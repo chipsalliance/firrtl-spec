@@ -12,7 +12,7 @@ author:
 title: Specification for the FIRRTL Language
 date: \today
 # Custom options added to the customized template
-version: 0.2.0
+version: 0.3.0
 # Options passed to the document class
 classoption:
 - 12pt

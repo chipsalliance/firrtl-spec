@@ -440,7 +440,7 @@ As in the case of vector types, a bundle field may be declared with any type,
 including other aggregate types.
 
 ``` firrtl
-{real: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}
+{real: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>},
  imag: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}}
 
 ```
@@ -1284,11 +1284,11 @@ In the example above, the type of `mymem`{.firrtl} is:
 {flip r1: {addr: UInt<8>,
            en: UInt<1>,
            clk: Clock,
-           flip data: {real: SInt<16>, imag: SInt<16>}}
+           flip data: {real: SInt<16>, imag: SInt<16>}},
  flip r2: {addr: UInt<8>,
            en: UInt<1>,
            clk: Clock,
-           flip data: {real: SInt<16>, imag: SInt<16>}}
+           flip data: {real: SInt<16>, imag: SInt<16>}},
  flip w: {addr: UInt<8>,
           en: UInt<1>,
           clk: Clock,

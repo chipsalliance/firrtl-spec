@@ -39,16 +39,19 @@ $endfor$
 $if(title)$
 \title{$title$$if(thanks)$\thanks{$thanks$}$endif$}
 $endif$
-$if(subtitle)$
 $if(beamer)$
 $else$
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
-  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+  \apptocmd{\@title}{\par {\large \emph{#1} \par}}{}{}
 }
 \makeatother
 $endif$
+$if(version)$
+\subtitle{Version $version$}
+$endif$
+$if(subtitle)$
 \subtitle{$subtitle$}
 $endif$
 \author{$for(author)$$author$$sep$ \and $endfor$}

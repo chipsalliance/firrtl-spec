@@ -1,14 +1,6 @@
 ---
 author:
-- |
-  Patrick S. Li\
-  <psli@eecs.berkeley.edu>
-- |
-  Adam M. Izraelevitz\
-  <adamiz@eecs.berkeley.edu>
-- |
-  Jonathan Bachrach\
-  <jrb@eecs.berkeley.edu>
+- The FIRRTL Specification Contributors
 title: Specification for the FIRRTL Language
 date: \today
 # Custom options added to the customized template
@@ -132,59 +124,40 @@ toolchain.
 
 # Acknowledgments
 
-The FIRRTL language could not have been developed without the help of many of
-the faculty and students in the ASPIRE lab, and the University of California,
-Berkeley.
+The FIRRTL specification was originally published as a UC Berkeley Tech Report
+([UCB/EECS-2016-9](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-9.html))
+authored by Adam Izraelevitz ([`@azidar`](https://github.com/azidar)), Partick
+Li ([`@CuppoJava`](https://github.com/CuppoJava)), and Jonathan Bachrach
+([`@jackbackrack`](https://github.com/jackbackrack)).  The vision for FIRRTL was
+then expanded in an [ICCAD
+paper](https://ieeexplore.ieee.org/abstract/document/8203780) and in [Adam's
+thesis](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2019/EECS-2019-168.html).
 
-This project originated from discussions with the authors' advisor, Jonathan
-Bachrach, who indicated the need for a structural redesign of the Chisel system
-around a well-defined intermediate representation.  Patrick Li designed and
-implemented the first prototype of the FIRRTL language, wrote the initial
-specification for the language, and presented it to the Chisel group consisting
-of Adam Izraelevitz, Scott Beamer, David Biancolin, Christopher Celio, Henry
-Cook, Palmer Dabbelt, Donggyu Kim, Jack Koenig, Martin Maas, Albert Magyar,
-Colin Schmidt, Andrew Waterman, Yunsup Lee, Richard Lin, Eric Love, Albert Ou,
-Stephen Twigg, John Bachan, David Donofrio, Farzad Fatollahi-Fard, Jim Lawson,
-Brian Richards, Krste Asanović, and John Wawrzynek.
+During that time and since, there have been a number of contributions and
+improvements to the specification.  To better reflect the work of contributors
+after the original tech report, the FIRRTL specification was changed to be
+authored by _The FIRRTL Specification Contributors_.  A list of these
+contributors is below:
 
-Adam Izraelevitz then reworked the design and re-implemented FIRRTL, and after
-many discussions with Patrick Li and the Chisel group, refined the design to its
-present version.
-
-The authors would like to thank the following individuals in particular for
-their contributions to the FIRRTL project:
-
--   Andrew Waterman: for his many contributions to the design of FIRRTL's
-    constructs, for his work on Chisel 3.0, and for porting architecture
-    research infrastructure
-
--   Richard Lin: for improving the Chisel 3.0 code base for release quality
-
--   Jack Koenig: for implementing the FIRRTL parser in Scala
-
--   Henry Cook: for porting and cleaning up many aspects of Chisel 3.0,
-    including the testing infrastructure and the parameterization library
-
--   Chick Markley: for creating the new testing harness and porting the Chisel
-    tutorial
-
--   Stephen Twigg: for his expertise in hardware intermediate representations
-    and for providing many corner cases to consider
-
--   Palmer Dabbelt, Eric Love, Martin Maas, Christopher Celio, and Scott Beamer:
-    for their feedback on previous drafts of the FIRRTL specification
-
-And finally this project would not have been possible without the continuous
-feedback and encouragement of Jonathan Bachrach, and his leadership on and
-implementation of Chisel.
-
-This research was partially funded by DARPA Award Number HR0011-12-2-0016, the
-Center for Future Architecture Research, a member of STARnet, a Semiconductor
-Research Corporation program sponsored by MARCO and DARPA, and ASPIRE Lab
-industrial sponsors and affiliates Intel, Google, Huawei, Nokia, NVIDIA, Oracle,
-and Samsung. Any opinions, findings, conclusions, or recommendations in this
-paper are solely those of the authors and does not necessarily reflect the
-position or the policy of the sponsors.
+<!-- This can be generated using ./scripts/get-authors.sh -->
+- [`@albert-magyar`](https://github.com/albert-magyar)
+- [`@azidar`](https://github.com/azidar)
+- [`@ben-marshall`](https://github.com/ben-marshall)
+- [`@boqwxp`](https://github.com/boqwxp)
+- [`@chick`](https://github.com/chick)
+- [`@darthscsi`](https://github.com/darthscsi)
+- [`@donggyukim`](https://github.com/donggyukim)
+- [`@ekiwi`](https://github.com/ekiwi)
+- [`@ekiwi-sifive`](https://github.com/ekiwi-sifive)
+- [`@felixonmars`](https://github.com/felixonmars)
+- [`@grebe`](https://github.com/grebe)
+- [`@jackkoenig`](https://github.com/jackkoenig)
+- [`@jared-barocsi`](https://github.com/jared-barocsi)
+- [`@richardxia`](https://github.com/richardxia)
+- [`@seldridge`](https://github.com/seldridge)
+- [`@sequencer`](https://github.com/sequencer)
+- [`@shunshou`](https://github.com/shunshou)
+- [`@tdb-alcorn`](https://github.com/tdb-alcorn)
 
 # Circuits and Modules
 

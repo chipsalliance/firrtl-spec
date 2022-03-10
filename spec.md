@@ -2559,7 +2559,7 @@ circuit Top : @[myfile.txt 14:8]
      out <= add(a,a) @[myfile.txt 34:4]
 ```
 
-\pagebreak
+\clearpage
 
 # FIRRTL Language Definition
 

@@ -318,11 +318,10 @@ Clock
 ### Analog Type
 
 The analog type specifies that a wire or port can be attached to multiple
-drivers. `Analog`{.firrtl} cannot be used as part of the type of a node or
-register, nor can it be used as part of the datatype of a memory. In this
-respect, it is similar to how `inout`{.firrtl} ports are used in Verilog, and
-FIRRTL analog signals are often used to interface with external Verilog or VHDL
-IP.
+drivers. `Analog`{.firrtl} cannot be used as part of the type of a register, nor
+can it be used as part of the datatype of a memory. In this respect, it is
+similar to how `inout`{.firrtl} ports are used in Verilog, and FIRRTL analog
+signals are often used to interface with external Verilog or VHDL IP.
 
 In contrast with all other ground types, analog signals cannot appear on either
 side of a connection statement. Instead, analog signals are attached to each

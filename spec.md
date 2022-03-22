@@ -178,7 +178,7 @@ circuit MyTop :
 ## Modules
 
 Each module has a given name, a list of ports, and a list of statements representing the
-circuit connections within the module. A module port is specified by its , which
+circuit connections within the module. A module port is specified by its direction, which
 may be input or output, a name, and the data type of the port.
 
 The following example declares a module with one input port, one output port,

@@ -177,7 +177,7 @@ circuit MyTop :
 
 ## Modules
 
-Each module has a given name, a list of ports, and a statement representing the
+Each module has a given name, a list of ports, and a list of statements representing the
 circuit connections within the module. A module port is specified by its , which
 may be input or output, a name, and the data type of the port.
 

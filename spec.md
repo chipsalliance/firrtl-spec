@@ -145,6 +145,7 @@ contributors is below:
 - [`@ben-marshall`](https://github.com/ben-marshall)
 - [`@boqwxp`](https://github.com/boqwxp)
 - [`@chick`](https://github.com/chick)
+- [`@dansvo`](https://github.com/dansvo)
 - [`@darthscsi`](https://github.com/darthscsi)
 - [`@donggyukim`](https://github.com/donggyukim)
 - [`@ekiwi`](https://github.com/ekiwi)

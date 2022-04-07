@@ -159,6 +159,7 @@ contributors is below:
 - [`@sequencer`](https://github.com/sequencer)
 - [`@shunshou`](https://github.com/shunshou)
 - [`@tdb-alcorn`](https://github.com/tdb-alcorn)
+- [`@youngar`](https://github.com/youngar)
 
 # Circuits and Modules
 

@@ -811,7 +811,8 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 
 Note that the clock signal for a register must be of type `clock`{.firrtl}, the
 reset signal must be a single bit `UInt`{.firrtl}, and the type of
-initialization value must match the declared type of the register.
+initialization value must be equivalent to the declared type of the register
+(see [@sec:type-equivalence] for details).
 
 ## Invalidates
 

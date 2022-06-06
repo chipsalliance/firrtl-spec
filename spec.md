@@ -267,7 +267,7 @@ two. In the FIRRTL language, the number represented by a signal of fixed-point
 type may expressed in terms of a base integer *value* term and a *binary point*,
 which represents an inverse power of two.
 
-The range of the value term is governed by a *width* an a manner analogous to
+The range of the value term is governed by a *width* in a manner analogous to
 integral types, with the additional restriction that all fixed-point number
 types are inherently signed in FIRRTL. Whenever an operation such as a
 `cat`{.firrtl} operates on the "bits" of a fixed-point number, it operates on

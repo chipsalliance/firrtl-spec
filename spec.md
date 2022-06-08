@@ -269,23 +269,19 @@ declaration.
 
 This well-defined interface consists of:
  - All of the module's `port` fields
+   - No `port`s can be added or deleted
+   - [@sec:aggregate-type] ports will be lowered to [@sec:ground-type] ports
+     using a specified algorithm <TODO?>
  - The module's `id`
- 
-The following example shows a declaration of a public module:
-
-```firrtl
-extcircuit FooCircuit :
-  extmodule Foo :
-      input foo: UInt
-      output bar: UInt
-      ; ...
-```
+   - This should never change
 
 A public module can be instantiated in an external Circuit like so:
 
 ```firrtl
 extcircuit FooCircuit :
   extmodule Foo :
+      input foo: UInt
+      output bar: UInt
       ; ...
 
 circuit UsesFooCircuit :

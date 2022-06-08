@@ -146,6 +146,7 @@ contributors is below:
 - [`@boqwxp`](https://github.com/boqwxp)
 - [`@chick`](https://github.com/chick)
 - [`@dansvo`](https://github.com/dansvo)
+- [`@debs-sifive`](https://github.com/debs-sifive)
 - [`@darthscsi`](https://github.com/darthscsi)
 - [`@donggyukim`](https://github.com/donggyukim)
 - [`@ekiwi`](https://github.com/ekiwi)
@@ -177,6 +178,22 @@ circuit MyTop :
       ; ...
 ```
 
+
+## Externally Defined Circuits
+
+An externally defined circuit is a circuit declaration whose implementation
+exists elsewhere. It should contain only module declarations
+([@sec:externally-defined-modules] or [@sec:public-modules]).
+
+```firrtl
+extcircuit MyExtCircuit :
+  extmodule FooExtModule :
+      ; ...
+  extmodule BarExtModule :
+      ; ...
+```
+
+
 ## Modules
 
 Each module has a given name, a list of ports, and a list of statements
@@ -199,6 +216,7 @@ Note that a module definition does *not* indicate that the module will be
 physically present in the final circuit. Refer to the description of the
 instance statement for details on how to instantiate a module
 ([@sec:instances]).
+
 
 ## Externally Defined Modules
 
@@ -229,6 +247,41 @@ ports.
 A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated
 Verilog to downstream tools.
+
+
+## Public Modules
+
+A public module is accessible by `Circuit`s other than the `Circuit` it is
+defined in. Unless otherwise specified, all modules inside of a `Circuit` are
+private and cannot be accessed by any other `Circuit`.
+
+A public module has fixed ports.
+
+A module can be marked as public like so:
+
+```firrtl
+circuit FooCircuit :
+   module Foo is public :
+      input foo: UInt
+      output bar: UInt
+      ; ...
+```
+
+A public module can be instantiated like so:
+
+```firrtl
+extcircuit FooCircuit :
+  extmodule Foo :
+      input foo: UInt
+      output bar: UInt
+      defname = VerilogName
+      ; ...
+
+circuit UsesFooCircuit :
+   module FooUser :
+      inst foo of FooCircuit::Foo
+```
+
 
 # Types
 

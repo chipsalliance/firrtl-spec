@@ -181,8 +181,9 @@ circuit MyTop :
 ## Externally Defined Circuits
 
 An externally defined circuit is a circuit declaration whose implementation
-exists elsewhere. It should contain only module declarations
-([@sec:externally-defined-modules] or [@sec:public-modules]).
+exists elsewhere. It should contain only module declarations, i.e.
+externally-defined modules ([@sec:externally-defined-modules]) or public
+modules ([@sec:public-modules]).
 
 ```firrtl
 extcircuit MyExtCircuit :
@@ -268,12 +269,17 @@ A public module must have a well-defined interface that can be captured in its
 declaration.
 
 This well-defined interface consists of:
- - All of the module's `port` fields
-   - No `port`s can be added or deleted
-   - [@sec:aggregate-type] ports will be lowered to [@sec:ground-type] ports
-     using a specified algorithm <TODO?>
- - The module's `id`
-   - This should never change
+\begin{itemize}
+   \item All of the module's `port` fields
+   \begin{itemize}
+      \item No `port`s can be added or deleted
+      \item Aggregate type ports ([@sec:aggregate-type]) will be lowered to ground type ports ([@sec:ground-type]) using a specified algorithm <TODO?>
+   \end{itemize}   
+   \item The module's `id`
+   \begin{itemize}
+      \item This should never change
+   \end{itemize}
+\end{itemize}
 
 A public module can be instantiated in an external Circuit like so:
 

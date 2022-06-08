@@ -265,8 +265,13 @@ In the above example, the public module `Foo` gets instantiated in the
 `FooCircuit` the same way a private module would.
 
 A public module must have a well-defined interface that can be captured in its
-declaration, so all ports should be fixed. The following example shows a
-declaration of a public module.
+declaration.
+
+This well-defined interface consists of:
+ - All of the module's `port` fields
+ - The module's `id`
+ 
+The following example shows a declaration of a public module:
 
 ```firrtl
 extcircuit FooCircuit :

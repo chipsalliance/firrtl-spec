@@ -251,8 +251,6 @@ A public module is accessible by `Circuit`s other than the `Circuit` it is
 defined in. Unless otherwise specified, all modules inside of a `Circuit` are
 private and cannot be accessed by any other `Circuit`.
 
-A public module has fixed ports.
-
 A module can be marked as public like so:
 
 ```firrtl
@@ -266,14 +264,23 @@ circuit FooCircuit :
 In the above example, the public module `Foo` gets instantiated in the
 `FooCircuit` the same way a private module would.
 
-A public module can be instantiated in an external Circuit like so:
+A public module must have a well-defined interface that can be captured in its
+declaration, so all ports should be fixed. The following example shows a
+declaration of a public module.
 
 ```firrtl
 extcircuit FooCircuit :
   extmodule Foo :
       input foo: UInt
       output bar: UInt
-      defname = VerilogName
+      ; ...
+```
+
+A public module can be instantiated in an external Circuit like so:
+
+```firrtl
+extcircuit FooCircuit :
+  extmodule Foo :
       ; ...
 
 circuit UsesFooCircuit :

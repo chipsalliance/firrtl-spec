@@ -3,6 +3,7 @@
   <highlighting>
     <list name="structure">
       <item>circuit</item>
+      <item>extcircuit</item>
       <item>module</item>
       <item>extmodule</item>
     </list>
@@ -18,6 +19,7 @@
       <item>of</item>
       <item>wire</item>
       <item>node</item>
+      <item>public</item>
     </list>
     <list name="types">
       <item>UInt</item>

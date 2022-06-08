@@ -230,6 +230,56 @@ A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated
 Verilog to downstream tools.
 
+## Public Modules
+
+A public module is accessible by `Circuit`s other than the `Circuit` it is
+defined in. Unless otherwise specified, all modules inside of a `Circuit` are
+private and cannot be accessed by any other `Circuit`.
+
+A module can be marked as public like so:
+
+```firrtl
+circuit FooCircuit :
+   public module Foo :
+      input foo: UInt
+      output bar: UInt
+      ; ...
+```
+
+In the above example, the public module `Foo` gets instantiated in the
+`FooCircuit` the same way a private module would.
+
+A public module must have a well-defined interface that can be captured in its
+declaration.
+
+This well-defined interface consists of:
+\begin{itemize}
+   \item All of the module's `port` fields
+   \begin{itemize}
+      \item No `port`s can be added or deleted
+      \item Aggregate type ports will be lowered to ground type ports ([@sec:types]) using a specified algorithm <TODO?>
+   \end{itemize}   
+   \item The module's `id`
+   \begin{itemize}
+      \item This should never change
+   \end{itemize}
+\end{itemize}
+
+A public module can be instantiated in an external Circuit like so:
+
+```firrtl
+extcircuit FooCircuit :
+  extmodule Foo :
+      input foo: UInt
+      output bar: UInt
+      ; ...
+
+circuit UsesFooCircuit :
+   module FooUser :
+      inst foo of FooCircuit::Foo
+```
+
+
 # Types
 
 Types are used to specify the structure of the data held by each circuit

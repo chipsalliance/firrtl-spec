@@ -257,13 +257,16 @@ A module can be marked as public like so:
 
 ```firrtl
 circuit FooCircuit :
-   module Foo is public :
+   public module Foo :
       input foo: UInt
       output bar: UInt
       ; ...
 ```
 
-A public module can be instantiated like so:
+In the above example, the public module `Foo` gets instantiated in the
+`FooCircuit` the same way a private module would.
+
+A public module can be instantiated in an external Circuit like so:
 
 ```firrtl
 extcircuit FooCircuit :

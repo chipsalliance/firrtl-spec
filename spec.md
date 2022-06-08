@@ -257,7 +257,7 @@ This well-defined interface consists of:
    \item All of the module's `port` fields
    \begin{itemize}
       \item No `port`s can be added or deleted
-      \item Aggregate type ports will be lowered to ground type ports ([@sec:types]) using a specified algorithm <TODO?>
+      \item Aggregate type ports (Section~\ref{sec:bundle-types}) will be lowered to ground type ports (Section~\ref{sec:ground-types}) using a specified algorithm <TODO?>
    \end{itemize}   
    \item The module's `id`
    \begin{itemize}

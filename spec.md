@@ -178,7 +178,6 @@ circuit MyTop :
       ; ...
 ```
 
-
 ## Externally Defined Circuits
 
 An externally defined circuit is a circuit declaration whose implementation
@@ -192,7 +191,6 @@ extcircuit MyExtCircuit :
   extmodule BarExtModule :
       ; ...
 ```
-
 
 ## Modules
 
@@ -216,7 +214,6 @@ Note that a module definition does *not* indicate that the module will be
 physically present in the final circuit. Refer to the description of the
 instance statement for details on how to instantiate a module
 ([@sec:instances]).
-
 
 ## Externally Defined Modules
 
@@ -247,7 +244,6 @@ ports.
 A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated
 Verilog to downstream tools.
-
 
 ## Public Modules
 
@@ -281,7 +277,6 @@ circuit UsesFooCircuit :
    module FooUser :
       inst foo of FooCircuit::Foo
 ```
-
 
 # Types
 

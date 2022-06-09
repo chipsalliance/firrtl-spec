@@ -2448,6 +2448,29 @@ circuit Foo:
     skip
 ```
 
+| Folded Module   | Unfolded Modules  |
+| --------------- | ----------------- |
+| <img title="Folded Modules" src="include/img/firrtl-folded-module.png"/> | <img title="Unfolded Modules" src="include/img/firrtl-unfolded-module.png"/> |
+
+Using targets (or multiple targets), any specific module, instance, or
+combination of instances can be expressed. Some examples include:
+
+| Target                                 | Description                                                |
+| --------                               | -------------                                              |
+| <code>~Foo</code>                      | refers to the whole circuit                                |
+| <code>~Foo&#124;Foo</code>             | refers to the top module                                   |
+| <code>~Foo&#124;Bar</code>             | refers to module `Bar` (or both instances of module `Bar`) |
+| <code>~Foo&#124;Foo/a:Bar</code>       | refers just to one instance of module `Bar`                |
+| <code>~Foo&#124;Foo/b:Bar/c:Baz</code> | refers to one instance of module `Baz`                     |
+| <code>~Foo&#124;Bar/d:Baz</code>       | refers to two instances of module `Baz`                    |
+
+If a target does not contain an instance path, it is a _local_ target.  A local
+target points to all instances of a module.  If a target contains an instance
+path, it is a _non-local_ target.  A non-local target _may_ not point to all
+instances of a module.  Additionally, a non-local target may have an equivalent
+local target representation.
+
+
 # The Lowered FIRRTL Forms
 
 The lowered FIRRTL forms, MidFIRRTL and LoFIRRTL, are increasingly restrictive

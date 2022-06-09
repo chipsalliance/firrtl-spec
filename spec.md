@@ -2369,6 +2369,85 @@ As an example `firetruck$y$z`{.firrtl} shares a prefix with
 `firetruck$y`{.firrtl} and `firetruck`{.firrtl}, but does not share a prefix
 with `fire`{.firrtl}.
 
+# Annotations
+
+Annotations encode arbitrary metadata and associate it with zero or more
+targets in a FIRRTL circuit.
+
+Annotations are represented as a dictionary, with a "class" field which
+describes which annotation it is, and a "target" field which represents the IR
+object it is attached to. The annotation's class matches the name of a Java
+class in the Scala Chisel/FIRRTL code base. Annotations may have arbitrary
+additional fields attached. Some annotation classes extend other annotations,
+which effectively means that the subclass annotation implies to effect of the
+parent annotation.
+
+Annotations are serializable to JSON and either live in a separate file
+(e.g., during the handoff between Chisel and the SFC) or are stored in-memory
+(e.g., during SFC-based compilation). The SFC pass API requires that passes
+describe which targets in the circuit they update. SFC infrastructure then
+automatically updates annotations so they are always synchronized with their
+corresponding FIRRTL IR.
+
+An example of an annotation is the `DontTouchAnnotation`, which can be used to
+indicate to the compiler that a wire "foo" should not be optimized away.
+
+```json
+{
+  "class":"firrtl.transforms.DontTouchAnnotation",
+  "target":"~MyCircuit|MyModule>foo"
+}
+```
+
+Some annotations have more complex interactions with the IR. For example the
+[BoringUtils](https://www.chisel-lang.org/api/latest/chisel3/util/experimental/BoringUtils$.html)
+provides FIRRTL with annotations which can be used to wire together any two
+things across the module instance hierarchy.
+
+## Targets
+
+A circuit is described, stored, and optimized in a folded representation. For
+example, there may be multiple instances of a module which will eventually
+become multiple physical copies of that module on the die.
+
+Targets are a mechanism to identify specific hardware in specific instances of
+modules in a FIRRTL circuit.  A target consists of a circuit, a root module, an
+optional instance hierarchy, and an optional reference. A target can only
+identify hardware with a name, e.g., a circuit, module, instance, register,
+wire, or node. References may further refer to specific fields or subindices in
+aggregates. A target with no instance hierarchy is local. A target with an
+instance hierarchy is non-local.
+
+Targets use a shorthand syntax of the form:
+```
+target ::= “~” (circuit) (“|” (module) (“/” (instance) “:” (module) )* (“>” (ref) )?)?
+```
+
+A reference is a name inside a module and one or more qualifying tokens that
+encode subfields (of a bundle) or subindices (of a vector):
+```
+reference ::= (name) ("[" (index) "]" | "." (field))*
+```
+
+Targets are specific enough to refer to any specific module in a folded,
+unfolded, or partially folded representation.
+
+To show some examples of what these look like, consider the following example
+circuit. This consists of four instances of module `Baz`, two instances of
+module `Bar`, and one instance of module `Foo`:
+
+```firrtl
+circuit Foo:
+  module Foo:
+    inst a of Bar
+    inst b of Bar
+  module Bar:
+    inst c of Baz
+    inst d of Baz
+  module Baz:
+    skip
+```
+
 # The Lowered FIRRTL Forms
 
 The lowered FIRRTL forms, MidFIRRTL and LoFIRRTL, are increasingly restrictive

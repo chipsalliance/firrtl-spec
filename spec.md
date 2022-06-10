@@ -2376,33 +2376,20 @@ targets ([@sec:targets]) in a FIRRTL circuit.
 
 Annotations are represented as a dictionary, with a "class" field which
 describes which annotation it is, and a "target" field which represents the IR
-object it is attached to. The annotation's class matches the name of a Java
-class in the Scala Chisel/FIRRTL code base. Annotations may have arbitrary
-additional fields attached. Some annotation classes extend other annotations,
-which effectively means that the subclass annotation implies to effect of the
-parent annotation.
+object it is attached to. Annotations may have arbitrary additional fields
+attached. Some annotation classes extend other annotations, which effectively
+means that the subclass annotation implies to effect of the parent annotation.
 
-Annotations are serializable to JSON and either live in a separate file
-(e.g., during the handoff between Chisel and the SFC) or are stored in-memory
-(e.g., during SFC-based compilation). The SFC pass API requires that passes
-describe which targets in the circuit they update. SFC infrastructure then
-automatically updates annotations so they are always synchronized with their
-corresponding FIRRTL IR.
+Annotations are serializable to JSON.
 
-An example of an annotation is the `DontTouchAnnotation`, which can be used to
-indicate to the compiler that a wire "foo" should not be optimized away.
+Below is an example annotation used to mark some module `foo`:
 
 ```json
 {
-  "class":"firrtl.transforms.DontTouchAnnotation",
+  "class":"myannotationpackage.FooAnnotation",
   "target":"~MyCircuit|MyModule>foo"
 }
 ```
-
-Some annotations have more complex interactions with the IR. For example the
-[BoringUtils](https://www.chisel-lang.org/api/latest/chisel3/util/experimental/BoringUtils$.html)
-provides FIRRTL with annotations which can be used to wire together any two
-things across the module instance hierarchy.
 
 ## Targets
 

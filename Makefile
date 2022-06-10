@@ -8,10 +8,6 @@ IMGS=$(foreach dotfile,$(IMG_SRC),build/img/$(patsubst %.dot,%.png,$(lastword $(
 images: $(IMG_SRC) | build/ build/img/
 	$(foreach dotfile,$(IMG_SRC),dot -Tpng $(dotfile) -o build/img/$(patsubst %.dot,%.png,$(lastword $(subst /, ,$(dotfile))));)
 
-test:
-	mkdir test
-	$(echo goodbye)
-
 clean:
 	rm -rf build
 

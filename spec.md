@@ -2372,7 +2372,7 @@ with `fire`{.firrtl}.
 # Annotations
 
 Annotations encode arbitrary metadata and associate it with zero or more
-targets in a FIRRTL circuit.
+targets ([@sec:targets]) in a FIRRTL circuit.
 
 Annotations are represented as a dictionary, with a "class" field which
 describes which annotation it is, and a "target" field which represents the IR

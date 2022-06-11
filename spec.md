@@ -2369,6 +2369,103 @@ As an example `firetruck$y$z`{.firrtl} shares a prefix with
 `firetruck$y`{.firrtl} and `firetruck`{.firrtl}, but does not share a prefix
 with `fire`{.firrtl}.
 
+# Annotations
+
+Annotations encode arbitrary metadata and associate it with zero or more
+targets ([@sec:targets]) in a FIRRTL circuit.
+
+Annotations are represented as a dictionary, with a "class" field which
+describes which annotation it is, and a "target" field which represents the IR
+object it is attached to. Annotations may have arbitrary additional fields
+attached. Some annotation classes extend other annotations, which effectively
+means that the subclass annotation implies to effect of the parent annotation.
+
+Annotations are serializable to JSON.
+
+Below is an example annotation used to mark some module `foo`:
+
+```json
+{
+  "class":"myannotationpackage.FooAnnotation",
+  "target":"~MyCircuit|MyModule>foo"
+}
+```
+
+## Targets
+
+A circuit is described, stored, and optimized in a folded representation. For
+example, there may be multiple instances of a module which will eventually
+become multiple physical copies of that module on the die.
+
+Targets are a mechanism to identify specific hardware in specific instances of
+modules in a FIRRTL circuit.  A target consists of a circuit, a root module, an
+optional instance hierarchy, and an optional reference. A target can only
+identify hardware with a name, e.g., a circuit, module, instance, register,
+wire, or node. References may further refer to specific fields or subindices in
+aggregates. A target with no instance hierarchy is local. A target with an
+instance hierarchy is non-local.
+
+Targets use a shorthand syntax of the form:
+
+```ebnf
+target = “~” , circuit ,
+         [ “|” , module , { “/” (instance) “:” (module) } , [ “>” , ref ] ]
+```
+
+A reference is a name inside a module and one or more qualifying tokens that
+encode subfields (of a bundle) or subindices (of a vector):
+
+```ebnf
+ref = name , { ( "[" , index , "]" ) | ( "." , field ) }
+```
+
+Targets are specific enough to refer to any specific module in a folded,
+unfolded, or partially folded representation.
+
+To show some examples of what these look like, consider the following example
+circuit. This consists of four instances of module `Baz`, two instances of
+module `Bar`, and one instance of module `Foo`:
+
+```firrtl
+circuit Foo:
+  module Foo:
+    inst a of Bar
+    inst b of Bar
+  module Bar:
+    inst c of Baz
+    inst d of Baz
+  module Baz:
+    skip
+```
+
+This circuit can be represented in a _folded_, completely _unfolded_, or in some
+_partially folded_ state.  Figure [@fig:foo-folded] shows the folded
+representation.  Figure [@fig:foo-unfolded] shows the completely unfolded
+representation where each instance is broken out into its own module.
+
+![A folded representation of circuit Foo](build/img/firrtl-folded-module.eps){#fig:foo-folded width=15%}
+
+![A completely unfolded representation of circuit Foo](build/img/firrtl-unfolded-module.eps){#fig:foo-unfolded}
+
+Using targets (or multiple targets), any specific module, instance, or
+combination of instances can be expressed. Some examples include:
+
+| Target                                 | Description                                                |
+| --------                               | -------------                                              |
+| <code>~Foo</code>                      | refers to the whole circuit                                |
+| <code>~Foo&#124;Foo</code>             | refers to the top module                                   |
+| <code>~Foo&#124;Bar</code>             | refers to module `Bar` (or both instances of module `Bar`) |
+| <code>~Foo&#124;Foo/a:Bar</code>       | refers just to one instance of module `Bar`                |
+| <code>~Foo&#124;Foo/b:Bar/c:Baz</code> | refers to one instance of module `Baz`                     |
+| <code>~Foo&#124;Bar/d:Baz</code>       | refers to two instances of module `Baz`                    |
+
+If a target does not contain an instance path, it is a _local_ target.  A local
+target points to all instances of a module.  If a target contains an instance
+path, it is a _non-local_ target.  A non-local target _may_ not point to all
+instances of a module.  Additionally, a non-local target may have an equivalent
+local target representation.
+
+
 # The Lowered FIRRTL Forms
 
 The lowered FIRRTL forms, MidFIRRTL and LoFIRRTL, are increasingly restrictive

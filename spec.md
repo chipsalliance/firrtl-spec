@@ -2435,9 +2435,14 @@ circuit Foo:
     skip
 ```
 
-| Folded Module   | Unfolded Modules  |
-| --------------- | ----------------- |
-| <img title="Folded Modules" src="build/img/firrtl-folded-module.png"/> | <img title="Unfolded Modules" src="build/img/firrtl-unfolded-module.png"/> |
+This circuit can be represented in a _folded_, completely _unfolded_, or in some
+_partially folded_ state.  Figure [@fig:foo-folded] shows the folded
+representation.  Figure [@fig:foo-unfolded] shows the completely unfolded
+representation where each instance is broken out into its own module.
+
+![A folded representation of circuit Foo](build/img/firrtl-folded-module.eps){#fig:foo-folded width=15%}
+
+![A completely unfolded representation of circuit Foo](build/img/firrtl-unfolded-module.eps){#fig:foo-unfolded}
 
 Using targets (or multiple targets), any specific module, instance, or
 combination of instances can be expressed. Some examples include:

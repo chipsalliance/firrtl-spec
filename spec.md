@@ -2452,14 +2452,14 @@ representation where each instance is broken out into its own module.
 Using targets (or multiple targets), any specific module, instance, or
 combination of instances can be expressed. Some examples include:
 
-| Target                 | Description                                                |
-| -----------------------| -------------                                              |
-| `~Foo`                 | refers to the whole circuit                                |
-| `~Foo|Foo`             | refers to the top module                                   |
-| `~Foo|Bar`             | refers to module `Bar` (or both instances of module `Bar`) |
-| `~Foo|Foo/a:Bar`       | refers just to one instance of module `Bar`                |
-| `~Foo|Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`                     |
-| `~Foo|Bar/d:Baz`       | refers to two instances of module `Baz`                    |
+Target                   Description
+-----------------------  -------------
+`~Foo`                   refers to the whole circuit
+`~Foo|Foo`               refers to the top module
+`~Foo|Bar`               refers to module `Bar` (or both instances of module `Bar`)
+`~Foo|Foo/a:Bar`         refers just to one instance of module `Bar`
+`~Foo|Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`
+`~Foo|Bar/d:Baz`         refers to two instances of module `Baz`
 
 If a target does not contain an instance path, it is a _local_ target.  A local
 target points to all instances of a module.  If a target contains an instance

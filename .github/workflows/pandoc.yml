@@ -10,7 +10,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: mkdir build
+      - name: Get Graphviz
+        uses: ts-graphviz/setup-graphviz@v1
+      - name: ".dot -> [Graphviz] -> .eps"
+        run: make images
       - name: "Markdown -> [pandoc] -> LaTeX "
         uses: docker://pandoc/core:2.17
         with:
@@ -25,7 +28,7 @@ jobs:
       - name: "LaTeX -> [TeX Live] -> PDF"
         uses: xu-cheng/texlive-action/small@v1
         with:
-          run: (cd build && latexmk -pdf spec.tex)
+          run: latexmk -pdf spec.tex -output-directory=build
       - name: "Upload build directory"
         uses: actions/upload-artifact@v3
         with:

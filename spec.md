@@ -817,6 +817,18 @@ reset signal must be a single bit `UInt`{.firrtl}, and the type of
 initialization value must be equivalent to the declared type of the register
 (see [@sec:type-equivalence] for details).
 
+### Asynchronous Resets
+
+Registers can also be reset asynchronously with `AsyncReset`.
+
+``` firrtl
+wire myclock: Clock
+wire myreset: AsyncReset
+wire myinit: SInt
+reg myreg: SInt, myclock with: (reset => (myreset, myinit))
+; ...
+```
+
 ## Invalidates
 
 An invalidate statement is used to indicate that a circuit component contains

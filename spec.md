@@ -323,7 +323,7 @@ Clock
 ### Reset Type
 
 The abstract `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl}
-(synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) after
+(synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) during
 compilation.
 
 Synchronous resets used in registers will be mapped to a hardware description
@@ -364,8 +364,7 @@ resets will error
 only invalidated or is driven by or drives only synchronous resets)
 
 Note that an exception will be thrown if a `Reset`{.firrtl} is driven by
-both a synchronous and asynchronous type; last connect semantics will not
-determine the final type.
+both a synchronous and asynchronous type.
 
 `Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other
 types. Casting between reset types is also legal:

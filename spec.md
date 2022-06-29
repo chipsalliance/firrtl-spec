@@ -326,6 +326,34 @@ The abstract `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl}
 (synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) after
 compilation.
 
+Synchronous resets used in registers will be mapped to a hardware description
+language representation for synchronous resets.
+
+The following example demonstrates usage of a synchronous reset.
+
+``` firrtl
+input clock : Clock
+input r : UInt<1>
+input x : UInt<8>
+wire reset: Reset
+reset <= r
+reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
+; ...
+```
+
+Asynchronous resets used in registers will be mapped to a hardware description
+language representation for asynchronous resets.
+
+The following example demonstrates usage of an asynchronous reset.
+
+``` firrtl
+input clock : Clock
+input reset : AsyncReset
+input x : UInt<8>
+reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
+; ...
+```
+
 Inference rules are as follows:
 
 1. An abstract reset driven by and/or driving only asynchronous resets will be
@@ -353,36 +381,6 @@ z <= asUInt(y)
 ```
 
 See [@sec:primitive-operations] for more details on casting.
-
-#### Synchronous Resets\newline\newline
-
-Synchronous resets are inferred to the type `UInt<1>`.
-
-The following example demonstrates usage of a synchronous reset.
-
-``` firrtl
-input clock : Clock
-input r : UInt<1>
-input x : UInt<8>
-wire reset: Reset
-reset <= r
-reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
-; ...
-```
-
-#### Asynchronous Reset Type\newline\newline
-
-An `AsyncReset`{.firrtl} generates asynchronously-reset logic.
-
-The following example demonstrates usage of an asynchronous reset.
-
-``` firrtl
-input clock : Clock
-input reset : AsyncReset
-input x : UInt<8>
-reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
-; ...
-```
 
 ### Analog Type
 

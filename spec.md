@@ -2121,35 +2121,38 @@ padding.
 
 ## Interpret As UInt
 
-| Name   | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
-|--------|-----------|------------|-----------|-------------|--------------|
-| asUInt | \(e\)     | ()         | (UInt)    | UInt        | w~e~         |
-|        |           |            | (SInt)    | UInt        | w~e~         |
-|        |           |            | (Fixed)   | UInt        | w~e~         |
-|        |           |            | (Clock)   | UInt        | 1            |
+| Name   | Arguments | Parmaeters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~         |
+|        |           |            | (SInt)       | UInt        | w~e~         |
+|        |           |            | (Fixed)      | UInt        | w~e~         |
+|        |           |            | (Clock)      | UInt        | 1            |
+|        |           |            | (AsyncReset) | UInt        | 1            |
 
 The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 
 ## Interpret As SInt
 
-| Name   | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
-|--------|-----------|------------|-----------|-------------|--------------|
-| asSInt | \(e\)     | ()         | (UInt)    | SInt        | w~e~         |
-|        |           |            | (SInt)    | SInt        | w~e~         |
-|        |           |            | (Fixed)   | SInt        | w~e~         |
-|        |           |            | (Clock)   | SInt        | 1            |
+| Name   | Arguments | Parmaeters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asSInt | \(e\)     | ()         | (UInt)       | SInt        | w~e~         |
+|        |           |            | (SInt)       | SInt        | w~e~         |
+|        |           |            | (Fixed)      | SInt        | w~e~         |
+|        |           |            | (Clock)      | SInt        | 1            |
+|        |           |            | (AsyncReset) | SInt        | 1            |
 
 The interpret as SInt operation reinterprets e's bits as a signed integer
 according to two's complement representation.
 
 ## Interpret As Fixed-Point Number
 
-| Name    | Arguments | Parmaeters | Arg Types | Result Type | Result Width | Result Binary Point |
-|---------|-----------|------------|-----------|-------------|--------------|---------------------|
-| asFixed | \(e\)     | \(p\)      | (UInt)    | Fixed       | w~e~         | p                   |
-|         |           |            | (SInt)    | Fixed       | w~e~         | p                   |
-|         |           |            | (Fixed)   | Fixed       | w~e~         | p                   |
-|         |           |            | (Clock)   | Fixed       | 1            | p                   |
+| Name    | Arguments | Parmaeters | Arg Types    | Result Type | Result Width | Result Binary Point |
+|---------|-----------|------------|--------------|-------------|--------------|---------------------|
+| asFixed | \(e\)     | \(p\)      | (UInt)       | Fixed       | w~e~         | p                   |
+|         |           |            | (SInt)       | Fixed       | w~e~         | p                   |
+|         |           |            | (Fixed)      | Fixed       | w~e~         | p                   |
+|         |           |            | (Clock)      | Fixed       | 1            | p                   |
+|         |           |            | (AsyncReset) | Fixed       | 1            | p                   |
 
 The interpret as fixed-point operation reinterprets e's bits as a fixed-point
 number of identical width. Since all fixed-point number in FIRRTL are signed,
@@ -2159,12 +2162,13 @@ type has binary point p.
 
 ## Interpret as Clock
 
-| Name    | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
-|---------|-----------|------------|-----------|-------------|--------------|
-| asClock | \(e\)     | ()         | (UInt)    | Clock       | n/a          |
-|         |           |            | (SInt)    | Clock       | n/a          |
-|         |           |            | (Fixed)   | Clock       | n/a          |
-|         |           |            | (Clock)   | Clock       | n/a          |
+| Name    | Arguments | Parmaeters | Arg Types    | Result Type | Result Width |
+|---------|-----------|------------|--------------|-------------|--------------|
+| asClock | \(e\)     | ()         | (UInt)       | Clock       | n/a          |
+|         |           |            | (SInt)       | Clock       | n/a          |
+|         |           |            | (Fixed)      | Clock       | n/a          |
+|         |           |            | (Clock)      | Clock       | n/a          |
+|         |           |            | (AsyncReset) | Clock       | n/a          |
 
 The result of the interpret as clock operation is the Clock typed signal
 obtained from interpreting a single bit integer as a clock signal.
@@ -2322,7 +2326,7 @@ non-negative and less than or equal to the bit width of e.
 
 ## Fixed-Point Precision Modification Operations
 
-| Name             | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name             | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------------------|-----------|------------|-----------|-------------|--------------|
 | incp, decp, setp | \(e\)     | \(n\)      | (Fixed)   | Fixed       |              |
 

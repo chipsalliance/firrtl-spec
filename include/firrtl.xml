@@ -46,6 +46,7 @@
       <item>eq</item>
       <item>neq</item>
       <item>pad</item>
+      <item>asAsyncReset</item>
       <item>asUInt</item>
       <item>asSInt</item>
       <item>asClock</item>

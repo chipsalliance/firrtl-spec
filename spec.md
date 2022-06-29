@@ -320,6 +320,108 @@ The clock type is specified as follows:
 Clock
 ```
 
+### Reset Type
+
+The abstract `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl}
+(synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) after
+compilation.
+
+Inference rules are as follows:
+
+\begin{enumerate}
+   \item An abstract reset driven by and/or driving only asynchronous resets
+will be inferred as asynchronous reset
+   \item An abstract reset driven by and/or driving both asynchronous and
+synchronous resets will error
+   \item Otherwise, the reset is inferred as synchronous (i.e. the abstract
+reset is only invalidated or is driven by or drives only synchronous resets)
+\end{enumerate}
+
+Note that an exception will be thrown if a `Reset`{.firrtl} is driven by
+both a synchronous and asynchronous type; last connect semantics will not
+determine the final type.
+
+`Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other
+types. See the following sections for examples.
+
+Casting between reset types is also legal:
+
+``` firrtl
+input a : UInt<1>
+output y : AsyncReset
+output z : Reset
+wire r : Reset
+r <= a
+y <= asAsyncReset(r)
+z <= asUInt(y)
+```
+
+#### Synchronous Resets\newline\newline
+
+Synchronous resets are inferred to the type `UInt<1>`.
+
+The following example demonstrates usage of a synchronous reset.
+
+``` firrtl
+input clock : Clock
+input r : UInt<1>
+input x : UInt<8>
+wire reset: Reset
+reset <= r
+reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
+; ...
+```
+
+Synchronous reset casting examples:
+
+``` firrtl
+input a : UInt<1>
+output v : UInt<1>
+output w : SInt<1>
+output x : Clock
+output y : Fixed<1><<0>>
+output z : AsyncReset
+wire r : Reset
+r <= a
+v <= asUInt(r)
+w <= asSInt(r)
+x <= asClock(r)
+y <= asFixedPoint(r, 0)
+z <= asAsyncReset(r)
+```
+
+#### Asynchronous Reset Type\newline\newline
+
+An `AsyncReset`{.firrtl} generates asynchronously-reset logic.
+
+The following example demonstrates usage of an asynchronous reset.
+
+``` firrtl
+input clock : Clock
+input reset : AsyncReset
+input x : UInt<8>
+reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
+; ...
+```
+
+`AsyncReset`{.firrtl} casting examples:
+
+``` firrtl
+input a : AsyncReset
+output u : Interval[0, 1].0
+output v : UInt<1>
+output w : SInt<1>
+output x : Clock
+output y : Fixed<1><<0>>
+output z : AsyncReset
+u <= asInterval(a, 0, 1, 0)
+v <= asUInt(a)
+w <= asSInt(a)
+x <= asClock(a)
+y <= asFixedPoint(a, 0)
+z <= asAsyncReset(a)
+```
+
 ### Analog Type
 
 The analog type specifies that a wire or port can be attached to multiple
@@ -800,9 +902,9 @@ reg myreg: SInt, myclock
 ```
 
 Optionally, for the purposes of circuit initialization, a register can be
-declared with a reset signal and value. In the following example,
-`myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal
-`myreset`{.firrtl} is high.
+declared with a reset signal (synchronous or asynchronous) and value. In the
+following example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl}
+when the signal `myreset`{.firrtl} is high.
 
 ``` firrtl
 wire myclock: Clock
@@ -816,18 +918,6 @@ Note that the clock signal for a register must be of type `clock`{.firrtl}, the
 reset signal must be a single bit `UInt`{.firrtl}, and the type of
 initialization value must be equivalent to the declared type of the register
 (see [@sec:type-equivalence] for details).
-
-### Asynchronous Resets
-
-Registers can also be reset asynchronously with `AsyncReset`.
-
-``` firrtl
-wire myclock: Clock
-wire myreset: AsyncReset
-wire myinit: SInt
-reg myreg: SInt, myclock with: (reset => (myreset, myinit))
-; ...
-```
 
 ## Invalidates
 
@@ -2715,7 +2805,7 @@ info = "@" , "[" , { string , " " , linecol } , "]" ;
 (* Type definitions *)
 width = "<" , int , ">" ;
 binarypoint = "<<" , int , ">>" ;
-type_ground = "Clock"
+type_ground = "Clock" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ]
             | "Fixed" , [ width ] , [ binarypoint ] ;
 type_aggregate = "{" , field , { field } , "}"

@@ -328,14 +328,12 @@ compilation.
 
 Inference rules are as follows:
 
-\begin{enumerate}
-   \item An abstract reset driven by and/or driving only asynchronous resets
-will be inferred as asynchronous reset
-   \item An abstract reset driven by and/or driving both asynchronous and
-synchronous resets will error
-   \item Otherwise, the reset is inferred as synchronous (i.e. the abstract
-reset is only invalidated or is driven by or drives only synchronous resets)
-\end{enumerate}
+1. An abstract reset driven by and/or driving only asynchronous resets will be
+inferred as asynchronous reset
+1. An abstract reset driven by and/or driving both asynchronous and synchronous
+resets will error
+1. Otherwise, the reset is inferred as synchronous (i.e. the abstract reset is
+only invalidated or is driven by or drives only synchronous resets)
 
 Note that an exception will be thrown if a `Reset`{.firrtl} is driven by
 both a synchronous and asynchronous type; last connect semantics will not

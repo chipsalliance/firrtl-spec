@@ -342,9 +342,7 @@ both a synchronous and asynchronous type; last connect semantics will not
 determine the final type.
 
 `Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other
-types. See the following sections for examples.
-
-Casting between reset types is also legal:
+types. Casting between reset types is also legal:
 
 ``` firrtl
 input a : UInt<1>
@@ -355,6 +353,8 @@ r <= a
 y <= asAsyncReset(r)
 z <= asUInt(y)
 ```
+
+See [@sec:primitive-operations] for more details on casting.
 
 #### Synchronous Resets\newline\newline
 
@@ -372,24 +372,6 @@ reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
 ; ...
 ```
 
-Synchronous reset casting examples:
-
-``` firrtl
-input a : UInt<1>
-output v : UInt<1>
-output w : SInt<1>
-output x : Clock
-output y : Fixed<1><<0>>
-output z : AsyncReset
-wire r : Reset
-r <= a
-v <= asUInt(r)
-w <= asSInt(r)
-x <= asClock(r)
-y <= asFixedPoint(r, 0)
-z <= asAsyncReset(r)
-```
-
 #### Asynchronous Reset Type\newline\newline
 
 An `AsyncReset`{.firrtl} generates asynchronously-reset logic.
@@ -402,24 +384,6 @@ input reset : AsyncReset
 input x : UInt<8>
 reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
 ; ...
-```
-
-`AsyncReset`{.firrtl} casting examples:
-
-``` firrtl
-input a : AsyncReset
-output u : Interval[0, 1].0
-output v : UInt<1>
-output w : SInt<1>
-output x : Clock
-output y : Fixed<1><<0>>
-output z : AsyncReset
-u <= asInterval(a, 0, 1, 0)
-v <= asUInt(a)
-w <= asSInt(a)
-x <= asClock(a)
-y <= asFixedPoint(a, 0)
-z <= asAsyncReset(a)
 ```
 
 ### Analog Type
@@ -2172,6 +2136,20 @@ type has binary point p.
 
 The result of the interpret as clock operation is the Clock typed signal
 obtained from interpreting a single bit integer as a clock signal.
+
+## Interpret as AsyncReset
+
+| Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------------|-----------|------------|--------------|-------------|--------------|
+| asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
+|              |           |            | (UInt)       | AsyncReset  | n/a          |
+|              |           |            | (SInt)       | AsyncReset  | n/a          |
+|              |           |            | (Fixed)      | AsyncReset  | n/a          |
+|              |           |            | (Interval)   | AsyncReset  | n/a          |
+|              |           |            | (Clock)      | AsyncReset  | n/a          |
+
+The result of the interpret as asynchronous reset operation is an AsyncReset typed
+signal.
 
 ## Shift Left Operation
 

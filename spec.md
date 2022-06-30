@@ -226,7 +226,8 @@ extmodule MyExternalModule :
 
 The widths of all externally defined module ports must be specified.  Width
 inference, described in [@sec:width-inference], is not supported for module
-ports.
+ports. In addition, externally defined modules cannot have ports of the
+uninferred `Reset`{.firrtl} type.
 
 A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated

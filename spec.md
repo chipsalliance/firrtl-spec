@@ -2090,6 +2090,7 @@ padding.
 |        |           |            | (SInt)       | UInt        | w~e~         |
 |        |           |            | (Fixed)      | UInt        | w~e~         |
 |        |           |            | (Clock)      | UInt        | 1            |
+|        |           |            | (Reset)      | UInt        | 1            |
 |        |           |            | (AsyncReset) | UInt        | 1            |
 
 The interpret as UInt operation reinterprets e's bits as an unsigned integer.
@@ -2102,6 +2103,7 @@ The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 |        |           |            | (SInt)       | SInt        | w~e~         |
 |        |           |            | (Fixed)      | SInt        | w~e~         |
 |        |           |            | (Clock)      | SInt        | 1            |
+|        |           |            | (Reset)      | SInt        | 1            |
 |        |           |            | (AsyncReset) | SInt        | 1            |
 
 The interpret as SInt operation reinterprets e's bits as a signed integer
@@ -2115,6 +2117,7 @@ according to two's complement representation.
 |         |           |            | (SInt)       | Fixed       | w~e~         | p                   |
 |         |           |            | (Fixed)      | Fixed       | w~e~         | p                   |
 |         |           |            | (Clock)      | Fixed       | 1            | p                   |
+|         |           |            | (Reset)      | Fixed       | 1            | p                   |
 |         |           |            | (AsyncReset) | Fixed       | 1            | p                   |
 
 The interpret as fixed-point operation reinterprets e's bits as a fixed-point
@@ -2131,6 +2134,7 @@ type has binary point p.
 |         |           |            | (SInt)       | Clock       | n/a          |
 |         |           |            | (Fixed)      | Clock       | n/a          |
 |         |           |            | (Clock)      | Clock       | n/a          |
+|         |           |            | (Reset)      | Clock       | n/a          |
 |         |           |            | (AsyncReset) | Clock       | n/a          |
 
 The result of the interpret as clock operation is the Clock typed signal
@@ -2146,6 +2150,7 @@ obtained from interpreting a single bit integer as a clock signal.
 |              |           |            | (Fixed)      | AsyncReset  | n/a          |
 |              |           |            | (Interval)   | AsyncReset  | n/a          |
 |              |           |            | (Clock)      | AsyncReset  | n/a          |
+|              |           |            | (Reset)      | AsyncReset  | n/a          |
 
 The result of the interpret as asynchronous reset operation is an AsyncReset typed
 signal.

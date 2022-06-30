@@ -322,23 +322,29 @@ Clock
 
 ### Reset Type
 
-The abstract `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl}
+The uninferred `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl}
 (synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) during
-compilation.
+compilation. Uninferred `Reset`{.firrtl}s can only exist in HiFIRRTL.
 
 Synchronous resets used in registers will be mapped to a hardware description
 language representation for synchronous resets.
 
-The following example demonstrates usage of a synchronous reset.
+The following example shows an uninferred reset that will get inferred to a
+synchronous reset.
 
 ``` firrtl
-input clock : Clock
-input r : UInt<1>
-input x : UInt<8>
-wire reset: Reset
-reset <= r
-reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
-; ...
+input a : UInt<1>
+wire reset : Reset
+reset <= a
+```
+
+When compiled to MidFIRRTL, `reset` is inferred to the synchronous
+`UInt<1>`{.firrtl} type:
+
+``` firrtl
+input a : UInt<1>
+wire reset : UInt<1>
+reset <= a
 ```
 
 Asynchronous resets used in registers will be mapped to a hardware description
@@ -2569,6 +2575,9 @@ following restrictions:
 - The dynamic sub-access expression is not used.
 
 - All components are connected to exactly once.
+
+- All uninferred `Reset`{.firrtl} types have been inferred to `UInt<1>`{.firrtl}
+or `AsyncReset`{.firrtl}.
 
 ## LoFIRRTL
 

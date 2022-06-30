@@ -2794,8 +2794,9 @@ type_ground = "Clock" | "AsyncReset"
             | "Fixed" , [ width ] , [ binarypoint ] ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
+type_uninferred = "Reset"
 field = [ "flip" ] , id , ":" , type ;
-type = type_ground | type_aggregate ;
+type = type_ground | type_aggregate | type_uninferred ;
 
 (* Primitive operations *)
 primop_2expr_keyword =
@@ -2872,8 +2873,9 @@ module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;
+port_extmodule = ( "input" | "output" ) , id , ":": , type_ground | type_aggregate , [ info ] ;
 extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
-              { port , newline } ,
+              { port_extmodule , newline } ,
               [ "defname" , "=" , id , newline ] ,
               { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;

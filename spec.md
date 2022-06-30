@@ -324,7 +324,7 @@ Clock
 
 The uninferred `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl}
 (synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) during
-compilation. Uninferred `Reset`{.firrtl}s can only exist in HiFIRRTL.
+compilation.
 
 Synchronous resets used in registers will be mapped to a hardware description
 language representation for synchronous resets.
@@ -338,7 +338,7 @@ wire reset : Reset
 reset <= a
 ```
 
-When compiled to MidFIRRTL, `reset` is inferred to the synchronous
+After reset inference, `reset` is inferred to the synchronous
 `UInt<1>`{.firrtl} type:
 
 ``` firrtl
@@ -362,15 +362,13 @@ reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
 
 Inference rules are as follows:
 
-1. An abstract reset driven by and/or driving only asynchronous resets will be
-inferred as asynchronous reset
-1. An abstract reset driven by and/or driving both asynchronous and synchronous
-resets will error
-1. Otherwise, the reset is inferred as synchronous (i.e. the abstract reset is
-only invalidated or is driven by or drives only synchronous resets)
-
-Note that an exception will be thrown if a `Reset`{.firrtl} is driven by
-both a synchronous and asynchronous type.
+1. An uninferred reset driven by and/or driving only asynchronous resets will be
+inferred as asynchronous reset.
+1. An uninferred reset driven by and/or driving both asynchronous and synchronous
+resets will cause an exception to be thrown. This occurs because reset inference
+happens before last-connect semantics are resolved.
+1. Otherwise, the reset is inferred as synchronous (i.e. the uninferred reset is
+only invalidated or is driven by or drives only synchronous resets).
 
 `Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other
 types. Casting between reset types is also legal:
@@ -2577,7 +2575,7 @@ following restrictions:
 - All components are connected to exactly once.
 
 - All uninferred `Reset`{.firrtl} types have been inferred to `UInt<1>`{.firrtl}
-or `AsyncReset`{.firrtl}.
+or `AsyncReset`{.firrtl}, since reset inference is part of HiFIRRTL.
 
 ## LoFIRRTL
 

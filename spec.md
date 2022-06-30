@@ -538,7 +538,8 @@ An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl},
 `UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}.
 It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
 
-The `AsyncReset`{.firrtl} type is only equivalent to `AsyncReset`{.firrtl}.
+The `AsyncReset`{.firrtl} type can be connected to another
+`AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
 
 Two vector types are equivalent if they have the same length, and if their
 element types are equivalent.

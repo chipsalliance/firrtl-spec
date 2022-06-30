@@ -534,10 +534,11 @@ type.
 Clock types are equivalent to clock types, and are not equivalent to any other
 type.
 
-An uninferred `Reset`{.firrtl} can be connected to either `UInt<1>`{.firrtl} or
-`AsyncReset`{.firrtl}, but not both.
+An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl},
+`UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}.
+It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
 
-The `AsyncReset`{.firrtl} type is not equivalent to any other type.
+The `AsyncReset`{.firrtl} type is only equivalent to `AsyncReset`{.firrtl}.
 
 Two vector types are equivalent if they have the same length, and if their
 element types are equivalent.

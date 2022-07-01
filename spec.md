@@ -320,6 +320,71 @@ The clock type is specified as follows:
 Clock
 ```
 
+### Reset Type
+
+The uninferred `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl}
+(synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) during
+compilation.
+
+Synchronous resets used in registers will be mapped to a hardware description
+language representation for synchronous resets.
+
+The following example shows an uninferred reset that will get inferred to a
+synchronous reset.
+
+``` firrtl
+input a : UInt<1>
+wire reset : Reset
+reset <= a
+```
+
+After reset inference, `reset` is inferred to the synchronous
+`UInt<1>`{.firrtl} type:
+
+``` firrtl
+input a : UInt<1>
+wire reset : UInt<1>
+reset <= a
+```
+
+Asynchronous resets used in registers will be mapped to a hardware description
+language representation for asynchronous resets.
+
+The following example demonstrates usage of an asynchronous reset.
+
+``` firrtl
+input clock : Clock
+input reset : AsyncReset
+input x : UInt<8>
+reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
+; ...
+```
+
+Inference rules are as follows:
+
+1. An uninferred reset driven by and/or driving only asynchronous resets will be
+inferred as asynchronous reset.
+1. An uninferred reset driven by and/or driving both asynchronous and synchronous
+resets will cause an exception to be thrown. This occurs because reset inference
+happens before last-connect semantics are resolved.
+1. Otherwise, the reset is inferred as synchronous (i.e. the uninferred reset is
+only invalidated or is driven by or drives only synchronous resets).
+
+`Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other
+types. Casting between reset types is also legal:
+
+``` firrtl
+input a : UInt<1>
+output y : AsyncReset
+output z : Reset
+wire r : Reset
+r <= a
+y <= asAsyncReset(r)
+z <= asUInt(y)
+```
+
+See [@sec:primitive-operations] for more details on casting.
+
 ### Analog Type
 
 The analog type specifies that a wire or port can be attached to multiple
@@ -468,6 +533,13 @@ type.
 
 Clock types are equivalent to clock types, and are not equivalent to any other
 type.
+
+An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl},
+`UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}.
+It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
+
+The `AsyncReset`{.firrtl} type can be connected to another
+`AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
 
 Two vector types are equivalent if they have the same length, and if their
 element types are equivalent.
@@ -812,10 +884,10 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
-Note that the clock signal for a register must be of type `clock`{.firrtl}, the
-reset signal must be a single bit `UInt`{.firrtl}, and the type of
-initialization value must be equivalent to the declared type of the register
-(see [@sec:type-equivalence] for details).
+Note that the clock signal for a register must be of type `clock`{.firrtl},
+the reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or
+`AsyncReset`{.firrtl}, and the type of initialization value must be equivalent
+to the declared type of the register (see [@sec:type-equivalence] for details).
 
 ## Invalidates
 
@@ -1934,7 +2006,7 @@ Notationally, the width of an argument e is represented as w~e~.
 
 ## Add Operation
 
-| Name | Arguments | Parmaeters | Arg Types     | Result Type | Result Width                |
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | add  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
 |      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
@@ -1945,7 +2017,7 @@ The add operation result is the sum of e1 and e2 without loss of precision.
 ## Subtract Operation
 
 
-| Name | Arguments | Parmaeters | Arg Types     | Result Type | Result Width                |
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | sub  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
 |      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
@@ -1956,7 +2028,7 @@ precision.
 
 ## Multiply Operation
 
-| Name | Arguments | Parmaeters | Arg Types     | Result Type | Result Width                |
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | mul  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | w~e1~+w~e2~                 |
 |      |           |            | (SInt,SInt)   | SInt        | w~e1~+w~e2~                 |
@@ -1968,7 +2040,7 @@ precision.
 ## Divide Operation
 
 
-| Name | Arguments | Parmaeters | Arg Types   | Result Type | Result Width |
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
 |------|-----------|------------|-------------|-------------|--------------|
 | div  | (num,den) | ()         | (UInt,UInt) | UInt        | w~num~       |
 |      |           |            | (SInt,SInt) | SInt        | w~num~+1     |
@@ -1979,7 +2051,7 @@ of a division where den is zero is undefined.
 
 ## Modulus Operation
 
-| Name | Arguments | Parmaeters | Arg Types   | Result Type | Result Width       |
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
 |------|-----------|------------|-------------|-------------|--------------------|
 | rem  | (num,den) | ()         | (UInt,UInt) | UInt        | min(w~num~,w~den~) |
 |      |           |            | (SInt,SInt) | SInt        | min(w~num~,w~den~) |
@@ -1992,7 +2064,7 @@ satisfies the relationship below:
 
 ## Comparison Operations
 
-| Name   | Arguments | Parmaeters | Arg Types     | Result Type | Result Width |
+| Name   | Arguments | Parameters | Arg Types     | Result Type | Result Width |
 |--------|-----------|------------|---------------|-------------|--------------|
 | lt,leq |           |            | (UInt,UInt)   | UInt        | 1            |
 | gt,geq | (e1,e2)   | ()         | (SInt,SInt)   | UInt        | 1            |
@@ -2005,7 +2077,7 @@ returns a value of zero otherwise.
 
 ## Padding Operations
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width                |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
 |------|-----------|------------|-----------|-------------|-----------------------------|
 | pad  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~,n)                 |
 |      |           |            | (SInt)    | SInt        | max(w~e~,n)                 |
@@ -2019,35 +2091,41 @@ padding.
 
 ## Interpret As UInt
 
-| Name   | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
-|--------|-----------|------------|-----------|-------------|--------------|
-| asUInt | \(e\)     | ()         | (UInt)    | UInt        | w~e~         |
-|        |           |            | (SInt)    | UInt        | w~e~         |
-|        |           |            | (Fixed)   | UInt        | w~e~         |
-|        |           |            | (Clock)   | UInt        | 1            |
+| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~         |
+|        |           |            | (SInt)       | UInt        | w~e~         |
+|        |           |            | (Fixed)      | UInt        | w~e~         |
+|        |           |            | (Clock)      | UInt        | 1            |
+|        |           |            | (Reset)      | UInt        | 1            |
+|        |           |            | (AsyncReset) | UInt        | 1            |
 
 The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 
 ## Interpret As SInt
 
-| Name   | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
-|--------|-----------|------------|-----------|-------------|--------------|
-| asSInt | \(e\)     | ()         | (UInt)    | SInt        | w~e~         |
-|        |           |            | (SInt)    | SInt        | w~e~         |
-|        |           |            | (Fixed)   | SInt        | w~e~         |
-|        |           |            | (Clock)   | SInt        | 1            |
+| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asSInt | \(e\)     | ()         | (UInt)       | SInt        | w~e~         |
+|        |           |            | (SInt)       | SInt        | w~e~         |
+|        |           |            | (Fixed)      | SInt        | w~e~         |
+|        |           |            | (Clock)      | SInt        | 1            |
+|        |           |            | (Reset)      | SInt        | 1            |
+|        |           |            | (AsyncReset) | SInt        | 1            |
 
 The interpret as SInt operation reinterprets e's bits as a signed integer
 according to two's complement representation.
 
 ## Interpret As Fixed-Point Number
 
-| Name    | Arguments | Parmaeters | Arg Types | Result Type | Result Width | Result Binary Point |
-|---------|-----------|------------|-----------|-------------|--------------|---------------------|
-| asFixed | \(e\)     | \(p\)      | (UInt)    | Fixed       | w~e~         | p                   |
-|         |           |            | (SInt)    | Fixed       | w~e~         | p                   |
-|         |           |            | (Fixed)   | Fixed       | w~e~         | p                   |
-|         |           |            | (Clock)   | Fixed       | 1            | p                   |
+| Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width | Result Binary Point |
+|---------|-----------|------------|--------------|-------------|--------------|---------------------|
+| asFixed | \(e\)     | \(p\)      | (UInt)       | Fixed       | w~e~         | p                   |
+|         |           |            | (SInt)       | Fixed       | w~e~         | p                   |
+|         |           |            | (Fixed)      | Fixed       | w~e~         | p                   |
+|         |           |            | (Clock)      | Fixed       | 1            | p                   |
+|         |           |            | (Reset)      | Fixed       | 1            | p                   |
+|         |           |            | (AsyncReset) | Fixed       | 1            | p                   |
 
 The interpret as fixed-point operation reinterprets e's bits as a fixed-point
 number of identical width. Since all fixed-point number in FIRRTL are signed,
@@ -2057,19 +2135,36 @@ type has binary point p.
 
 ## Interpret as Clock
 
-| Name    | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
-|---------|-----------|------------|-----------|-------------|--------------|
-| asClock | \(e\)     | ()         | (UInt)    | Clock       | n/a          |
-|         |           |            | (SInt)    | Clock       | n/a          |
-|         |           |            | (Fixed)   | Clock       | n/a          |
-|         |           |            | (Clock)   | Clock       | n/a          |
+| Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|---------|-----------|------------|--------------|-------------|--------------|
+| asClock | \(e\)     | ()         | (UInt)       | Clock       | n/a          |
+|         |           |            | (SInt)       | Clock       | n/a          |
+|         |           |            | (Fixed)      | Clock       | n/a          |
+|         |           |            | (Clock)      | Clock       | n/a          |
+|         |           |            | (Reset)      | Clock       | n/a          |
+|         |           |            | (AsyncReset) | Clock       | n/a          |
 
 The result of the interpret as clock operation is the Clock typed signal
 obtained from interpreting a single bit integer as a clock signal.
 
+## Interpret as AsyncReset
+
+| Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------------|-----------|------------|--------------|-------------|--------------|
+| asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
+|              |           |            | (UInt)       | AsyncReset  | n/a          |
+|              |           |            | (SInt)       | AsyncReset  | n/a          |
+|              |           |            | (Fixed)      | AsyncReset  | n/a          |
+|              |           |            | (Interval)   | AsyncReset  | n/a          |
+|              |           |            | (Clock)      | AsyncReset  | n/a          |
+|              |           |            | (Reset)      | AsyncReset  | n/a          |
+
+The result of the interpret as asynchronous reset operation is an AsyncReset typed
+signal.
+
 ## Shift Left Operation
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width                |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
 |------|-----------|------------|-----------|-------------|-----------------------------|
 | shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n                      |
 |      |           |            | (SInt)    | SInt        | w~e~+n                      |
@@ -2080,7 +2175,7 @@ of e. n must be non-negative.
 
 ## Shift Right Operation
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width                |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
 |------|-----------|------------|-----------|-------------|-----------------------------|
 | shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 1)              |
 |      |           |            | (SInt)    | SInt        | max(w~e~-n, 1)              |
@@ -2092,7 +2187,7 @@ for unsigned types and the sign bit for signed types. n must be non-negative.
 
 ## Dynamic Shift Left Operation
 
-| Name | Arguments | Parmaeters | Arg Types     | Result Type | Result Width                |
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | dshl | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~ + 2`^`w~e2~ - 1       |
 |      |           |            | (SInt, UInt)  | SInt        | w~e1~ + 2`^`w~e2~ - 1       |
@@ -2103,7 +2198,7 @@ most significant bit. e2 zeroes are shifted in to the least significant bits.
 
 ## Dynamic Shift Right Operation
 
-| Name | Arguments | Parmaeters | Arg Types     | Result Type | Result Width                |
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | dshr | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~                       |
 |      |           |            | (SInt, UInt)  | SInt        | w~e1~                       |
@@ -2115,7 +2210,7 @@ significant bits, and the e2 least significant bits are truncated.
 
 ## Arithmetic Convert to Signed Operation
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------|-----------|------------|-----------|-------------|--------------|
 | cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
 |      |           |            | (SInt)    | SInt        | w~e~         |
@@ -2125,7 +2220,7 @@ representing the same numerical value as e.
 
 ## Negate Operation
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------|-----------|------------|-----------|-------------|--------------|
 | neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
 |      |           |            | (SInt)    | SInt        | w~e~+1       |
@@ -2135,7 +2230,7 @@ numerical value of e.
 
 ## Bitwise Complement Operation
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------|-----------|------------|-----------|-------------|--------------|
 | not  | \(e\)     | ()         | (UInt)    | UInt        | w~e~         |
 |      |           |            | (SInt)    | UInt        | w~e~         |
@@ -2144,7 +2239,7 @@ The bitwise complement operation performs a logical not on each bit in e.
 
 ## Binary Bitwise Operations
 
-| Name       | Arguments | Parmaeters | Arg Types   | Result Type | Result Width     |
+| Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width     |
 |------------|-----------|------------|-------------|-------------|------------------|
 | and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
 |            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
@@ -2157,7 +2252,7 @@ the result before performing the operation.
 ## Bitwise Reduction Operations
 
 
-| Name          | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name          | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |---------------|-----------|------------|-----------|-------------|--------------|
 | andr,orr,xorr | \(e\)     | ()         | (UInt)    | UInt        | 1            |
 |               |           |            | (SInt)    | UInt        | 1            |
@@ -2175,7 +2270,7 @@ expression both return zero.
 
 ## Concatenate Operation
 
-| Name | Arguments | Parmaeters | Arg Types      | Result Type | Result Width |
+| Name | Arguments | Parameters | Arg Types      | Result Type | Result Width |
 |------|-----------|------------|----------------|-------------|--------------|
 | cat  | (e1,e2)   | ()         | (UInt, UInt)   | UInt        | w~e1~+w~e2~  |
 |      |           |            | (SInt, SInt)   | UInt        | w~e1~+w~e2~  |
@@ -2186,7 +2281,7 @@ most significant end of the bits of e2.
 
 ## Bit Extraction Operation
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------|-----------|------------|-----------|-------------|--------------|
 | bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1      |
 |      |           |            | (SInt)    | UInt        | hi-lo+1      |
@@ -2198,7 +2293,7 @@ and lo must be non-negative and strictly less than the bit width of e.
 
 ## Head
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------|-----------|------------|-----------|-------------|--------------|
 | head | \(e\)     | \(n\)      | (UInt)    | UInt        | n            |
 |      |           |            | (SInt)    | UInt        | n            |
@@ -2209,7 +2304,7 @@ non-negative and less than or equal to the bit width of e.
 
 ## Tail
 
-| Name | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------|-----------|------------|-----------|-------------|--------------|
 | tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n       |
 |      |           |            | (SInt)    | UInt        | w~e~-n       |
@@ -2220,7 +2315,7 @@ non-negative and less than or equal to the bit width of e.
 
 ## Fixed-Point Precision Modification Operations
 
-| Name             | Arguments | Parmaeters | Arg Types | Result Type | Result Width |
+| Name             | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------------------|-----------|------------|-----------|-------------|--------------|
 | incp, decp, setp | \(e\)     | \(n\)      | (Fixed)   | Fixed       |              |
 
@@ -2491,6 +2586,9 @@ following restrictions:
 
 - All components are connected to exactly once.
 
+- All uninferred `Reset`{.firrtl} types have been inferred to `UInt<1>`{.firrtl}
+or `AsyncReset`{.firrtl}, since reset inference is part of HiFIRRTL.
+
 ## LoFIRRTL
 
 A FIRRTL circuit is defined to be a valid LoFIRRTL circuit if it obeys the
@@ -2703,7 +2801,7 @@ info = "@" , "[" , { string , " " , linecol } , "]" ;
 (* Type definitions *)
 width = "<" , int , ">" ;
 binarypoint = "<<" , int , ">>" ;
-type_ground = "Clock"
+type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ]
             | "Fixed" , [ width ] , [ binarypoint ] ;
 type_aggregate = "{" , field , { field } , "}"

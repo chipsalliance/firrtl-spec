@@ -872,9 +872,9 @@ reg myreg: SInt, myclock
 ```
 
 Optionally, for the purposes of circuit initialization, a register can be
-declared with a reset signal (synchronous or asynchronous) and value. In the
-following example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl}
-when the signal `myreset`{.firrtl} is high.
+declared with a reset signal and value. In the following example,
+`myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal
+`myreset`{.firrtl} is high.
 
 ``` firrtl
 wire myclock: Clock
@@ -884,10 +884,10 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
-Note that the clock signal for a register must be of type `clock`{.firrtl}, the
-reset signal must be a single bit `UInt`{.firrtl}, and the type of
-initialization value must be equivalent to the declared type of the register
-(see [@sec:type-equivalence] for details).
+Note that the clock signal for a register must be of type `clock`{.firrtl},
+the reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or
+`AsyncReset`{.firrtl}, and the type of initialization value must be equivalent
+to the declared type of the register (see [@sec:type-equivalence] for details).
 
 ## Invalidates
 

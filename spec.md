@@ -2827,11 +2827,11 @@ primop_1expr =
 primop_1expr1int_keyword =
     "pad" | "shl" | "shr" ;
 primop_1expr1int =
-    primop_1exrp1int_keywork , "(", expr , "," , int , ")" ;
+    primop_1exrp1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int_keyword =
     "bits" ;
 primop_1expr2int =
-    primop_1expr2int_keywork , "(" , expr , "," , int , "," , int , ")" ;
+    primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Expression definitions *)

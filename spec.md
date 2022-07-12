@@ -1845,10 +1845,11 @@ module MyModule :
 The bit-index expression statically refers, by index, to a particular bit of an
 expression with an integer type (`UInt`{.firrtl} or `SInt`{.firrtl}). The index
 must be a non-negative integer and cannot be equal to or exceed the width of
-the integer it indexes. The bit-index must be connected to a value of type
-`UInt<1>`{.firrtl} and can only be used as a sink. In order to get a particular
-bit of an integer expression as a source, use the `bits`{.firrtl} primitive
-operation (see [@sec:bit-extraction-operation]).
+the integer it indexes. The type of a bit-index expression is
+`UInt<1>`.{firrtl} (even if the indexed variable is an `SInt`) and it can only
+be used as a sink. In order to get a particular bit of an integer expression as
+a source, use the `bits`{.firrtl} primitive operation (see
+[@sec:bit-extraction-operation]).
 
 The following example connects the `in`{.firrtl} port to the fifth bit
 of the `out`{.firrtl} port.

@@ -1840,6 +1840,26 @@ module MyModule :
    out[4] <= in
 ```
 
+## Bit-indices
+
+The bit-index expression statically refers, by index, to a particular bit of an
+expression with an integer type (`UInt` or `SInt`). The index must be a
+non-negative integer and cannot be equal to or exceed the width of the integer
+it indexes. The bit-index must be connected to a value of type `UInt<1>` and
+can only be used as a sink. In order to get a particular bit of an integer
+expression as a source, use the `bits` primitive operation (see
+[@sec:bit-extraction-operation]).
+
+The following example connects the `in`{.firrtl} port to the fifth bit
+of the `out`{.firrtl} port.
+
+``` firrtl
+module MyModule :
+   input in: UInt<1>
+   output out: UInt<10>
+   out[4] <= in
+```
+
 ## Sub-accesses
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed
@@ -2382,6 +2402,8 @@ wire or register is duplex.
 The flow of a sub-index or sub-access expression is the flow of the vector-typed
 expression it indexes or accesses.
 
+The flow of a bit-index is sink.
+
 The flow of a sub-field expression depends upon the orientation of the field. If
 the field is not flipped, its flow is the same flow as the bundle-typed
 expression it selects its field from. If the field is flipped, then its flow is
@@ -2645,6 +2667,8 @@ following restrictions:
 - All components must be declared with a ground type.
 
 - The partial connect statement is not used.
+
+- The bit-index expression is not used
 
 The first three restrictions follow from the fact that any LoFIRRTL circuit is
 also a legal MidFIRRTL circuit. The additional restrictions give LoFIRRTL a

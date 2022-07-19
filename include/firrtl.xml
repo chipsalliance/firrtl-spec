@@ -3,6 +3,7 @@
   <highlighting>
     <list name="structure">
       <item>circuit</item>
+      <item>extcircuit</item>
       <item>module</item>
       <item>extmodule</item>
     </list>

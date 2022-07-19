@@ -146,6 +146,7 @@ contributors is below:
 - [`@boqwxp`](https://github.com/boqwxp)
 - [`@chick`](https://github.com/chick)
 - [`@dansvo`](https://github.com/dansvo)
+- [`@debs-sifive`](https://github.com/debs-sifive)
 - [`@darthscsi`](https://github.com/darthscsi)
 - [`@debs-sifive`](https://github.com/debs-sifive)
 - [`@donggyukim`](https://github.com/donggyukim)
@@ -176,6 +177,21 @@ circuit MyTop :
    module MyTop :
       ; ...
    module MyModule :
+      ; ...
+```
+
+## Externally Defined Circuits
+
+An externally defined circuit is a circuit declaration whose implementation
+exists elsewhere. It should contain only module declarations, i.e.
+externally-defined modules ([@sec:externally-defined-modules]) or public
+modules ([@sec:public-modules]).
+
+```firrtl
+extcircuit MyExtCircuit :
+  extmodule FooExtModule :
+      ; ...
+  extmodule BarExtModule :
       ; ...
 ```
 

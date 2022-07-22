@@ -1842,14 +1842,30 @@ module MyModule :
 
 ## Bit-indices
 
-The bit-index expression statically refers, by index, to a particular bit of an
-expression with an integer type (`UInt`{.firrtl} or `SInt`{.firrtl}). The index
-must be a non-negative integer and cannot be equal to or exceed the width of
-the integer it indexes. The type of a bit-index expression is
-`UInt<1>`.{firrtl} (even if the indexed variable is an `SInt`) and it can only
-be used as a sink. In order to get a particular bit of an integer expression as
-a source, use the `bits`{.firrtl} primitive operation (see
-[@sec:bit-extraction-operation]).
+The bit-index expression statically refers, by index, to a particular bit, or
+slice of bits, of an expression with an integer type (`UInt`{.firrtl} or
+`SInt`{.firrtl}). The indices must be non-negative integers and cannot be equal
+to or exceed the width of the integer they index. The bit-index `x[hi:lo]`
+selects bits `hi` (most significant) through `lo` (least significant) of `x`.
+The bit-index `x[i]` selects the single bit `i`.
+
+The type of the bit-index expression `x[hi:lo]`.{firrtl} is `UInt<hi - lo +
+1>`.{firrtl} (even if `x` is an `SInt`) and the type of `x[i]`.{firrtl} is
+`UInt<1>`.{firrtl}.
+
+The bit-index can be used as a sink or source. When used as a source,
+`x[hi:lo]` is equivalent to `bits(x, hi, lo)` and `x[i]` is equivalent to
+`bits(x, i, i)`. See the `bits`{.firrtl} primitive operation
+([@sec:bit-extraction-operation]). When used as a sink, the bit-index assigns
+to only the sliced bits of the integer. If a value has multiple bit-index
+assignments, the assignments are accumulated in order according to last-connect
+semantics, in the same way as the behavior of last-connect semantics for
+aggregate types (see [@sec:last-connect-semantics]).
+
+Bit-indexing does not participate in width inference (see
+[@sec:width-inference]), and if a bit-index is applied to a value with an
+unspecified width, that value must have another use that allows its width to be
+inferred. Otherwise this causes an error.
 
 The following example connects the `in`{.firrtl} port to the fifth bit
 of the `out`{.firrtl} port.
@@ -2403,7 +2419,7 @@ wire or register is duplex.
 The flow of a sub-index or sub-access expression is the flow of the vector-typed
 expression it indexes or accesses.
 
-The flow of a bit-index is sink.
+The flow of a bit-index is the flow of the integer-typed expression it indexes.
 
 The flow of a sub-field expression depends upon the orientation of the field. If
 the field is not flipped, its flow is the same flow as the bundle-typed
@@ -2921,6 +2937,7 @@ expr =
 reference = id
           | reference , "." , id
           | reference , "[" , int , "]"
+          | reference , "[" , int , ":" , int , "]"
           | reference , "[" , expr , "]" ;
 
 (* Memory *)

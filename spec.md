@@ -1877,6 +1877,8 @@ module MyModule :
    out[4] <= in
 ```
 
+Bit-indexing is not supported on memory ports.
+
 ## Sub-accesses
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed

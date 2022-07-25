@@ -2454,6 +2454,8 @@ expression.
 
 The width of each primitive operation is detailed in [@sec:primitive-operations].
 
+The width of a bit-index is detailed in [@sec:bit-indices].
+
 The width of the integer literal expressions is detailed in their respective
 sections.
 

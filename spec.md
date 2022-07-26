@@ -1862,6 +1862,11 @@ assignments, the assignments are accumulated in order according to last-connect
 semantics, in the same way as the behavior of last-connect semantics for
 aggregate types (see [@sec:last-connect-semantics]).
 
+A value that is bit-indexed must be fully initialized at the bit-level. There
+must be a valid assignment accounting for every bit in the value regardless
+of paths through whens. Registers are implicitly initialized with their current
+contents.
+
 Bit-indexing does not participate in width inference (see
 [@sec:width-inference]), and if a bit-index is applied to a value with an
 unspecified width, that value must have another use that allows its width to be
@@ -1876,8 +1881,6 @@ module MyModule :
    output out: UInt<10>
    out[4] <= in
 ```
-
-Bit-indexing is not supported on memory ports.
 
 ## Sub-accesses
 

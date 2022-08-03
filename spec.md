@@ -52,6 +52,11 @@ lastDelim: ", and"
     due to their widespread use in Chisel and the SFC: Annotations, Targets,
     Asynchronous Reset,  Abstract Reset
   - Minor typo corrections and prose clarifications.
+* 0.3.1
+  - Clarify analog usage in registers
+  - Rework authorship as "The FIRRTL Specification Contributors"
+  - Add version information as subtitle
+  - Formatting fixes
 * 0.3.0 Document moved to Markdown
 
 # Introduction

@@ -45,7 +45,7 @@ lastDelim: ", and"
 
 # Versions
 
-- 0.4.1 Clarify the versioning scheme of this specification.
+- 1.0.0 Clarify the versioning scheme of this specification.
 - 0.4.0 Doc moved to Markdown
 
 # Introduction

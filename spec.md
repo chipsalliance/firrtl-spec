@@ -2912,16 +2912,20 @@ circuit = "circuit" , id , ":" , [ info ] , newline , indent ,
 
 This is the versioning scheme that applies 1.0.0 and later.
 
-The versioning scheme applies [Semantic Versioning 2.0.0](https://semver.org/#semantic-versioning-200).
+The versioning scheme applies
+[Semantic Versioning 2.0.0](https://semver.org/#semantic-versioning-200).
 
 Specifically, 
 
-The PATCH digit is bumped upon release which only includes non-functional changes, such as grammar edits,
-further examples, and clarifications.
+The PATCH digit is bumped upon release which only includes non-functional changes,
+such as grammar edits, further examples, and clarifications.
 
 The MINOR digit is bumped for feature additions to the spec.
 
-The MAJOR digit is bumped for backwards-incompatible changes such as features being removed from the spec, changing their interpretation, or new required features being added to the specification.
+The MAJOR digit is bumped for backwards-incompatible changes such as features
+being removed from the spec, changing their interpretation, or new required
+features being added to the specification.
 
-In other words, Any `.fir` file that was compliant with `x.y.z` will be compliant with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.
+In other words, Any `.fir` file that was compliant with `x.y.z` will be compliant
+with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.
 

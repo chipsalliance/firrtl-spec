@@ -4,7 +4,7 @@ author:
 title: Specification for the FIRRTL Language
 date: \today
 # Custom options added to the customized template
-version: 0.4.0
+version: 0.4.1
 # Options passed to the document class
 classoption:
 - 12pt
@@ -42,6 +42,11 @@ secPrefix:
 # This 'lastDelim' option does not work...
 lastDelim: ", and"
 ---
+
+# Versions
+
+- 0.4.1 Added missing information about AsyncReset, Reset, Targets and Annotations
+- 0.4.0 Doc moved to Markdown
 
 # Introduction
 

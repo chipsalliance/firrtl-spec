@@ -172,6 +172,7 @@ contributors is below:
 - [`@grebe`](https://github.com/grebe)
 - [`@jackkoenig`](https://github.com/jackkoenig)
 - [`@jared-barocsi`](https://github.com/jared-barocsi)
+- [`@mwachs5`](https://github.com/mwachs5)
 - [`@richardxia`](https://github.com/richardxia)
 - [`@seldridge`](https://github.com/seldridge)
 - [`@sequencer`](https://github.com/sequencer)

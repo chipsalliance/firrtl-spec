@@ -2921,7 +2921,7 @@ This is the versioning scheme that applies to version 1.0.0 and later.
 The versioning scheme complies with
 [Semantic Versioning 2.0.0](https://semver.org/#semantic-versioning-200).
 
-Specifically, 
+Specifically,
 
 The PATCH digit is bumped upon release which only includes non-functional changes,
 such as grammar edits, further examples, and clarifications.
@@ -2934,4 +2934,3 @@ features being added to the specification.
 
 In other words, any `.fir` file that was compliant with `x.y.z` will be compliant
 with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.
-

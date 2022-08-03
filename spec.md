@@ -4,7 +4,7 @@ author:
 title: Specification for the FIRRTL Language
 date: \today
 # Custom options added to the customized template
-version: 0.4.0
+version: 1.0.0
 # Options passed to the document class
 classoption:
 - 12pt
@@ -42,6 +42,22 @@ secPrefix:
 # This 'lastDelim' option does not work...
 lastDelim: ", and"
 ---
+
+# Revision History
+
+* 1.0.0 Document the versioning scheme of this specification.
+* 0.4.0
+  - Add documentation for undocumented features of the Scala-based
+    FIRRTL Compiler (SFC) that are de facto a part of the FIRRTL specification
+    due to their widespread use in Chisel and the SFC: Annotations, Targets,
+    Asynchronous Reset,  Abstract Reset
+  - Minor typo corrections and prose clarifications.
+* 0.3.1
+  - Clarify analog usage in registers
+  - Rework authorship as "The FIRRTL Specification Contributors"
+  - Add version information as subtitle
+  - Formatting fixes
+* 0.3.0 Document moved to Markdown
 
 # Introduction
 
@@ -156,6 +172,7 @@ contributors is below:
 - [`@grebe`](https://github.com/grebe)
 - [`@jackkoenig`](https://github.com/jackkoenig)
 - [`@jared-barocsi`](https://github.com/jared-barocsi)
+- [`@mwachs5`](https://github.com/mwachs5)
 - [`@richardxia`](https://github.com/richardxia)
 - [`@seldridge`](https://github.com/seldridge)
 - [`@sequencer`](https://github.com/sequencer)
@@ -2895,3 +2912,26 @@ circuit = "circuit" , id , ":" , [ info ] , newline , indent ,
             { module | extmodule } ,
           dedent ;
 ```
+
+
+# Versioning Scheme of this Document
+
+This is the versioning scheme that applies to version 1.0.0 and later.
+
+The versioning scheme complies with
+[Semantic Versioning 2.0.0](https://semver.org/#semantic-versioning-200).
+
+Specifically, 
+
+The PATCH digit is bumped upon release which only includes non-functional changes,
+such as grammar edits, further examples, and clarifications.
+
+The MINOR digit is bumped for feature additions to the spec.
+
+The MAJOR digit is bumped for backwards-incompatible changes such as features
+being removed from the spec, changing their interpretation, or new required
+features being added to the specification.
+
+In other words, any `.fir` file that was compliant with `x.y.z` will be compliant
+with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.
+

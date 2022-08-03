@@ -1863,9 +1863,8 @@ semantics, in the same way as the behavior of last-connect semantics for
 aggregate types (see [@sec:last-connect-semantics]).
 
 A value that is bit-indexed must be fully initialized at the bit-level. There
-must be a valid assignment accounting for every bit in the value regardless
-of paths through whens. Registers are implicitly initialized with their current
-contents.
+must be a valid assignment accounting for every bit in the value. Registers are
+implicitly initialized with their current contents.
 
 Bit-indexing does not participate in width inference (see
 [@sec:width-inference]), and if a bit-index is applied to a value with an
@@ -2672,6 +2671,8 @@ following restrictions:
 
 - The dynamic sub-access expression is not used.
 
+- The bit-index expression is not used as a sink.
+
 - All components are connected to exactly once.
 
 - All uninferred `Reset`{.firrtl} types have been inferred to `UInt<1>`{.firrtl}
@@ -2691,8 +2692,6 @@ following restrictions:
 - All components must be declared with a ground type.
 
 - The partial connect statement is not used.
-
-- The bit-index expression is not used
 
 The first three restrictions follow from the fact that any LoFIRRTL circuit is
 also a legal MidFIRRTL circuit. The additional restrictions give LoFIRRTL a

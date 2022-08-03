@@ -45,7 +45,7 @@ lastDelim: ", and"
 
 # Versions
 
-- 0.4.1 Added missing information about AsyncReset, Reset, Targets and Annotations
+- 0.4.1 Clarify the versioning scheme of this specification.
 - 0.4.0 Doc moved to Markdown
 
 # Introduction
@@ -2900,3 +2900,22 @@ circuit = "circuit" , id , ":" , [ info ] , newline , indent ,
             { module | extmodule } ,
           dedent ;
 ```
+
+
+# Versioning Scheme of this Document
+
+This is the versioning scheme that applies 0.4.0 and later.
+
+The versioning scheme applies [Semantic Versioning 2.0.0](https://semver.org/#semantic-versioning-200).
+
+Specifically, 
+
+The PATCH digit is bumped upon release which only includes non-functional changes, such as grammar edits,
+further examples, and clarifications.
+
+The MINOR digit is bumped for feature additions to the spec.
+
+The MAJOR digit is bumped for backwards-incompatible changes such as features being removed from the spec or changing their interpretation.
+
+In other words, Any `.fir` file that was compliant with `x.y.z` will be compliant with `x.Y.Z`, where `Y >= y`, z and Z can be any number.
+

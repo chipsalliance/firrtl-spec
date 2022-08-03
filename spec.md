@@ -2917,7 +2917,7 @@ circuit = "circuit" , id , ":" , [ info ] , newline , indent ,
 
 This is the versioning scheme that applies 1.0.0 and later.
 
-The versioning scheme applies
+The versioning scheme complies with
 [Semantic Versioning 2.0.0](https://semver.org/#semantic-versioning-200).
 
 Specifically, 

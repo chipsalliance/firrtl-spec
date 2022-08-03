@@ -45,13 +45,14 @@ lastDelim: ", and"
 
 # Revision History
 
-- 1.0.0 Clarify the versioning scheme of this specification.
-- 0.4.0
-  - Add documentation for undocumented features of
-the Scala-based FIRRTL Compiler (SFC) that are de facto a part of the
-FIRRTL specification due to their widespread use in Chisel and the SFC:  Annotations, Targets, Asynchronous Reset,  Abstract Reset
-  - There are also minor typo corrections and prose clarifications.
-- 0.3.0 Doc moved to Markdown
+* 1.0.0 Document the versioning scheme of this specification.
+* 0.4.0
+  - Add documentation for undocumented features of the Scala-based
+    FIRRTL Compiler (SFC) that are de facto a part of the FIRRTL specification
+    due to their widespread use in Chisel and the SFC: Annotations, Targets,
+    Asynchronous Reset,  Abstract Reset
+  - Minor typo corrections and prose clarifications.
+* 0.3.0 Document moved to Markdown
 
 # Introduction
 

@@ -910,12 +910,13 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
-Optionally, a register can be declared with an enable signal. Enable gates 
-writes to a register, such that they only take effect if the enable signal is 
-high.  Functionally this is equivalent to a register written by a mux of the old 
-value and the new value, controlled by the enable signal.  In the following 
+Optionally, a register can be declared with an enable signal. The enable signal 
+gates writes to a register, such that they only take effect if the enable signal 
+is high.  Functionally this is equivalent to a register written by a mux of the 
+old value and the new value, controlled by the enable signal.  In the following 
 example, `myreg`{.firrtl} is written the value `myval`{.firrtl} when the signal 
-`myen`{.firrtl} is high.  Enable must be a value of type `UInt<1>`{.firrtl}.
+`myen`{.firrtl} is high.  The enable signal must be a value of type 
+`UInt<1>`{.firrtl}.
 
 ``` firrtl
 wire myclock: Clock

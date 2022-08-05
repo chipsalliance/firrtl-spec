@@ -919,7 +919,7 @@ myreg <= myval
 ```
 
 When both reset and enable are present, reset shall be listed first, separated
-by a comman from enable.  Reset of the register is unaffected by the enable 
+by a comma from enable.  Reset of the register is unaffected by the enable 
 signal, depending only on reset signal.
 ```
 reg myreg: SInt, myclock with: (reset => (myreset, myinit), enable => myen)

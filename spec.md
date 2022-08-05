@@ -883,7 +883,7 @@ of the register's clock port.
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
 `myclock`{.firrtl}.  The clock signal for a register must be of type 
-`clock`{.firrtl}.
+`Clock`{.firrtl}.
 
 ``` firrtl
 wire myclock: Clock

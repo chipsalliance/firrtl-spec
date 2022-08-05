@@ -880,7 +880,8 @@ A register is a named stateful circuit component.
 
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
-`myclock`{.firrtl}.
+`myclock`{.firrtl}.  The clock signal for a register must be of type 
+`clock`{.firrtl}.
 
 ``` firrtl
 wire myclock: Clock
@@ -891,7 +892,10 @@ reg myreg: SInt, myclock
 Optionally, for the purposes of circuit initialization, a register can be
 declared with a reset signal and value. In the following example,
 `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal
-`myreset`{.firrtl} is high.
+`myreset`{.firrtl} is high.  The reset signal must be a `Reset`{.firrtl},
+`UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization 
+value must be equivalent to the declared type of the register 
+(see [@sec:type-equivalence] for details).
 
 ``` firrtl
 wire myclock: Clock
@@ -901,11 +905,9 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
-Optionally, a register can be
-declared with an enable signal. In the following example,
-`myreg`{.firrtl} is written the value `myval`{.firrtl} when the signal
-`myen`{.firrtl} is high.  Enable must
-be a value of type UInt<1>.
+Optionally, a register can be declared with an enable signal. In the following
+example, `myreg`{.firrtl} is written the value `myval`{.firrtl} when the signal
+`myen`{.firrtl} is high.  Enable must be a value of type UInt<1>.
 
 ``` firrtl
 wire myclock: Clock
@@ -922,11 +924,6 @@ signal, depending only on reset signal.
 ```
 reg myreg: SInt, myclock with: (reset => (myreset, myinit), enable => myen)
 ```
-
-
-Note that the clock signal for a register must be of type `clock`{.firrtl}, the
-reset signal must be a single bit `UInt`{.firrtl}, and the type of
-initialization value must match the declared type of the register.
 
 ## Invalidates
 

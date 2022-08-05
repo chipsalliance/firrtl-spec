@@ -901,10 +901,32 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
-Note that the clock signal for a register must be of type `clock`{.firrtl},
-the reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or
-`AsyncReset`{.firrtl}, and the type of initialization value must be equivalent
-to the declared type of the register (see [@sec:type-equivalence] for details).
+Optionally, a register can be
+declared with an enable signal. In the following example,
+`myreg`{.firrtl} is written the value `myval`{.firrtl} when the signal
+`myen`{.firrtl} is high.  Enable must
+be a value of type UInt<1>.
+
+``` firrtl
+wire myclock: Clock
+wire myen: UInt<1>
+wire myval: SInt
+reg myreg: SInt, myclock with: (enable => myen)
+myreg <= myval
+; ...
+```
+
+When both reset and enable are present, reset shall be listed first, separated
+by a comman from enable.  Reset of the register is unaffected by the enable 
+signal, depending only on reset signal.
+```
+reg myreg: SInt, myclock with: (reset => (myreset, myinit), enable => myen)
+```
+
+
+Note that the clock signal for a register must be of type `clock`{.firrtl}, the
+reset signal must be a single bit `UInt`{.firrtl}, and the type of
+initialization value must match the declared type of the register.
 
 ## Invalidates
 

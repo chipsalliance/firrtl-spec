@@ -880,10 +880,12 @@ A register is a named stateful circuit component.  Reads from a register return
 the value of the element, writes are not visible until after the positive edges 
 of the register's clock port.
 
+The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a 
+register must be a passive type (see [@sec:passive-types]).
+
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
-`myclock`{.firrtl}.  The clock signal for a register must be of type 
-`Clock`{.firrtl}.
+`myclock`{.firrtl}.
 
 ``` firrtl
 wire myclock: Clock
@@ -899,9 +901,9 @@ initialization  value must be equivalent to the declared type of the register
 (see [@sec:type-equivalence] for details). The behavior of the register depends 
 on the type of the reset signal.  `AsyncReset`.{firrtl} will immediately change 
 the value of the register, while other types will not change the value of the 
-register until the next positive edge of the clock signal.  In the following 
-example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the 
-signal `myreset`{.firrtl} is high.  
+register until the next positive edge of the clock signal (see [@sec:reset-type]).
+In the following example, `myreg`{.firrtl} is assigned the value 
+`myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.  
 ``` firrtl
 wire myclock: Clock
 wire myreset: UInt<1>
@@ -2907,7 +2909,12 @@ memory = "mem" , id , ":" , [ info ] , newline , indent ,
 (* Statements *)
 statement = "wire" , id , ":" , type , [ info ]
           | "reg" , id , ":" , type , expr ,
-            [ "(with: {reset => (" , expr , "," , expr ")})" ] , [ info ]
+            [ "(with: {"
+              ( "reset => (" , expr , "," , expr ")"
+              | "enable => (" , expr , ")"
+              | "reset => (" , expr , "," , expr "), enable => (" , expr , ")"
+              ) , "})" ,
+            [ info ]
           | memory
           | "inst" , id , "of" , id , [ info ]
           | "node" , id , "=" , expr , [ info ]

@@ -876,7 +876,9 @@ wire mywire: UInt
 
 ## Registers
 
-A register is a named stateful circuit component.
+A register is a named stateful circuit component.  Reads from a register return 
+the value of the element, writes are not visible until after the positive edges 
+of the register's clock port.
 
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
@@ -890,13 +892,16 @@ reg myreg: SInt, myclock
 ```
 
 Optionally, for the purposes of circuit initialization, a register can be
-declared with a reset signal and value. In the following example,
-`myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal
-`myreset`{.firrtl} is high.  The reset signal must be a `Reset`{.firrtl},
-`UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization 
-value must be equivalent to the declared type of the register 
-(see [@sec:type-equivalence] for details).
-
+declared with a reset signal and value. The register's value is updated with the
+reset value when the reset is asserted.  The reset signal must be a 
+`Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of 
+initialization  value must be equivalent to the declared type of the register 
+(see [@sec:type-equivalence] for details). The behavior of the register depends 
+on the type of the reset signal.  `AsyncReset`.{firrtl} will immediately change 
+the value of the register, while other types will not change the value of the 
+register until the next positive edge of the clock signal.  In the following 
+example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the 
+signal `myreset`{.firrtl} is high.  
 ``` firrtl
 wire myclock: Clock
 wire myreset: UInt<1>
@@ -905,9 +910,12 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
-Optionally, a register can be declared with an enable signal. In the following
-example, `myreg`{.firrtl} is written the value `myval`{.firrtl} when the signal
-`myen`{.firrtl} is high.  Enable must be a value of type UInt<1>.
+Optionally, a register can be declared with an enable signal. Enable gates 
+writes to a register, such that they only take effect if the enable signal is 
+high.  Functionally this is equivalent to a register written by a mux of the old 
+value and the new value, controlled by the enable signal.  In the following 
+example, `myreg`{.firrtl} is written the value `myval`{.firrtl} when the signal 
+`myen`{.firrtl} is high.  Enable must be a value of type `UInt<1>`{.firrtl}.
 
 ``` firrtl
 wire myclock: Clock
@@ -920,7 +928,7 @@ myreg <= myval
 
 When both reset and enable are present, reset shall be listed first, separated
 by a comma from enable.  Reset of the register is unaffected by the enable 
-signal, depending only on reset signal.
+signal, depending only on reset signal. 
 ```
 reg myreg: SInt, myclock with: (reset => (myreset, myinit), enable => myen)
 ```

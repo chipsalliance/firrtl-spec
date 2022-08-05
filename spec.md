@@ -182,8 +182,9 @@ contributors is below:
 
 # File Preamble
 
-A firrtl file includes a magic string and version identifier indicating the 
-version of this standard the file conforms to.  This will not be present on 
+A firrtl file begins with a magic string and version identifier indicating the 
+version of this standard the file conforms to 
+(see [@sec:versioning-scheme-of-this-document]).  This will not be present on 
 files generated according to versions of this standard prior to the first 
 versioned release of this standard to include this preamble.
 
@@ -2919,8 +2920,11 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;
 
+(* Wersion definition *)
+version = "FIRRTL" , "version" , {digit_dec} , "."  , {digit_dec} , "." , {digit_dec}
+
 (* Circuit definition *)
-circuit = "circuit" , id , ":" , [ info ] , newline , indent ,
+circuit = version , newline , "circuit" , id , ":" , [ info ] , newline , indent ,
             { module | extmodule } ,
           dedent ;
 ```

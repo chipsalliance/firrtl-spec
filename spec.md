@@ -189,7 +189,7 @@ files generated according to versions of this standard prior to the first
 versioned release of this standard to include this preamble.
 
 ``` firrtl
-firrtl version 1.1.0
+FIRRTL version 1.1.0
 circuit MyTop...
 ```
 

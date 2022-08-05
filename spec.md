@@ -180,6 +180,18 @@ contributors is below:
 - [`@tdb-alcorn`](https://github.com/tdb-alcorn)
 - [`@youngar`](https://github.com/youngar)
 
+# File Preamble
+
+A firrtl file includes a magic string and version identifier indicating the 
+version of this standard the file conforms to.  This will not be present on 
+files generated according to versions of this standard prior to the first 
+versioned release of this standard to include this preamble.
+
+``` firrtl
+firrtl version 1.1.0
+circuit MyTop...
+```
+
 # Circuits and Modules
 
 ## Circuits

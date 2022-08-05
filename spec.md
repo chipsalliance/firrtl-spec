@@ -2920,7 +2920,7 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;
 
-(* Wersion definition *)
+(* Version definition *)
 version = "FIRRTL" , "version" , {digit_dec} , "."  , {digit_dec} , "." , {digit_dec}
 
 (* Circuit definition *)

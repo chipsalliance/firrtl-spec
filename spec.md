@@ -253,7 +253,7 @@ composed of one or more aggregate or ground types.
 ## Ground Types
 
 There are five ground types in FIRRTL: an unsigned integer type, a signed
-integer type, a fixed-point number type, a clock type, and an analog type.
+integer type, a clock type, and an analog type.
 
 ### Integer Types
 
@@ -300,53 +300,6 @@ wire one_u : UInt<1>
 one_u <= UInt<1>(0)
 wire one_s : SInt<1>
 one_s <= SInt<1>(0)
-```
-
-
-### Fixed-Point Number Type
-
-In general, a fixed-point binary number type represents a range of values
-corresponding with the range of some integral type scaled by a fixed power of
-two. In the FIRRTL language, the number represented by a signal of fixed-point
-type may expressed in terms of a base integer *value* term and a *binary point*,
-which represents an inverse power of two.
-
-The range of the value term is governed by a *width* in a manner analogous to
-integral types, with the additional restriction that all fixed-point number
-types are inherently signed in FIRRTL. Whenever an operation such as a
-`cat`{.firrtl} operates on the "bits" of a fixed-point number, it operates on
-the string of bits that is the signed representation of the integer value
-term. The *width* of a fixed-point typed signal is the width of this string of
-bits.
-
-$$\begin{aligned}
-  \text{fixed-point quantity} &= \left( \text{integer value} \right) \times 2^{-\left(\text{binary point}\right)}\\
-  \text{integer value} &\in \left[ -2^{(\text{width})-1}, 2^{(\text{width})-1} \right)\\
-  \text{binary point} &\in \mathbb{Z}\end{aligned}$$
-
-In the above equation, the range of possible fixed-point quantities is governed
-by two parameters beyond a the particular "value" assigned to a signal: the
-width and the binary point. Note that when the binary point is positive, it is
-equivalent to the number of bits that would fall after the binary point. Just as
-width is a parameter of integer types in FIRRTL, width and binary point are both
-parameters of the fixed-point type.
-
-When declaring a component with fixed-point number type, it is possible to leave
-the width and/or the binary point unspecified. The unspecified parameters will
-be inferred to be sufficient to hold the results of all expressions that may
-drive the component. Similar to how width inference for integer types depends on
-width-propagation rules for each FIRRTL expression and each kind of primitive
-operator, fixed-point parameter inference depends on a set of rules outlined
-throughout this spec.
-
-Included below are examples of the syntax for all possible combinations of
-specified and inferred fixed-point type parameters.
-
-``` firrtl
-Fixed<3><<2>>    ; 3-bit width, 2 bits after binary point
-Fixed<10>        ; 10-bit width, inferred binary point
-Fixed<<-4>>      ; Inferred width, binary point of -4
-Fixed            ; Inferred width and binary point
 ```
 
 ### Clock Type
@@ -573,10 +526,6 @@ An unsigned integer type is always equivalent to another unsigned integer type
 regardless of bit width, and is not equivalent to any other type. Similarly, a
 signed integer type is always equivalent to another signed integer type
 regardless of bit width, and is not equivalent to any other type.
-
-A fixed-point number type is always equivalent to another fixed-point number
-type, regardless of width or binary point. It is not equivalent to any other
-type.
 
 Clock types are equivalent to clock types, and are not equivalent to any other
 type.
@@ -2064,7 +2013,6 @@ Notationally, the width of an argument e is represented as w~e~.
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | add  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
 |      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
-|      |           |            | (Fixed,Fixed) | Fixed       | see [@sec:fixed-point-math] |
 
 The add operation result is the sum of e1 and e2 without loss of precision.
 
@@ -2075,7 +2023,6 @@ The add operation result is the sum of e1 and e2 without loss of precision.
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | sub  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
 |      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
-|      |           |            | (Fixed,Fixed) | Fixed       | see [@sec:fixed-point-math] |
 
 The subtract operation result is e2 subtracted from e1, without loss of
 precision.
@@ -2086,7 +2033,6 @@ precision.
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | mul  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | w~e1~+w~e2~                 |
 |      |           |            | (SInt,SInt)   | SInt        | w~e1~+w~e2~                 |
-|      |           |            | (Fixed,Fixed) | Fixed       | see [@sec:fixed-point-math] |
 
 The multiply operation result is the product of e1 and e2, without loss of
 precision.
@@ -2122,7 +2068,6 @@ satisfies the relationship below:
 |--------|-----------|------------|---------------|-------------|--------------|
 | lt,leq |           |            | (UInt,UInt)   | UInt        | 1            |
 | gt,geq | (e1,e2)   | ()         | (SInt,SInt)   | UInt        | 1            |
-| eq,neq |           |            | (Fixed,Fixed) | UInt        | 1            |
 
 The comparison operations return an unsigned 1 bit signal with value one if e1
 is less than (lt), less than or equal to (leq), greater than (gt), greater than
@@ -2135,13 +2080,11 @@ returns a value of zero otherwise.
 |------|-----------|------------|-----------|-------------|-----------------------------|
 | pad  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~,n)                 |
 |      |           |            | (SInt)    | SInt        | max(w~e~,n)                 |
-|      |           |            | (Fixed)   | Fixed       | see [@sec:fixed-point-math] |
 
 
 If e's bit width is smaller than n, then the pad operation zero-extends or
 sign-extends e up to the given width n. Otherwise, the result is simply e. n
-must be non-negative. The binary point of fixed-point values is not affected by
-padding.
+must be non-negative.
 
 ## Interpret As UInt
 
@@ -2149,7 +2092,6 @@ padding.
 |--------|-----------|------------|--------------|-------------|--------------|
 | asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~         |
 |        |           |            | (SInt)       | UInt        | w~e~         |
-|        |           |            | (Fixed)      | UInt        | w~e~         |
 |        |           |            | (Clock)      | UInt        | 1            |
 |        |           |            | (Reset)      | UInt        | 1            |
 |        |           |            | (AsyncReset) | UInt        | 1            |
@@ -2162,7 +2104,6 @@ The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 |--------|-----------|------------|--------------|-------------|--------------|
 | asSInt | \(e\)     | ()         | (UInt)       | SInt        | w~e~         |
 |        |           |            | (SInt)       | SInt        | w~e~         |
-|        |           |            | (Fixed)      | SInt        | w~e~         |
 |        |           |            | (Clock)      | SInt        | 1            |
 |        |           |            | (Reset)      | SInt        | 1            |
 |        |           |            | (AsyncReset) | SInt        | 1            |
@@ -2170,30 +2111,12 @@ The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 The interpret as SInt operation reinterprets e's bits as a signed integer
 according to two's complement representation.
 
-## Interpret As Fixed-Point Number
-
-| Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width | Result Binary Point |
-|---------|-----------|------------|--------------|-------------|--------------|---------------------|
-| asFixed | \(e\)     | \(p\)      | (UInt)       | Fixed       | w~e~         | p                   |
-|         |           |            | (SInt)       | Fixed       | w~e~         | p                   |
-|         |           |            | (Fixed)      | Fixed       | w~e~         | p                   |
-|         |           |            | (Clock)      | Fixed       | 1            | p                   |
-|         |           |            | (Reset)      | Fixed       | 1            | p                   |
-|         |           |            | (AsyncReset) | Fixed       | 1            | p                   |
-
-The interpret as fixed-point operation reinterprets e's bits as a fixed-point
-number of identical width. Since all fixed-point number in FIRRTL are signed,
-the bits are taken to mean a signed value according to two's complement
-representation. They are scaled by the provided binary point p, and the result
-type has binary point p.
-
 ## Interpret as Clock
 
 | Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width |
 |---------|-----------|------------|--------------|-------------|--------------|
 | asClock | \(e\)     | ()         | (UInt)       | Clock       | n/a          |
 |         |           |            | (SInt)       | Clock       | n/a          |
-|         |           |            | (Fixed)      | Clock       | n/a          |
 |         |           |            | (Clock)      | Clock       | n/a          |
 |         |           |            | (Reset)      | Clock       | n/a          |
 |         |           |            | (AsyncReset) | Clock       | n/a          |
@@ -2208,7 +2131,6 @@ obtained from interpreting a single bit integer as a clock signal.
 | asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
 |              |           |            | (UInt)       | AsyncReset  | n/a          |
 |              |           |            | (SInt)       | AsyncReset  | n/a          |
-|              |           |            | (Fixed)      | AsyncReset  | n/a          |
 |              |           |            | (Interval)   | AsyncReset  | n/a          |
 |              |           |            | (Clock)      | AsyncReset  | n/a          |
 |              |           |            | (Reset)      | AsyncReset  | n/a          |
@@ -2222,7 +2144,6 @@ signal.
 |------|-----------|------------|-----------|-------------|-----------------------------|
 | shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n                      |
 |      |           |            | (SInt)    | SInt        | w~e~+n                      |
-|      |           |            | (Fixed)   | Fixed       | see [@sec:fixed-point-math] |
 
 The shift left operation concatenates n zero bits to the least significant end
 of e. n must be non-negative.
@@ -2233,7 +2154,6 @@ of e. n must be non-negative.
 |------|-----------|------------|-----------|-------------|-----------------------------|
 | shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 1)              |
 |      |           |            | (SInt)    | SInt        | max(w~e~-n, 1)              |
-|      |           |            | (Fixed)   | Fixed       | see [@sec:fixed-point-math] |
 
 The shift right operation truncates the least significant n bits from e.  If n
 is greater than or equal to the bit-width of e, the resulting value will be zero
@@ -2245,7 +2165,6 @@ for unsigned types and the sign bit for signed types. n must be non-negative.
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | dshl | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~ + 2`^`w~e2~ - 1       |
 |      |           |            | (SInt, UInt)  | SInt        | w~e1~ + 2`^`w~e2~ - 1       |
-|      |           |            | (Fixed, UInt) | Fixed       | see [@sec:fixed-point-math] |
 
 The dynamic shift left operation shifts the bits in e1 e2 places towards the
 most significant bit. e2 zeroes are shifted in to the least significant bits.
@@ -2256,7 +2175,6 @@ most significant bit. e2 zeroes are shifted in to the least significant bits.
 |------|-----------|------------|---------------|-------------|-----------------------------|
 | dshr | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~                       |
 |      |           |            | (SInt, UInt)  | SInt        | w~e1~                       |
-|      |           |            | (Fixed, UInt) | Fixed       | see [@sec:fixed-point-math] |
 
 The dynamic shift right operation shifts the bits in e1 e2 places towards the
 least significant bit. e2 signed or zeroed bits are shifted in to the most
@@ -2328,7 +2246,6 @@ expression both return zero.
 |------|-----------|------------|----------------|-------------|--------------|
 | cat  | (e1,e2)   | ()         | (UInt, UInt)   | UInt        | w~e1~+w~e2~  |
 |      |           |            | (SInt, SInt)   | UInt        | w~e1~+w~e2~  |
-|      |           |            | (Fixed, Fixed) | UInt        | w~e1~+w~e2~  |
 
 The result of the concatenate operation is the bits of e1 concatenated to the
 most significant end of the bits of e2.
@@ -2339,7 +2256,6 @@ most significant end of the bits of e2.
 |------|-----------|------------|-----------|-------------|--------------|
 | bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1      |
 |      |           |            | (SInt)    | UInt        | hi-lo+1      |
-|      |           |            | (Fixed)   | UInt        | hi-lo+1      |
 
 The result of the bit extraction operation are the bits of e between lo
 (inclusive) and hi (inclusive). hi must be greater than or equal to lo.  Both hi
@@ -2351,7 +2267,6 @@ and lo must be non-negative and strictly less than the bit width of e.
 |------|-----------|------------|-----------|-------------|--------------|
 | head | \(e\)     | \(n\)      | (UInt)    | UInt        | n            |
 |      |           |            | (SInt)    | UInt        | n            |
-|      |           |            | (Fixed)   | UInt        | n            |
 
 The result of the head operation are the n most significant bits of e. n must be
 non-negative and less than or equal to the bit width of e.
@@ -2362,22 +2277,9 @@ non-negative and less than or equal to the bit width of e.
 |------|-----------|------------|-----------|-------------|--------------|
 | tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n       |
 |      |           |            | (SInt)    | UInt        | w~e~-n       |
-|      |           |            | (Fixed)   | UInt        | w~e~-n       |
 
 The tail operation truncates the n most significant bits from e. n must be
 non-negative and less than or equal to the bit width of e.
-
-## Fixed-Point Precision Modification Operations
-
-| Name             | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------------------|-----------|------------|-----------|-------------|--------------|
-| incp, decp, setp | \(e\)     | \(n\)      | (Fixed)   | Fixed       |              |
-
-The increase precision, decrease precision, and set precision operations are
-used to alter the number of bits that appear after the binary point in a
-fixed-point number. This will cause the binary point and consequently the total
-width of the fixed-point result type to differ from those of the fixed-point
-argument type. See [@sec:fixed-point-math] for more detail.
 
 # Flows
 
@@ -2427,45 +2329,6 @@ The width of each primitive operation is detailed in [@sec:primitive-operations]
 
 The width of the integer literal expressions is detailed in their respective
 sections.
-
-# Fixed-Point Math
-
-| Operator    | Result Width                                          | Result Binary Point |
-|-------------|-------------------------------------------------------|---------------------|
-| add(e1, e2) | max(w~e1~-p~e1~, w~e2~-p~e2~) + max(p~e1~, p~e2~) + 1 | max(p~e1~, p~e2~)   |
-| mul(e1, e2) | w~1~ + w~2~                                           | p~1~ + p~2~         |
-
-: Propagation rules for binary primitive operators that operate on two
-  fixed-point numbers. Here, w~e1~ and p~e1~ are used to indicate the width and
-  binary point of the first operand, while w~e2~ and p~e2~ are used to indicate
-  the width and binary point of the second operand.
-
-
-| Operator   | Result Width                | Result Binary Point |
-|------------|-----------------------------|---------------------|
-| pad(e, n)  | max(w~e~, n)                | p~e~                |
-| shl(e, n)  | w~e~ + n                    | p~e~                |
-| shr(e, n)  | max(w~e~ - n, max(1, p~e~)) | p~e~                |
-| incp(e, n) | w~e~ + n                    | p~e~ + n            |
-| decp(e, n) | w~e~ - n                    | p~e~ - n            |
-| setp(e, n) | w~e~ - p~e~ + n             | n                   |
-
-: Propagation rules for binary primitive operators that modify the width and/or
-  precision of a single fixed-point number using a constant integer literal
-  parameter. Here, w~e~ and p~e~ are used to indicate the width and binary point
-  of the fixed-point operand, while `n` is used to represent the value of the
-  constant parameter.
-
-| Operator     | Result Width          | Result Binary Point |
-|--------------|-----------------------|---------------------|
-| dshl(e1, e1) | w~e1~ + 2`^`w~e2~ - 1 | p~e~                |
-| dshr(e1, e2) | w~e1~                 | p~e~                |
-
-: Propagation rules for dynamic shifts on fixed-point numbers. These take a
-  fixed-point argument and an UInt argument. Here, w~e1~ and p~e1~ are used to
-  indicate the width and binary point of the fixed-point operand, while w~e1~ is
-  used to represent the width of the unsigned integer operand. Note that the
-  actual shift amount will be the dynamic value of the `e2` argument.
 
 # Namespaces
 
@@ -2864,10 +2727,8 @@ info = "@" , "[" , { string , " " , linecol } , "]" ;
 
 (* Type definitions *)
 width = "<" , int , ">" ;
-binarypoint = "<<" , int , ">>" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
-            | ( "UInt" | "SInt" | "Analog" ) , [ width ]
-            | "Fixed" , [ width ] , [ binarypoint ] ;
+            | ( "UInt" | "SInt" | "Analog" ) , [ width ] ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
 field = [ "flip" ] , id , ":" , type ;

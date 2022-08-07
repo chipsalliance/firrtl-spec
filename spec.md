@@ -252,7 +252,7 @@ composed of one or more aggregate or ground types.
 
 ## Ground Types
 
-There are five ground types in FIRRTL: an unsigned integer type, a signed
+There are four ground types in FIRRTL: an unsigned integer type, a signed
 integer type, a clock type, and an analog type.
 
 ### Integer Types

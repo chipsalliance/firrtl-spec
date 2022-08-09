@@ -4,7 +4,7 @@ author:
 title: Specification for the FIRRTL Language
 date: \today
 # Custom options added to the customized template
-version: 1.0.0
+version: 1.1.0
 # Options passed to the document class
 classoption:
 - 12pt
@@ -45,6 +45,7 @@ lastDelim: ", and"
 
 # Revision History
 
+* 1.1.0 Add a `FIRRTL version` magic string
 * 1.0.0 Document the versioning scheme of this specification.
 * 0.4.0
   - Add documentation for undocumented features of the Scala-based

@@ -1,3 +1,6 @@
+# Compute a version to use for the specification based on the latest tag.
+VERSION=$(shell git describe --tags --dirty --match 'v*.*.*' | sed 's/^v//')
+
 IMG_SRCS=$(wildcard include/img_src/*.dot)
 IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/img/%.eps)
 
@@ -16,7 +19,8 @@ PANDOC_FLAGS=\
 	--syntax-definition include/firrtl.xml \
 	--syntax-definition include/ebnf.xml \
 	-r markdown+table_captions+inline_code_attributes+gfm_auto_identifiers \
-	--filter pandoc-crossref
+	--filter pandoc-crossref \
+	--metadata version:$(VERSION)
 
 build/spec.pdf: spec.md include/spec-template.tex include/firrtl.xml include/ebnf.xml $(IMG_EPSS) | build/
 	pandoc $< $(PANDOC_FLAGS) -o $@

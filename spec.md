@@ -2807,6 +2807,7 @@ digit_dec = digit_oct | "8" | "9" ;
 digit_hex = digit_dec
           | "A" | "B" | "C" | "D" | "E" | "F"
           | "a" | "b" | "c" | "d" | "e" | "f" ;
+
 (* An integer *)
 int = '"' , "b" , [ "-" ] , { digit_bin } , '"'
     | '"' , "o" , [ "-" ] , { digit_oct } , '"'
@@ -2921,10 +2922,12 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
             dedent ;
 
 (* Version definition *)
-version = "FIRRTL" , "version" , {digit_dec} , "."  , {digit_dec} , "." , {digit_dec}
+sem_ver = { digit_dec } , "."  , { digit_dec } , "." , { digit_dec }
+version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)
-circuit = version , newline , "circuit" , id , ":" , [ info ] , newline , indent ,
+circuit = version , newline ,
+          "circuit" , id , ":" , [ info ] , newline , indent ,
             { module | extmodule } ,
           dedent ;
 ```

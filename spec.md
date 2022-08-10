@@ -1668,7 +1668,7 @@ assume(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 The cover statement verifies that the predicate is true on the rising edge of
 some clock cycle when the enable is true. In other words, it directs the model
-checker to find some way to make enable implies predicate true at some time
+checker to find some way to make both enable and predicate true at some time
 step.
 
 ``` firrtl

@@ -521,6 +521,29 @@ $endif$
 $if(has-frontmatter)$
 \mainmatter
 $endif$
+$if(revisionHistory)$
+\section{Revision History}
+\begin{itemize}
+$if(revisionHistory.thisVersion)$
+\item $version$
+$for(revisionHistory.thisVersion)$
+\begin{itemize}
+\item $it$
+\end{itemize}
+$endfor$
+$endif$
+$for(revisionHistory.oldVersions)$
+\item $it.version$
+$if(it.changes)$
+\begin{itemize}
+$for(it.changes)$
+\item $it$
+$endfor$
+\end{itemize}
+$endif$
+$endfor$
+\end{itemize}
+$endif$
 $body$
 
 $if(has-frontmatter)$

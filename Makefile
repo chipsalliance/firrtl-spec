@@ -14,5 +14,5 @@ build/img/%.eps: include/img_src/%.dot | build/img/
 clean:
 	rm -rf build
 
-%/:
+build/ build/img/:
 	mkdir -p $@

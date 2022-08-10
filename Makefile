@@ -1,5 +1,5 @@
 IMG_SRCS=$(wildcard include/img_src/*.dot)
-IMG_EPSS=$(foreach dotfile,$(IMG_SRCS),build/img/$(patsubst %.dot,%.eps,$(lastword $(subst /, ,$(dotfile)))))
+IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/img/%.eps)
 
 .PHONY: all clean images
 .PRECIOUS: build/ build/img/

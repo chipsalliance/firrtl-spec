@@ -46,6 +46,7 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     - Add version information to FIRRTL files
+    - Specify "As-If" limited to boolean
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.0.0
@@ -2694,11 +2695,11 @@ module MyModule :
 
 # Semantics of Values
 
-FIRRTL is defined for 2-state logic.  The behavior of a generated circuit in a
-language, such as Verilog or VHDL, which have multi-state logic, is undefined
-in the presence of values which are not 2-state.  A FIRRTL compiler need only
-respect the 2-state behavior of a circuit.  This is a limitation on the scope of
-what behavior is observable (e.g. a relaxation of the
+FIRRTL is defined for 2-state boolean logic.  The behavior of a generated 
+circuit in a language, such as Verilog or VHDL, which have multi-state logic, is 
+undefined in the presence of values which are not 2-state.  A FIRRTL compiler 
+need only respect the 2-state behavior of a circuit.  This is a limitation on 
+the scope of what behavior is observable (i.e. a relaxation of the
 ["as-if"](https://en.wikipedia.org/wiki/As-if_rule) rule).
 
 # Details about Syntax

@@ -4,31 +4,24 @@ on: push
 
 jobs:
   markdown-to-pdf:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Get Graphviz
-        uses: ts-graphviz/setup-graphviz@v1
-      - name: ".dot -> [Graphviz] -> .eps"
-        run: make images
-      - name: "Markdown -> [pandoc] -> LaTeX "
-        uses: docker://pandoc/core:2.17
+        uses: actions/checkout@v3
+        # We use `git describe` which requires tags
         with:
-          args: >- # allows you to break string into multiple lines
-            spec.md
-            --template include/spec-template.tex
-            --syntax-definition include/firrtl.xml
-            --syntax-definition include/ebnf.xml
-            -r markdown+table_captions+inline_code_attributes+gfm_auto_identifiers
-            --filter pandoc-crossref
-            -o build/spec.tex
-      - name: "LaTeX -> [TeX Live] -> PDF"
-        uses: xu-cheng/texlive-action/small@v1
-        with:
-          run: latexmk -pdf spec.tex -output-directory=build
+          fetch-depth: 0
+      - name: "Install Dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install pandoc graphviz texlive-latex-recommended texlive-font-utils
+          mkdir -p usr/bin
+          wget https://github.com/lierdakil/pandoc-crossref/releases/download/v0.3.6.4/pandoc-crossref-Linux-2.9.2.1.tar.xz -O - | tar -Jx -C usr/bin
+          echo "$(pwd)/usr/bin" >> $GITHUB_PATH
+      - name: "Markdown -> [pandox] -> [TeXLive] -> PDF"
+        run: make
       - name: "Upload build directory"
         uses: actions/upload-artifact@v3
         with:

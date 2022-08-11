@@ -2699,7 +2699,7 @@ FIRRTL is defined for 2-state boolean logic.  The behavior of a generated
 circuit in a language, such as Verilog or VHDL, which have multi-state logic, is 
 undefined in the presence of values which are not 2-state.  A FIRRTL compiler 
 need only respect the 2-state behavior of a circuit.  This is a limitation on 
-the scope of what behavior is observable (i.e. a relaxation of the
+the scope of what behavior is observable (i.e., a relaxation of the
 ["as-if"](https://en.wikipedia.org/wiki/As-if_rule) rule).
 
 # Details about Syntax

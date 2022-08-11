@@ -45,10 +45,12 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    - Add version information to FIRRTL files
-    - Specify "As-If" limited to boolean
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 1.1.0
+      changes:
+        - Add version information to FIRRTL files
+        - Specify "As-If" limited to boolean
     - version: 1.0.0
       changes:
         - Document the versioning scheme of this specification.

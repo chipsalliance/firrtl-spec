@@ -18,7 +18,7 @@
 
 3. PRs or commits that are `[patch]`, `[minor]`, or `[major]` should add an item
    to [`revision-history.yaml`](revision-history.yaml) under the `thisVersion`
-   key. `[nfc]` PRs or commits do not modify
+   key. `[nfc]` PRs or commits do not modify this section.
 
 ## Releases
 

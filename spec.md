@@ -39,38 +39,6 @@ secPrefix:
   - Sections
 # This 'lastDelim' option does not work...
 lastDelim: ", and"
-# Information about revision history.  This is used by the LaTeX template.
-revisionHistory:
-  # Information about what was added in the current version.  This will be
-  # populated using the "version" that the Makefile grabs from git.  Notable
-  # additions to the specification should append entries here.
-  thisVersion:
-  # Information about the old versions.  This should be static.
-  oldVersions:
-    - version: 1.1.0
-      changes:
-        - Add version information to FIRRTL files
-        - Specify "As-If" limited to boolean
-    - version: 1.0.0
-      changes:
-        - Document the versioning scheme of this specification.
-    - version: 0.4.0
-      changes:
-        - >
-          Add documentation for undocumented features of the Scala-based FIRRTL
-          Compiler (SFC) that are de facto a part of the FIRRTL specification
-          due to their widespread use in Chisel and the SFC: Annotations,
-          Targets, Asynchronous Reset,  Abstract Reset
-        - Minor typo corrections and prose clarifications.
-    - version: 0.3.1
-      changes:
-        - Clarify analog usage in registers
-        - Rework authorship as "The FIRRTL Specification Contributors"
-        - Add version information as subtitle
-        - Formatting fixes
-    - version: 0.3.0
-      changes:
-        - Document moved to Markdown
 ---
 
 # Introduction

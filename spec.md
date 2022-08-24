@@ -990,6 +990,9 @@ sub-element in the vector.
 Invalidating a component with a bundle type recursively invalidates each
 sub-element in the bundle.
 
+Invalidating a particular subset of bits in an integer is possible by
+performing a bit-index with `is invalid`{.firrtl} (see [@sec:bit-indices]).
+
 ## Attaches
 
 The `attach`{.firrtl} statement is used to attach two or more analog signals,

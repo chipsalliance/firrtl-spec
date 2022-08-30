@@ -273,6 +273,36 @@ UInt
 SInt
 ```
 
+#### Zero Bit Width Integers
+
+Integers of width zero are permissable. They are always zero extended.
+Thus, when used in an operation that extends to a positive bit width, they
+behave like a zero. While zero bit width integer carry no information, we
+allow 0-bit integer constant zeros for convenience:
+`UInt<0>(0)` and `SInt<0>(0)`.
+
+``` firrtl
+wire zero_u : UInt<0>
+zero_u is invalid
+wire zero_s : SInt<0>
+zero_s is invalid
+
+wire one_u : UInt<1>
+one_u <= zero_u
+wire one_s : SInt<1>
+one_s <= zero_s
+```
+
+Is equivalent to:
+
+```
+wire one_u : UInt<1>
+one_u <= UInt<1>(0)
+wire one_s : SInt<1>
+one_s <= SInt<1>(0)
+```
+
+
 ### Fixed-Point Number Type
 
 In general, a fixed-point binary number type represents a range of values

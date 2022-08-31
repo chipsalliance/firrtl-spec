@@ -1854,7 +1854,9 @@ The bit-index `x[i]` selects the single bit `i`.
 
 The type of the bit-index expression `x[hi:lo]`.{firrtl} is `UInt<hi - lo +
 1>`.{firrtl} (even if `x` is an `SInt`) and the type of `x[i]`.{firrtl} is
-`UInt<1>`.{firrtl}.
+`UInt<1>`.{firrtl}. This means that when connecting to a bit-indexed value, the
+right-hand-side of the connection must be a `UInt`.{firrtl}, even if the value
+being indexed is an `SInt`.{firrtl}.
 
 The bit-index can be used as a sink or source. When used as a source,
 `x[hi:lo]` is equivalent to `bits(x, hi, lo)` and `x[i]` is equivalent to

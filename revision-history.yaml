@@ -4,7 +4,8 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    - Specify behavior of zero bit width integers, add zero-width literals
+    - Specify behavior of zero bit width integers, add zero-width literals, add
+      bit-index assignment and syntax
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.1.0

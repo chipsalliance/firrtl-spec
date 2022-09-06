@@ -899,6 +899,7 @@ The following example demonstrates instantiating a wire with the given name
 wire mywire: UInt
 ```
 
+
 ## Registers
 
 A register is a named stateful circuit component.  Reads from a register return 
@@ -938,10 +939,13 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
+A register is initialized with an indeterminate value (see [@sec:indeterminate-values]).
+
 ## Invalidates
 
 An invalidate statement is used to indicate that a circuit component contains
-indeterminate values. It is specified as follows:
+indeterminate values (see [@sec:indeterminate-values]). It is specified as 
+follows:
 
 ``` firrtl
 wire w: UInt
@@ -2708,6 +2712,67 @@ undefined in the presence of values which are not 2-state.  A FIRRTL compiler
 need only respect the 2-state behavior of a circuit.  This is a limitation on
 the scope of what behavior is observable (i.e., a relaxation of the
 ["as-if"](https://en.wikipedia.org/wiki/As-if_rule) rule).
+
+## Indeterminate Values
+
+An indeterminate value represents a value which is unknown or unspecified.  
+Indeterminate values are generally implementation defined, with constraints 
+specified below.  An indeterminate value may be assumed to be any specific 
+value, at an implementation's descresion, if, in doing so, all observable 
+behavior is as if the indeterminate value always took the specific value.
+
+This allows transformations such as the following, where when `a` has an 
+indeterminate value, the implementation chooses to consistently give it a value 
+of 4.  There is no visibility of a when it has an indeterminate value which does 
+not see it as 4.
+``` firrtl
+module IValue :
+  output o : UInt<8>
+  input c : UInt<1>
+
+  wire a : UInt<8>
+  a is invalid
+  when c :
+    a <= UInt<3>("h4")
+  o <= a
+```
+is transfromed to:
+``` firrtl
+module IValue :
+  output o : UInt<8>
+  input c : UInt<1>
+
+  o <= UInt<3>("h4")
+```
+Note that it is equally correct to produce:
+``` firrtl
+module IValue :
+  output o : UInt<8>
+  input c : UInt<1>
+
+  wire a : UInt<8>
+  when c :
+    a <= UInt<3>("h4")
+   else :
+     a <= UInt<3>("h42")
+  o <= a
+```
+
+The behavior of constructs which cause indeterminate values is implementation 
+defined with the following constraints.  
+* Registers initialization is of a uniform code pattern.  If code is generated 
+to randomly initialize some registers (or 0 fill them, etc), it should be 
+generated for all registers.
+* All observations of an expression with indeterminate value must see the same 
+value at runtime.  Multiple readers of a value will see the same runtime value.
+* Indeterminate values are not time-varying.  Time-aware construct, such as 
+registers, which hold an indeterminate value will return the same runtime value 
+unless something changes the value in a normal way.  For example, an 
+uninitialized register will return the same value over multiple clock cycles 
+until it is written.
+* Two constructs with indeterminate values place no constraint on the identity 
+of their values.  For example, two uninitialized registers, which therefore 
+contain indeterminate values, do not need to be equal under comparison.
 
 # Details about Syntax
 

@@ -918,16 +918,17 @@ reg myreg: SInt, myclock
 ; ...
 ```
 
-A register may be declared with a reset signal and value. The register's value 
+A register may be declared with a reset signal and value.  The register's value 
 is updated with the reset value when the reset is asserted.  The reset signal 
 must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and 
-the type of initialization  value must be equivalent to the declared type of the 
-register (see [@sec:type-equivalence] for details). The behavior of the register 
-depends on the type of the reset signal.  `AsyncReset`.{firrtl} will immediately 
-change the value of the register, while other types will not change the value of 
-the register until the next positive edge of the clock signal (see 
-[@sec:reset-type]).  In the following example, `myreg`{.firrtl} is assigned the 
-value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.  
+the type of initialization value must be equivalent to the declared type of the 
+register (see [@sec:type-equivalence] for details).  The behavior of the 
+register depends on the type of the reset signal.  `AsyncReset`.{firrtl} will 
+immediately change the value of the register.  `UInt<1> will not change 
+the value of the register until the next positive edge of the clock signal (see 
+[@sec:reset-type]).  `Reset`.{firrtl} is an abstract reset whose behavior 
+depends on reset inference.  In the following example, `myreg`{.firrtl} is 
+assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.  
 
 ``` firrtl
 wire myclock: Clock

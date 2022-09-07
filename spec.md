@@ -938,7 +938,8 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
-A register is initialized with an indeterminate value (see [@sec:indeterminate-values]).
+A register is initialized with an indeterminate value (see 
+[@sec:indeterminate-values]).
 
 ## Invalidates
 
@@ -1852,7 +1853,9 @@ module MyModule :
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed
 expression using a calculated index. The index must be an expression with an
-unsigned integer type.
+unsigned integer type.  An access to an out-of-bounds element results in an 
+indeterminate value (see [@sec:indeterminate-values]).  Each out-of-bounds 
+element is a different indeterminate value.
 
 The following example connects the n'th sub-element of the `in`{.firrtl} port to
 the `out`{.firrtl} port.

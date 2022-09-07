@@ -2757,9 +2757,9 @@ module IValue :
 
 The behavior of constructs which cause indeterminate values is implementation 
 defined with the following constraints.  
-* Registers initialization is of a uniform code pattern.  If code is generated 
-to randomly initialize some registers (or 0 fill them, etc), it should be 
-generated for all registers.
+* Register initialization is done in a consistent way for all registers.  If 
+code is generated to randomly initialize some registers (or 0 fill them, etc), 
+it should be generated for all registers.
 * All observations of an expression with indeterminate value must see the same 
 value at runtime.  Multiple readers of a value will see the same runtime value.
 * Indeterminate values are not time-varying.  Time-aware constructs, such as 

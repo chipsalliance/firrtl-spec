@@ -984,9 +984,7 @@ module MyModule :
    w.b is invalid
 ```
 
-For the purposes of simulation, invalidated components are initialized to random
-values, and operations involving indeterminate values produce undefined
-behaviour. This is useful for early detection of errors in simulation.
+The handing of invalidated components is covered in [@sec:indeterminate-values].
 
 ### The Invalidate Algorithm
 
@@ -2768,7 +2766,7 @@ value at runtime.  Multiple readers of a value will see the same runtime value.
 registers, which hold an indeterminate value will return the same runtime value 
 unless something changes the value in a normal way.  For example, an 
 uninitialized register will return the same value over multiple clock cycles 
-until it is written.
+until it is written (or reset).
 * Two constructs with indeterminate values place no constraint on the identity 
 of their values.  For example, two uninitialized registers, which therefore 
 contain indeterminate values, do not need to be equal under comparison.

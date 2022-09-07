@@ -899,7 +899,6 @@ The following example demonstrates instantiating a wire with the given name
 wire mywire: UInt
 ```
 
-
 ## Registers
 
 A register is a named stateful circuit component.  Reads from a register return 
@@ -2718,13 +2717,13 @@ the scope of what behavior is observable (i.e., a relaxation of the
 An indeterminate value represents a value which is unknown or unspecified.  
 Indeterminate values are generally implementation defined, with constraints 
 specified below.  An indeterminate value may be assumed to be any specific 
-value, at an implementation's descresion, if, in doing so, all observable 
+value, at an implementation's discresion, if, in doing so, all observable 
 behavior is as if the indeterminate value always took the specific value.
 
 This allows transformations such as the following, where when `a` has an 
 indeterminate value, the implementation chooses to consistently give it a value 
-of 4.  There is no visibility of a when it has an indeterminate value which does 
-not see it as 4.
+of 4.  There is no visibility of `a` when it has an indeterminate value which 
+does not see it as 4.
 ``` firrtl
 module IValue :
   output o : UInt<8>
@@ -2736,7 +2735,7 @@ module IValue :
     a <= UInt<3>("h4")
   o <= a
 ```
-is transfromed to:
+is transformed to:
 ``` firrtl
 module IValue :
   output o : UInt<8>
@@ -2765,7 +2764,7 @@ to randomly initialize some registers (or 0 fill them, etc), it should be
 generated for all registers.
 * All observations of an expression with indeterminate value must see the same 
 value at runtime.  Multiple readers of a value will see the same runtime value.
-* Indeterminate values are not time-varying.  Time-aware construct, such as 
+* Indeterminate values are not time-varying.  Time-aware constructs, such as 
 registers, which hold an indeterminate value will return the same runtime value 
 unless something changes the value in a normal way.  For example, an 
 uninitialized register will return the same value over multiple clock cycles 

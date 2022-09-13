@@ -997,6 +997,9 @@ sub-element in the vector.
 Invalidating a component with a bundle type recursively invalidates each
 sub-element in the bundle.
 
+Invalidating a particular subset of bits in an integer is possible by
+performing a bit-index with `is invalid`{.firrtl} (see [@sec:bit-indices]).
+
 ## Attaches
 
 The `attach`{.firrtl} statement is used to attach two or more analog signals,
@@ -1847,6 +1850,49 @@ module MyModule :
    out[4] <= in
 ```
 
+## Bit-indices
+
+The bit-index expression statically refers, by index, to a particular bit, or
+slice of bits, of an expression with an integer type (`UInt`{.firrtl} or
+`SInt`{.firrtl}). The indices must be non-negative integers and cannot be equal
+to or exceed the width of the integer they index. The bit-index `x[hi:lo]`
+selects bits `hi` (most significant) through `lo` (least significant) of `x`.
+The bit-index `x[i]` selects the single bit `i`.
+
+The type of the bit-index expression `x[hi:lo]`.{firrtl} is `UInt<hi - lo +
+1>`.{firrtl} (even if `x` is an `SInt`) and the type of `x[i]`.{firrtl} is
+`UInt<1>`.{firrtl}. This means that when connecting to a bit-indexed value, the
+right-hand-side of the connection must be a `UInt`.{firrtl}, even if the value
+being indexed is an `SInt`.{firrtl}.
+
+The bit-index can be used as a sink or source. When used as a source,
+`x[hi:lo]` is equivalent to `bits(x, hi, lo)` and `x[i]` is equivalent to
+`bits(x, i, i)`. See the `bits`{.firrtl} primitive operation
+([@sec:bit-extraction-operation]). When used as a sink, the bit-index assigns
+to only the sliced bits of the integer. If a value has multiple bit-index
+assignments, the assignments are accumulated in order according to last-connect
+semantics, in the same way as the behavior of last-connect semantics for
+aggregate types (see [@sec:last-connect-semantics]).
+
+A value that is bit-indexed must be fully initialized at the bit-level. There
+must be a valid assignment accounting for every bit in the value. Registers are
+implicitly initialized with their current contents.
+
+Bit-indexing does not participate in width inference (see
+[@sec:width-inference]), and if a bit-index is applied to a value with an
+unspecified width, that value must have another use that allows its width to be
+inferred. Otherwise this causes an error.
+
+The following example connects the `in`{.firrtl} port to the fifth bit
+of the `out`{.firrtl} port.
+
+``` firrtl
+module MyModule :
+   input in: UInt<1>
+   output out: UInt<10>
+   out[4] <= in
+```
+
 ## Sub-accesses
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed
@@ -2389,6 +2435,8 @@ wire or register is duplex.
 The flow of a sub-index or sub-access expression is the flow of the vector-typed
 expression it indexes or accesses.
 
+The flow of a bit-index is the flow of the integer-typed expression it indexes.
+
 The flow of a sub-field expression depends upon the orientation of the field. If
 the field is not flipped, its flow is the same flow as the bundle-typed
 expression it selects its field from. If the field is flipped, then its flow is
@@ -2419,6 +2467,8 @@ The width of a conditionally valid expression is the width of its input
 expression.
 
 The width of each primitive operation is detailed in [@sec:primitive-operations].
+
+The width of a bit-index is detailed in [@sec:bit-indices].
 
 The width of the integer literal expressions is detailed in their respective
 sections.
@@ -2632,6 +2682,8 @@ following restrictions:
 - The conditional statement is not used.
 
 - The dynamic sub-access expression is not used.
+
+- The bit-index expression is not used as a sink.
 
 - All components are connected to exactly once.
 
@@ -2903,6 +2955,7 @@ expr =
 reference = id
           | reference , "." , id
           | reference , "[" , int , "]"
+          | reference , "[" , int , ":" , int , "]"
           | reference , "[" , expr , "]" ;
 
 (* Memory *)

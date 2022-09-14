@@ -175,7 +175,7 @@ FIRRTL version 1.1.0
 circuit MyTop...
 ```
 
-# Circuits and Modules
+# Circuits and Modules and Functions
 
 ## Circuits
 
@@ -243,6 +243,58 @@ ports.
 A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated
 Verilog to downstream tools.
+
+## Functions
+
+A function has a name, list of arguments, and a list of statements representing
+a data-flow graph of stateless circuit components.  Each argument is specified 
+by its direction, which may be input or output, a name, and the data type of the 
+argument.
+
+Functions participate in width-inference (see [@sec:width-inference]) at 
+invocation sites in the same way modules to at instantiation sites.
+
+Functions cannot contain memories, registers, or instances.  This makes them
+"stateless"
+
+Functions can optional specify that they are "pure" functions.  These do not
+have side-effecting operations (such as printf).
+
+
+``` firrtl
+function MyPureFunction pure :
+  input foo : UInt
+  output bar : UInt
+  bar <= foo
+
+function MyFunction :
+  input clk: Clock
+  input halt: UInt<1>
+  stop(clk, halt, 42) : optional_name
+```
+
+## Intrinsics
+
+An intrinsic is a function. Intrinsics have all the components of a function
+except  a list of statements.  An intrinsic is a firrtl implementation provided 
+function.  The name of intrinsics are implementation defined.  A firrtl 
+implementation shall reject IR with unknown intrinsics.  Being functions,
+intrinsics are stateless.
+
+The widths of all intrinsic ports must be specified.  Width inference, described 
+in [@sec:width-inference], is not supported.
+
+Intrinsics can be "pure".  These do not have side-effects.  Whether a particular 
+intrinsic is pure or not is implementation defined and implementations shall 
+check that intrinsics declarations have the expected arguments, types, and 
+purity.
+
+``` firrtl
+intrinsic synopsys.4mux.u8 pure :
+  input cond : UInt<2>
+  output bar : Vector<4, UInt<8>>
+```
+
 
 # Types
 
@@ -1530,6 +1582,22 @@ module without affecting the semantics of the circuit.
 To disallow infinitely recursive hardware, modules cannot contain instances of
 itself, either directly, or indirectly through instances of other modules it
 instantiates.
+
+## Invoke
+
+FIRRTL functions and intrinsics are invoked with the `invoke` statement.
+
+``` firrtl
+circuit Top :
+   function MyFunc : 
+     input a : UInt
+     output b : UInt
+   module MyModule :
+      input a: UInt
+      output b: UInt
+      b <= invoke MyFunc(a)
+```
+
 
 ## Stops
 

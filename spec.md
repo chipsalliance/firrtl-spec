@@ -2718,7 +2718,7 @@ the scope of what behavior is observable (i.e., a relaxation of the
 An indeterminate value represents a value which is unknown or unspecified.  
 Indeterminate values are generally implementation defined, with constraints 
 specified below.  An indeterminate value may be assumed to be any specific 
-value, at an implementation's discresion, if, in doing so, all observable 
+value, at an implementation's discretion, if, in doing so, all observable 
 behavior is as if the indeterminate value always took the specific value.
 
 This allows transformations such as the following, where when `a` has an 

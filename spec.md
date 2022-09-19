@@ -252,8 +252,9 @@ composed of one or more aggregate or ground types.
 
 ## Ground Types
 
-There are five ground types in FIRRTL: an unsigned integer type, a signed
-integer type, a fixed-point number type, a clock type, and an analog type.
+There are six ground types in FIRRTL: an unsigned integer type, a signed integer
+type, a fixed-point number type, a clock type, an analog type, and a string
+type.
 
 ### Integer Types
 
@@ -458,6 +459,17 @@ widths of all arguments to a given attach operation be identical.
 Analog<1>  ; 1-bit analog type
 Analog<32> ; 32-bit analog type
 Analog     ; analog type with inferred width
+```
+
+### String Type
+
+The string type specifies that a value will be a string.  String types do not
+specify a width.  String types may only appear as external module parameters and
+as literals used in certain operations.  String types may not be used in
+aggregate types.
+
+``` firrtl
+parameter foo = "hello" ; an extmodule parameter with a String type
 ```
 
 ## Aggregate Types
@@ -1695,10 +1707,29 @@ cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 # Expressions
 
-FIRRTL expressions are used for creating literal unsigned and signed integers,
-for referring to a declared circuit component, for statically and dynamically
-accessing a nested element within a component, for creating multiplexers and
-conditionally valid signals, and for performing primitive operations.
+FIRRTL expressions are used for creating literal strings, unsigned and signed
+integers, for referring to a declared circuit component, for statically and
+dynamically accessing a nested element within a component, for creating
+multiplexers and conditionally valid signals, and for performing primitive
+operations.
+
+## String Literal
+
+A string literal is used to encode a constant, unchanging string.  This is used
+to encode fixed external module parameter values, as arguments to certain
+operations, or to construct integer literals from non-decimal numbering systems.
+An example of an external module parameter that requires a string literal is
+below:
+
+``` firrtl
+parameter foo = "hello"
+```
+
+See Sections [@sec:unsigned-integers-from-literal-bits] and
+[@sec:signed-integers-from-literal-bits] for examples of using string literals
+to construct integer literals.  See Sections [@sec:formatted-prints] and
+[@sec:verification] for examples of operations that have string literals
+arguments.
 
 ## Unsigned Integers
 
@@ -1720,7 +1751,7 @@ UInt(42)
 
 ## Unsigned Integers from Literal Bits
 
-A literal unsigned integer can alternatively be created given a string
+A literal unsigned integer can alternatively be created given a string literal
 representing its bit representation and an optional bit width.
 
 The following radices are supported:
@@ -1777,8 +1808,8 @@ SInt(-42)
 ## Signed Integers from Literal Bits
 
 Similar to unsigned integers, a literal signed integer can alternatively be
-created given a string representing its bit representation and an optional bit
-width.
+created given a string literal representing its bit representation and an
+optional bit width.
 
 The bit representation contains a binary, octal or hex indicator, followed by an
 optional sign, followed by the value.
@@ -2858,6 +2889,9 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "v" | "w" | "x" | "y" | "z" ;
 id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
 
+(* String literal definition *)
+string_lit = '"' , { char } , '"'
+
 (* Fileinfo communicates Chisel source file and line/column info *)
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
 info = "@" , "[" , { string , " " , linecol } , "]" ;
@@ -2867,7 +2901,8 @@ width = "<" , int , ">" ;
 binarypoint = "<<" , int , ">>" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ]
-            | "Fixed" , [ width ] , [ binarypoint ] ;
+            | "Fixed" , [ width ] , [ binarypoint ]
+            | "String" ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
 field = [ "flip" ] , id , ":" , type ;
@@ -2938,7 +2973,7 @@ statement = "wire" , id , ":" , type , [ info ]
               { statement } ,
             dedent , [ "else" , ":" , indent , { statement } , dedent ]
           | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
-          | "printf(" , expr , "," , expr , "," , string ,
+          | "printf(" , expr , "," , expr , "," , string_lit ,
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ] ;
 
@@ -2951,7 +2986,7 @@ module = "module" , id , ":" , [ info ] , newline , indent ,
 extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               [ "defname" , "=" , id , newline ] ,
-              { "parameter" , "=" , ( string | int ) , newline } ,
+              { "parameter" , "=" , ( string_lit | int ) , newline } ,
             dedent ;
 
 (* Version definition *)

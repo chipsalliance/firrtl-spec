@@ -217,12 +217,9 @@ instance statement for details on how to instantiate a module
 ## Externally Defined Modules
 
 Externally defined modules are modules whose implementation is not provided in
-the current circuit.  Only the ports and name of the externally defined module
-are specified in the circuit.  An externally defined module may include, in
-order, an optional _defname_ which sets the name of the external module in the
-resulting Verilog and zero or more name--value _parameter_ statements.  Each
-name--value parameter statement will result in a value being passed to the named
-parameter in the resulting Verilog.
+the current circuit.  Only the ports of the externally defined module are
+specified in the circuit.  No other statements may exist in the external module
+body.
 
 An example of an externally defined module is:
 
@@ -231,14 +228,30 @@ extmodule MyExternalModule :
   input foo: UInt<2>
   output bar: UInt<4>
   output baz: SInt<8>
-  defname = VerilogName
-  parameter x = "hello"
-  parameter y = 42
 ```
 
 The widths of all externally defined module ports must be specified.  Width
 inference, described in [@sec:width-inference], is not supported for module
 ports.
+
+Externally defined modules may have zero or more parameters.  Parameters may be
+of known-width `UInt`{.firrtl} or `String`{.firrtl}.  The value of a parameter
+is set at each instantiation of an external module using a literal value.
+
+An example of a parametric externally defined module and its instantiation is:
+
+``` firrtl
+extmodule MyExternalModule2<parameter x: String, parameter y: UInt<8>> :
+  ; ...
+module Top:
+  inst foo of MyExternalModule2<"hello", UInt<8>(42)>
+  inst bar of MyExternalModule2<"world", UInt(0)>
+```
+
+As shown above, it is allowable to use a smaller, unknown width `UInt`{.firrtl}
+literal to set a parameter value so long as the width of the underlying
+parameter value is large enough to store the literal type.  A literal that is
+too large for a given parameter type is illegal.
 
 A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated

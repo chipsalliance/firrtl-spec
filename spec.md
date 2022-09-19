@@ -246,9 +246,9 @@ Verilog to downstream tools.
 
 # Types
 
-Types are used to specify the structure of the data held by each circuit
-component. All types in FIRRTL are either one of the fundamental ground types or
-are built up from aggregating other types.
+FIRRTL has two classes of types: _ground_ types and _aggregate_ types.  Ground
+types are fundamental and are not composed of other types.  Aggregate types are
+composed of one or more aggregate or ground types.
 
 ## Ground Types
 
@@ -460,7 +460,12 @@ Analog<32> ; 32-bit analog type
 Analog     ; analog type with inferred width
 ```
 
-## Vector Types
+## Aggregate Types
+
+FIRRTL supports two aggregate types: vectors and bundles.  Aggregate types are
+composed of ground types or other aggregate types.
+
+### Vector Types
 
 A vector type is used to express an ordered sequence of elements of a given
 type. The length of the sequence must be non-negative and known.
@@ -487,7 +492,7 @@ each of which is a ten element vector of 16-bit unsigned integers.
 UInt<16>[10][20]
 ```
 
-## Bundle Types
+### Bundle Types
 
 A bundle type is used to express a collection of nested and named types.  All
 fields in a bundle type must have a given name, and type.

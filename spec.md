@@ -901,11 +901,11 @@ wire mywire: UInt
 
 ## Registers
 
-A register is a named stateful circuit component.  Reads from a register return 
-the current value of the element, writes are not visible until after a positive 
+A register is a named stateful circuit component.  Reads from a register return
+the current value of the element, writes are not visible until after a positive
 edges of the register's clock port.
 
-The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a 
+The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
 register must be a passive type (see [@sec:passive-types]).
 
 The following example demonstrates instantiating a register with the given name
@@ -918,17 +918,17 @@ reg myreg: SInt, myclock
 ; ...
 ```
 
-A register may be declared with a reset signal and value.  The register's value 
-is updated with the reset value when the reset is asserted.  The reset signal 
-must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and 
-the type of initialization value must be equivalent to the declared type of the 
-register (see [@sec:type-equivalence] for details).  The behavior of the 
-register depends on the type of the reset signal.  `AsyncReset`.{firrtl} will 
-immediately change the value of the register.  `UInt<1> will not change 
-the value of the register until the next positive edge of the clock signal (see 
-[@sec:reset-type]).  `Reset`.{firrtl} is an abstract reset whose behavior 
-depends on reset inference.  In the following example, `myreg`{.firrtl} is 
-assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.  
+A register may be declared with a reset signal and value.  The register's value
+is updated with the reset value when the reset is asserted.  The reset signal
+must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and
+the type of initialization value must be equivalent to the declared type of the
+register (see [@sec:type-equivalence] for details).  The behavior of the
+register depends on the type of the reset signal.  `AsyncReset`.{firrtl} will
+immediately change the value of the register.  `UInt<1> will not change
+the value of the register until the next positive edge of the clock signal (see
+[@sec:reset-type]).  `Reset`.{firrtl} is an abstract reset whose behavior
+depends on reset inference.  In the following example, `myreg`{.firrtl} is
+assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.
 
 ``` firrtl
 wire myclock: Clock

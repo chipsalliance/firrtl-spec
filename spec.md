@@ -252,7 +252,7 @@ by its direction, which may be input or output, a name, and the data type of the
 argument.
 
 Functions participate in width-inference (see [@sec:width-inference]) at 
-invocation sites in the same way modules to at instantiation sites.
+invocation sites in the same way modules do at instantiation sites.
 
 Functions cannot contain memories, registers, or instances.  This makes them
 "stateless"

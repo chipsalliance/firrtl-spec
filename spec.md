@@ -255,7 +255,7 @@ Functions participate in width-inference (see [@sec:width-inference]) at
 invocation sites in the same way modules do at instantiation sites.
 
 Functions cannot contain memories, registers, or instances.  This makes them
-"stateless"
+"stateless".
 
 Functions can optional specify that they are "pure" functions.  These do not
 have side-effecting operations (such as printf).

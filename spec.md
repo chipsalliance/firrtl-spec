@@ -2917,8 +2917,8 @@ primop_1expr2int =
 primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Expression definitions *)
-expr =
-    ( "UInt" | "SInt" ) , [ width ] , "(" , ( int ) , ")"
+int_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , int , ")"
+expr = int_lit
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
   | "validif" , "(" , expr , "," , expr , ")"
@@ -2942,11 +2942,13 @@ memory = "mem" , id , ":" , [ info ] , newline , indent ,
          dedent ;
 
 (* Statements *)
+parameter = uint_lit | string ;
+parameter_seq = parameter | parameter , "," , parameter_seq ;
 statement = "wire" , id , ":" , type , [ info ]
           | "reg" , id , ":" , type , expr ,
             [ "(with: {reset => (" , expr , "," , expr ")})" ] , [ info ]
           | memory
-          | "inst" , id , "of" , id , [ info ]
+          | "inst" , id , "of" , id , [ "<" , parameter_seq  , ">" ] , [ info ]
           | "node" , id , "=" , expr , [ info ]
           | reference , "<=" , expr , [ info ]
           | reference , "<-" , expr , [ info ]
@@ -2966,10 +2968,11 @@ module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;
-extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
+parameter_decl = "parameter" , id , ":" , type ;
+parameter_decl_seq = parameter_decl | parameter_decl , "," , parameter_decl_seq ;
+extmodule = "extmodule" , id , [ "<" , parameter_decl_seq , ">"  ] , ":" ,
+            [ info ] , newline , indent ,
               { port , newline } ,
-              [ "defname" , "=" , id , newline ] ,
-              { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;
 
 (* Version definition *)

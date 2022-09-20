@@ -235,20 +235,25 @@ inference, described in [@sec:width-inference], is not supported for module
 ports.
 
 Externally defined modules may have zero or more parameters.  Parameters may be
-of known-width `UInt`{.firrtl} or `String`{.firrtl}.  The value of a parameter
-is set at each instantiation of an external module using a literal value.
+of known-width `UInt`{.firrtl} or `SInt`{.firrtl} types or `String`{.firrtl}
+type.  The value of a parameter is set at each instantiation of an external
+module using a literal value.
 
 An example of a parametric externally defined module and its instantiation is:
 
 ``` firrtl
-extmodule MyExternalModule2<parameter x: String, parameter y: UInt<8>> :
+extmodule MyExternalModule2<
+  parameter x: String,
+  parameter y: UInt<8>,
+  parameter z: SInt<4>
+> :
   ; ...
 module Top:
-  inst foo of MyExternalModule2<"hello", UInt<8>(42)>
-  inst bar of MyExternalModule2<"world", UInt(0)>
+  inst foo of MyExternalModule2<"hello", UInt<8>(42), SInt<4>(-1)>
+  inst bar of MyExternalModule2<"world", UInt(0), SInt(-2)>
 ```
 
-As shown above, it is allowable to use a smaller, unknown width `UInt`{.firrtl}
+As shown above, it is allowable to use a smaller, unknown width integer type
 literal to set a parameter value so long as the width of the underlying
 parameter value is large enough to store the literal type.  A literal that is
 too large for a given parameter type is illegal.

@@ -2942,7 +2942,7 @@ memory = "mem" , id , ":" , [ info ] , newline , indent ,
          dedent ;
 
 (* Statements *)
-parameter = uint_lit | string ;
+parameter = int_lit | string ;
 parameter_seq = parameter | parameter , "," , parameter_seq ;
 statement = "wire" , id , ":" , type , [ info ]
           | "reg" , id , ":" , type , expr ,

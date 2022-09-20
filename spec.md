@@ -175,7 +175,7 @@ FIRRTL version 1.1.0
 circuit MyTop...
 ```
 
-# Circuits and Modules and Functions
+# Circuits, Modules, and Functions
 
 ## Circuits
 

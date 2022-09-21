@@ -2781,7 +2781,8 @@ unless something changes the value in a normal way.  For example, an
 uninitialized register will return the same value over multiple clock cycles 
 until it is written (or reset).
 - The value produced at runtime for an expression which produced an intermediate
-value shall only be a function of the inputs of the expression.  For example, an out-of-bounds vector access shall produce the same value for a 
+value shall only be a function of the inputs of the expression.  For example, an
+out-of-bounds vector access shall produce the same value for a 
 given out-of-bounds index and vector contents.
 - Two constructs with indeterminate values place no constraint on the identity 
 of their values.  For example, two uninitialized registers, which therefore 

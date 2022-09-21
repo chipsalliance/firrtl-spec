@@ -2767,8 +2767,9 @@ defined with the following constraints.
 * Register initialization is done in a consistent way for all registers.  If 
 code is generated to randomly initialize some registers (or 0 fill them, etc), 
 it should be generated for all registers.
-* All observations of an expression with indeterminate value must see the same 
-value at runtime.  Multiple readers of a value will see the same runtime value.
+* All observations of a unique instance of an expression with indeterminate 
+value must see the same value at runtime.  Multiple readers of a value will see 
+the same runtime value.
 * Indeterminate values are not time-varying.  Time-aware constructs, such as 
 registers, which hold an indeterminate value will return the same runtime value 
 unless something changes the value in a normal way.  For example, an 

@@ -5,6 +5,7 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     - Specify behavior of zero bit width integers, add zero-width literals
+    - Specify behavior of indeterminate values
     - Add an explicit section about "Aggregate Types" and move "Vector Type" and
       "Bundle Type" under it.
   # Information about the old versions.  This should be static.

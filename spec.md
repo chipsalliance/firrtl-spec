@@ -2718,22 +2718,26 @@ the scope of what behavior is observable (i.e., a relaxation of the
 An indeterminate value represents a value which is unknown or unspecified.  
 Indeterminate values are generally implementation defined, with constraints 
 specified below.  An indeterminate value may be assumed to be any specific 
-value, at an implementation's discretion, if, in doing so, all observable 
-behavior is as if the indeterminate value always took the specific value.
+value (not necessarily literal), at an implementation's discretion, if, in doing
+so, all observable behavior is as if the indeterminate value always took the 
+specific value.
 
 This allows transformations such as the following, where when `a` has an 
 indeterminate value, the implementation chooses to consistently give it a value 
-of 4.  There is no visibility of `a` when it has an indeterminate value which 
-does not see it as 4.
+of 'v'.  An alternate, legal mapping, lets the implementaiton give it the value
+`42`.  In both cases, there is no visibility of `a` when it has an indeterminate
+value which is not mapped to the value the implementaiton choose.
+
 ``` firrtl
 module IValue :
   output o : UInt<8>
   input c : UInt<1>
+  input v : UInt<8>
 
   wire a : UInt<8>
   a is invalid
   when c :
-    a <= UInt<3>("h4")
+    a <= v
   o <= a
 ```
 is transformed to:
@@ -2742,7 +2746,7 @@ module IValue :
   output o : UInt<8>
   input c : UInt<1>
 
-  o <= UInt<3>("h4")
+  o <= v
 ```
 Note that it is equally correct to produce:
 ``` firrtl
@@ -2752,7 +2756,7 @@ module IValue :
 
   wire a : UInt<8>
   when c :
-    a <= UInt<3>("h4")
+    a <= v
    else :
      a <= UInt<3>("h42")
   o <= a
@@ -2770,6 +2774,9 @@ registers, which hold an indeterminate value will return the same runtime value
 unless something changes the value in a normal way.  For example, an 
 uninitialized register will return the same value over multiple clock cycles 
 until it is written (or reset).
+* An expression which produces an indeterminate value shall produce the same 
+value for the same input.  For example, an out-of-bounds array access shall 
+produce the same value for a given out-of-bounds index and array contents.
 * Two constructs with indeterminate values place no constraint on the identity 
 of their values.  For example, two uninitialized registers, which therefore 
 contain indeterminate values, do not need to be equal under comparison.

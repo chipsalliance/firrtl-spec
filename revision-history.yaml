@@ -5,6 +5,7 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     - Specify behavior of zero bit width integers, add zero-width literals
+    - Specify behavior of indeterminate values
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.1.0

@@ -185,10 +185,10 @@ top-level module.
 
 ``` firrtl
 circuit MyTop :
-   module MyTop :
-      ; ...
-   module MyModule :
-      ; ...
+  module MyTop :
+    ; ...
+  module MyModule :
+    ; ...
 ```
 
 ## Modules
@@ -204,9 +204,9 @@ and one statement connecting the input port to the output port.  See
 
 ``` firrtl
 module MyModule :
-   input foo: UInt
-   output bar: UInt
-   bar <= foo
+  input foo: UInt
+  output bar: UInt
+  bar <= foo
 ```
 
 Note that a module definition does *not* indicate that the module will be
@@ -228,12 +228,12 @@ An example of an externally defined module is:
 
 ``` firrtl
 extmodule MyExternalModule :
-   input foo: UInt<2>
-   output bar: UInt<4>
-   output baz: SInt<8>
-   defname = VerilogName
-   parameter x = "hello"
-   parameter y = 42
+  input foo: UInt<2>
+  output bar: UInt<4>
+  output baz: SInt<8>
+  defname = VerilogName
+  parameter x = "hello"
+  parameter y = 42
 ```
 
 The widths of all externally defined module ports must be specified.  Width
@@ -298,9 +298,9 @@ intrinsic synopsys.4mux.u8 pure :
 
 # Types
 
-Types are used to specify the structure of the data held by each circuit
-component. All types in FIRRTL are either one of the fundamental ground types or
-are built up from aggregating other types.
+FIRRTL has two classes of types: _ground_ types and _aggregate_ types.  Ground
+types are fundamental and are not composed of other types.  Aggregate types are
+composed of one or more aggregate or ground types.
 
 ## Ground Types
 
@@ -512,7 +512,12 @@ Analog<32> ; 32-bit analog type
 Analog     ; analog type with inferred width
 ```
 
-## Vector Types
+## Aggregate Types
+
+FIRRTL supports two aggregate types: vectors and bundles.  Aggregate types are
+composed of ground types or other aggregate types.
+
+### Vector Types
 
 A vector type is used to express an ordered sequence of elements of a given
 type. The length of the sequence must be non-negative and known.
@@ -539,7 +544,7 @@ each of which is a ten element vector of 16-bit unsigned integers.
 UInt<16>[10][20]
 ```
 
-## Bundle Types
+### Bundle Types
 
 A bundle type is used to express a collection of nested and named types.  All
 fields in a bundle type must have a given name, and type.
@@ -712,9 +717,9 @@ output port, where port `myinput`{.firrtl} is connected to port
 
 ``` firrtl
 module MyModule :
-   input myinput: UInt
-   output myoutput: UInt
-   myoutput <= myinput
+  input myinput: UInt
+  output myoutput: UInt
+  myoutput <= myinput
 ```
 
 In order for a connection to be legal the following conditions must hold:
@@ -788,20 +793,20 @@ its output port, where port `myinput`{.firrtl} is connected to port
 
 ``` firrtl
 module MyModule :
-   input myinput: {flip a: UInt, b: UInt[2]}
-   output myoutput: {flip a: UInt, b: UInt[3], c: UInt}
-   myoutput <- myinput
+  input myinput: {flip a: UInt, b: UInt[2]}
+  output myoutput: {flip a: UInt, b: UInt[3], c: UInt}
+  myoutput <- myinput
 ```
 
 The above example is equivalent to the following:
 
 ``` firrtl
 module MyModule :
-   input myinput: {flip a: UInt, b: UInt[2]}
-   output myoutput: {flip a: UInt, b: UInt[3], c: UInt}
-   myinput.a <- myoutput.a
-   myoutput.b[0] <- myinput.b[0]
-   myoutput.b[1] <- myinput.b[1]
+  input myinput: {flip a: UInt, b: UInt[2]}
+  output myoutput: {flip a: UInt, b: UInt[3], c: UInt}
+  myinput.a <- myoutput.a
+  myoutput.b[0] <- myinput.b[0]
+  myoutput.b[1] <- myinput.b[1]
 ```
 
 For details on the syntax and semantics of the sub-field expression, sub-index
@@ -839,13 +844,13 @@ statement group composed of three connect statements.
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input b: UInt
-   output myport1: UInt
-   output myport2: UInt
-   myport1 <= a
-   myport1 <= b
-   myport2 <= a
+  input a: UInt
+  input b: UInt
+  output myport1: UInt
+  output myport2: UInt
+  myport1 <= a
+  myport1 <= b
+  myport2 <= a
 ```
 
 ### Last Connect Semantics
@@ -871,22 +876,22 @@ the `b`{.firrtl} sub-element of `myport`{.firrtl}.
 
 ``` firrtl
 module MyModule :
-   input portx: {b: UInt, c: UInt}
-   input porty: UInt
-   output myport: {b: UInt, c: UInt}
-   myport <= portx
-   myport.b <= porty
+  input portx: {b: UInt, c: UInt}
+  input porty: UInt
+  output myport: {b: UInt, c: UInt}
+  myport <= portx
+  myport.b <= porty
 ```
 
 The above circuit can be rewritten equivalently as follows.
 
 ``` firrtl
 module MyModule :
-   input portx: {b: UInt, c: UInt}
-   input porty: UInt
-   output myport: {b: UInt, c: UInt}
-   myport.b <= porty
-   myport.c <= portx.c
+  input portx: {b: UInt, c: UInt}
+  input porty: UInt
+  output myport: {b: UInt, c: UInt}
+  myport.b <= porty
+  myport.c <= portx.c
 ```
 
 In the case where a connection to a sub-element of an aggregate circuit
@@ -895,21 +900,21 @@ connection overwrites the earlier connections completely.
 
 ``` firrtl
 module MyModule :
-   input portx: {b: UInt, c: UInt}
-   input porty: UInt
-   output myport: {b: UInt, c: UInt}
-   myport.b <= porty
-   myport <= portx
+  input portx: {b: UInt, c: UInt}
+  input porty: UInt
+  output myport: {b: UInt, c: UInt}
+  myport.b <= porty
+  myport <= portx
 ```
 
 The above circuit can be rewritten equivalently as follows.
 
 ``` firrtl
 module MyModule :
-   input portx: {b: UInt, c: UInt}
-   input porty: UInt
-   output myport: {b: UInt, c: UInt}
-   myport <= portx
+  input portx: {b: UInt, c: UInt}
+  input porty: UInt
+  output myport: {b: UInt, c: UInt}
+  myport <= portx
 ```
 
 See [@sec:sub-fields] for more details about sub-field expressions.
@@ -953,11 +958,11 @@ wire mywire: UInt
 
 ## Registers
 
-A register is a named stateful circuit component.  Reads from a register return 
-the current value of the element, writes are not visible until after a positive 
+A register is a named stateful circuit component.  Reads from a register return
+the current value of the element, writes are not visible until after a positive
 edges of the register's clock port.
 
-The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a 
+The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
 register must be a passive type (see [@sec:passive-types]).
 
 The following example demonstrates instantiating a register with the given name
@@ -970,17 +975,17 @@ reg myreg: SInt, myclock
 ; ...
 ```
 
-A register may be declared with a reset signal and value.  The register's value 
-is updated with the reset value when the reset is asserted.  The reset signal 
-must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and 
-the type of initialization value must be equivalent to the declared type of the 
-register (see [@sec:type-equivalence] for details).  The behavior of the 
-register depends on the type of the reset signal.  `AsyncReset`.{firrtl} will 
-immediately change the value of the register.  `UInt<1> will not change 
-the value of the register until the next positive edge of the clock signal (see 
-[@sec:reset-type]).  `Reset`.{firrtl} is an abstract reset whose behavior 
-depends on reset inference.  In the following example, `myreg`{.firrtl} is 
-assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.  
+A register may be declared with a reset signal and value.  The register's value
+is updated with the reset value when the reset is asserted.  The reset signal
+must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and
+the type of initialization value must be equivalent to the declared type of the
+register (see [@sec:type-equivalence] for details).  The behavior of the
+register depends on the type of the reset signal.  `AsyncReset`.{firrtl} will
+immediately change the value of the register.  `UInt<1> will not change
+the value of the register until the next positive edge of the clock signal (see
+[@sec:reset-type]).  `Reset`.{firrtl} is an abstract reset whose behavior
+depends on reset inference.  In the following example, `myreg`{.firrtl} is
+assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.
 
 ``` firrtl
 wire myclock: Clock
@@ -990,10 +995,14 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
+A register is initialized with an indeterminate value (see 
+[@sec:indeterminate-values]).
+
 ## Invalidates
 
 An invalidate statement is used to indicate that a circuit component contains
-indeterminate values. It is specified as follows:
+indeterminate values (see [@sec:indeterminate-values]). It is specified as 
+follows:
 
 ``` firrtl
 wire w: UInt
@@ -1012,30 +1021,28 @@ details on the algorithm for determining what is invalidated.
 
 ``` firrtl
 module MyModule :
-   input in: {flip a: UInt, b: UInt}
-   output out: {flip a: UInt, b: UInt}
-   wire w: {flip a: UInt, b: UInt}
-   in is invalid
-   out is invalid
-   w is invalid
+  input in: {flip a: UInt, b: UInt}
+  output out: {flip a: UInt, b: UInt}
+  wire w: {flip a: UInt, b: UInt}
+  in is invalid
+  out is invalid
+  w is invalid
 ```
 
 is equivalent to the following:
 
 ``` firrtl
 module MyModule :
-   input in: {flip a: UInt, b: UInt}
-   output out: {flip a: UInt, b: UInt}
-   wire w: {flip a: UInt, b: UInt}
-   in.a is invalid
-   out.b is invalid
-   w.a is invalid
-   w.b is invalid
+  input in: {flip a: UInt, b: UInt}
+  output out: {flip a: UInt, b: UInt}
+  wire w: {flip a: UInt, b: UInt}
+  in.a is invalid
+  out.b is invalid
+  w.a is invalid
+  w.b is invalid
 ```
 
-For the purposes of simulation, invalidated components are initialized to random
-values, and operations involving indeterminate values produce undefined
-behaviour. This is useful for early detection of errors in simulation.
+The handing of invalidated components is covered in [@sec:indeterminate-values].
 
 ### The Invalidate Algorithm
 
@@ -1098,14 +1105,14 @@ In the following example, the wire `x`{.firrtl} is connected to the input
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input b: UInt
-   input en: UInt<1>
-   wire x: UInt
-   when en :
-      x <= a
-   else :
-      x <= b
+  input a: UInt
+  input b: UInt
+  input en: UInt<1>
+  wire x: UInt
+  when en :
+    x <= a
+  else :
+    x <= b
 ```
 
 ### Syntactic Shorthands
@@ -1118,26 +1125,26 @@ Thus the following example:
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input b: UInt
-   input en: UInt<1>
-   wire x: UInt
-   when en :
-      x <= a
+  input a: UInt
+  input b: UInt
+  input en: UInt<1>
+  wire x: UInt
+  when en :
+    x <= a
 ```
 
 can be equivalently expressed as:
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input b: UInt
-   input en: UInt<1>
-   wire x: UInt
-   when en :
-      x <= a
-   else :
-      skip
+  input a: UInt
+  input b: UInt
+  input en: UInt<1>
+  wire x: UInt
+  when en :
+    x <= a
+  else :
+    skip
 ```
 
 To aid readability of long chains of conditional statements, the colon following
@@ -1148,46 +1155,46 @@ Thus the following example:
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input b: UInt
-   input c: UInt
-   input d: UInt
-   input c1: UInt<1>
-   input c2: UInt<1>
-   input c3: UInt<1>
-   wire x: UInt
-   when c1 :
-      x <= a
-   else :
-      when c2 :
-         x <= b
+  input a: UInt
+  input b: UInt
+  input c: UInt
+  input d: UInt
+  input c1: UInt<1>
+  input c2: UInt<1>
+  input c3: UInt<1>
+  wire x: UInt
+  when c1 :
+    x <= a
+  else :
+    when c2 :
+      x <= b
+    else :
+      when c3 :
+        x <= c
       else :
-         when c3 :
-            x <= c
-         else :
-            x <= d
+        x <= d
 ```
 
 can be equivalently written as:
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input b: UInt
-   input c: UInt
-   input d: UInt
-   input c1: UInt<1>
-   input c2: UInt<1>
-   input c3: UInt<1>
-   wire x: UInt
-   when c1 :
-      x <= a
-   else when c2 :
-      x <= b
-   else when c3 :
-      x <= c
-   else :
-      x <= d
+  input a: UInt
+  input b: UInt
+  input c: UInt
+  input d: UInt
+  input c1: UInt<1>
+  input c2: UInt<1>
+  input c3: UInt<1>
+  wire x: UInt
+  when c1 :
+    x <= a
+  else when c2 :
+    x <= b
+  else when c3 :
+    x <= c
+  else :
+    x <= d
 ```
 
 To additionally aid readability, a conditional statement where the contents of
@@ -1199,9 +1206,9 @@ The following statement:
 
 ``` firrtl
 when c :
-   a <= b
+  a <= b
 else :
-   e <= f
+  e <= f
 ```
 
 can have the `when`{.firrtl} keyword, the `when`{.firrtl} branch, and the
@@ -1227,16 +1234,16 @@ component are unaffected by the condition. In the following example, register
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input b: UInt
-   input en: UInt<1>
-   input clk : Clock
-   when en :
-      reg myreg1 : UInt, clk
-      myreg1 <= a
-   else :
-      reg myreg2 : UInt, clk
-      myreg2 <= b
+  input a: UInt
+  input b: UInt
+  input en: UInt<1>
+  input clk : Clock
+  when en :
+    reg myreg1 : UInt, clk
+    myreg1 <= a
+  else :
+    reg myreg2 : UInt, clk
+    myreg2 <= b
 ```
 
 Intuitively, a line can be drawn between a connection (or partial connection) to
@@ -1254,11 +1261,11 @@ connected to `w`{.firrtl} when `en`{.firrtl} is low.
 
 ``` firrtl
 module MyModule :
-   input en: UInt<1>
-   input a: UInt
-   wire w: UInt
-   when en :
-      w <= a
+  input en: UInt<1>
+  input a: UInt
+  wire w: UInt
+  when en :
+    w <= a
 ```
 
 This is an illegal FIRRTL circuit and an error will be thrown during
@@ -1295,7 +1302,7 @@ wire c: UInt<1>
 wire w: UInt
 w <= a
 when c :
-   w <= b
+  w <= b
 ```
 
 can be rewritten equivalently using a multiplexer as follows:
@@ -1320,7 +1327,7 @@ wire c: UInt<1>
 wire w: UInt
 w is invalid
 when c :
-   w <= a
+  w <= a
 ```
 
 can be rewritten equivalently as follows:
@@ -1347,7 +1354,7 @@ wire c: UInt<1>
 wire w: {a: UInt, b: UInt}
 w <= x
 when c :
-   w <= y
+  w <= y
 ```
 
 can be rewritten equivalently as follows:
@@ -1375,7 +1382,7 @@ wire c: UInt<1>
 wire w: {a: UInt, b: UInt}
 w <= x
 when c :
-   w.a <= y
+  w.a <= y
 ```
 
 can be rewritten equivalently as follows:
@@ -1562,12 +1569,12 @@ example demonstrates creating an instance named `myinstance`{.firrtl} of the
 
 ``` firrtl
 circuit Top :
-   module MyModule :
-      input a: UInt
-      output b: UInt
-      b <= a
-   module Top :
-      inst myinstance of MyModule
+  module MyModule :
+    input a: UInt
+    output b: UInt
+    b <= a
+  module Top :
+    inst myinstance of MyModule
 ```
 
 The resulting instance has a bundle type. Each port of the instantiated module
@@ -1874,9 +1881,9 @@ to the previously declared port `in`{.firrtl}, to the reference expression
 
 ``` firrtl
 module MyModule :
-   input in: UInt
-   output out: UInt
-   out <= in
+  input in: UInt
+  output out: UInt
+  out <= in
 ```
 
 In the rest of the document, for brevity, the names of components will be used
@@ -1894,9 +1901,9 @@ sub-element of the `out`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
-   input in: UInt
-   output out: {a: UInt, b: UInt}
-   out.a <= in
+  input in: UInt
+  output out: {a: UInt, b: UInt}
+  out.a <= in
 ```
 
 ## Sub-indices
@@ -1910,26 +1917,28 @@ of the `out`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
-   input in: UInt
-   output out: UInt[10]
-   out[4] <= in
+  input in: UInt
+  output out: UInt[10]
+  out[4] <= in
 ```
 
 ## Sub-accesses
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed
 expression using a calculated index. The index must be an expression with an
-unsigned integer type.
+unsigned integer type.  An access to an out-of-bounds element results in an 
+indeterminate value (see [@sec:indeterminate-values]).  Each out-of-bounds 
+element is a different indeterminate value.
 
 The following example connects the n'th sub-element of the `in`{.firrtl} port to
 the `out`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
-   input in: UInt[3]
-   input n: UInt<2>
-   output out: UInt
-   out <= in[n]
+  input in: UInt[3]
+  input n: UInt<2>
+  output out: UInt
+  out <= in[n]
 ```
 
 A connection from a sub-access expression can be modeled by conditionally
@@ -1938,17 +1947,17 @@ the dynamic index is equal to the sub-element's static index.
 
 ``` firrtl
 module MyModule :
-   input in: UInt[3]
-   input n: UInt<2>
-   output out: UInt
-   when eq(n, UInt(0)) :
-      out <= in[0]
-   else when eq(n, UInt(1)) :
-      out <= in[1]
-   else when eq(n, UInt(2)) :
-      out <= in[2]
-   else :
-      out is invalid
+  input in: UInt[3]
+  input n: UInt<2>
+  output out: UInt
+  when eq(n, UInt(0)) :
+    out <= in[0]
+  else when eq(n, UInt(1)) :
+    out <= in[1]
+  else when eq(n, UInt(2)) :
+    out <= in[2]
+  else :
+    out is invalid
 ```
 
 The following example connects the `in`{.firrtl} port to the n'th sub-element of
@@ -1957,12 +1966,12 @@ connected from the corresponding sub-elements of the `default`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
-   input in: UInt
-   input default: UInt[3]
-   input n: UInt<2>
-   output out: UInt[3]
-   out <= default
-   out[n] <= in
+  input in: UInt
+  input default: UInt[3]
+  input n: UInt<2>
+  output out: UInt[3]
+  out <= default
+  out[n] <= in
 ```
 
 A connection to a sub-access expression can be modeled by conditionally
@@ -1971,17 +1980,17 @@ the dynamic index is equal to the sub-element's static index.
 
 ``` firrtl
 module MyModule :
-   input in: UInt
-   input default: UInt[3]
-   input n: UInt<2>
-   output out: UInt[3]
-   out <= default
-   when eq(n, UInt(0)) :
-      out[0] <= in
-   else when eq(n, UInt(1)) :
-      out[1] <= in
-   else when eq(n, UInt(2)) :
-      out[2] <= in
+  input in: UInt
+  input default: UInt[3]
+  input n: UInt<2>
+  output out: UInt[3]
+  out <= default
+  when eq(n, UInt(0)) :
+    out[0] <= in
+  else when eq(n, UInt(1)) :
+    out[1] <= in
+  else when eq(n, UInt(2)) :
+    out[2] <= in
 ```
 
 The following example connects the `in`{.firrtl} port to the m'th
@@ -1991,13 +2000,13 @@ connected from the corresponding sub-elements of the `default`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
-   input in: UInt
-   input default: UInt[2][2]
-   input n: UInt<1>
-   input m: UInt<1>
-   output out: UInt[2][2]
-   out <= default
-   out[n][m] <= in
+  input in: UInt
+  input default: UInt[2][2]
+  input n: UInt<1>
+  input m: UInt<1>
+  output out: UInt[2][2]
+  out <= default
+  out[n][m] <= in
 ```
 
 A connection to an expression containing multiple nested sub-access expressions
@@ -2007,20 +2016,20 @@ to all of the sub-element's static indices.
 
 ``` firrtl
 module MyModule :
-   input in: UInt
-   input default: UInt[2][2]
-   input n: UInt<1>
-   input m: UInt<1>
-   output out: UInt[2][2]
-   out <= default
-   when and(eq(n, UInt(0)), eq(m, UInt(0))) :
-      out[0][0] <= in
-   else when and(eq(n, UInt(0)), eq(m, UInt(1))) :
-      out[0][1] <= in
-   else when and(eq(n, UInt(1)), eq(m, UInt(0))) :
-      out[1][0] <= in
-   else when and(eq(n, UInt(1)), eq(m, UInt(1))) :
-      out[1][1] <= in
+  input in: UInt
+  input default: UInt[2][2]
+  input n: UInt<1>
+  input m: UInt<1>
+  output out: UInt[2][2]
+  out <= default
+  when and(eq(n, UInt(0)), eq(m, UInt(0))) :
+    out[0][0] <= in
+  else when and(eq(n, UInt(0)), eq(m, UInt(1))) :
+    out[0][1] <= in
+  else when and(eq(n, UInt(1)), eq(m, UInt(0))) :
+    out[1][0] <= in
+  else when and(eq(n, UInt(1)), eq(m, UInt(1))) :
+    out[1][1] <= in
 ```
 
 ## Multiplexers
@@ -2035,11 +2044,11 @@ is selected.
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input b: UInt
-   input sel: UInt<1>
-   output c: UInt
-   c <= mux(sel, a, b)
+  input a: UInt
+  input b: UInt
+  input sel: UInt<1>
+  output c: UInt
+  c <= mux(sel, a, b)
 ```
 
 A multiplexer expression is legal only if the following holds.
@@ -2069,10 +2078,10 @@ when the `valid`{.firrtl} signal is high. Otherwise, the value of the
 
 ``` firrtl
 module MyModule :
-   input a: UInt
-   input valid: UInt<1>
-   output c: UInt
-   c <= validif(valid, a)
+  input a: UInt
+  input valid: UInt<1>
+  output c: UInt
+  c <= validif(valid, a)
 ```
 
 A conditionally valid expression is legal only if the following holds.
@@ -2734,16 +2743,16 @@ The following module:
 
 ``` firrtl
 module MyModule :
-   input in: {a: UInt<1>, b: UInt<2>[3]}
-   input clk: Clock
-   output out: UInt
-   wire c: UInt
-   c <= in.a
-   reg r: UInt[3], clk
-   r <= in.b
-   when c :
-      r[1] <= in.a
-   out <= r[0]
+  input in: {a: UInt<1>, b: UInt<2>[3]}
+  input clk: Clock
+  output out: UInt
+  wire c: UInt
+  c <= in.a
+  reg r: UInt[3], clk
+  r <= in.b
+  when c :
+    r[1] <= in.a
+  out <= r[0]
 ```
 
 is rewritten as the following equivalent LoFIRRTL circuit by the lowering
@@ -2751,21 +2760,21 @@ transform.
 
 ``` firrtl
 module MyModule :
-   input in$a: UInt<1>
-   input in$b$0: UInt<2>
-   input in$b$1: UInt<2>
-   input in$b$2: UInt<2>
-   input clk: Clock
-   output out: UInt<2>
-   wire c: UInt<1>
-   c <= in$a
-   reg r$0: UInt<2>, clk
-   reg r$1: UInt<2>, clk
-   reg r$2: UInt<2>, clk
-   r$0 <= in$b$0
-   r$1 <= mux(c, in$a, in$b$1)
-   r$2 <= in$b$2
-   out <= r$0
+  input in$a: UInt<1>
+  input in$b$0: UInt<2>
+  input in$b$1: UInt<2>
+  input in$b$2: UInt<2>
+  input clk: Clock
+  output out: UInt<2>
+  wire c: UInt<1>
+  c <= in$a
+  reg r$0: UInt<2>, clk
+  reg r$1: UInt<2>, clk
+  reg r$2: UInt<2>, clk
+  r$0 <= in$b$0
+  r$1 <= mux(c, in$a, in$b$1)
+  r$2 <= in$b$2
+  out <= r$0
 ```
 
 # Semantics of Values
@@ -2776,6 +2785,76 @@ undefined in the presence of values which are not 2-state.  A FIRRTL compiler
 need only respect the 2-state behavior of a circuit.  This is a limitation on
 the scope of what behavior is observable (i.e., a relaxation of the
 ["as-if"](https://en.wikipedia.org/wiki/As-if_rule) rule).
+
+## Indeterminate Values
+
+An indeterminate value represents a value which is unknown or unspecified.  
+Indeterminate values are generally implementation defined, with constraints 
+specified below.  An indeterminate value may be assumed to be any specific 
+value (not necessarily literal), at an implementation's discretion, if, in doing
+so, all observable behavior is as if the indeterminate value always took the 
+specific value.
+
+This allows transformations such as the following, where when `a` has an 
+indeterminate value, the implementation chooses to consistently give it a value 
+of 'v'.  An alternate, legal mapping, lets the implementaiton give it the value
+`42`.  In both cases, there is no visibility of `a` when it has an indeterminate
+value which is not mapped to the value the implementaiton choose.
+
+``` firrtl
+module IValue :
+  output o : UInt<8>
+  input c : UInt<1>
+  input v : UInt<8>
+
+  wire a : UInt<8>
+  a is invalid
+  when c :
+    a <= v
+  o <= a
+```
+is transformed to:
+``` firrtl
+module IValue :
+  output o : UInt<8>
+  input c : UInt<1>
+
+  o <= v
+```
+Note that it is equally correct to produce:
+``` firrtl
+module IValue :
+  output o : UInt<8>
+  input c : UInt<1>
+
+  wire a : UInt<8>
+  when c :
+    a <= v
+   else :
+     a <= UInt<3>("h42")
+  o <= a
+```
+
+The behavior of constructs which cause indeterminate values is implementation 
+defined with the following constraints.  
+- Register initialization is done in a consistent way for all registers.  If 
+code is generated to randomly initialize some registers (or 0 fill them, etc), 
+it should be generated for all registers.
+- All observations of a unique instance of an expression with indeterminate 
+value must see the same value at runtime.  Multiple readers of a value will see 
+the same runtime value.
+- Indeterminate values captured in stateful elements are not time-varying.  
+Time-aware constructs, such as registers, which hold an indeterminate value will 
+return the same runtime value unless something changes the value in a normal 
+way.  For example, an uninitialized register will return the same value over 
+multiple clock cycles until it is written (or reset).
+- The value produced at runtime for an expression which produced an intermediate
+value shall only be a function of the inputs of the expression.  For example, an
+out-of-bounds vector access shall produce the same value for a 
+given out-of-bounds index and vector contents.
+- Two constructs with indeterminate values place no constraint on the identity 
+of their values.  For example, two uninitialized registers, which therefore 
+contain indeterminate values, do not need to be equal under comparison.
 
 # Details about Syntax
 
@@ -2873,17 +2952,17 @@ The following example shows the info tokens included:
 
 ``` firrtl
 circuit Top : @[myfile.txt 14:8]
-   module Top : @[myfile.txt 15:2]
-     output out: UInt @[myfile.txt 16:3]
-     input b: UInt<32> @[myfile.txt 17:3]
-     input c: UInt<1> @[myfile.txt 18:3]
-     input d: UInt<16> @[myfile.txt 19:3]
-     wire a: UInt @[myfile.txt 21:8]
-     when c : @[myfile.txt 24:8]
-       a <= b @[myfile.txt 27:16]
-     else :
-       a <= d @[myfile.txt 29:17]
-     out <= add(a,a) @[myfile.txt 34:4]
+  module Top : @[myfile.txt 15:2]
+    output out: UInt @[myfile.txt 16:3]
+    input b: UInt<32> @[myfile.txt 17:3]
+    input c: UInt<1> @[myfile.txt 18:3]
+    input d: UInt<16> @[myfile.txt 19:3]
+    wire a: UInt @[myfile.txt 21:8]
+    when c : @[myfile.txt 24:8]
+      a <= b @[myfile.txt 27:16]
+    else :
+      a <= d @[myfile.txt 29:17]
+    out <= add(a,a) @[myfile.txt 34:4]
 ```
 
 \clearpage

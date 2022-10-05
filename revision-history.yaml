@@ -8,6 +8,8 @@ revisionHistory:
     - Specify behavior of indeterminate values
     - Add an explicit section about "Aggregate Types" and move "Vector Type" and
       "Bundle Type" under it.
+    - Add "String" type and explain its usage in extmodule parameters, integer
+      literal construction, and operations.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.1.0

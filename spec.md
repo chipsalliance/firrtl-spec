@@ -246,10 +246,12 @@ Verilog to downstream tools.
 
 ## Functions
 
-A function has a name, a return type, a list of arguments, and a list of 
+A function has a name, a list of arguments, a return type, and a list of 
 statements representing a data-flow graph of stateless circuit components.  Each
-argument specifies its name and  data type.  Functions have a single return 
-value.  The name of the function serves as the identifier for the return value.
+argument specifies its name, direction, and data type.  All directions must be
+"input".  All types must be passive.  The name of the function is a valid
+identifier in the body of the function representing the return value and behaves
+as a wire.
 
 Functions participate in width-inference (see [@sec:width-inference]) at 
 invocation sites in the same way modules do at instantiation sites.
@@ -258,15 +260,20 @@ Functions cannot contain memories, registers, non-local anotations, or
 instances.  This makes them "stateless".
 
 Functions can optionally specify that they are "pure" functions.  These do not
-have side-effecting operations (such as printf).
+have side-effecting operations (such as printf).  Pure functions are identified 
+with the pure modifier as the last element of the function declaration before 
+the block with the arguments (other modifiers, such as external or intrinsic, 
+come first).
 
+Functions with no return value, those used for their side effects, use a return 
+type of UInt<0>..
 
 ``` firrtl
-function MyPureFunction UInt pure :
+function UInt MyPureFunction pure :
   input foo : UInt
   MyPureFunction <= foo
 
-function MyFunction UInt<0> :
+function UInt<0> MyFunction :
   input clk: Clock
   input halt: UInt<1>
   stop(clk, halt, 42) : optional_name
@@ -275,22 +282,22 @@ function MyFunction UInt<0> :
 
 ## External Functions
 
-An external function has a name, a return type, and a list of arguments.  Each
-argument specifies its name and  data type.  External functions have a single 
-return value.
+An external function is a function, but with the external modifier added after
+the function name.  An external function has no body.  The typing rules of
+functions apply, with the exception of width inference.
 
 The widths of all externally defined function arguments must be specified.  
 Width inference, described in [@sec:width-inference], is not supported for 
-external module arguments or return type.
+external module arguments.
 
 External functions can optionally specify that they are "pure" functions.  These
 do not have side-effecting operations (such as printf).
 
 ``` firrtl
-extfunction MyPureFunction UInt pure :
-  input foo : UInt
+function UInt<4> MyPureFunction external pure :
+  input foo : UInt<3>
 
-extfunction MyFunction UInt<0> :
+function UInt<0> MyFunction external :
   input clk: Clock
   input halt: UInt<1>
 ```
@@ -298,10 +305,12 @@ extfunction MyFunction UInt<0> :
 ## Intrinsics
 
 An intrinsic is a function. Intrinsics have all the components of a function
-except a list of statements.  An intrinsic is a firrtl implementation provided 
+except a body.  An intrinsic is indicated with the intrinisic modifier added 
+after the function name.  An intrinsic is a firrtl implementation provided 
 function.  The name of intrinsics are implementation defined.  A firrtl 
 implementation shall reject IR with unknown intrinsics.  Being functions,
-intrinsics are stateless.
+intrinsics are stateless.  The typing rules of functions apply, with the 
+exception of width inference.
 
 The widths of all an intrinsic's arguments must be specified.  Width inference, 
 described in [@sec:width-inference], is not supported for intrinsics' arguments 
@@ -312,8 +321,9 @@ intrinsic is pure or not is implementation defined and implementations shall
 check that intrinsics declarations have the expected arguments, types, and 
 purity.
 
+
 ``` firrtl
-intrinsic synopsys.4mux.u8 UInt<8>[4] pure :
+function UInt<8>[4] synopsys.4mux.u8 intrinsic pure :
   input cond : UInt<2>
 ```
 
@@ -1612,22 +1622,6 @@ To disallow infinitely recursive hardware, modules cannot contain instances of
 itself, either directly, or indirectly through instances of other modules it
 instantiates.
 
-## Invoke
-
-FIRRTL functions and intrinsics are invoked with the `invoke` statement.
-
-``` firrtl
-circuit Top :
-   extfunction MyFunc of UInt : 
-     input a : UInt
-
-   module MyModule :
-      input a: UInt
-      output b: UInt
-      b <= invoke MyFunc(a)
-```
-
-
 ## Stops
 
 The stop statement is used to halt simulations of the circuit. Backends are free
@@ -2114,6 +2108,34 @@ A conditionally valid expression is legal only if the following holds.
 
 Conditional statements can be equivalently expressed as multiplexers and
 conditionally valid expressions. See [@sec:conditionals] for details.
+
+## Invoke
+
+FIRRTL functions are invoked with the `invoke` expression.  An invoke takes
+a reference to function to call and has the return type of the function 
+declaration.  An invoke is equivlalent to a expansion of the function inside
+the code block, with suitable nodes substituted for arguments and a wire for the
+return value.
+
+A function which doesn't return a value is modeled as a function returning a
+UInt<0>.  To form a statement in which you can invoke it, assign the result to
+a node.
+
+``` firrtl
+circuit Top :
+   function external pure UInt<4> MyFunc : 
+     input a : UInt<3>
+
+   module MyModule :
+      input a: UInt
+      output b: UInt
+      b <= invoke MyFunc(a)
+
+  function external pure UInt<0> NoRetValFn :
+  
+  module MyModule2 :
+    node n = invoke NoRetValFn()
+```
 
 ## Primitive Operations
 

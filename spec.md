@@ -256,7 +256,7 @@ as a wire.
 Functions participate in width-inference (see [@sec:width-inference]) at 
 invocation sites in the same way modules do at instantiation sites.
 
-Functions cannot contain memories, registers, non-local anotations, or 
+Functions cannot contain memories, registers, non-local annotations, or 
 instances.  This makes them "stateless".
 
 Functions can optionally specify that they are "pure" functions.  These do not

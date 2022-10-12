@@ -1086,6 +1086,7 @@ can be equivalently expressed as:
 ``` firrtl
 module MyModule :
   input a: UInt
+
   input b: UInt
   input en: UInt<1>
   wire x: UInt
@@ -1800,6 +1801,36 @@ SInt("h-d")
 If the provided bit width is larger than the number of bits represented by the
 string, then the resulting value is unchanged. It is an error to provide a bit
 width smaller than the number of bits required to represent the string's value.
+
+## Vector Value Construction
+
+A vector can be formed by providing a vector type and an ordered list of values,
+one for each element of the vector.  The types of the values must match the
+vector element type.  If all values are literals, then this is a vector literal.
+
+``` firrtl
+node myarray = UInt<3>[2](UInt<3>(1), UInt<3>(7))
+
+node aofs = {a: UInt<2>, b: UInt<2>}[2](
+                {a: UInt<2>, b: UInt<2>}(UInt<2>(1), UInt<2>(2)),
+                {a: UInt<2>, b: UInt<2>}(UInt<2>(3), UInt<2>(4))
+              )
+
+wire t1 : UInt<3>
+wire t2 : UInt<3>
+node myarray = UInt<3>[2](t1, t2)
+```
+
+## Bundle Value Construction
+
+A bundle can be formed by providing an ordered list of values, one for each
+field of the the bundle.   The types of the values must match the
+corrosponding bundle element type.  If all values are literals, then this is a
+bundle literal.
+
+``` firrtl
+node simple = {a: UInt, b: UInt<4>}(UInt(4), UInt<4>(7))
+```
 
 ## References
 
@@ -2942,7 +2973,7 @@ binarypoint = "<<" , int , ">>" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ]
             | "Fixed" , [ width ] , [ binarypoint ] ;
-type_aggregate = "{" , field , { field } , "}"
+type_aggregate = "{" , field , { "," , field } , "}"
                | type , "[" , int , "]" ;
 field = [ "flip" ] , id , ":" , type ;
 type = type_ground | type_aggregate ;
@@ -2975,6 +3006,7 @@ primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 (* Expression definitions *)
 expr =
     ( "UInt" | "SInt" ) , [ width ] , "(" , ( int ) , ")"
+  | agg_literal
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
   | "validif" , "(" , expr , "," , expr , ")"
@@ -2983,6 +3015,8 @@ reference = id
           | reference , "." , id
           | reference , "[" , int , "]"
           | reference , "[" , expr , "]" ;
+
+agg_literal = type_aggregate, "(", expr , { "," , expr} ")" ;
 
 (* Memory *)
 ruw = ( "old" | "new" | "undefined" ) ;

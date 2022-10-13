@@ -217,12 +217,9 @@ instance statement for details on how to instantiate a module
 ## Externally Defined Modules
 
 Externally defined modules are modules whose implementation is not provided in
-the current circuit.  Only the ports and name of the externally defined module
-are specified in the circuit.  An externally defined module may include, in
-order, an optional _defname_ which sets the name of the external module in the
-resulting Verilog and zero or more name--value _parameter_ statements.  Each
-name--value parameter statement will result in a value being passed to the named
-parameter in the resulting Verilog.
+the current circuit.  Only the ports of the externally defined module are
+specified in the circuit.  No other statements may exist in the external module
+body.
 
 An example of an externally defined module is:
 
@@ -231,14 +228,39 @@ extmodule MyExternalModule :
   input foo: UInt<2>
   output bar: UInt<4>
   output baz: SInt<8>
-  defname = VerilogName
-  parameter x = "hello"
-  parameter y = 42
 ```
 
 The widths of all externally defined module ports must be specified.  Width
 inference, described in [@sec:width-inference], is not supported for module
 ports.
+
+Externally defined modules may have zero or more parameters.  Parameters may be
+of known-width `UInt`{.firrtl} or `SInt`{.firrtl} types or `String`{.firrtl}
+type.  The value of a parameter is set at each instantiation of an external
+module using a literal value.
+
+An example of a parametric externally defined module and its instantiation is:
+
+``` firrtl
+extmodule MyExternalModule2<
+  parameter x: Param<String>,
+  parameter y: Param<UInt<8>>,
+  parameter z: Param<SInt<4>>
+> :
+  ; ...
+module Top:
+  inst foo of MyExternalModule2<Param<"foo">, Param<UInt<8>(42)>, Param<SInt<4>(-1)>>
+  inst bar of MyExternalModule2<Param<"bar">, Param<UInt(0)>, Param<SInt(-2)>>
+  node _x = Param<"baz">
+  node _y = Param<UInt(1)>
+  node _z = Param<SInt(-1)>
+  inst baz of MyExternalModule2<_x, _y, _z>
+```
+
+As shown above, it is allowable to use a smaller, unknown width integer type
+literal to set a parameter value so long as the width of the underlying
+parameter value is large enough to store the literal type.  A literal that is
+too large for a given parameter type is illegal.
 
 A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated
@@ -562,6 +584,37 @@ direction, and is defined to be a type that recursively contains no fields with
 flipped orientations. Thus all ground types are passive types. Vector types are
 passive if their element type is passive. And bundle types are passive if no
 fields are flipped and if all field types are passive.
+
+## Parameter Types
+
+A `UInt`{.firrtl}, `SInt`{.firrtl}, or `String`{.firrtl} type may be boxed with
+a `Param`{.firrtl}` type.  This indicates that this is a type that is used to
+express parameterization.  Parameter types may be used to express
+parameterization on externally defined modules.  Parameter types may be used as
+nodes.  Parameter types may be used in passive aggregates.  All other uses of
+parameter types are explicitly illegal.  E.g., parameter types may not appear in
+wires, registers, ports, or connections.
+
+The following shows the creation of two parameter types, an expression involving
+these parameter types, and the use of the result of the expression in an
+external module instantiation.
+
+``` firrtl
+extmodule Foo<parameter a: Param<UInt<8>> :
+  input a : UInt<a>
+module Bar:
+  input a: UInt<8>
+
+  node x = Param(UInt<7>(1))
+  node y = Param(UInt<7>(2))
+  node z = paramAdd(x, y)
+
+  inst foo of Foo<z>
+```
+
+Certain operations are supported on parameter types.  See Section
+[@sec:parameter-primitive-operations] for a listing of all parameter primitive
+operations.
 
 ## Type Equivalence
 
@@ -2383,6 +2436,18 @@ fixed-point number. This will cause the binary point and consequently the total
 width of the fixed-point result type to differ from those of the fixed-point
 argument type. See [@sec:fixed-point-math] for more detail.
 
+# Parameter Primitive Operations
+
+Operations are defined for manipulating parameter types.  For operations which
+have overlapping functionality with normal primitive operations (see Section
+[@sec:primitive-operations]), the result width expressions are intentionally
+kept the same.
+
+| Name     | Arguments | Arg Types                     | Result Type   | Result Width       |
+|----------|-----------|-------------------------------|---------------|--------------------|
+| paramAdd | (e1,e2)   | (Param\<UInt\>,Param\<UInt\>) | Param\<UInt\> | max(w~e1~,w~e2~)+1 |
+|          |           | (Param\<SInt\>,Param\<SInt\>) | Param\<SInt\> | max(w~e1~,w~e2~)+1 |
+
 # Flows
 
 An expression's flow partially determines the legality of connecting to and from
@@ -2946,6 +3011,7 @@ type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
 field = [ "flip" ] , id , ":" , type ;
 type = type_ground | type_aggregate ;
+type_param = "Param<" , ( ( "UInt" | "SInt" ) , width | "String" ) , ">"
 
 (* Primitive operations *)
 primop_2expr_keyword =
@@ -2973,8 +3039,8 @@ primop_1expr2int =
 primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Expression definitions *)
-expr =
-    ( "UInt" | "SInt" ) , [ width ] , "(" , ( int ) , ")"
+int_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , int , ")"
+expr = int_lit
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
   | "validif" , "(" , expr , "," , expr , ")"
@@ -2983,6 +3049,17 @@ reference = id
           | reference , "." , id
           | reference , "[" , int , "]"
           | reference , "[" , expr , "]" ;
+
+(* Parameter primitive operations *)
+primop_param_2expr_keyword = "add" ;
+primop_param_2expr =
+    primop_param_2expr_keyword , "(" , parm_expr , "," , parm_expr ")" ;
+param_primop = primop_param_2expr ;
+
+(* Parameter expression definitions *)
+param_expr = int_lit ;
+  | reference
+  | param_primop ;
 
 (* Memory *)
 ruw = ( "old" | "new" | "undefined" ) ;
@@ -2998,11 +3075,13 @@ memory = "mem" , id , ":" , [ info ] , newline , indent ,
          dedent ;
 
 (* Statements *)
+parameter = int_lit | string ;
+parameter_seq = parameter | parameter , "," , parameter_seq ;
 statement = "wire" , id , ":" , type , [ info ]
           | "reg" , id , ":" , type , expr ,
             [ "(with: {reset => (" , expr , "," , expr ")})" ] , [ info ]
           | memory
-          | "inst" , id , "of" , id , [ info ]
+          | "inst" , id , "of" , id , [ "<" , parameter_seq  , ">" ] , [ info ]
           | "node" , id , "=" , expr , [ info ]
           | reference , "<=" , expr , [ info ]
           | reference , "<-" , expr , [ info ]
@@ -3022,10 +3101,11 @@ module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;
-extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
+parameter_decl = "parameter" , id , ":" , type_param ;
+parameter_decl_seq = parameter_decl | parameter_decl , "," , parameter_decl_seq ;
+extmodule = "extmodule" , id , [ "<" , parameter_decl_seq , ">"  ] , ":" ,
+            [ info ] , newline , indent ,
               { port , newline } ,
-              [ "defname" , "=" , id , newline ] ,
-              { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;
 
 (* Version definition *)

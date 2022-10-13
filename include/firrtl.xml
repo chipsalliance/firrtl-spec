@@ -27,6 +27,7 @@
       <item>Clock</item>
       <item>Reset</item>
       <item>AsyncReset</item>
+      <item>Param</item>
     </list>
     <list name="conditionals">
       <item>when</item>
@@ -78,6 +79,7 @@
       <item>assert</item>
       <item>assume</item>
       <item>cover</item>
+      <item>paramAdd</item>
     </list>
     <contexts>
       <context name="Normal Text" attribute="ID" lineEndContext="#pop">

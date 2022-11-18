@@ -8,6 +8,7 @@ revisionHistory:
     - Specify behavior of indeterminate values
     - Add an explicit section about "Aggregate Types" and move "Vector Type" and
       "Bundle Type" under it.
+    - Remove Fixed Point Types.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.1.0

@@ -2819,12 +2819,11 @@ primop_2expr =
 primop_1expr_keyword =
     "asUInt" | "asSInt" | "asClock" | "cvt"
   | "neg"    | "not"
-  | "andr"   | "orr"    | "xorr"
-  | "head"   | "tail" ;
+  | "andr"   | "orr"    | "xorr" ;
 primop_1expr =
     primop_1expr_keyword , "(" , expr , ")" ;
 primop_1expr1int_keyword =
-    "pad" | "shl" | "shr" ;
+    "pad" | "shl" | "shr" | "head" | "tail" ;
 primop_1expr1int =
     primop_1exrp1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int_keyword =

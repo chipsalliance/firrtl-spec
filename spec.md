@@ -2002,7 +2002,7 @@ asClock(x)
 [@sec:primitive-operations] will describe the format and semantics of each
 primitive operation.
 
-# Primitive Operations
+# Primitive Operations {#sec:primitive-operations}
 
 The arguments of all primitive operations must be expressions with ground types,
 while their parameters are static integer literals. Each specific operation can

@@ -2002,7 +2002,7 @@ asClock(x)
 [@sec:primitive-operations] will describe the format and semantics of each
 primitive operation.
 
-# Primitive Operations
+# Primitive Operations {#sec:primitive-operations}
 
 The arguments of all primitive operations must be expressions with ground types,
 while their parameters are static integer literals. Each specific operation can
@@ -2819,12 +2819,11 @@ primop_2expr =
 primop_1expr_keyword =
     "asUInt" | "asSInt" | "asClock" | "cvt"
   | "neg"    | "not"
-  | "andr"   | "orr"    | "xorr"
-  | "head"   | "tail" ;
+  | "andr"   | "orr"    | "xorr" ;
 primop_1expr =
     primop_1expr_keyword , "(" , expr , ")" ;
 primop_1expr1int_keyword =
-    "pad" | "shl" | "shr" ;
+    "pad" | "shl" | "shr" | "head" | "tail" ;
 primop_1expr1int =
     primop_1exrp1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int_keyword =

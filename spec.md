@@ -1809,7 +1809,9 @@ The sub-access expression dynamically refers to a sub-element of a vector-typed
 expression using a calculated index. The index must be an expression with an
 unsigned integer type.  An access to an out-of-bounds element results in an 
 indeterminate value (see [@sec:indeterminate-values]).  Each out-of-bounds 
-element is a different indeterminate value.
+element is a different indeterminate value.  Sub-access operations with constant
+index may be convereted to sub-index operations even though it converts
+indeterminate-value-on-out-of-bounds behavior to a compile-time error.
 
 The following example connects the n'th sub-element of the `in`{.firrtl} port to
 the `out`{.firrtl} port.

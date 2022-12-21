@@ -2346,7 +2346,7 @@ Combinational loops are not allowed and it shouldn't depend on any FIRRTL
 transformation to remove or break such combinational loops.
 
 The following example is not legal, since a combinational loop exists, 
-`w -> b -> w`, even it can be proved that the lop does not exist after
+`w -> b -> w`, even it can be proved that the loop does not exist after
 some simplification.
 
 ``` firrtl

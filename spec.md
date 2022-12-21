@@ -2335,6 +2335,46 @@ The width of each primitive operation is detailed in [@sec:primitive-operations]
 The width of the integer literal expressions is detailed in their respective
 sections.
 
+# Combinational Loops
+
+Combinational logic is a section of logic with no registers between gates.
+A combinational loop exists when the output of some combinational logic 
+is fed back into the input of that combinational logic with no intervening
+register. FIRRTL does not support combinational loops even if it is possible
+to show that the loop does not exist under actual mux select values.
+Combinational loops are not allowed and it shouldn't depend on any FIRRTL
+transformation to remove or break such combinational loops.
+
+The following example is not legal, since a combinational loop exists, 
+`w -> b -> w`, even it can be proved that the lop does not exist after
+some simplification.
+
+``` firrtl
+wire a: UInt
+wire b: UInt
+wire c: UInt<1>
+wire notC: UInt<1>
+wire w: UInt
+w <= a
+when c :
+  w <= b
+notC <= not(c)
+when notC :
+  b <= w
+```
+
+The  following circuit has a combinational loop, even if it can be proved
+that `n1` and `n2` never overlap.
+``` firrtl
+module MyModule :  
+  input n1: UInt<2>
+  input n2: UInt<2>
+  wire tmp: UInt<1>
+  wire vec: UInt<1>[3]
+  tmp <= vec[n1]
+  vec[n2] <= tmp  
+```
+
 # Namespaces
 
 All modules in a circuit exist in the same module namespace, and thus must all

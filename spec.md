@@ -2342,7 +2342,7 @@ A combinational loop exists when the output of some combinational logic
 is fed back into the input of that combinational logic with no intervening
 register. FIRRTL does not support combinational loops even if it is possible
 to show that the loop does not exist under actual mux select values.
-Combinational loops are not allowed and it shouldn't depend on any FIRRTL
+Combinational loops are not allowed and designs should not depend on any FIRRTL
 transformation to remove or break such combinational loops.
 
 The module `Foo` has a combinational loop and is not legal,

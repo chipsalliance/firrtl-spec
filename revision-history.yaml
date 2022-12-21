@@ -12,6 +12,7 @@ revisionHistory:
     - Move "head" and "tail" from primop_1expr_keyword to
       primop_1expr1int_keyword in the "FIRRTL Language Definition".
     - Add in-line annotation format
+    - Specify behavior of combinational loops
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.1.0

@@ -2345,28 +2345,20 @@ to show that the loop does not exist under actual mux select values.
 Combinational loops are not allowed and it shouldn't depend on any FIRRTL
 transformation to remove or break such combinational loops.
 
-The following example is not legal, since a combinational loop exists, 
-`w -> b -> w`, even it can be proved that the loop does not exist after
-some simplification.
-
+The module `Foo` has a combinational loop and is not legal,
+even though the loop will be removed by last connect semantics.
 ``` firrtl
-wire a: UInt
-wire b: UInt
-wire c: UInt<1>
-wire notC: UInt<1>
-wire w: UInt
-w <= a
-when c :
-  w <= b
-notC <= not(c)
-when notC :
-  b <= w
-```
+  module Foo:
+    input a: UInt<1>
+    output b: UInt<1>
+    b <= b
+    b <= a
+ ```   
 
-The  following circuit has a combinational loop, even if it can be proved
+The following module `Foo2` has a combinational loop, even if it can be proved
 that `n1` and `n2` never overlap.
 ``` firrtl
-module MyModule :  
+module Foo2 :  
   input n1: UInt<2>
   input n2: UInt<2>
   wire tmp: UInt<1>
@@ -2374,6 +2366,20 @@ module MyModule :
   tmp <= vec[n1]
   vec[n2] <= tmp  
 ```
+
+ Module `Foo3` is another example of an illegal combinational loop, even if it
+only exists at the word level and not at the bit-level.
+
+```firrtl
+module Foo3
+  wire a : UInt<2>
+  wire b : UInt<1>
+  
+  a <= cat(b, c)
+  b <= bits(a, 0, 0)
+  
+```
+
 
 # Namespaces
 

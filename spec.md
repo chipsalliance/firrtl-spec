@@ -3685,7 +3685,7 @@ statement = "wire" , id , ":" , type , [ info ]
           | "invalidate" , reference , [ info ]
 
 (* Module definitions *)
-port = ( "input" | "output" ) , id , ":": , type , [ info ] ;
+port = ( "input" | "output" ) , id , ":" , type , [ info ] ;
 module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,

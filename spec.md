@@ -1072,7 +1072,7 @@ field.
 
 ### Alternate Syntax
 
-Connects may also be specified by keyword.  This form is identical to the `<=` 
+Connects may also be specified by keyword.  This form is identical to the `<=`
 form in operand order
 
 ``` firrtl
@@ -3641,7 +3641,7 @@ ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
 
 (* Memory *)
-ruw = ( "old" | "new" | "undefined" ) ;
+ruw =  "old" | "new" | "undefined" ;
 memory = "mem" , id , ":" , [ info ] , newline , indent ,
            "data-type" , "=>" , type , newline ,
            "depth" , "=>" , int , newline ,
@@ -3721,7 +3721,7 @@ circuit =
 
 ## Deprecated Syntax
 
-`reference is invalid` and `reference <= expr` are deprecated and will be 
+`reference is invalid` and `reference <= expr` are deprecated and will be
 replaced with the alternate syntax in the next major revision.
 
 # Versioning Scheme of this Document

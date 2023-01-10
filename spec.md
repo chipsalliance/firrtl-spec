@@ -2472,6 +2472,52 @@ sections.
   used to represent the width of the unsigned integer operand. Note that the
   actual shift amount will be the dynamic value of the `e2` argument.
 
+# Combinational Loops
+
+Combinational logic is a section of logic with no registers between gates.
+A combinational loop exists when the output of some combinational logic
+is fed back into the input of that combinational logic with no intervening
+register. FIRRTL does not support combinational loops even if it is possible
+to show that the loop does not exist under actual mux select values.
+Combinational loops are not allowed and designs should not depend on any FIRRTL
+transformation to remove or break such combinational loops.
+
+The module `Foo` has a combinational loop and is not legal,
+even though the loop will be removed by last connect semantics.
+``` firrtl
+  module Foo:
+    input a: UInt<1>
+    output b: UInt<1>
+    b <= b
+    b <= a
+ ```
+
+The following module `Foo2` has a combinational loop, even if it can be proved
+that `n1` and `n2` never overlap.
+``` firrtl
+module Foo2 :
+  input n1: UInt<2>
+  input n2: UInt<2>
+  wire tmp: UInt<1>
+  wire vec: UInt<1>[3]
+  tmp <= vec[n1]
+  vec[n2] <= tmp
+```
+
+Module `Foo3` is another example of an illegal combinational loop, even if it
+only exists at the word level and not at the bit-level.
+
+```firrtl
+module Foo3
+  wire a : UInt<2>
+  wire b : UInt<1>
+
+  a <= cat(b, c)
+  b <= bits(a, 0, 0)
+
+```
+
+
 # Namespaces
 
 All modules in a circuit exist in the same module namespace, and thus must all

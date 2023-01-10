@@ -99,21 +99,16 @@ mechanism for error checking.
 ## Design Philosophy
 
 FIRRTL represents the standardized elaborated circuit that the Chisel HDL
-produces. FIRRTL represents the circuit immediately after Chisel's elaboration
-but before any circuit simplification. It is designed to resemble the Chisel HDL
-after all meta-programming has executed. Thus, a user program that makes little
-use of meta-programming facilities should look almost identical to the generated
+produces. FIRRTL represents the circuit immediately after Chisel's
+elaboration. It is designed to resemble the Chisel HDL after all
+meta-programming has executed. Thus, a user program that makes little use of
+meta-programming facilities should look almost identical to the generated
 FIRRTL.
 
 For this reason, FIRRTL has first-class support for high-level constructs such
-as vector types, bundle types, conditional statements, and modules. These
-high-level constructs are then gradually removed by a sequence of *lowering*
-transformations. During each lowering transformation, the circuit is rewritten
-into an equivalent circuit using simpler, lower-level constructs. Eventually the
-circuit is simplified to its most restricted form, resembling a structured
-netlist, which allows for easy translation to an output language
-(e.g. Verilog). This form is given the name *lowered FIRRTL* (LoFIRRTL) and is a
-strict subset of the full FIRRTL language.
+as vector types, bundle types, conditional statements, and modules. A FIRRTL
+compiler may choose to convert high-level constructs into low-level constructs
+before generating Verilog.
 
 Because the host language is now used solely for its meta-programming
 facilities, the frontend can be very light-weight, and additional HDLs written
@@ -2224,51 +2219,14 @@ have a unique name.
 
 Each module has an identifier namespace containing the names of all port and
 circuit component declarations. Thus, all declarations within a module must have
-unique names. Furthermore, the set of component declarations within a module
-must be *prefix unique*. Please see [@sec:prefix-uniqueness] for the definition
-of prefix uniqueness.
+unique names.
 
 Within a bundle type declaration, all field names must be unique.
 
 Within a memory declaration, all port names must be unique.
 
-During the lowering transformation, all circuit component declarations with
-aggregate types are rewritten as a group of component declarations, each with a
-ground type. The name expansion algorithm in [@sec:name-expansion-algorithm]
-calculates the names of all replacement components derived from the original
-aggregate-typed component.
-
-After the lowering transformation, the names of the lowered circuit components
-are guaranteed by the name expansion algorithm and thus can be reliably
-referenced by users to pair meta-data or other annotations with named circuit
-components.
-
-## Name Expansion Algorithm
-
-Given a component with a ground type, the name of the component is returned.
-
-Given a component with a vector type, the suffix `$`*i* is appended to the
-expanded names of each sub-element, where *i* is the index of each sub-element.
-
-Given a component with a bundle type, the suffix `$`*f* is appended to the
-expanded names of each sub-element, where *f* is the field name of each
-sub-element.
-
-## Prefix Uniqueness
-
-The *symbol sequence* of a name is the ordered list of strings that results from
-splitting the name at each occurrence of the '\$' character.
-
-A symbol sequence $a$ is a *prefix* of another symbol sequence $b$ if the
-strings in $a$ occur in the beginning of $b$.
-
-A set of names are defined to be *prefix unique* if there exists no two names
-such that the symbol sequence of one is a prefix of the symbol sequence of the
-other.
-
-As an example `firetruck$y$z`{.firrtl} shares a prefix with
-`firetruck$y`{.firrtl} and `firetruck`{.firrtl}, but does not share a prefix
-with `fire`{.firrtl}.
+Any modifications to names must preserve the uniqueness of names within a
+namespace.
 
 # Annotations
 
@@ -2406,94 +2364,6 @@ circuit Foo: %[[
 
 Any legal JSON is allowed, meaning that the above JSON may be stored "minimized"
 all on one line.
-
-# The Lowered FIRRTL Forms
-
-The lowered FIRRTL forms, MidFIRRTL and LoFIRRTL, are increasingly restrictive
-subsets of the FIRRTL language that omit many of the higher level
-constructs. All conforming FIRRTL compilers must provide a *lowering
-transformation* that transforms arbitrary FIRRTL circuits into equivalent
-LoFIRRTL circuits. However, there are no additional requirements related to
-accepting or producing MidFIRRTL, as the LoFIRRTL output of the lowering
-transformation will already be a legal subset of MidFIRRTL.
-
-## MidFIRRTL
-
-A FIRRTL circuit is defined to be a valid MidFIRRTL circuit if it obeys the
-following restrictions:
-
-- All widths must be explicitly defined.
-
-- The conditional statement is not used.
-
-- The dynamic sub-access expression is not used.
-
-- All components are connected to exactly once.
-
-- All uninferred `Reset`{.firrtl} types have been inferred to `UInt<1>`{.firrtl}
-or `AsyncReset`{.firrtl}, since reset inference is part of HiFIRRTL.
-
-## LoFIRRTL
-
-A FIRRTL circuit is defined to be a valid LoFIRRTL circuit if it obeys the
-following restrictions:
-
-- All widths must be explicitly defined.
-
-- The conditional statement is not used.
-
-- All components are connected to exactly once.
-
-- All components must be declared with a ground type.
-
-- The partial connect statement is not used.
-
-The first three restrictions follow from the fact that any LoFIRRTL circuit is
-also a legal MidFIRRTL circuit. The additional restrictions give LoFIRRTL a
-direct correspondence to a circuit netlist.
-
-Low level circuit transformations can be conveniently written by first lowering
-a circuit to its LoFIRRTL form, then operating on the restricted (and thus
-simpler) subset of constructs. Note that circuit transformations are still free
-to generate high level constructs as they can simply be lowered again.
-
-The following module:
-
-``` firrtl
-module MyModule :
-  input in: {a: UInt<1>, b: UInt<2>[3]}
-  input clk: Clock
-  output out: UInt
-  wire c: UInt
-  c <= in.a
-  reg r: UInt[3], clk
-  r <= in.b
-  when c :
-    r[1] <= in.a
-  out <= r[0]
-```
-
-is rewritten as the following equivalent LoFIRRTL circuit by the lowering
-transform.
-
-``` firrtl
-module MyModule :
-  input in$a: UInt<1>
-  input in$b$0: UInt<2>
-  input in$b$1: UInt<2>
-  input in$b$2: UInt<2>
-  input clk: Clock
-  output out: UInt<2>
-  wire c: UInt<1>
-  c <= in$a
-  reg r$0: UInt<2>, clk
-  reg r$1: UInt<2>, clk
-  reg r$2: UInt<2>, clk
-  r$0 <= in$b$0
-  r$1 <= mux(c, in$a, in$b$1)
-  r$2 <= in$b$2
-  out <= r$0
-```
 
 # Semantics of Values
 
@@ -2681,6 +2551,53 @@ circuit Top : @[myfile.txt 14:8]
     else :
       a <= d @[myfile.txt 29:17]
     out <= add(a,a) @[myfile.txt 34:4]
+```
+
+# FIRRTL Compiler Implementation Details
+
+This section provides auxiliary information necessary for developers of a FIRRTL
+Compiler _implementation_.  A FIRRTL Compiler is a program that converts FIRRTL
+text to another representation, e.g., Verilog, VHDL, a programming language, or
+a binary program.
+
+## Aggregate Type Lowering (Lower Types)
+
+A FIRRTL Compiler should provide a "Lower Types" pass that converts aggregate
+types to ground types.
+
+A FIRRTL Compiler must apply such a pass to the ports of all "public" modules in
+a Verilog/VHDL representation.  Public modules are defined as (1) the top-level
+module and (2) any external modules.
+
+A FIRRTL Compiler may apply such a pass to other types in a FIRRTL circuit.
+
+The Lower Types algorithm operates as follows:
+
+1. Ground type names are unmodified.
+
+2. Vector types are converted to ground types by appending a suffix, `_<i>`, to
+   the i^th^ element of the vector.  (`<` and `>` are not included in the
+   suffix.)
+
+3. Bundle types are converted to ground types by appending a suffix, `_<name>`,
+   to the field called `name`.  (`<` and `>` are not included in the suffix.)
+
+New names generated by Lower Types must be unique with respect to the current
+namespace (see [@sec:namespaces]).
+
+E.g., consider the following wire:
+
+``` firrtl
+wire a : { b: UInt<1>, c: UInt<2> }[2]
+```
+
+The result of a Lower Types pass applied to this wire is:
+
+``` firrtl
+wire a_0_b : UInt<1>
+wire a_0_c : UInt<2>
+wire a_1_b : UInt<1>
+wire a_1_c : UInt<2>
 ```
 
 \clearpage

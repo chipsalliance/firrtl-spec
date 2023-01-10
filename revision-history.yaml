@@ -18,6 +18,9 @@ revisionHistory:
       Compiler implementations
     - Fix spelling/grammar issues
     - Remove partial connect ("<-")
+    - Remove FIRRTL forms and lowering, indicate that high-level constructs may
+      be preserved by a FIRRTL compiler
+    - Add Compiler Implementation Details documenting Lower Types pass
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.1.0

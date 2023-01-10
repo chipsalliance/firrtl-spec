@@ -2483,6 +2483,46 @@ path, it is a _non-local_ target.  A non-local target _may_ not point to all
 instances of a module.  Additionally, a non-local target may have an equivalent
 local target representation.
 
+## Annotation Storage
+
+Annotations may be stored in one or more JSON files using an
+array-of-dictionaries format.  The following shows a valid annotation file
+containing two annotations:
+
+``` json
+[
+  {
+    "class":"hello",
+    "target":"~Foo|Bar"
+  },
+  {
+    "class":"world",
+    "target":"~Foo|Baz"
+  }
+]
+```
+
+Annotations may also be stored in-line along with the FIRRTL circuit by wrapping
+Annotation JSON in `%[ ... ]`.  The following shows the above annotation file
+stored in-line:
+
+``` firrtl
+circuit Foo: %[[
+  {
+    "class":"hello",
+    "target":"~Foo|Bar"
+  },
+  {
+    "class":"world",
+    "target":"~Foo|Baz"
+  }
+]]
+  module : Foo
+  ; ...
+```
+
+Any legal JSON is allowed, meaning that the above JSON may be stored "minimized"
+all on one line.
 
 # The Lowered FIRRTL Forms
 
@@ -2888,15 +2928,19 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;
 
+(* In-line Annotations *)
+annotations = "%" , "[" , json_array , "]" ;
+
 (* Version definition *)
 sem_ver = { digit_dec } , "."  , { digit_dec } , "." , { digit_dec }
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)
-circuit = version , newline ,
-          "circuit" , id , ":" , [ info ] , newline , indent ,
-            { module | extmodule } ,
-          dedent ;
+circuit =
+  version , newline ,
+  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
+    { module | extmodule } ,
+  dedent ;
 ```
 
 

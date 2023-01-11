@@ -106,14 +106,14 @@ use of meta-programming facilities should look almost identical to the generated
 FIRRTL.
 
 For this reason, FIRRTL has first-class support for high-level constructs such
-as vector types, bundle types, conditional statements, partial connects, and
-modules. These high-level constructs are then gradually removed by a sequence of
-*lowering* transformations. During each lowering transformation, the circuit is
-rewritten into an equivalent circuit using simpler, lower-level
-constructs. Eventually the circuit is simplified to its most restricted form,
-resembling a structured netlist, which allows for easy translation to an output
-language (e.g. Verilog). This form is given the name *lowered FIRRTL* (LoFIRRTL)
-and is a strict subset of the full FIRRTL language.
+as vector types, bundle types, conditional statements, and modules. These
+high-level constructs are then gradually removed by a sequence of *lowering*
+transformations. During each lowering transformation, the circuit is rewritten
+into an equivalent circuit using simpler, lower-level constructs. Eventually the
+circuit is simplified to its most restricted form, resembling a structured
+netlist, which allows for easy translation to an output language
+(e.g. Verilog). This form is given the name *lowered FIRRTL* (LoFIRRTL) and is a
+strict subset of the full FIRRTL language.
 
 Because the host language is now used solely for its meta-programming
 facilities, the frontend can be very light-weight, and additional HDLs written
@@ -400,10 +400,7 @@ analog signals that are never attached. The only primitive operations that may
 be applied to analog signals are casts to other signal types.
 
 When an analog signal appears as a field of an aggregate type, the aggregate
-cannot appear in a standard connection statement; however, the partial
-connection statement will `attach`{.firrtl} corresponding analog fields of its
-operands according to the partial connection algorithm described in
-[@sec:the-partial-connection-algorithm].
+cannot appear in a standard connection statement.
 
 As with integer types, an analog type can represent a multi-bit signal.  When
 analog signals are not given a concrete width, their widths are inferred
@@ -549,58 +546,6 @@ equivalent types. Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to
 `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent
 to `{flip a: {b: UInt}}`{.firrtl}.
 
-## Weak Type Equivalence
-
-The weak type equivalence relation is used to determine whether a partial
-connection between two components is legal. See [@sec:partial-connects] for
-further details about partial connect statements.
-
-Two types are weakly equivalent if their corresponding oriented types are
-equivalent.
-
-### Oriented Types
-
-The weak type equivalence relation requires first a definition of *oriented
-types*. Intuitively, an oriented type is a type where all orientation
-information is collated and coupled with the leaf ground types instead of in
-bundle fields.
-
-An oriented ground type is an orientation coupled with a ground type. An
-oriented vector type is an ordered sequence of positive length of elements of a
-given oriented type. An oriented bundle type is a collection of oriented fields,
-each containing a name and an oriented type, but no orientation.
-
-Applying a flip orientation to an oriented type recursively reverses the
-orientation of every oriented ground type contained within. Applying a non-flip
-orientation to an oriented type does nothing.
-
-### Conversion to Oriented Types
-
-To convert a ground type to an oriented ground type, attach a non-flip
-orientation to the ground type.
-
-To convert a vector type to an oriented vector type, convert its element type to
-an oriented type, and retain its length.
-
-To convert a bundle field to an oriented field, convert its type to an oriented
-type, apply the field orientation, and combine this with the original field's
-name to create the oriented field. To convert a bundle type to an oriented
-bundle type, convert each field to an oriented field.
-
-### Oriented Type Equivalence
-
-Two oriented ground types are equivalent if their orientations match and their
-types are equivalent.
-
-Two oriented vector types are equivalent if their element types are equivalent.
-
-Two oriented bundle types are not equivalent if there exists two fields, one
-from each oriented bundle type, that have identical names but whose oriented
-types are not equivalent. Otherwise, the oriented bundle types are equivalent.
-
-As stated earlier, two types are weakly equivalent if their corresponding
-oriented types are equivalent.
-
 # Statements
 
 Statements are used to describe the components within a module and how they
@@ -656,85 +601,6 @@ connected to the left-hand side field.  Conversely, if the i'th field is
 flipped, then the left-hand side field is connected to the right-hand side
 field.
 
-## Partial Connects
-
-Like the connect statement, the partial connect statement is also used to
-specify a physically wired connection between two circuit components.  However,
-it enforces fewer restrictions on the types and widths of the circuit components
-it connects.
-
-In order for a partial connect to be legal the following conditions must hold:
-
-1.  The types of the left-hand and right-hand side expressions must be weakly
-    equivalent (see [@sec:weak-type-equivalence] for details).
-
-2.  The flow of the left-hand side expression must be sink or duplex (see
-    [@sec:flows] for an explanation of flow).
-
-3.  Either the flow of the right-hand side expression is source or duplex, or
-    the right-hand side expression has a passive type.
-
-Partial connect statements from a narrower ground type component to a wider
-ground type component will have its value automatically sign-extended to the
-larger bit width. Partial connect statements from a wider ground type component
-to a narrower ground type component will have its value automatically truncated
-to fit the smaller bit width.
-
-Intuitively, bundle fields with matching names will be connected appropriately,
-while bundle fields not present in both types will be ignored. Similarly,
-vectors with mismatched lengths will be connected up to the shorter length, and
-the remaining sub-elements are ignored. The full algorithm is detailed in
-[@sec:the-partial-connection-algorithm].
-
-The following example demonstrates partially connecting a module's input port to
-its output port, where port `myinput`{.firrtl} is connected to port
-`myoutput`{.firrtl}.
-
-``` firrtl
-module MyModule :
-  input myinput: {flip a: UInt, b: UInt[2]}
-  output myoutput: {flip a: UInt, b: UInt[3], c: UInt}
-  myoutput <- myinput
-```
-
-The above example is equivalent to the following:
-
-``` firrtl
-module MyModule :
-  input myinput: {flip a: UInt, b: UInt[2]}
-  output myoutput: {flip a: UInt, b: UInt[3], c: UInt}
-  myinput.a <- myoutput.a
-  myoutput.b[0] <- myinput.b[0]
-  myoutput.b[1] <- myinput.b[1]
-```
-
-For details on the syntax and semantics of the sub-field expression, sub-index
-expression, and statement groups, see [@sec:sub-fields; @sec:sub-indices;
-@sec:statement-groups].
-
-### The Partial Connection Algorithm
-
-A partial connect statement between two non-analog ground type components
-connects the right-hand side expression to the left-hand side
-expression. Conversely, a *reverse* partial connect statement between two
-non-analog ground type components connects the left-hand side expression to the
-right-hand side expression. A partial connect statement between two analog-typed
-components performs an attach between the two signals.
-
-A partial (or reverse partial) connect statement between two vector typed
-components applies a partial (or reverse partial) connect from the first n
-sub-elements in the right-hand side expression to the first n corresponding
-sub-elements in the left-hand side expression, where n is the length of the
-shorter vector.
-
-A partial (or reverse partial) connect statement between two bundle typed
-components considers any pair of fields, one from the first bundle type and one
-from the second, with matching names. If the first field in the pair is not
-flipped, then we apply a partial (or reverse partial) connect from the
-right-hand side field to the left-hand side field.  However, if the first field
-is flipped, then we apply a reverse partial (or partial) connect from the
-right-hand side field to the left-hand side field.
-
 ## Statement Groups
 
 An ordered sequence of one or more statements can be grouped into a single
@@ -760,10 +626,8 @@ take precedence over earlier ones. In the previous example, in the resultant
 circuit, port `b`{.firrtl} will be connected to `myport1`{.firrtl}, and port
 `a`{.firrtl} will be connected to `myport2`{.firrtl}.
 
-Note that connect and partial connect statements have equal priority, and later
-connect or partial connect statements always take priority over earlier connect
-or partial connect statements. Conditional statements are also affected by last
-connect semantics, and for details see [@sec:conditional-last-connect-semantics].
+Conditional statements are also affected by last connect semantics, and for
+details see [@sec:conditional-last-connect-semantics].
 
 In the case where a connection to a circuit component with an aggregate type is
 followed by a connection to a sub-element of that component, only the connection
@@ -846,7 +710,7 @@ conditional statement.
 ## Wires
 
 A wire is a named combinational circuit component that can be connected to and
-from using connect and partial connect statements.
+from using connect statements.
 
 The following example demonstrates instantiating a wire with the given name
 `mywire`{.firrtl} and type `UInt`{.firrtl}.
@@ -969,10 +833,6 @@ wire z: Analog<2>
 attach(x, y)      ; binary attach
 attach(z, y, x)   ; attach all three signals
 ```
-
-When signals of aggregate types that contain analog-typed fields are used as
-operators of a partial connection, corresponding fields of analog type are
-attached, rather than connected.
 
 ## Nodes
 
@@ -1145,9 +1005,9 @@ module MyModule :
     myreg2 <= b
 ```
 
-Intuitively, a line can be drawn between a connection (or partial connection) to
-a component and that component's declaration. All conditional statements that
-are crossed by the line apply to that connection (or partial connection).
+Intuitively, a line can be drawn between a connection to a component and that
+component's declaration. All conditional statements that are crossed by the line
+apply to that connection.
 
 ### Initialization Coverage
 
@@ -1243,8 +1103,8 @@ See [@sec:indeterminate-values] for more information on indeterminate values.
 The behavior of conditional connections to circuit components with aggregate
 types can be modeled by first expanding each connect into individual connect
 statements on its ground elements (see [@sec:the-connection-algorithm;
-@sec:the-partial-connection-algorithm] for the connection and partial connection
-algorithms) and then applying the conditional last connect semantics.
+@sec:the-partial-connection-algorithm] for the connection algorithm) and then
+applying the conditional last connect semantics.
 
 For example, the following snippet:
 
@@ -2927,7 +2787,6 @@ statement = "wire" , id , ":" , type , [ info ]
           | "inst" , id , "of" , id , [ info ]
           | "node" , id , "=" , expr , [ info ]
           | reference , "<=" , expr , [ info ]
-          | reference , "<-" , expr , [ info ]
           | reference , "is invalid" , [ info ]
           | "attach(" , { reference } , ")" , [ info ]
           | "when" , expr , ":" [ info ] , newline , indent ,

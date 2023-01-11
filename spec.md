@@ -1213,11 +1213,10 @@ wire w: UInt
 w <= mux(c, b, a)
 ```
 
-In the case where an invalid statement is followed by a conditional statement
-containing a connect to the invalidated component, the resulting connection to
-the component can be expressed using a conditionally valid expression. See
-[@sec:conditionally-valids] for more details about the conditionally valid
-expression.
+Because invalid statements assign indeterminate values to components, a FIRRTL
+Compiler is free to choose any specific value for an indeterminate value when
+resolving last connect semantics.  E.g., in the following circuit `w`{.firrtl}
+has an indeterminate value when `c`{.firrtl} is false.
 
 ``` firrtl
 wire a: UInt
@@ -1228,14 +1227,17 @@ when c :
   w <= a
 ```
 
-can be rewritten equivalently as follows:
+A FIRRTL compiler is free to optimize this to the following circuit by assuming
+that `w`{.firrtl} takes on the value of `a`{.firrtl} when `c`{.firrtl} is false.
 
 ``` firrtl
 wire a: UInt
 wire c: UInt<1>
 wire w: UInt
-w <= validif(c, a)
+w <= a
 ```
+
+See [@sec:indeterminate-values] for more information on indeterminate values.
 
 The behaviour of conditional connections to circuit components with aggregate
 types can be modeled by first expanding each connect into individual connect
@@ -1649,8 +1651,8 @@ cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 FIRRTL expressions are used for creating literal unsigned and signed integers,
 for referring to a declared circuit component, for statically and dynamically
-accessing a nested element within a component, for creating multiplexers and
-conditionally valid signals, and for performing primitive operations.
+accessing a nested element within a component, for creating multiplexers, and
+for performing primitive operations.
 
 ## Unsigned Integers
 
@@ -1947,33 +1949,6 @@ A multiplexer expression is legal only if the following holds.
 
 1. The types of the two input expressions are passive (see
    [@sec:passive-types]).
-
-## Conditionally Valids
-
-A conditionally valid expression is expressed as an input expression guarded
-with an unsigned single bit valid signal. It outputs the input expression when
-the valid signal is high, otherwise the result is undefined.
-
-The following example connects the `a`{.firrtl} port to the `c`{.firrtl} port
-when the `valid`{.firrtl} signal is high. Otherwise, the value of the
-`c`{.firrtl} port is undefined.
-
-``` firrtl
-module MyModule :
-  input a: UInt
-  input valid: UInt<1>
-  output c: UInt
-  c <= validif(valid, a)
-```
-
-A conditionally valid expression is legal only if the following holds.
-
-1.  The type of the valid signal is a single bit unsigned integer.
-
-2.  The type of the input expression is passive (see [@sec:passive-types]).
-
-Conditional statements can be equivalently expressed as multiplexers and
-conditionally valid expressions. See [@sec:conditionals] for details.
 
 ## Primitive Operations
 
@@ -2924,7 +2899,6 @@ expr =
     ( "UInt" | "SInt" ) , [ width ] , "(" , ( int ) , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
-  | "validif" , "(" , expr , "," , expr , ")"
   | primop ;
 reference = id
           | reference , "." , id

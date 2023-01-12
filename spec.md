@@ -276,7 +276,7 @@ SInt
 
 #### Zero Bit Width Integers
 
-Integers of width zero are permissable. They are always zero extended.
+Integers of width zero are permissible. They are always zero extended.
 Thus, when used in an operation that extends to a positive bit width, they
 behave like a zero. While zero bit width integer carry no information, we
 allow 0-bit integer constant zeros for convenience:
@@ -686,7 +686,7 @@ Connect statements from a narrower ground type component to a wider ground type
 component will have its value automatically sign-extended or zero-extended to
 the larger bit width. Connect statements from a wider ground type component to a
 narrower ground type component will have its value automatically truncated to
-fit the smaller bit width. The behaviour of connect statements between two
+fit the smaller bit width. The behavior of connect statements between two
 circuit components with aggregate types is defined by the connection algorithm
 in [@sec:the-connection-algorithm].
 
@@ -1287,7 +1287,7 @@ wire w: UInt
 w <= validif(c, a)
 ```
 
-The behaviour of conditional connections to circuit components with aggregate
+The behavior of conditional connections to circuit components with aggregate
 types can be modeled by first expanding each connect into individual connect
 statements on its ground elements (see [@sec:the-connection-algorithm;
 @sec:the-partial-connection-algorithm] for the connection and partial connection
@@ -1364,7 +1364,7 @@ by the following parameters.
     cycles after setting the port's write address and data before the
     corresponding element within the memory holds the new value.
 
-6.  A read-under-write flag indicating the behaviour when a memory location is
+6.  A read-under-write flag indicating the behavior when a memory location is
     written to while a read to that location is in progress.
 
 The following example demonstrates instantiating a memory containing 256 complex
@@ -1463,7 +1463,7 @@ should be used accordingly. If the readwrite port is in write mode (the
 `addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its write
 port fields, and should be used accordingly.
 
-### Read Under Write Behaviour
+### Read Under Write Behavior
 
 The read-under-write flag indicates the value held on a read port's
 `data`{.firrtl} field if its memory location is written to while it is reading.
@@ -1504,7 +1504,7 @@ the same for overlapping clock periods, or when any portion of a read operation
 overlaps part of a write operation with a matching addresses. In such cases, the
 data that is read out of the read port is undefined.
 
-### Write Under Write Behaviour
+### Write Under Write Behavior
 
 In all cases, if a memory location is written to by more than one port on the
 same cycle, the stored value is undefined.
@@ -2815,9 +2815,9 @@ specific value.
 
 This allows transformations such as the following, where when `a` has an
 indeterminate value, the implementation chooses to consistently give it a value
-of 'v'.  An alternate, legal mapping, lets the implementaiton give it the value
+of 'v'.  An alternate, legal mapping, lets the implementation give it the value
 `42`.  In both cases, there is no visibility of `a` when it has an indeterminate
-value which is not mapped to the value the implementaiton choose.
+value which is not mapped to the value the implementation chooses.
 
 ``` firrtl
 module IValue :
@@ -2848,8 +2848,8 @@ module IValue :
   wire a : UInt<8>
   when c :
     a <= v
-   else :
-     a <= UInt<3>("h42")
+  else :
+    a <= UInt<3>("h42")
   o <= a
 ```
 

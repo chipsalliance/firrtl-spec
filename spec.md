@@ -156,11 +156,13 @@ contributors is below:
 - [`@jared-barocsi`](https://github.com/jared-barocsi)
 - [`@keszocze`](https://github.com/keszocze)
 - [`@mwachs5`](https://github.com/mwachs5)
+- [`@prithayan`](https://github.com/prithayan)
 - [`@richardxia`](https://github.com/richardxia)
 - [`@seldridge`](https://github.com/seldridge)
 - [`@sequencer`](https://github.com/sequencer)
 - [`@shunshou`](https://github.com/shunshou)
 - [`@tdb-alcorn`](https://github.com/tdb-alcorn)
+- [`@tymcauley`](https://github.com/tymcauley)
 - [`@youngar`](https://github.com/youngar)
 
 # File Preamble

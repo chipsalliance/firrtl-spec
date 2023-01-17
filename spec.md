@@ -255,8 +255,10 @@ composed of one or more aggregate or ground types.
 
 ## Ground Types
 
-There are five ground types in FIRRTL: an unsigned integer type, a signed
-integer type, a fixed-point number type, a clock type, and an analog type.
+
+There are six classes of ground types in FIRRTL: unsigned integer types, signed
+integer types, a fixed-point number type, a clock type, reset types, and analog
+types.
 
 ### Integer Types
 
@@ -264,17 +266,14 @@ Both unsigned and signed integer types may optionally be given a known
 non-negative integer bit width.
 
 ``` firrtl
-UInt<10>
-SInt<32>
+UInt ; unsigned int type with inferred width
+SInt ; signed int type with inferred width
+UInt<10> ; unsigned int type with 10 bits
+SInt<32> ; signed int type with 32 bits
 ```
 
 Alternatively, if the bit width is omitted, it will be automatically inferred by
 FIRRTL's width inferencer, as detailed in [@sec:width-inference].
-
-``` firrtl
-UInt
-SInt
-```
 
 #### Zero Bit Width Integers
 
@@ -371,6 +370,11 @@ The uninferred `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl}
 (synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) during
 compilation.
 
+``` firrtl
+Reset ; inferred type
+AsyncReset
+```
+
 Synchronous resets used in registers will be mapped to a hardware description
 language representation for synchronous resets.
 
@@ -410,8 +414,7 @@ Inference rules are as follows:
 1. An uninferred reset driven by and/or driving only asynchronous resets will be
 inferred as asynchronous reset.
 1. An uninferred reset driven by and/or driving both asynchronous and synchronous
-resets will cause an exception to be thrown. This occurs because reset inference
-happens before last-connect semantics are resolved.
+resets is an error.
 1. Otherwise, the reset is inferred as synchronous (i.e. the uninferred reset is
 only invalidated or is driven by or drives only synchronous resets).
 
@@ -1860,8 +1863,8 @@ module MyModule :
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed
 expression using a calculated index. The index must be an expression with an
-unsigned integer type.  An access to an out-of-bounds element results in an 
-indeterminate value (see [@sec:indeterminate-values]).  Each out-of-bounds 
+unsigned integer type.  An access to an out-of-bounds element results in an
+indeterminate value (see [@sec:indeterminate-values]).  Each out-of-bounds
 element is a different indeterminate value.  Sub-access operations with constant
 index may be convereted to sub-index operations even though it converts
 indeterminate-value-on-out-of-bounds behavior to a compile-time error.

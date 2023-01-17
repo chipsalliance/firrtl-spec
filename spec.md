@@ -99,21 +99,16 @@ mechanism for error checking.
 ## Design Philosophy
 
 FIRRTL represents the standardized elaborated circuit that the Chisel HDL
-produces. FIRRTL represents the circuit immediately after Chisel's elaboration
-but before any circuit simplification. It is designed to resemble the Chisel HDL
-after all meta-programming has executed. Thus, a user program that makes little
-use of meta-programming facilities should look almost identical to the generated
+produces. FIRRTL represents the circuit immediately after Chisel's
+elaboration. It is designed to resemble the Chisel HDL after all
+meta-programming has executed. Thus, a user program that makes little use of
+meta-programming facilities should look almost identical to the generated
 FIRRTL.
 
 For this reason, FIRRTL has first-class support for high-level constructs such
-as vector types, bundle types, conditional statements, partial connects, and
-modules. These high-level constructs are then gradually removed by a sequence of
-*lowering* transformations. During each lowering transformation, the circuit is
-rewritten into an equivalent circuit using simpler, lower-level
-constructs. Eventually the circuit is simplified to its most restricted form,
-resembling a structured netlist, which allows for easy translation to an output
-language (e.g. Verilog). This form is given the name *lowered FIRRTL* (LoFIRRTL)
-and is a strict subset of the full FIRRTL language.
+as vector types, bundle types, conditional statements, and modules. A FIRRTL
+compiler may choose to convert high-level constructs into low-level constructs
+before generating Verilog.
 
 Because the host language is now used solely for its meta-programming
 facilities, the frontend can be very light-weight, and additional HDLs written
@@ -154,12 +149,15 @@ contributors is below:
 - [`@grebe`](https://github.com/grebe)
 - [`@jackkoenig`](https://github.com/jackkoenig)
 - [`@jared-barocsi`](https://github.com/jared-barocsi)
+- [`@keszocze`](https://github.com/keszocze)
 - [`@mwachs5`](https://github.com/mwachs5)
+- [`@prithayan`](https://github.com/prithayan)
 - [`@richardxia`](https://github.com/richardxia)
 - [`@seldridge`](https://github.com/seldridge)
 - [`@sequencer`](https://github.com/sequencer)
 - [`@shunshou`](https://github.com/shunshou)
 - [`@tdb-alcorn`](https://github.com/tdb-alcorn)
+- [`@tymcauley`](https://github.com/tymcauley)
 - [`@youngar`](https://github.com/youngar)
 
 # File Preamble
@@ -275,7 +273,7 @@ SInt
 
 #### Zero Bit Width Integers
 
-Integers of width zero are permissable. They are always zero extended.
+Integers of width zero are permissible. They are always zero extended.
 Thus, when used in an operation that extends to a positive bit width, they
 behave like a zero. While zero bit width integer carry no information, we
 allow 0-bit integer constant zeros for convenience:
@@ -397,10 +395,7 @@ analog signals that are never attached. The only primitive operations that may
 be applied to analog signals are casts to other signal types.
 
 When an analog signal appears as a field of an aggregate type, the aggregate
-cannot appear in a standard connection statement; however, the partial
-connection statement will `attach`{.firrtl} corresponding analog fields of its
-operands according to the partial connection algorithm described in
-[@sec:the-partial-connection-algorithm].
+cannot appear in a standard connection statement.
 
 As with integer types, an analog type can represent a multi-bit signal.  When
 analog signals are not given a concrete width, their widths are inferred
@@ -546,58 +541,6 @@ equivalent types. Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to
 `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent
 to `{flip a: {b: UInt}}`{.firrtl}.
 
-## Weak Type Equivalence
-
-The weak type equivalence relation is used to determine whether a partial
-connection between two components is legal. See [@sec:partial-connects] for
-further details about partial connect statements.
-
-Two types are weakly equivalent if their corresponding oriented types are
-equivalent.
-
-### Oriented Types
-
-The weak type equivalence relation requires first a definition of *oriented
-types*. Intuitively, an oriented type is a type where all orientation
-information is collated and coupled with the leaf ground types instead of in
-bundle fields.
-
-An oriented ground type is an orientation coupled with a ground type. An
-oriented vector type is an ordered sequence of positive length of elements of a
-given oriented type. An oriented bundle type is a collection of oriented fields,
-each containing a name and an oriented type, but no orientation.
-
-Applying a flip orientation to an oriented type recursively reverses the
-orientation of every oriented ground type contained within. Applying a non-flip
-orientation to an oriented type does nothing.
-
-### Conversion to Oriented Types
-
-To convert a ground type to an oriented ground type, attach a non-flip
-orientation to the ground type.
-
-To convert a vector type to an oriented vector type, convert its element type to
-an oriented type, and retain its length.
-
-To convert a bundle field to an oriented field, convert its type to an oriented
-type, apply the field orientation, and combine this with the original field's
-name to create the oriented field. To convert a bundle type to an oriented
-bundle type, convert each field to an oriented field.
-
-### Oriented Type Equivalence
-
-Two oriented ground types are equivalent if their orientations match and their
-types are equivalent.
-
-Two oriented vector types are equivalent if their element types are equivalent.
-
-Two oriented bundle types are not equivalent if there exists two fields, one
-from each oriented bundle type, that have identical names but whose oriented
-types are not equivalent. Otherwise, the oriented bundle types are equivalent.
-
-As stated earlier, two types are weakly equivalent if their corresponding
-oriented types are equivalent.
-
 # Statements
 
 Statements are used to describe the components within a module and how they
@@ -624,20 +567,19 @@ In order for a connection to be legal the following conditions must hold:
 1.  The types of the left-hand and right-hand side expressions must be
     equivalent (see [@sec:type-equivalence] for details).
 
-2.  The bit widths of the two expressions must allow for data to always flow
-    from a smaller bit width to an equal size or larger bit width.
-
-3.  The flow of the left-hand side expression must be sink or duplex (see
+2.  The flow of the left-hand side expression must be sink or duplex (see
     [@sec:flows] for an explanation of flow).
 
-4.  Either the flow of the right-hand side expression is source or duplex, or
+3.  Either the flow of the right-hand side expression is source or duplex, or
     the right-hand side expression has a passive type.
 
 Connect statements from a narrower ground type component to a wider ground type
 component will have its value automatically sign-extended or zero-extended to
-the larger bit width. The behaviour of connect statements between two circuit
-components with aggregate types is defined by the connection algorithm in
-[@sec:the-connection-algorithm].
+the larger bit width. Connect statements from a wider ground type component to a
+narrower ground type component will have its value automatically truncated to
+fit the smaller bit width. The behavior of connect statements between two
+circuit components with aggregate types is defined by the connection algorithm
+in [@sec:the-connection-algorithm].
 
 ### The Connection Algorithm
 
@@ -653,85 +595,6 @@ expression. If the i'th field is not flipped, then the right-hand side field is
 connected to the left-hand side field.  Conversely, if the i'th field is
 flipped, then the left-hand side field is connected to the right-hand side
 field.
-
-## Partial Connects
-
-Like the connect statement, the partial connect statement is also used to
-specify a physically wired connection between two circuit components.  However,
-it enforces fewer restrictions on the types and widths of the circuit components
-it connects.
-
-In order for a partial connect to be legal the following conditions must hold:
-
-1.  The types of the left-hand and right-hand side expressions must be weakly
-    equivalent (see [@sec:weak-type-equivalence] for details).
-
-2.  The flow of the left-hand side expression must be sink or duplex (see
-    [@sec:flows] for an explanation of flow).
-
-3.  Either the flow of the right-hand side expression is source or duplex, or
-    the right-hand side expression has a passive type.
-
-Partial connect statements from a narrower ground type component to a wider
-ground type component will have its value automatically sign-extended to the
-larger bit width. Partial connect statements from a wider ground type component
-to a narrower ground type component will have its value automatically truncated
-to fit the smaller bit width.
-
-Intuitively, bundle fields with matching names will be connected appropriately,
-while bundle fields not present in both types will be ignored. Similarly,
-vectors with mismatched lengths will be connected up to the shorter length, and
-the remaining sub-elements are ignored. The full algorithm is detailed in
-[@sec:the-partial-connection-algorithm].
-
-The following example demonstrates partially connecting a module's input port to
-its output port, where port `myinput`{.firrtl} is connected to port
-`myoutput`{.firrtl}.
-
-``` firrtl
-module MyModule :
-  input myinput: {flip a: UInt, b: UInt[2]}
-  output myoutput: {flip a: UInt, b: UInt[3], c: UInt}
-  myoutput <- myinput
-```
-
-The above example is equivalent to the following:
-
-``` firrtl
-module MyModule :
-  input myinput: {flip a: UInt, b: UInt[2]}
-  output myoutput: {flip a: UInt, b: UInt[3], c: UInt}
-  myinput.a <- myoutput.a
-  myoutput.b[0] <- myinput.b[0]
-  myoutput.b[1] <- myinput.b[1]
-```
-
-For details on the syntax and semantics of the sub-field expression, sub-index
-expression, and statement groups, see [@sec:sub-fields; @sec:sub-indices;
-@sec:statement-groups].
-
-### The Partial Connection Algorithm
-
-A partial connect statement between two non-analog ground type components
-connects the right-hand side expression to the left-hand side
-expression. Conversely, a *reverse* partial connect statement between two
-non-analog ground type components connects the left-hand side expression to the
-right-hand side expression. A partial connect statement between two analog-typed
-components performs an attach between the two signals.
-
-A partial (or reverse partial) connect statement between two vector typed
-components applies a partial (or reverse partial) connect from the first n
-sub-elements in the right-hand side expression to the first n corresponding
-sub-elements in the left-hand side expression, where n is the length of the
-shorter vector.
-
-A partial (or reverse partial) connect statement between two bundle typed
-components considers any pair of fields, one from the first bundle type and one
-from the second, with matching names. If the first field in the pair is not
-flipped, then we apply a partial (or reverse partial) connect from the
-right-hand side field to the left-hand side field.  However, if the first field
-is flipped, then we apply a reverse partial (or partial) connect from the
-right-hand side field to the left-hand side field.
 
 ## Statement Groups
 
@@ -758,10 +621,8 @@ take precedence over earlier ones. In the previous example, in the resultant
 circuit, port `b`{.firrtl} will be connected to `myport1`{.firrtl}, and port
 `a`{.firrtl} will be connected to `myport2`{.firrtl}.
 
-Note that connect and partial connect statements have equal priority, and later
-connect or partial connect statements always take priority over earlier connect
-or partial connect statements. Conditional statements are also affected by last
-connect semantics, and for details see [@sec:conditional-last-connect-semantics].
+Conditional statements are also affected by last connect semantics, and for
+details see [@sec:conditional-last-connect-semantics].
 
 In the case where a connection to a circuit component with an aggregate type is
 followed by a connection to a sub-element of that component, only the connection
@@ -844,7 +705,7 @@ conditional statement.
 ## Wires
 
 A wire is a named combinational circuit component that can be connected to and
-from using connect and partial connect statements.
+from using connect statements.
 
 The following example demonstrates instantiating a wire with the given name
 `mywire`{.firrtl} and type `UInt`{.firrtl}.
@@ -892,13 +753,13 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 ; ...
 ```
 
-A register is initialized with an indeterminate value (see 
+A register is initialized with an indeterminate value (see
 [@sec:indeterminate-values]).
 
 ## Invalidates
 
 An invalidate statement is used to indicate that a circuit component contains
-indeterminate values (see [@sec:indeterminate-values]). It is specified as 
+indeterminate values (see [@sec:indeterminate-values]). It is specified as
 follows:
 
 ``` firrtl
@@ -967,10 +828,6 @@ wire z: Analog<2>
 attach(x, y)      ; binary attach
 attach(z, y, x)   ; attach all three signals
 ```
-
-When signals of aggregate types that contain analog-typed fields are used as
-operators of a partial connection, corresponding fields of analog type are
-attached, rather than connected.
 
 ## Nodes
 
@@ -1143,9 +1000,9 @@ module MyModule :
     myreg2 <= b
 ```
 
-Intuitively, a line can be drawn between a connection (or partial connection) to
-a component and that component's declaration. All conditional statements that
-are crossed by the line apply to that connection (or partial connection).
+Intuitively, a line can be drawn between a connection to a component and that
+component's declaration. All conditional statements that are crossed by the line
+apply to that connection.
 
 ### Initialization Coverage
 
@@ -1212,11 +1069,10 @@ wire w: UInt
 w <= mux(c, b, a)
 ```
 
-In the case where an invalid statement is followed by a conditional statement
-containing a connect to the invalidated component, the resulting connection to
-the component can be expressed using a conditionally valid expression. See
-[@sec:conditionally-valids] for more details about the conditionally valid
-expression.
+Because invalid statements assign indeterminate values to components, a FIRRTL
+Compiler is free to choose any specific value for an indeterminate value when
+resolving last connect semantics.  E.g., in the following circuit `w`{.firrtl}
+has an indeterminate value when `c`{.firrtl} is false.
 
 ``` firrtl
 wire a: UInt
@@ -1227,20 +1083,23 @@ when c :
   w <= a
 ```
 
-can be rewritten equivalently as follows:
+A FIRRTL compiler is free to optimize this to the following circuit by assuming
+that `w`{.firrtl} takes on the value of `a`{.firrtl} when `c`{.firrtl} is false.
 
 ``` firrtl
 wire a: UInt
 wire c: UInt<1>
 wire w: UInt
-w <= validif(c, a)
+w <= a
 ```
 
-The behaviour of conditional connections to circuit components with aggregate
+See [@sec:indeterminate-values] for more information on indeterminate values.
+
+The behavior of conditional connections to circuit components with aggregate
 types can be modeled by first expanding each connect into individual connect
 statements on its ground elements (see [@sec:the-connection-algorithm;
-@sec:the-partial-connection-algorithm] for the connection and partial connection
-algorithms) and then applying the conditional last connect semantics.
+@sec:the-partial-connection-algorithm] for the connection algorithm) and then
+applying the conditional last connect semantics.
 
 For example, the following snippet:
 
@@ -1313,7 +1172,7 @@ by the following parameters.
     cycles after setting the port's write address and data before the
     corresponding element within the memory holds the new value.
 
-6.  A read-under-write flag indicating the behaviour when a memory location is
+6.  A read-under-write flag indicating the behavior when a memory location is
     written to while a read to that location is in progress.
 
 The following example demonstrates instantiating a memory containing 256 complex
@@ -1412,7 +1271,7 @@ should be used accordingly. If the readwrite port is in write mode (the
 `addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its write
 port fields, and should be used accordingly.
 
-### Read Under Write Behaviour
+### Read Under Write Behavior
 
 The read-under-write flag indicates the value held on a read port's
 `data`{.firrtl} field if its memory location is written to while it is reading.
@@ -1453,7 +1312,7 @@ the same for overlapping clock periods, or when any portion of a read operation
 overlaps part of a write operation with a matching addresses. In such cases, the
 data that is read out of the read port is undefined.
 
-### Write Under Write Behaviour
+### Write Under Write Behavior
 
 In all cases, if a memory location is written to by more than one port on the
 same cycle, the stored value is undefined.
@@ -1648,8 +1507,8 @@ cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 FIRRTL expressions are used for creating literal unsigned and signed integers,
 for referring to a declared circuit component, for statically and dynamically
-accessing a nested element within a component, for creating multiplexers and
-conditionally valid signals, and for performing primitive operations.
+accessing a nested element within a component, for creating multiplexers, and
+for performing primitive operations.
 
 ## Unsigned Integers
 
@@ -1949,33 +1808,6 @@ A multiplexer expression is legal only if the following holds.
 1. The types of the two input expressions are passive (see
    [@sec:passive-types]).
 
-## Conditionally Valids
-
-A conditionally valid expression is expressed as an input expression guarded
-with an unsigned single bit valid signal. It outputs the input expression when
-the valid signal is high, otherwise the result is undefined.
-
-The following example connects the `a`{.firrtl} port to the `c`{.firrtl} port
-when the `valid`{.firrtl} signal is high. Otherwise, the value of the
-`c`{.firrtl} port is undefined.
-
-``` firrtl
-module MyModule :
-  input a: UInt
-  input valid: UInt<1>
-  output c: UInt
-  c <= validif(valid, a)
-```
-
-A conditionally valid expression is legal only if the following holds.
-
-1.  The type of the valid signal is a single bit unsigned integer.
-
-2.  The type of the input expression is passive (see [@sec:passive-types]).
-
-Conditional statements can be equivalently expressed as multiplexers and
-conditionally valid expressions. See [@sec:conditionals] for details.
-
 ## Primitive Operations
 
 All fundamental operations on ground types are expressed as a FIRRTL primitive
@@ -2004,7 +1836,7 @@ asClock(x)
 [@sec:primitive-operations] will describe the format and semantics of each
 primitive operation.
 
-# Primitive Operations
+# Primitive Operations {#sec:primitive-operations}
 
 The arguments of all primitive operations must be expressions with ground types,
 while their parameters are static integer literals. Each specific operation can
@@ -2336,6 +2168,52 @@ The width of each primitive operation is detailed in [@sec:primitive-operations]
 The width of the integer literal expressions is detailed in their respective
 sections.
 
+# Combinational Loops
+
+Combinational logic is a section of logic with no registers between gates.
+A combinational loop exists when the output of some combinational logic
+is fed back into the input of that combinational logic with no intervening
+register. FIRRTL does not support combinational loops even if it is possible
+to show that the loop does not exist under actual mux select values.
+Combinational loops are not allowed and designs should not depend on any FIRRTL
+transformation to remove or break such combinational loops.
+
+The module `Foo` has a combinational loop and is not legal,
+even though the loop will be removed by last connect semantics.
+``` firrtl
+  module Foo:
+    input a: UInt<1>
+    output b: UInt<1>
+    b <= b
+    b <= a
+ ```
+
+The following module `Foo2` has a combinational loop, even if it can be proved
+that `n1` and `n2` never overlap.
+``` firrtl
+module Foo2 :
+  input n1: UInt<2>
+  input n2: UInt<2>
+  wire tmp: UInt<1>
+  wire vec: UInt<1>[3]
+  tmp <= vec[n1]
+  vec[n2] <= tmp
+```
+
+Module `Foo3` is another example of an illegal combinational loop, even if it
+only exists at the word level and not at the bit-level.
+
+```firrtl
+module Foo3
+  wire a : UInt<2>
+  wire b : UInt<1>
+
+  a <= cat(b, c)
+  b <= bits(a, 0, 0)
+
+```
+
+
 # Namespaces
 
 All modules in a circuit exist in the same module namespace, and thus must all
@@ -2343,51 +2221,14 @@ have a unique name.
 
 Each module has an identifier namespace containing the names of all port and
 circuit component declarations. Thus, all declarations within a module must have
-unique names. Furthermore, the set of component declarations within a module
-must be *prefix unique*. Please see [@sec:prefix-uniqueness] for the definition
-of prefix uniqueness.
+unique names.
 
 Within a bundle type declaration, all field names must be unique.
 
 Within a memory declaration, all port names must be unique.
 
-During the lowering transformation, all circuit component declarations with
-aggregate types are rewritten as a group of component declarations, each with a
-ground type. The name expansion algorithm in [@sec:name-expansion-algorithm]
-calculates the names of all replacement components derived from the original
-aggregate-typed component.
-
-After the lowering transformation, the names of the lowered circuit components
-are guaranteed by the name expansion algorithm and thus can be reliably
-referenced by users to pair meta-data or other annotations with named circuit
-components.
-
-## Name Expansion Algorithm
-
-Given a component with a ground type, the name of the component is returned.
-
-Given a component with a vector type, the suffix `$`*i* is appended to the
-expanded names of each sub-element, where *i* is the index of each sub-element.
-
-Given a component with a bundle type, the suffix `$`*f* is appended to the
-expanded names of each sub-element, where *f* is the field name of each
-sub-element.
-
-## Prefix Uniqueness
-
-The *symbol sequence* of a name is the ordered list of strings that results from
-splitting the name at each occurrence of the '\$' character.
-
-A symbol sequence $a$ is a *prefix* of another symbol sequence $b$ if the
-strings in $a$ occur in the beginning of $b$.
-
-A set of names are defined to be *prefix unique* if there exists no two names
-such that the symbol sequence of one is a prefix of the symbol sequence of the
-other.
-
-As an example `firetruck$y$z`{.firrtl} shares a prefix with
-`firetruck$y`{.firrtl} and `firetruck`{.firrtl}, but does not share a prefix
-with `fire`{.firrtl}.
+Any modifications to names must preserve the uniqueness of names within a
+namespace.
 
 # Annotations
 
@@ -2485,94 +2326,46 @@ path, it is a _non-local_ target.  A non-local target _may_ not point to all
 instances of a module.  Additionally, a non-local target may have an equivalent
 local target representation.
 
+## Annotation Storage
 
-# The Lowered FIRRTL Forms
+Annotations may be stored in one or more JSON files using an
+array-of-dictionaries format.  The following shows a valid annotation file
+containing two annotations:
 
-The lowered FIRRTL forms, MidFIRRTL and LoFIRRTL, are increasingly restrictive
-subsets of the FIRRTL language that omit many of the higher level
-constructs. All conforming FIRRTL compilers must provide a *lowering
-transformation* that transforms arbitrary FIRRTL circuits into equivalent
-LoFIRRTL circuits. However, there are no additional requirements related to
-accepting or producing MidFIRRTL, as the LoFIRRTL output of the lowering
-transformation will already be a legal subset of MidFIRRTL.
-
-## MidFIRRTL
-
-A FIRRTL circuit is defined to be a valid MidFIRRTL circuit if it obeys the
-following restrictions:
-
-- All widths must be explicitly defined.
-
-- The conditional statement is not used.
-
-- The dynamic sub-access expression is not used.
-
-- All components are connected to exactly once.
-
-- All uninferred `Reset`{.firrtl} types have been inferred to `UInt<1>`{.firrtl}
-or `AsyncReset`{.firrtl}, since reset inference is part of HiFIRRTL.
-
-## LoFIRRTL
-
-A FIRRTL circuit is defined to be a valid LoFIRRTL circuit if it obeys the
-following restrictions:
-
-- All widths must be explicitly defined.
-
-- The conditional statement is not used.
-
-- All components are connected to exactly once.
-
-- All components must be declared with a ground type.
-
-- The partial connect statement is not used.
-
-The first three restrictions follow from the fact that any LoFIRRTL circuit is
-also a legal MidFIRRTL circuit. The additional restrictions give LoFIRRTL a
-direct correspondence to a circuit netlist.
-
-Low level circuit transformations can be conveniently written by first lowering
-a circuit to its LoFIRRTL form, then operating on the restricted (and thus
-simpler) subset of constructs. Note that circuit transformations are still free
-to generate high level constructs as they can simply be lowered again.
-
-The following module:
-
-``` firrtl
-module MyModule :
-  input in: {a: UInt<1>, b: UInt<2>[3]}
-  input clk: Clock
-  output out: UInt
-  wire c: UInt
-  c <= in.a
-  reg r: UInt[3], clk
-  r <= in.b
-  when c :
-    r[1] <= in.a
-  out <= r[0]
+``` json
+[
+  {
+    "class":"hello",
+    "target":"~Foo|Bar"
+  },
+  {
+    "class":"world",
+    "target":"~Foo|Baz"
+  }
+]
 ```
 
-is rewritten as the following equivalent LoFIRRTL circuit by the lowering
-transform.
+Annotations may also be stored in-line along with the FIRRTL circuit by wrapping
+Annotation JSON in `%[ ... ]`.  The following shows the above annotation file
+stored in-line:
 
 ``` firrtl
-module MyModule :
-  input in$a: UInt<1>
-  input in$b$0: UInt<2>
-  input in$b$1: UInt<2>
-  input in$b$2: UInt<2>
-  input clk: Clock
-  output out: UInt<2>
-  wire c: UInt<1>
-  c <= in$a
-  reg r$0: UInt<2>, clk
-  reg r$1: UInt<2>, clk
-  reg r$2: UInt<2>, clk
-  r$0 <= in$b$0
-  r$1 <= mux(c, in$a, in$b$1)
-  r$2 <= in$b$2
-  out <= r$0
+circuit Foo: %[[
+  {
+    "class":"hello",
+    "target":"~Foo|Bar"
+  },
+  {
+    "class":"world",
+    "target":"~Foo|Baz"
+  }
+]]
+  module : Foo
+  ; ...
 ```
+
+Any legal JSON is allowed, meaning that the above JSON may be stored "minimized"
+all on one line.
 
 # Semantics of Values
 
@@ -2585,18 +2378,18 @@ the scope of what behavior is observable (i.e., a relaxation of the
 
 ## Indeterminate Values
 
-An indeterminate value represents a value which is unknown or unspecified.  
-Indeterminate values are generally implementation defined, with constraints 
-specified below.  An indeterminate value may be assumed to be any specific 
+An indeterminate value represents a value which is unknown or unspecified.
+Indeterminate values are generally implementation defined, with constraints
+specified below.  An indeterminate value may be assumed to be any specific
 value (not necessarily literal), at an implementation's discretion, if, in doing
-so, all observable behavior is as if the indeterminate value always took the 
+so, all observable behavior is as if the indeterminate value always took the
 specific value.
 
-This allows transformations such as the following, where when `a` has an 
-indeterminate value, the implementation chooses to consistently give it a value 
-of 'v'.  An alternate, legal mapping, lets the implementaiton give it the value
+This allows transformations such as the following, where when `a` has an
+indeterminate value, the implementation chooses to consistently give it a value
+of 'v'.  An alternate, legal mapping, lets the implementation give it the value
 `42`.  In both cases, there is no visibility of `a` when it has an indeterminate
-value which is not mapped to the value the implementaiton choose.
+value which is not mapped to the value the implementation chooses.
 
 ``` firrtl
 module IValue :
@@ -2627,30 +2420,30 @@ module IValue :
   wire a : UInt<8>
   when c :
     a <= v
-   else :
-     a <= UInt<3>("h42")
+  else :
+    a <= UInt<3>("h42")
   o <= a
 ```
 
-The behavior of constructs which cause indeterminate values is implementation 
-defined with the following constraints.  
-- Register initialization is done in a consistent way for all registers.  If 
-code is generated to randomly initialize some registers (or 0 fill them, etc), 
+The behavior of constructs which cause indeterminate values is implementation
+defined with the following constraints.
+- Register initialization is done in a consistent way for all registers.  If
+code is generated to randomly initialize some registers (or 0 fill them, etc),
 it should be generated for all registers.
-- All observations of a unique instance of an expression with indeterminate 
-value must see the same value at runtime.  Multiple readers of a value will see 
+- All observations of a unique instance of an expression with indeterminate
+value must see the same value at runtime.  Multiple readers of a value will see
 the same runtime value.
-- Indeterminate values captured in stateful elements are not time-varying.  
-Time-aware constructs, such as registers, which hold an indeterminate value will 
-return the same runtime value unless something changes the value in a normal 
-way.  For example, an uninitialized register will return the same value over 
+- Indeterminate values captured in stateful elements are not time-varying.
+Time-aware constructs, such as registers, which hold an indeterminate value will
+return the same runtime value unless something changes the value in a normal
+way.  For example, an uninitialized register will return the same value over
 multiple clock cycles until it is written (or reset).
 - The value produced at runtime for an expression which produced an intermediate
 value shall only be a function of the inputs of the expression.  For example, an
-out-of-bounds vector access shall produce the same value for a 
+out-of-bounds vector access shall produce the same value for a
 given out-of-bounds index and vector contents.
-- Two constructs with indeterminate values place no constraint on the identity 
-of their values.  For example, two uninitialized registers, which therefore 
+- Two constructs with indeterminate values place no constraint on the identity
+of their values.  For example, two uninitialized registers, which therefore
 contain indeterminate values, do not need to be equal under comparison.
 
 # Details about Syntax
@@ -2762,6 +2555,53 @@ circuit Top : @[myfile.txt 14:8]
     out <= add(a,a) @[myfile.txt 34:4]
 ```
 
+# FIRRTL Compiler Implementation Details
+
+This section provides auxiliary information necessary for developers of a FIRRTL
+Compiler _implementation_.  A FIRRTL Compiler is a program that converts FIRRTL
+text to another representation, e.g., Verilog, VHDL, a programming language, or
+a binary program.
+
+## Aggregate Type Lowering (Lower Types)
+
+A FIRRTL Compiler should provide a "Lower Types" pass that converts aggregate
+types to ground types.
+
+A FIRRTL Compiler must apply such a pass to the ports of all "public" modules in
+a Verilog/VHDL representation.  Public modules are defined as (1) the top-level
+module and (2) any external modules.
+
+A FIRRTL Compiler may apply such a pass to other types in a FIRRTL circuit.
+
+The Lower Types algorithm operates as follows:
+
+1. Ground type names are unmodified.
+
+2. Vector types are converted to ground types by appending a suffix, `_<i>`, to
+   the i^th^ element of the vector.  (`<` and `>` are not included in the
+   suffix.)
+
+3. Bundle types are converted to ground types by appending a suffix, `_<name>`,
+   to the field called `name`.  (`<` and `>` are not included in the suffix.)
+
+New names generated by Lower Types must be unique with respect to the current
+namespace (see [@sec:namespaces]).
+
+E.g., consider the following wire:
+
+``` firrtl
+wire a : { b: UInt<1>, c: UInt<2> }[2]
+```
+
+The result of a Lower Types pass applied to this wire is:
+
+``` firrtl
+wire a_0_b : UInt<1>
+wire a_0_c : UInt<2>
+wire a_1_b : UInt<1>
+wire a_1_c : UInt<2>
+```
+
 \clearpage
 
 # FIRRTL Language Definition
@@ -2821,12 +2661,11 @@ primop_2expr =
 primop_1expr_keyword =
     "asUInt" | "asSInt" | "asClock" | "cvt"
   | "neg"    | "not"
-  | "andr"   | "orr"    | "xorr"
-  | "head"   | "tail" ;
+  | "andr"   | "orr"    | "xorr" ;
 primop_1expr =
     primop_1expr_keyword , "(" , expr , ")" ;
 primop_1expr1int_keyword =
-    "pad" | "shl" | "shr" ;
+    "pad" | "shl" | "shr" | "head" | "tail" ;
 primop_1expr1int =
     primop_1exrp1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int_keyword =
@@ -2840,7 +2679,6 @@ expr =
     ( "UInt" | "SInt" ) , [ width ] , "(" , ( int ) , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
-  | "validif" , "(" , expr , "," , expr , ")"
   | primop ;
 reference = id
           | reference , "." , id
@@ -2868,7 +2706,6 @@ statement = "wire" , id , ":" , type , [ info ]
           | "inst" , id , "of" , id , [ info ]
           | "node" , id , "=" , expr , [ info ]
           | reference , "<=" , expr , [ info ]
-          | reference , "<-" , expr , [ info ]
           | reference , "is invalid" , [ info ]
           | "attach(" , { reference } , ")" , [ info ]
           | "when" , expr , ":" [ info ] , newline , indent ,
@@ -2891,15 +2728,19 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;
 
+(* In-line Annotations *)
+annotations = "%" , "[" , json_array , "]" ;
+
 (* Version definition *)
 sem_ver = { digit_dec } , "."  , { digit_dec } , "." , { digit_dec }
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)
-circuit = version , newline ,
-          "circuit" , id , ":" , [ info ] , newline , indent ,
-            { module | extmodule } ,
-          dedent ;
+circuit =
+  version , newline ,
+  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
+    { module | extmodule } ,
+  dedent ;
 ```
 
 

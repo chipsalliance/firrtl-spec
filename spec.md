@@ -274,7 +274,7 @@ Integers of width zero are permissible. They are always zero extended.
 Thus, when used in an operation that extends to a positive bit width, they
 behave like a zero. While zero bit width integers carry no information, we
 allow 0-bit integer constant zeros for convenience:
-`UInt<0>(0)` and `SInt<0>(0)`.
+`UInt<0>(0)`{.firrtl} and `SInt<0>(0)`{.firrtl}.
 
 ``` firrtl
 wire zero_u : UInt<0>
@@ -333,7 +333,7 @@ wire reset : Reset
 reset <= a
 ```
 
-After reset inference, `reset` is inferred to the synchronous
+After reset inference, `reset`{.firrtl} is inferred to the synchronous
 `UInt<1>`{.firrtl} type:
 
 ``` firrtl
@@ -2244,7 +2244,7 @@ means that the subclass annotation implies to effect of the parent annotation.
 
 Annotations are serializable to JSON.
 
-Below is an example annotation used to mark some module `foo`:
+Below is an example annotation used to mark some module `foo`{.firrtl}:
 
 ```json
 {
@@ -2386,10 +2386,10 @@ value (not necessarily literal), at an implementation's discretion, if, in doing
 so, all observable behavior is as if the indeterminate value always took the
 specific value.
 
-This allows transformations such as the following, where when `a` has an
+This allows transformations such as the following, where when `a`{.firrtl} has an
 indeterminate value, the implementation chooses to consistently give it a value
-of 'v'.  An alternate, legal mapping, lets the implementation give it the value
-`42`.  In both cases, there is no visibility of `a` when it has an indeterminate
+of `v`{.firrtl}.  An alternate, legal mapping, lets the implementation give it the value
+`42`{.firrtl}.  In both cases, there is no visibility of `a`{.firrtl} when it has an indeterminate
 value which is not mapped to the value the implementation chooses.
 
 ``` firrtl

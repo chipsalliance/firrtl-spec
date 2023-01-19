@@ -119,7 +119,7 @@ toolchain.
 
 The FIRRTL specification was originally published as a UC Berkeley Tech Report
 ([UCB/EECS-2016-9](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-9.html))
-authored by Adam Izraelevitz ([`@azidar`](https://github.com/azidar)), Partick
+authored by Adam Izraelevitz ([`@azidar`](https://github.com/azidar)), Patrick
 Li ([`@CuppoJava`](https://github.com/CuppoJava)), and Jonathan Bachrach
 ([`@jackbackrack`](https://github.com/jackbackrack)).  The vision for FIRRTL was
 then expanded in an [ICCAD

@@ -1595,7 +1595,7 @@ The bit representation contains a binary, octal or hex indicator, followed by an
 optional sign, followed by the value.
 
 If a bit width is not given, the number of bits in the bit representation is the
-minimal bitwidth to represent the value represented by the string. The following
+minimal bit width to represent the value represented by the string. The following
 examples create a 8-bit integer representing the number -13. For all bases, a
 negative sign acts as if it were a unary negation; in other words, a negative
 literal produces the additive inverse of the unsigned interpretation of the

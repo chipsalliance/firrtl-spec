@@ -1381,7 +1381,7 @@ simulations of the circuit. Backends are free to generate hardware that relays
 this information to a hardware test harness, but this is not required by the
 FIRRTL specification.
 
-A printf statement requires a clock signal, a print condition signal, a format
+A `printf`{.firrtl} statement requires a clock signal, a print condition signal, a format
 string, and a variable list of argument signals. The condition signal must be a
 single bit unsigned integer type, and the argument signals must each have a
 ground type.
@@ -1389,7 +1389,7 @@ ground type.
 For information about execution ordering of clocked statements with observable
 environmental side effects, see [@sec:stops].
 
-The printf statement has an optional name attribute which can be used to attach
+The `printf`{.firrtl} statement has an optional name attribute which can be used to attach
 metadata to the statement. The name is part of the module level
 namespace. However it can never be used in a reference since it is not of any
 valid type.
@@ -1402,7 +1402,7 @@ wire b: UInt
 printf(clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b) : optional_name
 ```
 
-On each positive clock edge, when the condition signal is high, the printf
+On each positive clock edge, when the condition signal is high, the `printf`{.firrtl}
 statement prints out the format string where its argument placeholders are
 substituted with the value of the corresponding argument.
 

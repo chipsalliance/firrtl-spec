@@ -162,7 +162,7 @@ contributors is below:
 
 # File Preamble
 
-A firrtl file begins with a magic string and version identifier indicating the
+A FIRRTL file begins with a magic string and version identifier indicating the
 version of this standard the file conforms to
 (see [@sec:versioning-scheme-of-this-document]).  This will not be present on
 files generated according to versions of this standard prior to the first

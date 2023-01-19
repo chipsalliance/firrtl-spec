@@ -272,7 +272,7 @@ FIRRTL's width inferencer, as detailed in [@sec:width-inference].
 
 Integers of width zero are permissible. They are always zero extended.
 Thus, when used in an operation that extends to a positive bit width, they
-behave like a zero. While zero bit width integer carry no information, we
+behave like a zero. While zero bit width integers carry no information, we
 allow 0-bit integer constant zeros for convenience:
 `UInt<0>(0)` and `SInt<0>(0)`.
 

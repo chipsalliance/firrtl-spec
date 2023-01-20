@@ -3671,7 +3671,7 @@ statement = "wire" , id , ":" , type , [ info ]
           | "node" , id , "=" , expr , [ info ]
           | reference , "<=" , expr , [ info ]
           | reference , "is invalid" , [ info ]
-          | "attach(" , { reference } , ")" , [ info ]
+          | "attach(" , reference , { "," ,  reference } , ")" , [ info ]
           | "when" , expr , ":" [ info ] , newline , indent ,
               statement, { statement } ,
             dedent , [ "else" , ":" , indent , statement, { statement } , dedent ]

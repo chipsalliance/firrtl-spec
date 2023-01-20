@@ -18,6 +18,8 @@
       <item>of</item>
       <item>wire</item>
       <item>node</item>
+      <item>ref</item>
+      <item>define</item>
     </list>
     <list name="types">
       <item>UInt</item>
@@ -27,6 +29,10 @@
       <item>Clock</item>
       <item>Reset</item>
       <item>AsyncReset</item>
+    </list>
+    <list name="outertype">
+      <item>Probe</item>
+      <item>RWProbe</item>
     </list>
     <list name="typemodifiers">
       <item>const</item>
@@ -81,11 +87,19 @@
       <item>assert</item>
       <item>assume</item>
       <item>cover</item>
+      <item>read</item>
+      <item>probe</item>
+      <item>rwprobe</item>
+      <item>force</item>
+      <item>release</item>
+      <item>force_initial</item>
+      <item>release_initial</item>
     </list>
     <contexts>
       <context name="Normal Text" attribute="ID" lineEndContext="#pop">
         <keyword attribute="Keyword" context="#stay" String="keywords" />
         <keyword attribute="Keyword" context="type" String="types" />
+        <keyword attribute="Keyword" context="outertype" String="outertype" />
         <keyword attribute="Keyword" context="#stay" String="typemodifiers" />
         <keyword attribute="Structure" context="#stay" String="structure" />
         <keyword attribute="PrimOp" context="#stay" String="primops" />
@@ -108,6 +122,7 @@
       <context name="memory" attribute="Keyword" lineEndContext="#stay">
         <Detect2Chars char="=" char1="&gt;" attribute="Operator" context="memoryRHS"/>
         <StringDetect String="read-under-write" attribute="Keyword" context="#pop!memoryLast"/>
+        <DetectChar char= ";" context="comment" attribute="Comment"/>
       </context>
       <context name="memoryRHS" attribute="ID" lineEndContext="#pop">
         <keyword String="types" attribute="Keyword" context="type"/>
@@ -133,11 +148,21 @@
       <context name="info" attribute="Info" lineEndContext="#stay">
         <DetectChar char="]" context="#pop"/>
       </context>
+      <context name="outertype" attribute="Keyword" lineEndContext="#pop">
+        <DetectChar char="&lt;" attribute="Operator" context="#stay"/>
+        <keyword String="types" attribute="Keyword" context="type"/>
+        <DetectChar char="{" context="field" attribute="Separator"/>
+        <DetectChar char="}" attribute="Separator" context="#pop#pop"/>
+        <DetectChar char= ";" context="comment" attribute="Comment"/>
+        <AnyChar String="&gt;," attribute="Operator" context="#pop"/>
+        <DetectChar char="[" attribute="Operator" context="widthOrDepthOrLit"/>
+      </context>
       <context name="type" attribute="String" lineEndContext="#pop">
         <AnyChar String="&lt;[(" attribute="Operator" context="widthOrDepthOrLit"/>
         <AnyChar String="," attribute="Separator" context="#pop"/>
         <AnyChar String="}" attribute="Separator" context="#pop#pop"/>
         <DetectChar char= ";" context="comment" attribute="Comment"/>
+        <AnyChar String="&gt;" attribute="Operator" context="#pop"/>
       </context>
       <context name="widthOrDepthOrLit" attribute="String" lineEndContext="#stay">
         <DetectChar char="&lt;" attribute="Operator" context="widthOrDepthOrLit"/>
@@ -146,6 +171,7 @@
       <context name="field" attribute="ID" lineEndContext="#stay">
         <StringDetect String="flip" attribute="Keyword" context="#stay"/>
         <keyword String="types" attribute="Keyword" context="type"/>
+        <keyword String="outertype" attribute="Keyword" context="outertype"/>
         <keyword String="typemodifiers" attribute="Keyword" context="#stay"/>
         <DetectChar char="{" attribute="Separator" context="field"/>
         <DetectChar char="}" attribute="Separator" context="#pop"/>

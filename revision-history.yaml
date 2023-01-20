@@ -15,6 +15,7 @@ revisionHistory:
     - Render inline annotations as JSON, fix typo in example.
     - Fix rendering of type modifiers (const) in document.
     - Fix grammar for registers.
+    - Add reference types and related statements.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.2.0

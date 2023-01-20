@@ -3708,7 +3708,7 @@ intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
 annotations = "%" , "[" , json_array , "]" ;
 
 (* Version definition *)
-sem_ver = { digit_dec } , "."  , { digit_dec } , "." , { digit_dec }
+sem_ver = { digit_dec }+ , "."  , { digit_dec }+ , "." , { digit_dec }+
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)

@@ -1,5 +1,13 @@
 # Guide for Contributors
 
+## Writing
+
+* Wrap markdown lines to 80 characters.
+* Inline FIRRTL code snippets should be tagged as FIRRTL code with `{.firrtl}`.
+  * This isn't recognized by GitHub, but is used for the PDF generation.
+* Match terminology and capitalization preferences used elsewhere by default.
+* Don't forget to spell-check!
+
 ## Pushing Changes
 
 1. Read the [Versioning Scheme of this

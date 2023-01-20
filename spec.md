@@ -740,11 +740,12 @@ must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and
 the type of initialization value must be equivalent to the declared type of the
 register (see [@sec:type-equivalence] for details).  The behavior of the
 register depends on the type of the reset signal.  `AsyncReset`.{firrtl} will
-immediately change the value of the register.  `UInt<1>`{.firrtl} will not change
-the value of the register until the next positive edge of the clock signal (see
-[@sec:reset-type]).  `Reset`{.firrtl} is an abstract reset whose behavior
-depends on reset inference.  In the following example, `myreg`{.firrtl} is
-assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.
+immediately change the value of the register.  `UInt<1>`{.firrtl} will not
+change the value of the register until the next positive edge of the clock
+signal (see [@sec:reset-type]).  `Reset`{.firrtl} is an abstract reset whose
+behavior depends on reset inference.  In the following example, `myreg`{.firrtl}
+is assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is
+high.
 
 ``` firrtl
 wire myclock: Clock
@@ -1381,16 +1382,16 @@ simulations of the circuit. Backends are free to generate hardware that relays
 this information to a hardware test harness, but this is not required by the
 FIRRTL specification.
 
-A `printf`{.firrtl} statement requires a clock signal, a print condition signal, a format
-string, and a variable list of argument signals. The condition signal must be a
-single bit unsigned integer type, and the argument signals must each have a
-ground type.
+A `printf`{.firrtl} statement requires a clock signal, a print condition signal,
+a format string, and a variable list of argument signals. The condition signal
+must be a single bit unsigned integer type, and the argument signals must each
+have a ground type.
 
 For information about execution ordering of clocked statements with observable
 environmental side effects, see [@sec:stops].
 
-The `printf`{.firrtl} statement has an optional name attribute which can be used to attach
-metadata to the statement. The name is part of the module level
+The `printf`{.firrtl} statement has an optional name attribute which can be used
+to attach metadata to the statement. The name is part of the module level
 namespace. However it can never be used in a reference since it is not of any
 valid type.
 
@@ -1402,9 +1403,9 @@ wire b: UInt
 printf(clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b) : optional_name
 ```
 
-On each positive clock edge, when the condition signal is high, the `printf`{.firrtl}
-statement prints out the format string where its argument placeholders are
-substituted with the value of the corresponding argument.
+On each positive clock edge, when the condition signal is high, the
+`printf`{.firrtl} statement prints out the format string where its argument
+placeholders are substituted with the value of the corresponding argument.
 
 ### Format Strings
 
@@ -1595,11 +1596,11 @@ The bit representation contains a binary, octal or hex indicator, followed by an
 optional sign, followed by the value.
 
 If a bit width is not given, the number of bits in the bit representation is the
-minimal bit width to represent the value represented by the string. The following
-examples create a 8-bit integer representing the number -13. For all bases, a
-negative sign acts as if it were a unary negation; in other words, a negative
-literal produces the additive inverse of the unsigned interpretation of the
-digit pattern.
+minimal bit width to represent the value represented by the string. The
+following examples create a 8-bit integer representing the number -13. For all
+bases, a negative sign acts as if it were a unary negation; in other words, a
+negative literal produces the additive inverse of the unsigned interpretation of
+the digit pattern.
 
 ``` firrtl
 SInt("b-1101")
@@ -2386,11 +2387,12 @@ value (not necessarily literal), at an implementation's discretion, if, in doing
 so, all observable behavior is as if the indeterminate value always took the
 specific value.
 
-This allows transformations such as the following, where when `a`{.firrtl} has an
-indeterminate value, the implementation chooses to consistently give it a value
-of `v`{.firrtl}.  An alternate, legal mapping, lets the implementation give it the value
-`42`{.firrtl}.  In both cases, there is no visibility of `a`{.firrtl} when it has an indeterminate
-value which is not mapped to the value the implementation chooses.
+This allows transformations such as the following, where when `a`{.firrtl} has
+an indeterminate value, the implementation chooses to consistently give it a
+value of `v`{.firrtl}.  An alternate, legal mapping, lets the implementation
+give it the value `42`{.firrtl}.  In both cases, there is no visibility of
+`a`{.firrtl} when it has an indeterminate value which is not mapped to the value
+the implementation chooses.
 
 ``` firrtl
 module IValue :

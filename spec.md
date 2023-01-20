@@ -499,6 +499,54 @@ the module.  The `c`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field
 flows into the module, and the `d`{.firrtl} sub-field contained in the
 `b`{.firrtl} sub-field flows out of the module.
 
+## Type Modifiers
+
+### Constant Type
+
+A constant type is a type whose value is guaranteed to be a compile-time 
+constant.  Constant types may be used in ports, wire, nodes, and generally 
+anywhere a non-constant type is usable.  Operations on constant type are well 
+defined.  As a general rule (with any exception listed in the definition for 
+such operations as have exceptions), an operation whose arguments are constant
+produces a constant.  Operations, except where noted, do not take a mixture of 
+constant and non-constant arguments.  Constants can be used in any context with 
+a source flow which allows a non-constant.  Constants may be used as the target 
+of a connect so long as the source of the connect is itself constant.  These 
+rules ensure all constants are derived from literals or from input ports to the 
+top-level module which are constant.
+
+``` firrtl
+const UInt<3>
+const SInt
+const {real: UInt<32>, imag : UInt<32>}
+const 
+
+Last-connect semantics of constant typed values is well defined, so long as any 
+control flow is conditioned on an expression which has a constant type.  This 
+means if a constant is being assigned to in a `when` block, the `when`'s 
+condition must be a constant.
+
+Output ports of external modules and input ports to the top-level module may be
+constant.  In such case, the value of the port is not known, but that it is time
+invariant at runtime is known.
+
+The indexing of a constant aggregate produces a constant of the appropriate type 
+for the element.
+
+#### A note on implementation
+
+Constant types are a restriction on firrtl types.  Therefore, firrtl structures 
+which would be expected to produce certain verilog structures will produce the
+same structure if instantiated with a constant type.  For example, an input port
+of type `const UInt` will result in a port in the verilog, if under the same
+conditions an input port of type `UInt` would have.
+
+It is not intended that constants are a replacement for parameterization.  
+Constant typed values have no particular meta-programming capability.  It is,
+for example, expected that a module with a constant input port be fully 
+compilable to non-parameterized verilog.
+
+
 ## Passive Types
 
 It is inappropriate for some circuit components to be declared with a type that

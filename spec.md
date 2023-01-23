@@ -3588,7 +3588,7 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
 id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
-linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
+linecol = num_dec , ":" , num_dec ;
 info = "@" , "[" , { string , " " , linecol } , "]" ;
 
 (* Type definitions *)
@@ -3708,7 +3708,7 @@ intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
 annotations = "%" , "[" , json_array , "]" ;
 
 (* Version definition *)
-sem_ver = { digit_dec }+ , "."  , { digit_dec }+ , "." , { digit_dec }+
+sem_ver = num_dec , "."  , num_dec , "." , num_dec
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)

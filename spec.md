@@ -3197,8 +3197,8 @@ Targets are specific enough to refer to any specific module in a folded,
 unfolded, or partially folded representation.
 
 To show some examples of what these look like, consider the following example
-circuit. This consists of four instances of module `Baz`{.firrtl}, two
-instances of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
+circuit. This consists of four instances of module `Baz`{.firrtl}, two instances
+of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
 ```firrtl
 circuit Foo:

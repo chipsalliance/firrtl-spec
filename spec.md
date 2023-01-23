@@ -3589,7 +3589,8 @@ id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
 linecol = num_dec , ":" , num_dec ;
-info = "@" , "[" , { string , " " , linecol } , "]" ;
+lineinfo = string, " ", linecol
+info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
 (* Type definitions *)
 width = "<" , int_any , ">" ;

@@ -3672,11 +3672,11 @@ statement = "wire" , id , ":" , type , [ info ]
           | reference , "<=" , expr , [ info ]
           | reference , "is invalid" , [ info ]
           | "attach(" , reference , { "," ,  reference } , ")" , [ info ]
-          | "when" , expr , ":" [ info ] , newline , indent ,
-              statement, { statement } ,
-            dedent , [ "else" , ":" , indent , statement, { statement } , dedent ]
-          | "stop(" , expr , "," , expr , "," , int_any , ")" , [ info ]
-          | "printf(" , expr , "," , expr , "," , string_dq ,
+          | "when" , expr , ":" [ info ] , newline ,
+            indent , statement, { statement } , dedent ,
+            [ "else" , ":" , indent , statement, { statement } , dedent ]
+          | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
+          | "printf(" , expr , "," , expr , "," , string ,
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ]
           | "define" , static_reference , "=" , ref_expr , [ info ]

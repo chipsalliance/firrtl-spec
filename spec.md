@@ -508,12 +508,12 @@ constant.  Constant types may be used in ports, wire, nodes, and generally
 anywhere a non-constant type is usable.  Operations on constant type are well 
 defined.  As a general rule (with any exception listed in the definition for 
 such operations as have exceptions), an operation whose arguments are constant
-produces a constant.  Operations, except where noted, do not take a mixture of 
-constant and non-constant arguments.  Constants can be used in any context with 
-a source flow which allows a non-constant.  Constants may be used as the target 
-of a connect so long as the source of the connect is itself constant.  These 
-rules ensure all constants are derived from literals or from input ports to the 
-top-level module which are constant.
+produces a constant.  An operations with some non-constant arguments produce a
+non-constant.  Constants can be used in any context with a source flow which 
+allows a non-constant.  Constants may be used as the target of a connect so long 
+as the source of the connect is itself constant.  These rules ensure all 
+constants are derived from literals or from constant-typed input ports of the 
+top-level module.
 
 ``` firrtl
 const UInt<3>
@@ -770,7 +770,7 @@ the current value of the element, writes are not visible until after a positive
 edges of the register's clock port.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
-register must be a passive type (see [@sec:passive-types]).
+register must be a passive type (see [@sec:passive-types]) and may not be const.
 
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
@@ -1562,8 +1562,8 @@ for performing primitive operations.
 ## Unsigned Integers
 
 A literal unsigned integer can be created given a non-negative integer value and
-an optional positive bit width. The following example creates a 10-bit unsigned
-integer representing the number 42.
+an optional positive bit width. Integer literals are of constant type.  The 
+following example creates a 10-bit unsigned integer representing the number 42.
 
 ``` firrtl
 UInt<10>(42)
@@ -1580,7 +1580,8 @@ UInt(42)
 ## Unsigned Integers from Literal Bits
 
 A literal unsigned integer can alternatively be created given a string
-representing its bit representation and an optional bit width.
+representing its bit representation and an optional bit width.  Like with the
+integer representation, the expression has a constant type.
 
 The following radices are supported:
 
@@ -1617,8 +1618,9 @@ UInt<7>("hD")
 ## Signed Integers
 
 Similar to unsigned integers, a literal signed integer can be created given an
-integer value and an optional positive bit width. The following example creates
-a 10-bit unsigned integer representing the number -42.
+integer value and an optional positive bit width. Integer literals are of 
+constant type.  The following example creates a 10-bit unsigned integer 
+representing the number -42.
 
 ``` firrtl
 SInt<10>(-42)
@@ -1637,7 +1639,8 @@ SInt(-42)
 
 Similar to unsigned integers, a literal signed integer can alternatively be
 created given a string representing its bit representation and an optional bit
-width.
+width.  Like with the integer representation, the expression has a constant 
+type.
 
 The bit representation contains a binary, octal or hex indicator, followed by an
 optional sign, followed by the value.
@@ -1683,7 +1686,8 @@ will be rewritten as "the port `in`{.firrtl} is connected to the port
 ## Sub-fields
 
 The sub-field expression refers to a sub-element of an expression with a bundle
-type.
+type.  If the expression is of a constant bundle type, the sub-element shall be 
+of a constant type.
 
 The following example connects the `in`{.firrtl} port to the `a`{.firrtl}
 sub-element of the `out`{.firrtl} port.
@@ -1699,7 +1703,9 @@ module MyModule :
 
 The sub-index expression statically refers, by index, to a sub-element of an
 expression with a vector type. The index must be a non-negative integer and
-cannot be equal to or exceed the length of the vector it indexes.
+cannot be equal to or exceed the length of the vector it indexes.  If the 
+expression is of a constant vector type, the sub-element shall be of a constant
+type.
 
 The following example connects the `in`{.firrtl} port to the fifth sub-element
 of the `out`{.firrtl} port.
@@ -1715,11 +1721,12 @@ module MyModule :
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed
 expression using a calculated index. The index must be an expression with an
-unsigned integer type.  An access to an out-of-bounds element results in an 
-indeterminate value (see [@sec:indeterminate-values]).  Each out-of-bounds 
-element is a different indeterminate value.  Sub-access operations with constant
-index may be convereted to sub-index operations even though it converts
-indeterminate-value-on-out-of-bounds behavior to a compile-time error.
+unsigned integer type.  If the expression is of a constant vector type, the 
+sub-element shall be of a constant type.  An access to an out-of-bounds element 
+results in an indeterminate value (see [@sec:indeterminate-values]).  Each 
+out-of-bounds element is a different indeterminate value.  Sub-access operations 
+with constant index may be convereted to sub-index operations even though it 
+converts indeterminate-value-on-out-of-bounds behavior to a compile-time error.
 
 The following example connects the n'th sub-element of the `in`{.firrtl} port to
 the `out`{.firrtl} port.
@@ -1890,7 +1897,9 @@ primitive operation.
 The arguments of all primitive operations must be expressions with ground types,
 while their parameters are static integer literals. Each specific operation can
 place additional restrictions on the number and types of their arguments and
-parameters.
+parameters.  Primitive operations may have all their arguments of constant type,
+in which case their return type is of constant type.  If the operation has a 
+mixed constant and non-constant arguments, the result is non-constant.
 
 Notationally, the width of an argument e is represented as w~e~.
 

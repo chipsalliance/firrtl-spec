@@ -1436,11 +1436,12 @@ Format strings support the following escape characters:
 To facilitate simulation, model checking and formal methods, there are three
 non-synthesizable verification statements available: assert, assume and
 cover. Each type of verification statement requires a clock signal, a predicate
-signal, an enable signal and an explanatory message string literal. The
-predicate and enable signals must have single bit unsigned integer type. When an
-assert is violated the explanatory message may be issued as guidance. The
-explanatory message may be phrased as if prefixed by the words "Verifies
-that\...".
+signal, an enable signal and a string literal.  The predicate and enable
+signals must have single bit unsigned integer type.  Assert and assume use the
+string as an explanatory message.  For cover statements the string indicates a
+suggested comment.  When an assert or assume is violated the explanatory
+message may be issued as guidance.  The explanatory message may be phrased as
+if prefixed by the words "Verifies that\...".
 
 Backends are free to generate the corresponding model checking constructs in the
 target language, but this is not required by the FIRRTL specification. Backends
@@ -1495,6 +1496,7 @@ The cover statement verifies that the predicate is true on the rising edge of
 some clock cycle when the enable is true. In other words, it directs the model
 checker to find some way to make both enable and predicate true at some time
 step.
+The string argument may be emitted as a comment with the cover.
 
 ``` firrtl
 wire clk: Clock

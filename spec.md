@@ -2711,7 +2711,8 @@ type_ground = "Clock" | "Reset" | "AsyncReset"
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
 field = [ "flip" ] , id , ":" , type ;
-type = type_ground | type_aggregate ;
+consttype = "const", type_ground | type_aggregate
+type = type_ground | type_aggregate | consttype ;
 
 (* Primitive operations *)
 primop_2expr_keyword =

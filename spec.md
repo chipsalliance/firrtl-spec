@@ -1309,7 +1309,7 @@ analog types within the component (as they cannot be connected to).
 
 ### Alternate Syntax
 
-`is invalid`.{.firrtl} may also be specified by keyword.
+`is invalid`{.firrtl} may also be specified by keyword.
 
 ``` firrtl
 module MyModule :

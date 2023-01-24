@@ -790,7 +790,7 @@ the type of reset value must be equivalent to the declared type of the register
 `AsyncReset`{.firrtl}, then the reset value must be a constant type.  The 
 behavior of the register depends on the type of the reset signal.  
 `AsyncReset`.{firrtl} will immediately change the value of the register.  
-`UInt<1> will not change the value of the register until the next positive edge 
+`UInt<1>`{.firrtl} will not change the value of the register until the next positive edge 
 of the clock signal (see [@sec:reset-type]).  `Reset`.{firrtl} is an abstract 
 reset whose behavior depends on reset inference.  In the following example, 
 `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal 

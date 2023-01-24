@@ -518,8 +518,9 @@ top-level module.
 ``` firrtl
 const UInt<3>
 const SInt
-const {real: UInt<32>, imag : UInt<32>}
+const {real: UInt<32>, imag : UInt<32>, other : const SInt}
 const 
+```
 
 Last-connect semantics of constant typed values is well defined, so long as any 
 control flow is conditioned on an expression which has a constant type.  This 

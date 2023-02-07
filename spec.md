@@ -1099,9 +1099,8 @@ See [@sec:indeterminate-values] for more information on indeterminate values.
 
 The behavior of conditional connections to circuit components with aggregate
 types can be modeled by first expanding each connect into individual connect
-statements on its ground elements (see [@sec:the-connection-algorithm;
-@sec:the-partial-connection-algorithm] for the connection algorithm) and then
-applying the conditional last connect semantics.
+statements on its ground elements (see [@sec:the-connection-algorithm] for the
+connection algorithm) and then applying the conditional last connect semantics.
 
 For example, the following snippet:
 
@@ -2127,8 +2126,7 @@ non-negative and less than or equal to the bit width of e.
 
 An expression's flow partially determines the legality of connecting to and from
 the expression. Every expression is classified as either *source*, *sink*, or
-*duplex*. For details on connection rules refer back to [@sec:connects;
-@sec:partial-connects].
+*duplex*. For details on connection rules refer back to [@sec:connects].
 
 The flow of a reference to a declared circuit component depends on the kind of
 circuit component. A reference to an input port, an instance, a memory, and a

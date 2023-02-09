@@ -2162,9 +2162,6 @@ corresponding input widths. For multiplexing aggregate-typed expressions, the
 resulting widths of each leaf sub-element is the maximum of its corresponding
 two input leaf sub-element widths.
 
-The width of a conditionally valid expression is the width of its input
-expression.
-
 The width of each primitive operation is detailed in [@sec:primitive-operations].
 
 The width of the integer literal expressions is detailed in their respective

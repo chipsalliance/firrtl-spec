@@ -24,6 +24,7 @@ revisionHistory:
     - Allow out-of-bounds errors to be caught at compile time.
     - Clarify the string argument for cover is a comment, not a message
       as it is for assert and assume.
+    - Remove stray language leftover from removing conditionally valid.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.1.0

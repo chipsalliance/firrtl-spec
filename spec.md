@@ -503,17 +503,18 @@ flows into the module, and the `d`{.firrtl} sub-field contained in the
 
 ### Constant Type
 
-A constant type is a type whose value is guaranteed to be a compile-time 
-constant.  Constant types may be used in ports, wire, nodes, and generally 
-anywhere a non-constant type is usable.  Operations on constant type are well 
-defined.  As a general rule (with any exception listed in the definition for 
-such operations as have exceptions), an operation whose arguments are constant
-produces a constant.  An operations with some non-constant arguments produce a
-non-constant.  Constants can be used in any context with a source flow which 
-allows a non-constant.  Constants may be used as the target of a connect so long 
-as the source of the connect is itself constant.  These rules ensure all 
-constants are derived from literals or from constant-typed input ports of the 
-top-level module.
+A constant type is a type whose value is guaranteed to be unchanging at circuit 
+execution time.  Constant is a constraint on the mutability of the value, it 
+does not imply a literal value at a point in the emitted design.  Constant types 
+may be used in ports, wire, nodes, and generally anywhere a non-constant type is 
+usable.  Operations on constant type are well defined.  As a general rule (with 
+any exception listed in the definition for such operations as have exceptions), 
+an operation whose arguments are constant produces a constant.  An operations 
+with some non-constant arguments produce a non-constant.  Constants can be used 
+in any context with a source flow which allows a non-constant.  Constants may be 
+used as the target of a connect so long as the source of the connect is itself 
+constant.  These rules ensure all constants are derived from literals or from 
+constant-typed input ports of the top-level module.
 
 ``` firrtl
 const UInt<3>
@@ -528,8 +529,8 @@ means if a constant is being assigned to in a `when` block, the `when`'s
 condition must be a constant.
 
 Output ports of external modules and input ports to the top-level module may be
-constant.  In such case, the value of the port is not known, but that it is time
-invariant at runtime is known.
+constant.  In such case, the value of the port is not known, but that it is 
+non-mutating at runtime is known.
 
 The indexing of a constant aggregate produces a constant of the appropriate type 
 for the element.
@@ -771,7 +772,8 @@ the current value of the element, writes are not visible until after a positive
 edges of the register's clock port.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
-register must be a passive type (see [@sec:passive-types]) and may not be const.
+register must be a passive type (see [@sec:passive-types]) and may not be 
+`const`.{.firrtl}.
 
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
@@ -1692,7 +1694,8 @@ will be rewritten as "the port `in`{.firrtl} is connected to the port
 
 The sub-field expression refers to a sub-element of an expression with a bundle
 type.  If the expression is of a constant bundle type, the sub-element shall be 
-of a constant type.
+of a constant type (`const`.{firrtl} propagates from the bundle to the element 
+on indexing).
 
 The following example connects the `in`{.firrtl} port to the `a`{.firrtl}
 sub-element of the `out`{.firrtl} port.
@@ -1703,6 +1706,26 @@ module MyModule :
   output out: {a: UInt, b: UInt}
   out.a <= in
 ```
+
+The following example is the same as above, but with a constant output bundle.
+
+``` firrtl
+module MyModule :
+  input in: const UInt
+  output out: const {a: UInt, b: UInt}
+  out.a <= in // out.a is of type const UInt
+```
+
+The following example is the same as above, but with a bundle with a constant 
+field.
+
+``` firrtl
+module MyModule :
+  input in: const UInt
+  output out: {a: const UInt, b: UInt}
+  out.a <= in // out.a is of type const UInt
+```
+
 
 ## Sub-indices
 
@@ -1721,6 +1744,16 @@ module MyModule :
   output out: UInt[10]
   out[4] <= in
 ```
+
+The following example is the same as above, but with a constant vector.
+
+``` firrtl
+module MyModule :
+  input in: const UInt
+  output out: const UInt[10]
+  out[4] <= in // out[4] has a type of const UInt
+```
+
 
 ## Sub-accesses
 

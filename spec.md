@@ -788,16 +788,16 @@ reg myreg: SInt, myclock
 A register may be declared with a reset signal and value.  The register's value
 is updated with the reset value when the reset is asserted.  The reset signal
 must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and
-the type of reset value must be equivalent to the declared type of the register 
-(see [@sec:type-equivalence] for details).  If the reset signal is an 
+the type of initialization value must be equivalent to the declared type of the
+register (see [@sec:type-equivalence] for details).  If the reset signal is an 
 `AsyncReset`{.firrtl}, then the reset value must be a constant type.  The 
 behavior of the register depends on the type of the reset signal.  
-`AsyncReset`.{firrtl} will immediately change the value of the register.  
-`UInt<1>`{.firrtl} will not change the value of the register until the next positive edge 
-of the clock signal (see [@sec:reset-type]).  `Reset`.{firrtl} is an abstract 
-reset whose behavior depends on reset inference.  In the following example, 
-`myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal 
-`myreset`{.firrtl} is high.
+`AsyncReset`{.firrtl} will immediately change the value of the register.  
+`UInt<1>`{.firrtl} will not change the value of the register until the next 
+positive edge of the clock signal (see [@sec:reset-type]).  `Reset`{.firrtl} is 
+an abstract reset whose behavior depends on reset inference.  In the following 
+example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the 
+signal `myreset`{.firrtl} is high.
 
 ``` firrtl
 wire myclock: Clock
@@ -1151,9 +1151,8 @@ See [@sec:indeterminate-values] for more information on indeterminate values.
 
 The behavior of conditional connections to circuit components with aggregate
 types can be modeled by first expanding each connect into individual connect
-statements on its ground elements (see [@sec:the-connection-algorithm;
-@sec:the-partial-connection-algorithm] for the connection algorithm) and then
-applying the conditional last connect semantics.
+statements on its ground elements (see [@sec:the-connection-algorithm] for the
+connection algorithm) and then applying the conditional last connect semantics.
 
 For example, the following snippet:
 
@@ -2225,8 +2224,7 @@ non-negative and less than or equal to the bit width of e.
 
 An expression's flow partially determines the legality of connecting to and from
 the expression. Every expression is classified as either *source*, *sink*, or
-*duplex*. For details on connection rules refer back to [@sec:connects;
-@sec:partial-connects].
+*duplex*. For details on connection rules refer back to [@sec:connects].
 
 The flow of a reference to a declared circuit component depends on the kind of
 circuit component. A reference to an input port, an instance, a memory, and a
@@ -2261,9 +2259,6 @@ The width of a ground-typed multiplexer expression is the maximum of its two
 corresponding input widths. For multiplexing aggregate-typed expressions, the
 resulting widths of each leaf sub-element is the maximum of its corresponding
 two input leaf sub-element widths.
-
-The width of a conditionally valid expression is the width of its input
-expression.
 
 The width of each primitive operation is detailed in [@sec:primitive-operations].
 
@@ -2530,6 +2525,7 @@ module IValue :
 
 The behavior of constructs which cause indeterminate values is implementation
 defined with the following constraints.
+
 - Register initialization is done in a consistent way for all registers.  If
 code is generated to randomly initialize some registers (or 0 fill them, etc),
 it should be generated for all registers.

@@ -1371,6 +1371,12 @@ data that is read out of the read port is undefined.
 In all cases, if a memory location is written to by more than one port on the
 same cycle, the stored value is undefined.
 
+### Constant memory type
+
+A memory with a constant data-type represents a ROM and may not have 
+write-ports.  It is beyond the scope of this specification how ROMs are 
+initialized.
+
 ## Instances
 
 FIRRTL modules are instantiated with the instance statement. The following

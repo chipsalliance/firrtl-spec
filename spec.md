@@ -253,7 +253,7 @@ represented by an intrinsic module is encoded in _intrinsic_.  The name of the
 intmodule is only used for instances, it has no semantic meaning.  An 
 implementation shall type-check all ports and parameters.  Ports may be 
 uninferred (either width or reset) if specified by the implementation (which is 
-useful inspecting and interacting with those inference features).
+useful for inspecting and interacting with those inference features).
 
 ``` firrtl
 intmodule MyIntrinsicModule :

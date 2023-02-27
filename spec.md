@@ -256,8 +256,8 @@ uninferred (either width or reset) if specified by the implementation (which is
 useful inspecting and interacting with those inference features).
 
 ``` firrtl
-intmodule MyExternalModule :
-  input foo: UInt<2>
+intmodule MyIntrinsicModule :
+  input foo: UInt
   output bar: UInt<4>
   output baz: SInt<8>
   intrinsic = IntrinsicName

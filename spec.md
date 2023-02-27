@@ -246,7 +246,7 @@ Verilog to downstream tools.
 
 Intrinsic modules are modules which represent implementation-defined, 
 compiler-provided functionality.  Intrinsics generally are used for 
-funcitonality which requires knowledge of the implementation or circuit not
+functionality which requires knowledge of the implementation or circuit not
 available to a library writer.  What intrinsics are supported by an 
 implementation is defined by the implementation.  The particular intrinsic
 represented by an intrinsic module is encoded in _intrinsic_.  The name of the

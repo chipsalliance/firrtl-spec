@@ -250,13 +250,13 @@ funcitonality which requires knowledge of the implementation or circuit not
 available to a library writer.  What intrinsics are supported by an 
 implementation is defined by the implementation.  The particular intrinsic
 represented by an intrinsic module is encoded in _intrinsic_.  The name of the
-intmodule is only used for instances, it has no semantic meaning.  An 
+intmodule is only used to identify a specific instance.  An 
 implementation shall type-check all ports and parameters.  Ports may be 
 uninferred (either width or reset) if specified by the implementation (which is 
 useful inspecting and interacting with those inference features).
 
 ``` firrtl
-intmodule MyIntrinsicModule :
+intmodule MyIntrinsicModule_xhello_y64 :
   input foo: UInt
   output bar: UInt<4>
   output baz: SInt<8>

@@ -2431,6 +2431,7 @@ is transformed to:
 module IValue :
   output o : UInt<8>
   input c : UInt<1>
+  input v : UInt<8>
 
   o <= v
 ```
@@ -2439,6 +2440,7 @@ Note that it is equally correct to produce:
 module IValue :
   output o : UInt<8>
   input c : UInt<1>
+  input v : UInt<8>
 
   wire a : UInt<8>
   when c :

@@ -538,7 +538,7 @@ for the element.
 #### A note on implementation
 
 Constant types are a restriction on FIRRTL types.  Therefore, FIRRTL structures 
-which would be expected to produce certain verilog structures will produce the
+which would be expected to produce certain Verilog structures will produce the
 same structure if instantiated with a constant type.  For example, an input port
 of type `const UInt` will result in a port in the verilog, if under the same
 conditions an input port of type `UInt` would have.

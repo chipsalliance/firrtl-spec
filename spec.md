@@ -1756,7 +1756,7 @@ The following example is the same as above, but with a constant vector.
 module MyModule :
   input in: const UInt
   output out: const UInt[10]
-  out[4] <= in // out[4] has a type of const UInt
+  out[4] <= in ; out[4] has a type of const UInt
 ```
 
 

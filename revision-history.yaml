@@ -18,6 +18,7 @@ revisionHistory:
     - Allow out-of-bounds errors to be caught at compile time.
     - Clarify the string argument for cover is a comment, not a message
       as it is for assert and assume.
+    - Add intrinsics.
     - Fix parameter grammar to include name of parameter.
   # Information about the old versions.  This should be static.
   oldVersions:

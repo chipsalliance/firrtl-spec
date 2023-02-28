@@ -247,6 +247,29 @@ A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated
 Verilog to downstream tools.
 
+## Implementation Defined Modules (Intrinsics)
+
+Intrinsic modules are modules which represent implementation-defined, 
+compiler-provided functionality.  Intrinsics generally are used for 
+functionality which requires knowledge of the implementation or circuit not
+available to a library writer.  What intrinsics are supported by an 
+implementation is defined by the implementation.  The particular intrinsic
+represented by an intrinsic module is encoded in _intrinsic_.  The name of the
+intmodule is only used to identify a specific instance.  An 
+implementation shall type-check all ports and parameters.  Ports may be 
+uninferred (either width or reset) if specified by the implementation (which is 
+useful for inspecting and interacting with those inference features).
+
+``` firrtl
+intmodule MyIntrinsicModule_xhello_y64 :
+  input foo: UInt
+  output bar: UInt<4>
+  output baz: SInt<8>
+  intrinsic = IntrinsicName
+  parameter x = "hello"
+  parameter y = 42
+```
+
 # Types
 
 FIRRTL has two classes of types: _ground_ types and _aggregate_ types.  Ground
@@ -3124,6 +3147,11 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               [ "defname" , "=" , id , newline ] ,
               { "parameter" , id , "=" , ( string | int ) , newline } ,
             dedent ;
+intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
+              { port , newline } ,
+              "intrinsic" , "=" , id , newline ,
+              { "parameter" , "=" , ( string | int ) , newline } ,
+            dedent ;
 
 (* In-line Annotations *)
 annotations = "%" , "[" , json_array , "]" ;
@@ -3136,7 +3164,7 @@ version = "FIRRTL" , "version" , sem_ver ;
 circuit =
   version , newline ,
   "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
-    { module | extmodule } ,
+    { module | extmodule | intmodule } ,
   dedent ;
 ```
 

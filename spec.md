@@ -1728,7 +1728,7 @@ field.
 module MyModule :
   input in: const UInt
   output out: {a: const UInt, b: UInt}
-  out.a <= in // out.a is of type const UInt
+  out.a <= in ; out.a is of type const UInt
 ```
 
 

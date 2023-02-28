@@ -2726,7 +2726,7 @@ module = "module" , id , ":" , [ info ] , newline , indent ,
 extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               [ "defname" , "=" , id , newline ] ,
-              { "parameter" , "=" , ( string | int ) , newline } ,
+              { "parameter" , id , "=" , ( string | int ) , newline } ,
             dedent ;
 
 (* In-line Annotations *)

@@ -520,10 +520,9 @@ constant-typed input ports of the top-level module.
 const UInt<3>
 const SInt
 const {real: UInt<32>, imag : UInt<32>, other : const SInt}
-const 
 ```
 
-Last-connect semantics of constant typed values is well defined, so long as any 
+Last-connect semantics of constant typed values are well defined, so long as any 
 control flow is conditioned on an expression which has a constant type.  This 
 means if a constant is being assigned to in a `when` block, the `when`'s 
 condition must be a constant.
@@ -2747,8 +2746,7 @@ type_ground = "Clock" | "Reset" | "AsyncReset"
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
 field = [ "flip" ] , id , ":" , type ;
-consttype = "const", type_ground | type_aggregate
-type = type_ground | type_aggregate | consttype ;
+type = [ "const" ], ( type_ground | type_aggregate ) ;
 
 (* Primitive operations *)
 primop_2expr_keyword =

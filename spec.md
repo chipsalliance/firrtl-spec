@@ -2753,7 +2753,7 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
             dedent ;
 intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
-              [ "intrinsic" , "=" , id , newline ] ,
+              "intrinsic" , "=" , id , newline ,
               { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;
 

@@ -1718,7 +1718,7 @@ The following example is the same as above, but with a constant output bundle.
 module MyModule :
   input in: const UInt
   output out: const {a: UInt, b: UInt}
-  out.a <= in // out.a is of type const UInt
+  out.a <= in ; out.a is of type const UInt
 ```
 
 The following example is the same as above, but with a bundle with a constant 

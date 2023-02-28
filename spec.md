@@ -246,14 +246,14 @@ Verilog to downstream tools.
 
 Intrinsic modules are modules which represent implementation-defined, 
 compiler-provided functionality.  Intrinsics generally are used for 
-funcitonality which requires knowledge of the implementation or circuit not
+functionality which requires knowledge of the implementation or circuit not
 available to a library writer.  What intrinsics are supported by an 
 implementation is defined by the implementation.  The particular intrinsic
 represented by an intrinsic module is encoded in _intrinsic_.  The name of the
 intmodule is only used to identify a specific instance.  An 
 implementation shall type-check all ports and parameters.  Ports may be 
 uninferred (either width or reset) if specified by the implementation (which is 
-useful inspecting and interacting with those inference features).
+useful for inspecting and interacting with those inference features).
 
 ``` firrtl
 intmodule MyIntrinsicModule_xhello_y64 :
@@ -2749,11 +2749,11 @@ module = "module" , id , ":" , [ info ] , newline , indent ,
 extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               [ "defname" , "=" , id , newline ] ,
-              { "parameter" , "=" , ( string | int ) , newline } ,
+              { "parameter" , id , "=" , ( string | int ) , newline } ,
             dedent ;
 intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
-              [ "intrinsic" , "=" , id , newline ] ,
+              "intrinsic" , "=" , id , newline ,
               { "parameter" , "=" , ( string | int ) , newline } ,
             dedent ;
 

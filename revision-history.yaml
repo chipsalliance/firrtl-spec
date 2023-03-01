@@ -22,6 +22,7 @@ revisionHistory:
       be preserved by a FIRRTL compiler
     - Add Compiler Implementation Details documenting Lower Types pass
     - Allow out-of-bounds errors to be caught at compile time.
+    - Define constant type modifier.
     - Clarify the string argument for cover is a comment, not a message
       as it is for assert and assume.
     - Remove stray language leftover from removing conditionally valid.

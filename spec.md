@@ -249,15 +249,15 @@ Verilog to downstream tools.
 
 ## Implementation Defined Modules (Intrinsics)
 
-Intrinsic modules are modules which represent implementation-defined, 
-compiler-provided functionality.  Intrinsics generally are used for 
+Intrinsic modules are modules which represent implementation-defined,
+compiler-provided functionality.  Intrinsics generally are used for
 functionality which requires knowledge of the implementation or circuit not
-available to a library writer.  What intrinsics are supported by an 
+available to a library writer.  What intrinsics are supported by an
 implementation is defined by the implementation.  The particular intrinsic
 represented by an intrinsic module is encoded in _intrinsic_.  The name of the
-intmodule is only used to identify a specific instance.  An 
-implementation shall type-check all ports and parameters.  Ports may be 
-uninferred (either width or reset) if specified by the implementation (which is 
+intmodule is only used to identify a specific instance.  An
+implementation shall type-check all ports and parameters.  Ports may be
+uninferred (either width or reset) if specified by the implementation (which is
 useful for inspecting and interacting with those inference features).
 
 ``` firrtl

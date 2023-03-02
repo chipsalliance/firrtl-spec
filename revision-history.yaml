@@ -4,32 +4,34 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    - Specify behavior of zero bit width integers, add zero-width literals
-    - Specify behavior of indeterminate values
-    - Add an explicit section about "Aggregate Types" and move "Vector Type" and
-      "Bundle Type" under it.
     - Remove Fixed Point Types.
-    - Move "head" and "tail" from primop_1expr_keyword to
-      primop_1expr1int_keyword in the "FIRRTL Language Definition".
-    - Add in-line annotation format
-    - Specify behavior of combinational loops
     - Remove conditionally valid expression (`validif`)
-    - Change connect to truncate widths to align with all existing FIRRTL
-      Compiler implementations
-    - Fix spelling/grammar issues
     - Remove partial connect ("<-")
     - Remove FIRRTL forms and lowering, indicate that high-level constructs may
       be preserved by a FIRRTL compiler
     - Add Compiler Implementation Details documenting Lower Types pass
-    - Allow out-of-bounds errors to be caught at compile time.
     - Define constant type modifier.
-    - Clarify the string argument for cover is a comment, not a message
-      as it is for assert and assume.
     - Remove stray language leftover from removing conditionally valid.
-    - Add intrinsics.
-    - Fix parameter grammar to include name of parameter.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 1.2.0
+      changes:
+        - Specify behavior of zero bit width integers, add zero-width literals
+        - Specify behavior of indeterminate values
+        - Add an explicit section about "Aggregate Types" and move "Vector Type" and
+          "Bundle Type" under it.
+        - Move "head" and "tail" from primop_1expr_keyword to
+          primop_1expr1int_keyword in the "FIRRTL Language Definition".
+        - Add in-line annotation format
+        - Specify behavior of combinational loops
+        - Change connect to truncate widths to align with all existing FIRRTL
+          Compiler implementations
+        - Fix spelling/grammar issues
+        - Allow out-of-bounds errors to be caught at compile time.
+        - Clarify the string argument for cover is a comment, not a message
+          as it is for assert and assume.
+        - Add intrinsics.
+        - Fix parameter grammar to include name of parameter.
     - version: 1.1.0
       changes:
         - Add version information to FIRRTL files

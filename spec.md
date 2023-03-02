@@ -244,15 +244,15 @@ Verilog to downstream tools.
 
 ## Implementation Defined Modules (Intrinsics)
 
-Intrinsic modules are modules which represent implementation-defined, 
-compiler-provided functionality.  Intrinsics generally are used for 
+Intrinsic modules are modules which represent implementation-defined,
+compiler-provided functionality.  Intrinsics generally are used for
 functionality which requires knowledge of the implementation or circuit not
-available to a library writer.  What intrinsics are supported by an 
+available to a library writer.  What intrinsics are supported by an
 implementation is defined by the implementation.  The particular intrinsic
 represented by an intrinsic module is encoded in _intrinsic_.  The name of the
-intmodule is only used to identify a specific instance.  An 
-implementation shall type-check all ports and parameters.  Ports may be 
-uninferred (either width or reset) if specified by the implementation (which is 
+intmodule is only used to identify a specific instance.  An
+implementation shall type-check all ports and parameters.  Ports may be
+uninferred (either width or reset) if specified by the implementation (which is
 useful for inspecting and interacting with those inference features).
 
 ``` firrtl
@@ -526,17 +526,17 @@ flows into the module, and the `d`{.firrtl} sub-field contained in the
 
 ### Constant Type
 
-A constant type is a type whose value is guaranteed to be unchanging at circuit 
-execution time.  Constant is a constraint on the mutability of the value, it 
-does not imply a literal value at a point in the emitted design.  Constant types 
-may be used in ports, wire, nodes, and generally anywhere a non-constant type is 
-usable.  Operations on constant type are well defined.  As a general rule (with 
-any exception listed in the definition for such operations as have exceptions), 
-an operation whose arguments are constant produces a constant.  An operation 
-with some non-constant arguments produce a non-constant.  Constants can be used 
-in any context with a source flow which allows a non-constant.  Constants may be 
-used as the target of a connect so long as the source of the connect is itself 
-constant.  These rules ensure all constants are derived from literals or from 
+A constant type is a type whose value is guaranteed to be unchanging at circuit
+execution time.  Constant is a constraint on the mutability of the value, it
+does not imply a literal value at a point in the emitted design.  Constant types
+may be used in ports, wire, nodes, and generally anywhere a non-constant type is
+usable.  Operations on constant type are well defined.  As a general rule (with
+any exception listed in the definition for such operations as have exceptions),
+an operation whose arguments are constant produces a constant.  An operation
+with some non-constant arguments produce a non-constant.  Constants can be used
+in any context with a source flow which allows a non-constant.  Constants may be
+used as the target of a connect so long as the source of the connect is itself
+constant.  These rules ensure all constants are derived from literals or from
 constant-typed input ports of the top-level module.
 
 ``` firrtl
@@ -545,29 +545,29 @@ const SInt
 const {real: UInt<32>, imag : UInt<32>, other : const SInt}
 ```
 
-Last-connect semantics of constant typed values are well defined, so long as any 
-control flow is conditioned on an expression which has a constant type.  This 
-means if a constant is being assigned to in a `when` block, the `when`'s 
+Last-connect semantics of constant typed values are well defined, so long as any
+control flow is conditioned on an expression which has a constant type.  This
+means if a constant is being assigned to in a `when` block, the `when`'s
 condition must be a constant.
 
 Output ports of external modules and input ports to the top-level module may be
-constant.  In such case, the value of the port is not known, but that it is 
+constant.  In such case, the value of the port is not known, but that it is
 non-mutating at runtime is known.
 
-The indexing of a constant aggregate produces a constant of the appropriate type 
+The indexing of a constant aggregate produces a constant of the appropriate type
 for the element.
 
 #### A note on implementation
 
-Constant types are a restriction on FIRRTL types.  Therefore, FIRRTL structures 
+Constant types are a restriction on FIRRTL types.  Therefore, FIRRTL structures
 which would be expected to produce certain Verilog structures will produce the
 same structure if instantiated with a constant type.  For example, an input port
 of type `const UInt` will result in a port in the Verilog, if under the same
 conditions an input port of type `UInt` would have.
 
-It is not intended that constants are a replacement for parameterization.  
+It is not intended that constants are a replacement for parameterization.
 Constant typed values have no particular meta-programming capability.  It is,
-for example, expected that a module with a constant input port be fully 
+for example, expected that a module with a constant input port be fully
 compilable to non-parameterized Verilog.
 
 
@@ -794,7 +794,7 @@ the current value of the element, writes are not visible until after a positive
 edges of the register's clock port.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
-register must be a passive type (see [@sec:passive-types]) and may not be 
+register must be a passive type (see [@sec:passive-types]) and may not be
 `const`.{.firrtl}.
 
 The following example demonstrates instantiating a register with the given name
@@ -811,14 +811,14 @@ A register may be declared with a reset signal and value.  The register's value
 is updated with the reset value when the reset is asserted.  The reset signal
 must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and
 the type of initialization value must be equivalent to the declared type of the
-register (see [@sec:type-equivalence] for details).  If the reset signal is an 
-`AsyncReset`{.firrtl}, then the reset value must be a constant type.  The 
-behavior of the register depends on the type of the reset signal.  
-`AsyncReset`{.firrtl} will immediately change the value of the register.  
-`UInt<1>`{.firrtl} will not change the value of the register until the next 
-positive edge of the clock signal (see [@sec:reset-type]).  `Reset`{.firrtl} is 
-an abstract reset whose behavior depends on reset inference.  In the following 
-example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the 
+register (see [@sec:type-equivalence] for details).  If the reset signal is an
+`AsyncReset`{.firrtl}, then the reset value must be a constant type.  The
+behavior of the register depends on the type of the reset signal.
+`AsyncReset`{.firrtl} will immediately change the value of the register.
+`UInt<1>`{.firrtl} will not change the value of the register until the next
+positive edge of the clock signal (see [@sec:reset-type]).  `Reset`{.firrtl} is
+an abstract reset whose behavior depends on reset inference.  In the following
+example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the
 signal `myreset`{.firrtl} is high.
 
 ``` firrtl
@@ -1394,8 +1394,8 @@ same cycle, the stored value is undefined.
 
 ### Constant memory type
 
-A memory with a constant data-type represents a ROM and may not have 
-write-ports.  It is beyond the scope of this specification how ROMs are 
+A memory with a constant data-type represents a ROM and may not have
+write-ports.  It is beyond the scope of this specification how ROMs are
 initialized.
 
 ## Instances
@@ -1596,7 +1596,7 @@ for performing primitive operations.
 ## Unsigned Integers
 
 A literal unsigned integer can be created given a non-negative integer value and
-an optional positive bit width. Integer literals are of constant type.  The 
+an optional positive bit width. Integer literals are of constant type.  The
 following example creates a 10-bit unsigned integer representing the number 42.
 
 ``` firrtl
@@ -1652,8 +1652,8 @@ UInt<7>("hD")
 ## Signed Integers
 
 Similar to unsigned integers, a literal signed integer can be created given an
-integer value and an optional positive bit width. Integer literals are of 
-constant type.  The following example creates a 10-bit unsigned integer 
+integer value and an optional positive bit width. Integer literals are of
+constant type.  The following example creates a 10-bit unsigned integer
 representing the number -42.
 
 ``` firrtl
@@ -1673,7 +1673,7 @@ SInt(-42)
 
 Similar to unsigned integers, a literal signed integer can alternatively be
 created given a string representing its bit representation and an optional bit
-width.  Like with the integer representation, the expression has a constant 
+width.  Like with the integer representation, the expression has a constant
 type.
 
 The bit representation contains a binary, octal or hex indicator, followed by an
@@ -1720,8 +1720,8 @@ will be rewritten as "the port `in`{.firrtl} is connected to the port
 ## Sub-fields
 
 The sub-field expression refers to a sub-element of an expression with a bundle
-type.  If the expression is of a constant bundle type, the sub-element shall be 
-of a constant type (`const`.{firrtl} propagates from the bundle to the element 
+type.  If the expression is of a constant bundle type, the sub-element shall be
+of a constant type (`const`.{firrtl} propagates from the bundle to the element
 on indexing).
 
 The following example connects the `in`{.firrtl} port to the `a`{.firrtl}
@@ -1743,7 +1743,7 @@ module MyModule :
   out.a <= in ; out.a is of type const UInt
 ```
 
-The following example is the same as above, but with a bundle with a constant 
+The following example is the same as above, but with a bundle with a constant
 field.
 
 ``` firrtl
@@ -1758,7 +1758,7 @@ module MyModule :
 
 The sub-index expression statically refers, by index, to a sub-element of an
 expression with a vector type. The index must be a non-negative integer and
-cannot be equal to or exceed the length of the vector it indexes.  If the 
+cannot be equal to or exceed the length of the vector it indexes.  If the
 expression is of a constant vector type, the sub-element shall be of a constant
 type.
 
@@ -1786,11 +1786,11 @@ module MyModule :
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed
 expression using a calculated index. The index must be an expression with an
-unsigned integer type.  If the expression is of a constant vector type, the 
-sub-element shall be of a constant type.  An access to an out-of-bounds element 
-results in an indeterminate value (see [@sec:indeterminate-values]).  Each 
-out-of-bounds element is a different indeterminate value.  Sub-access operations 
-with constant index may be converted to sub-index operations even though it 
+unsigned integer type.  If the expression is of a constant vector type, the
+sub-element shall be of a constant type.  An access to an out-of-bounds element
+results in an indeterminate value (see [@sec:indeterminate-values]).  Each
+out-of-bounds element is a different indeterminate value.  Sub-access operations
+with constant index may be converted to sub-index operations even though it
 converts indeterminate-value-on-out-of-bounds behavior to a compile-time error.
 
 The following example connects the n'th sub-element of the `in`{.firrtl} port to
@@ -1963,7 +1963,7 @@ The arguments of all primitive operations must be expressions with ground types,
 while their parameters are static integer literals. Each specific operation can
 place additional restrictions on the number and types of their arguments and
 parameters.  Primitive operations may have all their arguments of constant type,
-in which case their return type is of constant type.  If the operation has a 
+in which case their return type is of constant type.  If the operation has a
 mixed constant and non-constant arguments, the result is non-constant.
 
 Notationally, the width of an argument e is represented as w~e~.

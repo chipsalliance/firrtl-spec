@@ -6,7 +6,7 @@ revisionHistory:
   thisVersion:
     - Add 'asAsyncReset' to primop_1expr_keyword in "FIRRTL Language Definition"
     - Fix grammar for force_release statements
-
+    - Add a description of conventions for modules
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 2.1.1

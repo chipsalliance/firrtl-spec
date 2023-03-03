@@ -2465,8 +2465,8 @@ containing two annotations:
 ```
 
 Annotations may also be stored in-line along with the FIRRTL circuit by wrapping
-Annotation JSON in `%[ ... ]`.  The following shows the above annotation file
-stored in-line:
+Annotation JSON in `%[ ... ]`{.firrtl}.  The following shows the above
+annotation file stored in-line:
 
 ``` firrtl
 circuit Foo: %[[
@@ -2479,7 +2479,7 @@ circuit Foo: %[[
     "target":"~Foo|Baz"
   }
 ]]
-  module : Foo
+  module Foo :
   ; ...
 ```
 

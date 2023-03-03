@@ -1418,7 +1418,7 @@ The resulting instance has a bundle type. Each port of the instantiated module
 is represented by a field in the bundle with the same name and type as the
 port. The fields corresponding to input ports are flipped to indicate their data
 flows in the opposite direction as the output ports.  The `myinstance`{.firrtl}
-instance in the example above has type `{flip a:UInt, b:UInt}`.
+instance in the example above has type `{flip a:UInt, b:UInt}`{.firrtl}.
 
 Modules have the property that instances can always be *inlined* into the parent
 module without affecting the semantics of the circuit.
@@ -2297,8 +2297,8 @@ to show that the loop does not exist under actual mux select values.
 Combinational loops are not allowed and designs should not depend on any FIRRTL
 transformation to remove or break such combinational loops.
 
-The module `Foo` has a combinational loop and is not legal,
-even though the loop will be removed by last connect semantics.
+The module `Foo`{.firrtl} has a combinational loop and is not legal, even
+though the loop will be removed by last connect semantics.
 ``` firrtl
   module Foo:
     input a: UInt<1>
@@ -2307,8 +2307,8 @@ even though the loop will be removed by last connect semantics.
     b <= a
  ```
 
-The following module `Foo2` has a combinational loop, even if it can be proved
-that `n1` and `n2` never overlap.
+The following module `Foo2`{.firrtl} has a combinational loop, even if it can
+be proved that `n1`{.firrtl} and `n2`{.firrtl} never overlap.
 ``` firrtl
 module Foo2 :
   input n1: UInt<2>
@@ -2319,8 +2319,8 @@ module Foo2 :
   vec[n2] <= tmp
 ```
 
-Module `Foo3` is another example of an illegal combinational loop, even if it
-only exists at the word level and not at the bit-level.
+Module `Foo3`{.firrtl} is another example of an illegal combinational loop,
+even if it only exists at the word level and not at the bit-level.
 
 ```firrtl
 module Foo3
@@ -2403,8 +2403,8 @@ Targets are specific enough to refer to any specific module in a folded,
 unfolded, or partially folded representation.
 
 To show some examples of what these look like, consider the following example
-circuit. This consists of four instances of module `Baz`, two instances of
-module `Bar`, and one instance of module `Foo`:
+circuit. This consists of four instances of module `Baz`{.firrtl}, two
+instances of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
 ```firrtl
 circuit Foo:
@@ -2434,10 +2434,10 @@ Target                   Description
 -----------------------  -------------
 `~Foo`                   refers to the whole circuit
 `~Foo|Foo`               refers to the top module
-`~Foo|Bar`               refers to module `Bar` (or both instances of module `Bar`)
-`~Foo|Foo/a:Bar`         refers just to one instance of module `Bar`
-`~Foo|Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`
-`~Foo|Bar/d:Baz`         refers to two instances of module `Baz`
+`~Foo|Bar`               refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})
+`~Foo|Foo/a:Bar`         refers just to one instance of module `Bar`{.firrtl}
+`~Foo|Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`{.firrtl}
+`~Foo|Bar/d:Baz`         refers to two instances of module `Baz`{.firrtl}
 
 If a target does not contain an instance path, it is a _local_ target.  A local
 target points to all instances of a module.  If a target contains an instance
@@ -2656,10 +2656,10 @@ circuit Foo :
 ```
 
 All circuits, modules, ports and statements can optionally be followed with the
-info token `@[fileinfo]` where fileinfo is a string containing the source file
-information from where it was generated. The following characters need to be
-escaped with a leading '`\`': '`\n`' (new line), '`\t`' (tab), '`]`' and '`\`'
-itself.
+info token `@[fileinfo]`{.firrtl} where fileinfo is a string containing the
+source file information from where it was generated. The following characters
+need to be escaped with a leading '`\`': '`\n`' (new line), '`\t`' (tab), '`]`'
+and '`\`' itself.
 
 The following example shows the info tokens included:
 

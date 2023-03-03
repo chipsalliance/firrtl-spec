@@ -2656,10 +2656,10 @@ circuit Foo :
 ```
 
 All circuits, modules, ports and statements can optionally be followed with the
-info token `@[fileinfo]` where fileinfo is a string containing the source file
-information from where it was generated. The following characters need to be
-escaped with a leading '`\`': '`\n`' (new line), '`\t`' (tab), '`]`' and '`\`'
-itself.
+info token `@[fileinfo]`{.firrtl} where fileinfo is a string containing the
+source file information from where it was generated. The following characters
+need to be escaped with a leading '`\`': '`\n`' (new line), '`\t`' (tab), '`]`'
+and '`\`' itself.
 
 The following example shows the info tokens included:
 

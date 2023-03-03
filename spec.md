@@ -547,8 +547,8 @@ const {real: UInt<32>, imag : UInt<32>, other : const SInt}
 
 Last-connect semantics of constant typed values are well defined, so long as any
 control flow is conditioned on an expression which has a constant type.  This
-means if a constant is being assigned to in a `when` block, the `when`'s
-condition must be a constant.
+means if a constant is being assigned to in a `when`{.firrtl} block, the
+`when`{.firrtl}'s condition must be a constant.
 
 Output ports of external modules and input ports to the top-level module may be
 constant.  In such case, the value of the port is not known, but that it is
@@ -562,8 +562,8 @@ for the element.
 Constant types are a restriction on FIRRTL types.  Therefore, FIRRTL structures
 which would be expected to produce certain Verilog structures will produce the
 same structure if instantiated with a constant type.  For example, an input port
-of type `const UInt` will result in a port in the Verilog, if under the same
-conditions an input port of type `UInt` would have.
+of type `const UInt`{.firrtl} will result in a port in the Verilog, if under
+the same conditions an input port of type `UInt`{.firrtl} would have.
 
 It is not intended that constants are a replacement for parameterization.
 Constant typed values have no particular meta-programming capability.  It is,
@@ -795,7 +795,7 @@ edges of the register's clock port.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
 register must be a passive type (see [@sec:passive-types]) and may not be
-`const`.{.firrtl}.
+`const`{.firrtl}.
 
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
@@ -1721,7 +1721,7 @@ will be rewritten as "the port `in`{.firrtl} is connected to the port
 
 The sub-field expression refers to a sub-element of an expression with a bundle
 type.  If the expression is of a constant bundle type, the sub-element shall be
-of a constant type (`const`.{firrtl} propagates from the bundle to the element
+of a constant type (`const`{.firrtl} propagates from the bundle to the element
 on indexing).
 
 The following example connects the `in`{.firrtl} port to the `a`{.firrtl}

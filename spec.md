@@ -2434,10 +2434,10 @@ Target                   Description
 -----------------------  -------------
 `~Foo`                   refers to the whole circuit
 `~Foo|Foo`               refers to the top module
-`~Foo|Bar`               refers to module `Bar` (or both instances of module `Bar`)
-`~Foo|Foo/a:Bar`         refers just to one instance of module `Bar`
-`~Foo|Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`
-`~Foo|Bar/d:Baz`         refers to two instances of module `Baz`
+`~Foo|Bar`               refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})
+`~Foo|Foo/a:Bar`         refers just to one instance of module `Bar`{.firrtl}
+`~Foo|Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`{.firrtl}
+`~Foo|Bar/d:Baz`         refers to two instances of module `Baz`{.firrtl}
 
 If a target does not contain an instance path, it is a _local_ target.  A local
 target points to all instances of a module.  If a target contains an instance

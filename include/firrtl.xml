@@ -97,6 +97,7 @@
         <DetectChar char="&quot;" attribute="String" context="string"/>
         <StringDetect String="reg" attribute="Keyword" context="register"/>
         <StringDetect String="mem" attribute="Keyword" context="memoryFirst"/>
+        <StringDetect String="%[" attribute="Operator" context="inlineannotation"/>
       </context>
       <context name="memoryFirst" attribute="ID" lineEndContext="#pop!memory">
       </context>
@@ -145,6 +146,10 @@
         <DetectChar char="}" attribute="Separator" context="#pop"/>
         <AnyChar String=":," attribute="Separator" context="#stay"/>
         <DetectChar char= ";" context="comment" attribute="Comment"/>
+      </context>
+      <context name="inlineannotation" attribute="Operator" lineEndContext="#stay">
+        <DetectChar char="]" attribute="Operator" context="#pop"/>
+        <IncludeRules context="##JSON" includeAttrib="true"/>
       </context>
     </contexts>
     <itemDatas>

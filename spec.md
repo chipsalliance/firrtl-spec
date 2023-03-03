@@ -2479,7 +2479,7 @@ circuit Foo: %[[
     "target":"~Foo|Baz"
   }
 ]]
-  module : Foo
+  module Foo :
   ; ...
 ```
 

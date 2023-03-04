@@ -13,6 +13,7 @@ revisionHistory:
     - Define constant type modifier.
     - Remove stray language leftover from removing conditionally valid.
     - Render inline annotations as JSON, fix typo in example.
+    - Fix rendering of type modifiers (const) in document.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 1.2.0

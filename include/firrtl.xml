@@ -28,6 +28,9 @@
       <item>Reset</item>
       <item>AsyncReset</item>
     </list>
+    <list name="typemodifiers">
+      <item>const</item>
+    </list>
     <list name="conditionals">
       <item>when</item>
       <item>else</item>
@@ -83,6 +86,7 @@
       <context name="Normal Text" attribute="ID" lineEndContext="#pop">
         <keyword attribute="Keyword" context="#stay" String="keywords" />
         <keyword attribute="Keyword" context="type" String="types" />
+        <keyword attribute="Keyword" context="#stay" String="typemodifiers" />
         <keyword attribute="Structure" context="#stay" String="structure" />
         <keyword attribute="PrimOp" context="#stay" String="primops" />
         <keyword attribute="Conditional" context="#stay" String="conditionals" />
@@ -142,6 +146,7 @@
       <context name="field" attribute="ID" lineEndContext="#stay">
         <StringDetect String="flip" attribute="Keyword" context="#stay"/>
         <keyword String="types" attribute="Keyword" context="type"/>
+        <keyword String="typemodifiers" attribute="Keyword" context="#stay"/>
         <DetectChar char="{" attribute="Separator" context="field"/>
         <DetectChar char="}" attribute="Separator" context="#pop"/>
         <AnyChar String=":," attribute="Separator" context="#stay"/>

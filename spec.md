@@ -2824,7 +2824,9 @@ memory = "mem" , id , ":" , [ info ] , newline , indent ,
 (* Statements *)
 statement = "wire" , id , ":" , type , [ info ]
           | "reg" , id , ":" , type , expr ,
-            [ "(with: {reset => (" , expr , "," , expr ")})" ] , [ info ]
+            [ "with" , ":" , "(" , "reset" , "=>" ,
+              "(" , expr , "," , expr , ")", ")" ] ,
+            [ info ]
           | memory
           | "inst" , id , "of" , id , [ info ]
           | "node" , id , "=" , expr , [ info ]

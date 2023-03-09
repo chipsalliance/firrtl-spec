@@ -641,7 +641,7 @@ Probe types may target `const`{.firrtl} signals, but cannot use
 `RWProbe<const T>`{.firrtl}, as constant values should never be mutated at
 runtime.
 
-### Width and Reset Inference
+#### Width and Reset Inference
 
 Probe types do participate in global width and reset inference, but only in the
 direction of the reference itself (no inference in the other direction, even
@@ -1873,9 +1873,10 @@ location is not significant other than scoping, and do not have last-connect
 semantics.  Every sink-flow probe must be the target of exactly one of these
 statements.
 
-The define statement takes a sink-flow static reference target and sets
-it to the specified reference, which must either be a probe
-expression, or a static reference source.
+The define statement takes a sink-flow static reference target and sets it to
+the specified reference, which must either be a probe expression, or a static
+reference source.
+
 
 Example:
 
@@ -1924,6 +1925,13 @@ module Foo:
 
 `RWProbe`{.firrtl} references to ports are not allowed on public-facing
 modules.
+
+Define statements can set a `Probe`{.firrtl} to either a `Probe`{.firrtl} or
+`RWProbe`{.firrtl}, but a `RWProbe`{.firrtl} cannot be set to a
+`Probe`{.firrtl}.  The inner types of the two references must (recursively) be
+identical or identical with the destination containing uninferred versions of
+the corresponding element in the source type.  See
+[@sec:width-and-reset-inference] for details.
 
 #### Probes and Passive Types
 

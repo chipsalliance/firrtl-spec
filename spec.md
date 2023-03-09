@@ -636,6 +636,44 @@ Probe types may be specified as part of an external module (see
 [@sec:externally-defined-modules]), with the resolved referent optionally
 specified using `ref`{.firrtl} statements.
 
+Probe types may target `const`{.firrtl} signals, but cannot use
+`rwprobe`{.firrtl} with a constant signal to produce a 
+`RWProbe<const T>`{.firrtl}, as constant values should never be mutated at
+runtime.
+
+### Width and Reset Inference
+
+Probe types do participate in global width and reset inference, but only in the
+direction of the reference itself (no inference in the other direction, even
+with force statements).  Both inner types of the references used in a
+`define`{.firrtl} statement must be identical or the same type with the
+destination uninferred (this is checked recursively).  Additionally, any
+contained reset type is similarly only inferred in the direction of the
+reference, even if it eventually reaches a known reset type.
+
+In the following example, the FIRRTL compiler will produce an error constrasted
+with inferring the input port as `AsyncReset`{.firrtl} if a direct connection was used:
+
+```firrtl
+circuit ResetInferBad :
+  module ResetInferBad :
+    input in : Reset
+    output out : AsyncReset
+    out <= read(probe(in))
+```
+
+The following circuit has all resets inferred to `AsyncReset`{.firrtl}, however:
+
+```firrtl
+circuit ResetInferGood :
+  module ResetInferGood :
+    input in : Reset
+    output out : Reset
+    output out2 : AsyncReset
+    out <= read(probe(in))
+    out2 <= in
+```
+
 ### Input References
 
 Probe references are generally forwarded up the design hierarchy, being used to

@@ -1886,8 +1886,7 @@ module Refs:
   output a : Probe<{x: UInt, y: UInt}> ; read-only ref. to wire 'p'
   output b : RWProbe<UInt> ; force-able ref. to node 'q', inferred width.
   output c : Probe<UInt<1>> ; read-only ref. to register 'r'
-  output d : RWProbe<UInt<2>>[4] ; vector of ref.'s to memory data in 'm'
-  output e : Probe<Clock> ; ref. to input clock port
+  output d : Probe<Clock> ; ref. to input clock port
 
   wire p : {x: UInt, flip y : UInt}
   define a = probe(p) ; probe is passive
@@ -1895,14 +1894,7 @@ module Refs:
   define b = rwprobe(q)
   reg r: UInt, clock
   define c = probe(r)
-  mem m:
-    data-type => UInt<5>
-    depth => 4
-    ; ...
-    read-under-write => undefined
-
-  define d = rwprobe(m)
-  define e = probe(clock)
+  define d = probe(clock)
 ```
 
 The target is not required to be only an identifier, it may be a field within a
@@ -2616,9 +2608,8 @@ The probe expression creates a reference to a read-only or force-able view of
 the data underlying the specified reference expression.
 
 The type of the produced probe reference is always passive, but the probed
-expression may not be.
-
-Probed memories produce a vector of references to their data.
+expression may not be.  Memories and their ports are not supported as probe
+targets.
 
 There are two probe varieties: `probe`{.firrtl} and `rwprobe`{.firrtl} for
 producing probes of type `Probe`{.firrtl} and `RWProbe`{.firrtl}, respectively.

@@ -1948,8 +1948,9 @@ Nested declarations (see [@sec:nested-declarations]) may be exported:
 
 ```firrtl
 module RefProducer :
-  input a : UInt
+  input a : UInt<4>
   input en : UInt<1>
+  input clk : Clock
   output thereg : Probe<UInt>
 
   when en :

@@ -633,7 +633,7 @@ module NoSubAccessesWithProbes :
 ```
 
 Probe types may be specified as part of an external module (see
-[@sec:externally-defined-modules]), with the resolved referent optionally
+[@sec:externally-defined-modules]), with the resolved referent for each
 specified using `ref`{.firrtl} statements.
 
 Probe types may target `const`{.firrtl} signals, but cannot use

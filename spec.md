@@ -578,9 +578,9 @@ underlying circuit constructs they originate from, captured using
 possible, as read-only probes impose fewer limitations and are more amenable to
 optimization.
 
-Probe references must always be able to be statically traced to their target, or to
-an external module's output reference.  This means no conditional connections
-via sub-accesses, multiplexers, or other means.
+Probe references must always be able to be statically traced to their target,
+or to an external module's output reference.  This means no conditional
+connections via sub-accesses, multiplexers, or other means.
 
 ### Probe Types
 
@@ -688,8 +688,8 @@ reference paths.  When probe references are used to access the underlying data
 statically known element at or below the point of that use, in all contexts.
 Support for other scenarios are allowed as determined by the implementation.
 
-Input probe references are not allowed on public-facing modules: e.g., the top module
-and external modules.
+Input probe references are not allowed on public-facing modules: e.g., the top
+module and external modules.
 
 Examples of input probe references follow.
 

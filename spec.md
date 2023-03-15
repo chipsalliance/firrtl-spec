@@ -552,14 +552,14 @@ For use in cross-module references (hierarchical references in Verilog), a
 reference to a probe of the circuit component is used.  See [@sec:probes] for
 details.
 
-Using reference-type ports, modules may expose internals for reading and
-forcing without routing wires out of the design.
+Using probe-type ports, modules may expose internals for reading and forcing
+without routing wires out of the design.
 
-This is often useful for testing and verification, where reference types allow
+This is often useful for testing and verification, where probe types allow
 reads of the entities to be explicitly exported without hard-coding their place
-in the design.  Instead, by using references, a testbench module may express
-accesses to the internals which will resolve to the appropriate target language
-construct by the compiler (e.g., hierarchical reference).
+in the design.  Instead, by using probe-type references, a testbench module may
+express accesses to the internals which will resolve to the appropriate target
+language construct by the compiler (e.g., hierarchical reference).
 
 Reference ports are not expected to be synthesizable or representable in the
 target language and are omitted in the compiled design; they only exist at the

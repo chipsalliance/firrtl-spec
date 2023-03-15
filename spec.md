@@ -652,7 +652,8 @@ contained reset type is similarly only inferred in the direction of the
 reference, even if it eventually reaches a known reset type.
 
 In the following example, the FIRRTL compiler will produce an error constrasted
-with inferring the input port as `AsyncReset`{.firrtl} if a direct connection was used:
+with inferring the input port as `AsyncReset`{.firrtl} if a direct connection
+was used:
 
 ```firrtl
 circuit ResetInferBad :
@@ -662,7 +663,8 @@ circuit ResetInferBad :
     out <= read(probe(in))
 ```
 
-The following circuit has all resets inferred to `AsyncReset`{.firrtl}, however:
+The following circuit has all resets inferred to `AsyncReset`{.firrtl},
+however:
 
 ```firrtl
 circuit ResetInferGood :

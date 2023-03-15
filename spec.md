@@ -578,7 +578,7 @@ underlying circuit constructs they originate from, captured using
 possible, as read-only probes impose fewer limitations and are more amenable to
 optimization.
 
-References must always be able to be statically traced to their target, or to
+Probe references must always be able to be statically traced to their target, or to
 an external module's output reference.  This means no conditional connections
 via sub-accesses, multiplexers, or other means.
 
@@ -591,11 +591,12 @@ There are two probe types: `Probe`{.firrtl} and `RWProbe`{.firrtl}.
 
 Probe types are parametric over the type of data that they refer to, which is
 always passive (as defined in [@sec:passive-types]) even when the probed target
-is not (see [@sec:probes-and-passive-types]).  Probe types cannot contain probe
-types.
+is not (see [@sec:probes-and-passive-types]).  Probe types cannot contain
+reference types.
 
 Conceptually probe types are single-direction views of the probed data-flow
-point.
+point.  They are references to the data accessed with the probe expression
+generating the reference.
 
 Examples:
 
@@ -673,7 +674,7 @@ circuit ResetInferGood :
     out2 <= in
 ```
 
-### Input References
+### Input Probe References
 
 Probe references are generally forwarded up the design hierarchy, being used to
 reach down into design internals from a higher point.  As a result probe-type
@@ -687,10 +688,10 @@ reference paths.  When probe references are used to access the underlying data
 statically known element at or below the point of that use, in all contexts.
 Support for other scenarios are allowed as determined by the implementation.
 
-Input references are not allowed on public-facing modules: e.g., the top module
+Input probe references are not allowed on public-facing modules: e.g., the top module
 and external modules.
 
-Examples of input references follow.
+Examples of input probe references follow.
 
 #### U-Turn Example
 
@@ -770,10 +771,10 @@ circuit Top:
 
 #### IO with references to endpoint data
 
-A primary motivation for input references is that in some situations they make
-it easier to generate the FIRRTL code.  While output references necessarily
-capture this design equivalently, this can be harder to generate and so is
-useful to support.
+A primary motivation for input probe references is that in some situations they
+make it easier to generate the FIRRTL code.  While output references
+necessarily capture this design equivalently, this can be harder to generate
+and so is useful to support.
 
 The following demonstrates an example of this, where it's convenient to use the
 same bundle type as both output to one module and input to another, with
@@ -781,7 +782,7 @@ references populated by both modules targeting signals of interest at each end.
 For this to be the same bundle type -- input on one and output on another --
 the `Probe` references for each end should be output-oriented and accordingly
 are input-oriented at the other end.  It would be inconvenient to generate this
-design so that each has output references only.
+design so that each has output probe references only.
 
 The `Connect` module instantiates a `Producer` and `Consumer` module, connects
 them using a bundle with references in both orientations, and forwards those
@@ -1910,8 +1911,8 @@ semantics.  Every sink-flow probe must be the target of exactly one of these
 statements.
 
 The define statement takes a sink-flow static reference target and sets it to
-the specified reference, which must either be a probe expression, or a static
-reference source.
+the specified reference, which must either be a compatible probe expression or
+static reference source.
 
 
 Example:
@@ -2034,7 +2035,7 @@ using input reference-type ports, which are allowed but should be used
 carefully as they make it possible to express
 invalid reference paths.
 
-See [@sec:input-references] for more details, a small example is given below:
+See [@sec:input-probe-references] for more details, a small example is given below:
 
 ```firrtl
 module UnusedInputRef :

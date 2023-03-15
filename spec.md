@@ -681,11 +681,11 @@ references are most often output ports, but may also be used on input ports
 internally, as described in this section.
 
 Input probe references are allowed on internal modules, but they should be used
-with care because they make it possible to express invalid reference paths.
-When probe references are used to access the underlying data (e.g., with a
-`read`{.firrtl} or `force`{.firrtl}), they must target a statically known
-element at or below the point of that use.  Support for other scenarios are
-allowed as determined by the implementation.
+with care because they make it possible to express invalid or multiple
+reference paths.  When probe references are used to access the underlying data
+(e.g., with a `read`{.firrtl} or `force`{.firrtl}), they must target a
+statically known element at or below the point of that use, in all contexts.
+Support for other scenarios are allowed as determined by the implementation.
 
 Input references are not allowed on public-facing modules: e.g., the top module
 and external modules.
@@ -725,10 +725,47 @@ where this is not the case, and such upwards references are not supported:
 
 ```firrtl
 module Foo:
-   input in : Probe<UInt>
-   output out : UInt
+  input in : Probe<UInt>
+  output out : UInt
 
-   out <= read(in)
+  out <= read(in)
+```
+
+Even when the target resolves at or below, the path must be the same in all
+contexts so a single description of the module may be generated.
+
+The following example demonstrates such an invalid use of probe references:
+
+```firrtl
+circuit Top:
+  module Top:
+    input in : UInt<4>
+    output out : UInt
+
+    inst ud1 of UpDown
+    ud1.in <= in
+    define ud1.in_ref = ud1.r1
+
+    inst ud2 of UpDown
+    ud2.in <= in
+    define ud2.in_ref = ud2.r2
+
+    out <= add(ud1.out, ud2.out)
+
+  module UpDown:
+    input in : UInt<4>
+    input in_ref : Probe<UInt<4>>
+    output r1 : Probe<UInt<4>>
+    output r2 : Probe<UInt<4>>
+    output out : UInt
+
+    ; In ud1, this is UpDown.n1, in ud2 this is UpDown.n2 .
+    ; However, this is not supported as it cannot be both at once.
+    out <= read(in_ref)
+    node n1 = and(in, UInt<4>(1))
+    node n2 = and(in, UInt<4>(3))
+    define r1 = probe(n1)
+    define r2 = probe(n2)
 ```
 
 #### IO with references to endpoint data

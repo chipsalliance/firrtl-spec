@@ -4,20 +4,22 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    - Remove Fixed Point Types.
-    - Remove conditionally valid expression (`validif`)
-    - Remove partial connect ("<-")
-    - Remove FIRRTL forms and lowering, indicate that high-level constructs may
-      be preserved by a FIRRTL compiler
-    - Add Compiler Implementation Details documenting Lower Types pass
-    - Define constant type modifier.
-    - Remove stray language leftover from removing conditionally valid.
-    - Render inline annotations as JSON, fix typo in example.
-    - Fix rendering of type modifiers (const) in document.
-    - Fix grammar for registers.
-    - Add reference types and related statements.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 2.0.0
+      changes:
+      - Remove Fixed Point Types.
+      - Remove conditionally valid expression (`validif`)
+      - Remove partial connect ("<-")
+      - Remove FIRRTL forms and lowering, indicate that high-level constructs
+        may be preserved by a FIRRTL compiler
+      - Add Compiler Implementation Details documenting Lower Types pass
+      - Define constant type modifier.
+      - Remove stray language leftover from removing conditionally valid.
+      - Render inline annotations as JSON, fix typo in example.
+      - Fix rendering of type modifiers (const) in document.
+      - Fix grammar for registers.
+      - Add reference types and related statements.
     - version: 1.2.0
       changes:
         - Specify behavior of zero bit width integers, add zero-width literals

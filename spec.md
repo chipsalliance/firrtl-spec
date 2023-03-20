@@ -237,8 +237,8 @@ extmodule MyExternalModule :
 ```
 
 The widths of all externally defined module ports must be specified.  Width
-inference, described in [@sec:width-inference], is not supported for module
-ports.
+inference, described in [@sec:width-inference], is not supported for externally
+defined module ports.
 
 A common use of an externally defined module is to represent a Verilog module
 that will be written separately and provided together with FIRRTL-generated

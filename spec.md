@@ -637,7 +637,7 @@ Probe types may be specified as part of an external module (see
 specified using `ref`{.firrtl} statements.
 
 Probe types may target `const`{.firrtl} signals, but cannot use
-`rwprobe`{.firrtl} with a constant signal to produce a 
+`rwprobe`{.firrtl} with a constant signal to produce a
 `RWProbe<const T>`{.firrtl}, as constant values should never be mutated at
 runtime.
 

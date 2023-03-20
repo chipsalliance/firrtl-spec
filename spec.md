@@ -224,7 +224,15 @@ references.  Each name--value parameter statement will result in a value being
 passed to the named parameter in the resulting Verilog.  Every port or port
 sub-element of reference type must have exactly one `ref`{.firrtl} statement.
 
-An example of an externally defined module is:
+The widths of all externally defined module ports must be specified.  Width
+inference, described in [@sec:width-inference], is not supported for externally
+defined module ports.
+
+A common use of an externally defined module is to represent a Verilog module
+that will be written separately and provided together with FIRRTL-generated
+Verilog to downstream tools.
+
+An example of an externally defined module with parameters is:
 
 ``` firrtl
 extmodule MyExternalModule :
@@ -235,14 +243,6 @@ extmodule MyExternalModule :
   parameter x = "hello"
   parameter y = 42
 ```
-
-The widths of all externally defined module ports must be specified.  Width
-inference, described in [@sec:width-inference], is not supported for externally
-defined module ports.
-
-A common use of an externally defined module is to represent a Verilog module
-that will be written separately and provided together with FIRRTL-generated
-Verilog to downstream tools.
 
 An example of an externally defined module with references is:
 
@@ -259,6 +259,38 @@ current FIRRTL design. While they are part of the FIRRTL-level interface to the
 external module, they are not expected to correspond to a particular Verilog
 construct. They exist to carry information about the implementation of the
 extmodule necessary for code generation of the current circuit.
+
+The types of parameters may be any of the following literal types.  See
+[@sec:literals] for more information:
+
+1. Integer literal, e.g. `42`{.firrtl}
+1. String literal, e.g., `"hello"`{.firrtl}
+1. Raw String Literal, e.g., `'world'`{.firrtl}
+
+An integer literal is lowered to a Verilog literal.  A string literal is lowered
+to a Verilog string.  A raw string literal is lowered verbatim to Verilog.
+
+As an example, consider the following external module:
+
+``` firrtl
+extmodule Foo:
+  parameter foo = 'hello'
+  parameter bar = "world"
+  parameter baz = 42
+```
+
+This is lowered to a Verilog instantiation site as:
+
+``` verilog
+Foo #(
+  .foo(hello),
+  .bar("world")
+  .baz(42)
+) bar();
+```
+
+A parameter that is a string-encoded integer literal is treated as a string
+literal.
 
 ## Implementation Defined Modules (Intrinsics)
 
@@ -282,6 +314,69 @@ intmodule MyIntrinsicModule_xhello_y64 :
   parameter x = "hello"
   parameter y = 42
 ```
+
+The types of intrinsic module parameters may only be literal integers or
+string literals.
+
+A parameter that is a string-encoded integer literal is treated as a string
+literal.
+
+# Literals
+
+FIRRTL has both integer, string, and raw string literals.
+
+An integer literal is a signed or unsigned decimal integer.  The following are
+examples of integer literals:
+
+``` firrtl
+42
+-9000
+```
+
+A string literal is a sequence of characters with a leading `"`{.firrtl} and a
+trailing `"`{.firrtl}.  The following is an example of a string literal:
+
+``` firrtl
+"hello"
+```
+
+A raw string literal is a sequence of characters with a leading `'`{.firrtl} and
+a trailing `'`{.firrtl}.  The following is an example of a raw string literal:
+
+``` firrtl
+'world'
+```
+
+## String-encoded Integer Literal
+
+A string-encoded integer literal is a special string literal with one of the
+following leading characters to indicate the numerical encoding:
+
+- `b`{.firrtl} -- for representing binary numbers
+- `o`{.firrtl} -- for representing octal numbers
+- `h`{.firrtl} -- for representing hexadecimal numbers
+
+Signed string-encoded integer literals have their sign following the leading
+encoding character.
+
+The following string-encoded integer literals all have the value `42`:
+
+``` firrtl
+"b101010"
+"o52"
+"h2a"
+```
+
+The following string-encoded integer literals all have the value `-42`:
+
+``` firrtl
+"b-101010"
+"o-52"
+"h-2a"
+```
+
+String-encoded integer literals are usable in any place where an integer would
+be unless explicitly disallowed.
 
 # Types
 
@@ -842,8 +937,8 @@ an operation whose arguments are constant produces a constant.  An operation
 with some non-constant arguments produce a non-constant.  Constants can be used
 in any context with a source flow which allows a non-constant.  Constants may be
 used as the target of a connect so long as the source of the connect is itself
-constant.  These rules ensure all constants are derived from literals or from
-constant-typed input ports of the top-level module.
+constant.  These rules ensure all constants are derived from constant integer
+expressions or from constant-typed input ports of the top-level module.
 
 ``` firrtl
 const UInt<3>
@@ -1543,21 +1638,25 @@ by the following parameters.
 
 1.  A passive type representing the type of each element in the memory.
 
-2.  A positive integer representing the number of elements in the memory.
+2.  A positive integer literal representing the number of elements in the
+    memory.
 
 3.  A variable number of named ports, each being a read port, a write port, or
     readwrite port.
 
-4.  A non-negative integer indicating the read latency, which is the number of
-    cycles after setting the port's read address before the corresponding
-    element's value can be read from the port's data field.
+4.  A non-negative integer literal indicating the read latency, which is the
+    number of cycles after setting the port's read address before the
+    corresponding element's value can be read from the port's data field.
 
-5.  A positive integer indicating the write latency, which is the number of
-    cycles after setting the port's write address and data before the
+5.  A positive integer literal indicating the write latency, which is the number
+    of cycles after setting the port's write address and data before the
     corresponding element within the memory holds the new value.
 
 6.  A read-under-write flag indicating the behavior when a memory location is
     written to while a read to that location is in progress.
+
+Integer literals for the number of elements and the read/write latencies _may
+not be string-encoded integer literals_.
 
 The following example demonstrates instantiating a memory containing 256 complex
 numbers, each with 16-bit signed integer fields for its real and imaginary
@@ -2218,112 +2317,62 @@ module DUT :
 
 # Expressions
 
-FIRRTL expressions are used for creating literal unsigned and signed integers,
-for referring to a declared circuit component, for statically and dynamically
-accessing a nested element within a component, for creating multiplexers, for
-performing primitive operations, and for reading a remote reference to a probe.
+FIRRTL expressions are used for creating constant integers, for referring to a
+declared circuit component, for statically and dynamically accessing a nested
+element within a component, for creating multiplexers, for performing primitive
+operations, and for reading a remote reference to a probe.
 
-## Unsigned Integers
+## Constant Integer Expressions
 
-A literal unsigned integer can be created given a non-negative integer value and
-an optional positive bit width. Integer literals are of constant type.  The
-following example creates a 10-bit unsigned integer representing the number 42.
+A constant unsigned or signed integer expression can be created from an integer
+literal or string-encoded integer literal.  An optional positive bit width may
+be specified. Constant integer expressions are of constant type.  All of the
+following examples create a 10-bit unsigned constant integer expressions
+representing the number `42`:
 
 ``` firrtl
 UInt<10>(42)
+UInt<10>("b101010")
+UInt<10>("o52")
+UInt<10>("h2A")
+UInt<10>("h2a")
 ```
 
 Note that it is an error to supply a bit width that is not large enough to fit
 the given value. If the bit width is omitted, then the minimum number of bits
-necessary to fit the given value will be inferred.
+necessary to fit the given value will be inferred.  All of the following will
+infer a bit width of five:
 
 ``` firrtl
 UInt(42)
+UInt("b101010")
+UInt("o52")
+UInt("h2A")
+UInt("h2a")
 ```
 
-## Unsigned Integers from Literal Bits
-
-A literal unsigned integer can alternatively be created given a string
-representing its bit representation and an optional bit width.  Like with the
-integer representation, the expression has a constant type.
-
-The following radices are supported:
-
-1.`b`{.firrtl} : For representing binary numbers.
-
-2.`o`{.firrtl} : For representing octal numbers.
-
-3.`h`{.firrtl} : For representing hexadecimal numbers.
-
-If a bit width is not given, the number of bits in the bit representation is
-directly represented by the string. The following examples create a 8-bit
-integer representing the number 13.
-
-``` firrtl
-UInt("b00001101")
-UInt("h0D")
-```
-
-If the provided bit width is larger than the number of bits required to
-represent the string's value, then the resulting value is equivalent to the
-string zero-extended up to the provided bit width. If the provided bit width is
-smaller than the number of bits represented by the string, then the resulting
-value is equivalent to the string truncated down to the provided bit width. All
-truncated bits must be zero.
-
-The following examples create a 7-bit integer representing the number 13.
-
-``` firrtl
-UInt<7>("b00001101")
-UInt<7>("o015")
-UInt<7>("hD")
-```
-
-## Signed Integers
-
-Similar to unsigned integers, a literal signed integer can be created given an
-integer value and an optional positive bit width. Integer literals are of
-constant type.  The following example creates a 10-bit unsigned integer
-representing the number -42.
+Signed constant integer expressions may be created from a signed integer literal
+or signed string-encoded integer literal.  All of the following examples create
+a 10-bit signed hardware integer representing the number `-42`:
 
 ``` firrtl
 SInt<10>(-42)
+SInt<10>("b-101010")
+SInt<10>("o-52")
+SInt<10>("h-2A")
+SInt<10>("h-2a")
 ```
 
-Note that it is an error to supply a bit width that is not large enough to fit
-the given value using two's complement representation. If the bit width is
-omitted, then the minimum number of bits necessary to fit the given value will
-be inferred.
+Signed constant integer expressions may also have an inferred width.  All of the
+following examples create and infer a 6-bit signed integer with value `-42`:
 
 ``` firrtl
 SInt(-42)
+SInt("b-101010")
+SInt("o-52")
+SInt("h-2A")
+SInt("h-2a")
 ```
-
-## Signed Integers from Literal Bits
-
-Similar to unsigned integers, a literal signed integer can alternatively be
-created given a string representing its bit representation and an optional bit
-width.  Like with the integer representation, the expression has a constant
-type.
-
-The bit representation contains a binary, octal or hex indicator, followed by an
-optional sign, followed by the value.
-
-If a bit width is not given, the number of bits in the bit representation is the
-minimal bit width to represent the value represented by the string. The
-following examples create a 8-bit integer representing the number -13. For all
-bases, a negative sign acts as if it were a unary negation; in other words, a
-negative literal produces the additive inverse of the unsigned interpretation of
-the digit pattern.
-
-``` firrtl
-SInt("b-1101")
-SInt("h-d")
-```
-
-If the provided bit width is larger than the number of bits represented by the
-string, then the resulting value is unchanged. It is an error to provide a bit
-width smaller than the number of bits required to represent the string's value.
 
 ## References
 
@@ -2573,7 +2622,7 @@ A multiplexer expression is legal only if the following holds.
 
 All fundamental operations on ground types are expressed as a FIRRTL primitive
 operation. In general, each operation takes some number of argument expressions,
-along with some number of static integer literal parameters.
+along with some number of integer literal parameters.
 
 The general form of a primitive operation is expressed as follows:
 
@@ -2675,8 +2724,8 @@ their use.
 # Primitive Operations {#sec:primitive-operations}
 
 The arguments of all primitive operations must be expressions with ground types,
-while their parameters are static integer literals. Each specific operation can
-place additional restrictions on the number and types of their arguments and
+while their parameters are integer literals. Each specific operation can place
+additional restrictions on the number and types of their arguments and
 parameters.  Primitive operations may have all their arguments of constant type,
 in which case their return type is of constant type.  If the operation has a
 mixed constant and non-constant arguments, the result is non-constant.
@@ -2999,7 +3048,7 @@ two input leaf sub-element widths.
 
 The width of each primitive operation is detailed in [@sec:primitive-operations].
 
-The width of the integer literal expressions is detailed in their respective
+The width of constant integer expressions is detailed in their respective
 sections.
 
 # Combinational Loops
@@ -3292,25 +3341,6 @@ parsed.
 The following characters are allowed in identifiers: upper and lower case
 letters, digits, and `_`{.firrtl}. Identifiers cannot begin with a digit.
 
-An integer literal in FIRRTL begins with one of the following, where '\#'
-represents a digit between 0 and 9.
-
-- 'h' : For indicating a hexadecimal number, followed by an optional sign. The
-  rest of the literal must consist of either digits or a letter between 'A' and
-  'F'.
-
-- 'o' : For indicating an octal number, followed by an optional sign.  The rest
-  of the literal must consist of digits between 0 and 7.
-
-- 'b' : For indicating a binary number, followed by an optional sign.  The rest
-  of the literal must consist of digits that are either 0 or 1.
-
-- '-\#' : For indicating a negative decimal number. The rest of the literal must
-  consist of digits between 0 and 9.
-
-- '\#' : For indicating a positive decimal number. The rest of the literal must
-  consist of digits between 0 and 9.
-
 Comments begin with a semicolon and extend until the end of the line.  Commas
 are treated as whitespace, and may be used by the user for clarity if desired.
 
@@ -3450,19 +3480,27 @@ indent = " " , { " " } ;
 dedent = ? remove one level of indentation ? ;
 newline = ? a newline character ? ;
 
-(* Integer literal definitions  *)
+(* Integer Literals *)
 digit_bin = "0" | "1" ;
 digit_oct = digit_bin | "2" | "3" | "4" | "5" | "6" | "7" ;
 digit_dec = digit_oct | "8" | "9" ;
 digit_hex = digit_dec
           | "A" | "B" | "C" | "D" | "E" | "F"
           | "a" | "b" | "c" | "d" | "e" | "f" ;
+int = [ "-" ] , digit_bin , { digit_bin } ;
 
-(* An integer *)
-int = '"' , "b" , [ "-" ] , { digit_bin } , '"'
-    | '"' , "o" , [ "-" ] , { digit_oct } , '"'
-    | '"' , "h" , [ "-" ] , { digit_hex } , '"'
-    |             [ "-" ] , { digit_bin } ;
+(* String-encoded Integer Literals *)
+int_se =
+    '"' , "b" , [ "-" ] , digit_bin , { digit_bin } , '"'
+  | '"' , "o" , [ "-" ] , digit_oct , { digit_oct } , '"'
+  | '"' , "h" , [ "-" ] , digit_hex , { digit_hex } , '"' ;
+
+(* An Integer or String-encoded Integer Literal *)
+int_any = int | int_se ;
+
+(* String Literals *)
+string = ? a string ? ;
+string_raw = "'" , string , "'" ;
 
 (* Identifiers define legal FIRRTL or Verilog names *)
 letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
@@ -3480,11 +3518,11 @@ linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
 info = "@" , "[" , { string , " " , linecol } , "]" ;
 
 (* Type definitions *)
-width = "<" , int , ">" ;
+width = "<" , int_any , ">" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ] ;
 type_aggregate = "{" , field , { field } , "}"
-               | type , "[" , int , "]" ;
+               | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
 type = ( [ "const" ] , ( type_ground | type_aggregate ) ) | type_ref ;
@@ -3506,23 +3544,23 @@ primop_1expr =
 primop_1expr1int_keyword =
     "pad" | "shl" | "shr" | "head" | "tail" ;
 primop_1expr1int =
-    primop_1exrp1int_keyword , "(", expr , "," , int , ")" ;
+    primop_1exrp1int_keyword , "(", expr , "," , int_any , ")" ;
 primop_1expr2int_keyword =
     "bits" ;
 primop_1expr2int =
-    primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
+    primop_1expr2int_keyword , "(" , expr , "," , int_any , "," , int_any , ")" ;
 primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Expression definitions *)
 expr =
-    ( "UInt" | "SInt" ) , [ width ] , "(" , ( int ) , ")"
+    ( "UInt" | "SInt" ) , [ width ] , "(" , int_any , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
   | "read" , "(" , static_reference , ")"
   | primop ;
 static_reference = id
                  | static_reference , "." , id
-                 | static_reference , "[" , int , "]" ;
+                 | static_reference , "[" , int_any , "]" ;
 reference = static_reference
           | reference , "[" , expr , "]" ;
 ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
@@ -3563,7 +3601,7 @@ statement = "wire" , id , ":" , type , [ info ]
           | "when" , expr , ":" [ info ] , newline , indent ,
               { statement } ,
             dedent , [ "else" , ":" , indent , { statement } , dedent ]
-          | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
+          | "stop(" , expr , "," , expr , "," , int_any , ")" , [ info ]
           | "printf(" , expr , "," , expr , "," , string ,
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ]
@@ -3576,17 +3614,18 @@ module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;
+type_param = int | string | raw_string ;
 extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               [ "defname" , "=" , id , newline ] ,
-              { "parameter" , id , "=" , ( string | int ) , newline } ,
+              { "parameter" , id , "=" , type_param , newline } ,
               { "ref" , static_reference , "is" ,
                 '"' , static_reference , '"' , newline } ,
             dedent ;
 intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               "intrinsic" , "=" , id , newline ,
-              { "parameter" , "=" , ( string | int ) , newline } ,
+              { "parameter" , "=" , ( int | string ) , newline } ,
             dedent ;
 
 (* In-line Annotations *)

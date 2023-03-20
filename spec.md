@@ -2135,8 +2135,10 @@ variants should be used.  Example:
 
 ```firrtl
 when c : force_initial(ref, x)
+```
 
 would become:
+
 ```systemverilog
 initial if (c) force a.b = x;
 ```

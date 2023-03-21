@@ -308,35 +308,38 @@ a trailing `'`{.firrtl}.  The following is an example of a raw string literal:
 'world'
 ```
 
-## String-encoded Integer Literal
+## Radix-specified Integer Literal
 
-A string-encoded integer literal is a special string literal with one of the
+A radix-specified integer literal is a special integer literal with one of the
 following leading characters to indicate the numerical encoding:
 
-- `b`{.firrtl} -- for representing binary numbers
-- `o`{.firrtl} -- for representing octal numbers
-- `h`{.firrtl} -- for representing hexadecimal numbers
+- `0b`{.firrtl} -- for representing binary numbers
+- `0o`{.firrtl} -- for representing octal numbers
+- `0d`{.firrtl} -- for representing decimal numbers
+- `0h`{.firrtl} -- for representing hexadecimal numbers
 
-Signed string-encoded integer literals have their sign following the leading
+Signed radix-specified integer literals have their sign following the leading
 encoding character.
 
 The following string-encoded integer literals all have the value `42`:
 
 ``` firrtl
-"b101010"
-"o52"
-"h2a"
+0b101010
+0o52
+0d42
+0h2a
 ```
 
 The following string-encoded integer literals all have the value `-42`:
 
 ``` firrtl
-"b-101010"
-"o-52"
-"h-2a"
+-0b101010
+-0o52
+-0d42
+-0h2a
 ```
 
-String-encoded integer literals are only usable when constructing hardware
+Radix-encoded integer literals are only usable when constructing hardware
 integer literals.  Any use in place of an integer is disallowed.
 
 # Types
@@ -2395,7 +2398,7 @@ operations, and for reading a remote reference to a probe.
 ## Constant Integer Expressions
 
 A constant unsigned or signed integer expression can be created from an integer
-literal or string-encoded integer literal.  An optional positive bit width may
+literal or radix-specified integer literal.  An optional positive bit width may
 be specified. Constant integer expressions are of constant type.  All of the
 following examples create a 10-bit unsigned constant integer expressions
 representing the number `42`:
@@ -2422,7 +2425,7 @@ UInt("h2a")
 ```
 
 Signed constant integer expressions may be created from a signed integer literal
-or signed string-encoded integer literal.  All of the following examples create
+or signed radix-encoded integer literal.  All of the following examples create
 a 10-bit signed hardware integer representing the number `-42`:
 
 ``` firrtl
@@ -3638,11 +3641,12 @@ digit_hex = digit_dec
           | "a" | "b" | "c" | "d" | "e" | "f" ;
 int = [ "-" ] , digit_bin , { digit_bin } ;
 
-(* String-encoded Integer Literals *)
-int_se =
-    '"' , "b" , [ "-" ] , digit_bin , { digit_bin } , '"'
-  | '"' , "o" , [ "-" ] , digit_oct , { digit_oct } , '"'
-  | '"' , "h" , [ "-" ] , digit_hex , { digit_hex } , '"' ;
+(* Radix-specified Integer Literals *)
+rint =
+    [ "-" ] , "0b" , digit_bin , { digit_bin }
+  | [ "-" ] , "0o" , digit_oct , { digit_oct }
+  | [ "-" ] , "0d" , digit_oct , { digit_dec }
+  | [ "-" ] , "0h" , digit_hex , { digit_hex } ;
 
 (* String Literals *)
 string = ? a string ? ;
@@ -3709,7 +3713,7 @@ primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Expression definitions *)
 expr =
-    ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | int_se ) , ")"
+    ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")"
   | type_enum , "(" , id , [ "," , expr ] , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"

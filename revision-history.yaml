@@ -15,6 +15,8 @@ revisionHistory:
       - Add enumeration types, match statements, and enumeration expressions
       - Fixup probe endpoint and non-passive force examples.
       - Add type alias
+      - Restrict string-encoded integers to only being usable in the
+        construction of hardware literals.
     abi:
       - Initial ABI description.
   # Information about the old versions.  This should be static.

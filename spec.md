@@ -256,9 +256,6 @@ Foo #(
 ) bar();
 ```
 
-A parameter that is a string-encoded integer literal is treated as a string
-literal.
-
 ## Implementation Defined Modules (Intrinsics)
 
 Intrinsic modules are modules which represent implementation-defined,
@@ -284,9 +281,6 @@ intmodule MyIntrinsicModule_xhello_y64 :
 
 The types of intrinsic module parameters may only be literal integers or
 string literals.
-
-A parameter that is a string-encoded integer literal is treated as a string
-literal.
 
 # Literals
 
@@ -342,8 +336,8 @@ The following string-encoded integer literals all have the value `-42`:
 "h-2a"
 ```
 
-String-encoded integer literals are usable in any place where an integer would
-be unless explicitly disallowed.
+String-encoded integer literals are only usable when constructing hardware
+integer literals.  Any use in place of an integer is disallowed.
 
 # Types
 
@@ -613,7 +607,7 @@ The variant types of an enumeration must all be passive and cannot contain
 analog or probe types.
 
 In the following example, the first variant has the tag `a`{.firrtl} with type
-`UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type 
+`UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type
 `UInt<16>`{.firrtl}.
 
 ``` firrtl
@@ -1733,9 +1727,6 @@ by the following parameters.
 
 6.  A read-under-write flag indicating the behavior when a memory location is
     written to while a read to that location is in progress.
-
-Integer literals for the number of elements and the read/write latencies _may
-not be string-encoded integer literals_.
 
 The following example demonstrates instantiating a memory containing 256 complex
 numbers, each with 16-bit signed integer fields for its real and imaginary
@@ -3653,9 +3644,6 @@ int_se =
   | '"' , "o" , [ "-" ] , digit_oct , { digit_oct } , '"'
   | '"' , "h" , [ "-" ] , digit_hex , { digit_hex } , '"' ;
 
-(* An Integer or String-encoded Integer Literal *)
-int_any = int | int_se ;
-
 (* String Literals *)
 string = ? a string ? ;
 string_dq = '"' , string , '"' ;
@@ -3680,13 +3668,13 @@ lineinfo = string, " ", linecol
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
 (* Type definitions *)
-width = "<" , int_any , ">" ;
+width = "<" , int , ">" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ] ;
 type_enum = "{|" , { field_enum } , "|}" ;
 field_enum = id, [ ":" , type_simple_child ] ;
 type_aggregate = "{" , field , { field } , "}"
-               | type , "[" , int_any , "]" ;
+               | type , "[" , int , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
 type_simple_child = type_ground | type_enum | type_aggregate | id ;
@@ -3712,16 +3700,16 @@ primop_1expr =
 primop_1expr1int_keyword =
     "pad" | "shl" | "shr" | "head" | "tail" ;
 primop_1expr1int =
-    primop_1exrp1int_keyword , "(", expr , "," , int_any , ")" ;
+    primop_1exrp1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int_keyword =
     "bits" ;
 primop_1expr2int =
-    primop_1expr2int_keyword , "(" , expr , "," , int_any , "," , int_any , ")" ;
+    primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Expression definitions *)
 expr =
-    ( "UInt" | "SInt" ) , [ width ] , "(" , int_any , ")"
+    ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | int_se ) , ")"
   | type_enum , "(" , id , [ "," , expr ] , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
@@ -3729,7 +3717,7 @@ expr =
   | primop ;
 static_reference = id
                  | static_reference , "." , id
-                 | static_reference , "[" , int_any , "]" ;
+                 | static_reference , "[" , int , "]" ;
 reference = static_reference
           | reference , "[" , expr , "]" ;
 ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
@@ -3774,7 +3762,7 @@ statement =
     indent , statement, { statement } , dedent ,
     [ "else" , ":" , indent , statement, { statement } , dedent ]
   | "match" , expr , ":" , [ info ] , newline ,
-    [ indent , { id , [ "(" , id , ")" ] , ":" , newline , 
+    [ indent , { id , [ "(" , id , ")" ] , ":" , newline ,
     [ indent , { statement } , dedent ] } , dedent ]
   | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "printf(" , expr , "," , expr , "," , string_dq ,

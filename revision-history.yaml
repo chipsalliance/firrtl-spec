@@ -4,6 +4,8 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
+    - Restrict string-encoded integers to only being usable in the construction
+      of hardware literals.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 2.0.1

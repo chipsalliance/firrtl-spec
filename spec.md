@@ -2202,10 +2202,10 @@ module ForceAndRelease:
   inst r of AddRefs
   o <= r.sum
 
-  force_initial(r.a, 0)
-  force_initial(r.a, 1)
-  force_initial(r.b, 2)
-  force_initial(r.c, 3)
+  force_initial(r.a, UInt<2>(0))
+  force_initial(r.a, UInt<2>(1))
+  force_initial(r.b, UInt<2>(2))
+  force_initial(r.c, UInt<2>(3))
   release_initial(r.c)
 ```
 
@@ -2257,8 +2257,8 @@ module ForceAndRelease:
   inst r of AddRefs
   o <= r.sum
 
-  force(clock, c, r.a, a)
-  release(clock, not(c), r.a)
+  force(clock, cond, r.a, a)
+  release(clock, not(cond), r.a)
 ```
 
 Which at the positive edge of `clock`{.firrtl} will either force or release
@@ -2269,7 +2269,7 @@ Sample SystemVerilog output:
 
 ```SystemVerilog
 always @(posedge clock) begin
-  if (c)
+  if (cond)
     force ForceAndRelease.AddRefs.x = a;
   else
     release ForceAndRelease.AddRefs.x;
@@ -2301,7 +2301,7 @@ module Top:
   val.b <= UInt<2>(2)
 
   ; Force takes a RWProbe and overrides the target with 'val'.
-  force(d.xp, val)
+  force_initial(d.xp, val)
 
 module DUT :
   input x : {a: UInt, flip b: UInt}

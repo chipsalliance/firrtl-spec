@@ -4,9 +4,11 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    - Clarify int/string types and their allowed usage.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 2.0.1
+      changes:
+        - Clarify int/string types and their allowed usage.
     - version: 2.0.0
       changes:
         - Remove Fixed Point Types.

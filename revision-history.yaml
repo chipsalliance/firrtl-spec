@@ -4,8 +4,8 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-  # Information about the old versions.  This should be static.
     - Fix typos in force/release examples, force takes expr not int literal.
+  # Information about the old versions.  This should be static.
   oldVersions:
     - version: 2.0.1
       changes:

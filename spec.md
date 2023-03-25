@@ -3500,7 +3500,8 @@ int_any = int | int_se ;
 
 (* String Literals *)
 string = ? a string ? ;
-string_raw = "'" , string , "'" ;
+string_dq = '"' , string , '"' ;
+string_sq = "'" , string , "'" ;
 
 (* Identifiers define legal FIRRTL or Verilog names *)
 letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
@@ -3602,7 +3603,7 @@ statement = "wire" , id , ":" , type , [ info ]
               { statement } ,
             dedent , [ "else" , ":" , indent , { statement } , dedent ]
           | "stop(" , expr , "," , expr , "," , int_any , ")" , [ info ]
-          | "printf(" , expr , "," , expr , "," , string ,
+          | "printf(" , expr , "," , expr , "," , string_dq ,
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ]
           | "define" , static_reference , "=" , ref_expr , [ info ]
@@ -3614,7 +3615,7 @@ module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;
-type_param = int | string | raw_string ;
+type_param = int | string_dq | string_sq ;
 extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               [ "defname" , "=" , id , newline ] ,
@@ -3625,7 +3626,7 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
 intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               "intrinsic" , "=" , id , newline ,
-              { "parameter" , "=" , ( int | string ) , newline } ,
+              { "parameter" , "=" , ( int | string_dq ) , newline } ,
             dedent ;
 
 (* In-line Annotations *)

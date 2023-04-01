@@ -16,7 +16,7 @@ jobs:
       - name: "Install Dependencies"
         run: |
           sudo apt-get update
-          sudo apt-get install pandoc graphviz texlive-latex-recommended texlive-font-utils
+          sudo apt-get install pandoc graphviz texlive-latex-extra texlive-latex-recommended texlive-font-utils
           mkdir -p usr/bin
           wget https://github.com/lierdakil/pandoc-crossref/releases/download/v0.3.6.4/pandoc-crossref-Linux-2.9.2.1.tar.xz -O - | tar -Jx -C usr/bin
           echo "$(pwd)/usr/bin" >> $GITHUB_PATH

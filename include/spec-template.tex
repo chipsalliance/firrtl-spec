@@ -68,6 +68,18 @@ $if(logo)$
 $endif$
 $endif$
 
+$if(toc)$
+\usepackage{tocloft}
+% Section spacing
+\setlength\cftsecnumwidth{2em}
+% Subsection indent/spacing
+\setlength\cftsubsecindent{2em}
+\setlength\cftsubsecnumwidth{3em}
+% Subsubsection indent/spacing
+\setlength\cftsubsubsecindent{5em}
+\setlength\cftsubsubsecnumwidth{3em}
+$endif$
+
 $if(beamer)$
 $if(background-image)$
 \usebackgroundtemplate{%

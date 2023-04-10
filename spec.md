@@ -549,6 +549,19 @@ Analog<32> ; 32-bit analog type
 Analog     ; analog type with inferred width
 ```
 
+### Enumeration Types
+
+Enumerations are structural disjoint union types.  An enumeration has a number
+of variants, each with a type.  The different variants are specified with tags.
+A variant may optionally omit the data type, in which case it is implicitly
+defined to be `UInt<0>`. The variant types of an enumeration must all be
+passive and cannot contain analog types.
+
+``` firrtl
+[#a, #b, #c]
+[#some: UInt<8>, #none]
+```
+
 ## Aggregate Types
 
 FIRRTL supports two aggregate types: vectors and bundles.  Aggregate types are
@@ -1009,6 +1022,9 @@ It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
 The `AsyncReset`{.firrtl} type can be connected to another
 `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
 
+Two enumeration types are equivalent if both have the same number of variants,
+and both the enumeration's i'th variants have matching names and types.
+
 Two vector types are equivalent if they have the same length, and if their
 element types are equivalent.
 
@@ -1377,7 +1393,9 @@ node mynode = mux(pred, a, b)
 
 ## Conditionals
 
-Connections within a conditional statement that connect to previously declared
+### When Statements
+
+Connections within a when statement that connect to previously declared
 components hold only when the given condition is high. The condition must have a
 1-bit unsigned integer type.
 
@@ -1397,7 +1415,7 @@ module MyModule :
     x <= b
 ```
 
-### Syntactic Shorthands
+#### Syntactic Shorthands
 
 The `else`{.firrtl} branch of a conditional statement may be omitted, in which
 case a default `else`{.firrtl} branch is supplied consisting of the empty
@@ -1505,6 +1523,21 @@ The `else`{.firrtl} branch may also be added to the single line:
 
 ``` firrtl
 when c : a <= b else : e <= f
+```
+
+### Match Statements
+
+Match statements are used to discriminate the active variant of a enumeration
+typed expression.  A match statement must exhaustively test every variant of an
+enumeration. An optional binder may be specified to extract the data of the
+variant.
+
+``` firrtl
+match x:
+  #Some(x):
+    a <= x
+  #None:
+    e <= f
 ```
 
 ### Nested Declarations
@@ -2420,6 +2453,36 @@ SInt("b-101010")
 SInt("o-52")
 SInt("h-2A")
 SInt("h-2a")
+```
+
+## Enum Expressions
+
+An enumeration can be constructed by specifying the variant tag, an optional
+data value expression, and a return type specifier.
+
+``` firrtl
+#a : [#a, #b, #c]
+#some(UInt<8>(1)) : [#some: UInt<8>, #none]
+```
+
+## Vector Expressions
+
+A vector can be constructed by specifying a list of values and a return type
+specifier.
+
+``` firrtl
+[UInt(2), UInt(3), UInt(4)] : UInt<8>[3]
+[io.a, io.b, io.c] : UInt<32>[3]
+```
+
+## Bundle Expressions
+
+A bundle can be constructed by specifying the field values using a bundle-like
+syntax, and a return type specifier.
+
+``` firrtl
+{a: UInt(0)} : {a : UInt<8>}
+{enable: io.in} : {enable : UInt<1>}
 ```
 
 ## References

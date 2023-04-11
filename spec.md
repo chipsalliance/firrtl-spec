@@ -1534,9 +1534,9 @@ variant.
 
 ``` firrtl
 match x:
-  #Some(x):
-    a <= x
-  #None:
+  #some(v):
+    a <= v
+  #none:
     e <= f
 ```
 
@@ -2457,8 +2457,10 @@ SInt("h-2a")
 
 ## Enum Expressions
 
-An enumeration can be constructed by specifying the variant tag, an optional
-data value expression, and a return type specifier.
+An enumeration can be constructed by specifying the variant tag, a data value
+expression, and a return type specifier. The data value expression may be
+omitted when the data type is `UInt<0>(0)`, where it is implicitly defined to
+be `UInt<0>(0)`.
 
 ``` firrtl
 #a : [#a, #b, #c]

@@ -6,6 +6,8 @@ revisionHistory:
   thisVersion:
     - Fix typos in force/release examples, force takes expr not int literal.
     - Delineate string and single-quoted/double-quoted string in grammar.
+    - Deprecate reference-first statements.
+  
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 2.0.1

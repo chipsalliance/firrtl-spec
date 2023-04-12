@@ -1080,6 +1080,7 @@ module MyModule :
   input myinput: UInt
   output myoutput: UInt
   connect myoutput, myinput
+  ; equivalent to "myoutput <= myinput"
 ```
 
 ## Statement Groups
@@ -1308,7 +1309,7 @@ analog types within the component (as they cannot be connected to).
 
 ### Alternate Syntax
 
-Is invalid may also be specified by keyword.
+`is invalid`.{.firrtl} may also be specified by keyword.
 
 ``` firrtl
 module MyModule :
@@ -1316,8 +1317,11 @@ module MyModule :
   output out: {flip a: UInt, b: UInt}
   wire w: {flip a: UInt, b: UInt}
   invalidated in
+  ; equivalent to "in is invalid"
   invalidated out
+  ; equivalent to "out is invalid"
   invalidated w
+  ; equivalent to "w is invalid"
 ```
 
 ## Attaches
@@ -3675,7 +3679,7 @@ circuit =
 ## Deprecated Syntax
 
 `reference is invalid` and `reference <= expr` are deprecated and will be 
-replaced with the alternate syntax in a future revision.
+replaced with the alternate syntax in the next major revision.
 
 # Versioning Scheme of this Document
 

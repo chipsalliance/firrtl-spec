@@ -6,8 +6,8 @@ revisionHistory:
   thisVersion:
     - Fix typos in force/release examples, force takes expr not int literal.
     - Delineate string and single-quoted/double-quoted string in grammar.
+    - Tweak grammar of 'read' to support 'read(probe(x))' as in examples.
   # Information about the old versions.  This should be static.
-   - Tweak grammar of 'read' to support 'read(probe(x))' as in examples.
   oldVersions:
     - version: 2.0.1
       changes:

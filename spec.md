@@ -1070,6 +1070,19 @@ connected to the left-hand side field.  Conversely, if the i'th field is
 flipped, then the left-hand side field is connected to the right-hand side
 field.
 
+### Alternate Syntax
+
+Connects may also be specified by keyword.  This form is identical to the `<=` 
+form in operand order
+
+``` firrtl
+module MyModule :
+  input myinput: UInt
+  output myoutput: UInt
+  connect myoutput, myinput
+  ; equivalent to "myoutput <= myinput"
+```
+
 ## Statement Groups
 
 An ordered sequence of one or more statements can be grouped into a single
@@ -1293,6 +1306,23 @@ sub-element in the bundle.
 
 Components of reference and analog type are ignored, as are any reference or
 analog types within the component (as they cannot be connected to).
+
+### Alternate Syntax
+
+`is invalid`.{.firrtl} may also be specified by keyword.
+
+``` firrtl
+module MyModule :
+  input in: {flip a: UInt, b: UInt}
+  output out: {flip a: UInt, b: UInt}
+  wire w: {flip a: UInt, b: UInt}
+  invalidate in
+  ; equivalent to "in is invalid"
+  invalidate out
+  ; equivalent to "out is invalid"
+  invalidate w
+  ; equivalent to "w is invalid"
+```
 
 ## Attaches
 
@@ -3607,7 +3637,9 @@ statement = "wire" , id , ":" , type , [ info ]
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ]
           | "define" , static_reference , "=" , ref_expr , [ info ]
-          | force_release , [ info ] ;
+          | "force_release" , [ info ] ;
+          | "connect" , reference , "," , expr , [ info ]
+          | "invalidate" , reference , [ info ]
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":": , type , [ info ] ;
@@ -3644,6 +3676,10 @@ circuit =
   dedent ;
 ```
 
+## Deprecated Syntax
+
+`reference is invalid` and `reference <= expr` are deprecated and will be 
+replaced with the alternate syntax in the next major revision.
 
 # Versioning Scheme of this Document
 

@@ -1316,11 +1316,11 @@ module MyModule :
   input in: {flip a: UInt, b: UInt}
   output out: {flip a: UInt, b: UInt}
   wire w: {flip a: UInt, b: UInt}
-  invalidated in
+  invalidate in
   ; equivalent to "in is invalid"
-  invalidated out
+  invalidate out
   ; equivalent to "out is invalid"
-  invalidated w
+  invalidate w
   ; equivalent to "w is invalid"
 ```
 
@@ -3639,7 +3639,7 @@ statement = "wire" , id , ":" , type , [ info ]
           | "define" , static_reference , "=" , ref_expr , [ info ]
           | "force_release" , [ info ] ;
           | "connect" , reference , "," , expr , [ info ]
-          | "invalidated" , reference , [ info ]
+          | "invalidate" , reference , [ info ]
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":": , type , [ info ] ;

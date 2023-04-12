@@ -3587,7 +3587,7 @@ expr =
     ( "UInt" | "SInt" ) , [ width ] , "(" , int_any , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
-  | "read" , "(" , static_reference , ")"
+  | "read" , "(" , ref_expr , ")"
   | primop ;
 static_reference = id
                  | static_reference , "." , id

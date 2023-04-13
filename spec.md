@@ -1671,18 +1671,18 @@ by the following parameters.
 2.  A positive integer literal representing the number of elements in the
     memory.
 
-3.  A variable number of named ports, each being a read port, a write port, or
-    readwrite port.
-
-4.  A non-negative integer literal indicating the read latency, which is the
-    number of cycles after setting the port's read address before the
-    corresponding element's value can be read from the port's data field.
-
-5.  A positive integer literal indicating the write latency, which is the number
-    of cycles after setting the port's write address and data before the
-    corresponding element within the memory holds the new value.
-
-6.  A read-under-write flag indicating the behavior when a memory location is
+3.  A variable number of named ports, each having following parameters:
+  1.  A read flag indicating the reading capability of this port.
+  2.  A write flag indicating the writing capability of this port.
+  3.  If the port can read, a non-negative integer literal indicating the read
+      latency, which is the number of cycles after setting the port's read
+      address before the corresponding element's value can be read from the
+      port's rdata field.
+  4.  If the port can write, a positive integer literal indicating the write
+      latency, which is the number of cycles after setting the port's write
+      address and wdata before the corresponding element within the memory holds
+      the new value.
+4.  A read-under-write flag indicating the behavior when a memory location is
     written to while a read to that location is in progress.
 
 Integer literals for the number of elements and the read/write latencies _may
@@ -1691,20 +1691,28 @@ not be string-encoded integer literals_.
 The following example demonstrates instantiating a memory containing 256 complex
 numbers, each with 16-bit signed integer fields for its real and imaginary
 components. It has two read ports, `r1`{.firrtl} and `r2`{.firrtl}, and one
-write port, `w`{.firrtl}. It is combinationally read (read latency is zero
-cycles) and has a write latency of one cycle. Finally, its read-under-write
+write port, `w`{.firrtl}, with the ability to do partial writes using a mask.
+All of its read ports is combinationally read (read latency is zero cycles) and
+its write port has a write latency of one cycle. Finally, its read-under-write
 behavior is undefined.
 
 ``` firrtl
 mem mymem :
   data-type => {real:SInt<16>, imag:SInt<16>}
   depth => 256
-  reader => r1
-  reader => r2
-  writer => w
-  read-latency => 0
-  write-latency => 1
   read-under-write => undefined
+  port r1:
+    read => yes
+    write => no
+    read-latency => 0
+  port r2:
+    read => yes
+    write => no
+    read-latency => 0
+  port w:
+    read => no
+    write => with-mask
+    write-latency => 1
 ```
 
 In the example above, the type of `mymem`{.firrtl} is:
@@ -1713,44 +1721,49 @@ In the example above, the type of `mymem`{.firrtl} is:
 {flip r1: {addr: UInt<8>,
            en: UInt<1>,
            clk: Clock,
-           flip data: {real: SInt<16>, imag: SInt<16>}},
+           flip rdata: {real: SInt<16>, imag: SInt<16>}},
  flip r2: {addr: UInt<8>,
            en: UInt<1>,
            clk: Clock,
-           flip data: {real: SInt<16>, imag: SInt<16>}},
+           flip rdata: {real: SInt<16>, imag: SInt<16>}},
  flip w: {addr: UInt<8>,
           en: UInt<1>,
           clk: Clock,
-          data: {real: SInt<16>, imag: SInt<16>},
+          wdata: {real: SInt<16>, imag: SInt<16>},
           mask: {real: UInt<1>, imag: UInt<1>}}}
 ```
 
 The following sections describe how a memory's field types are calculated and
 the behavior of each type of memory port.
 
-### Read Ports
+### Ports
+
+Ports can have the following read capability:
+
+- `no`{.firrtl}: This port cannot read from the memory
+- `yes`{.firrtl}: THis port can read from the memory
+
+Ports can have the following write capability:
+
+- `no`{.firrtl}: This port cannot write into the memory
+- `no-mask`{.firrtl}: This port can only do full writes into the memory
+- `with-mask`{.firrtl}: This port can do partial writes into the memory
 
 If a memory is declared with element type `T`{.firrtl}, has a size less than or
-equal to $2^N$, then its read ports have type:
+equal to $2^N$, then a port with maximum capability (read => yes, write =>
+with-mask) have type:
 
 ``` firrtl
-{addr: UInt<N>, en: UInt<1>, clk: Clock, flip data: T}
-```
+{
+  clk: Clock,
+  en: UInt<1>,
+  addr: UInt<N>,
+  wmode: UInt<1>,
 
-If the `en`{.firrtl} field is high, then the element value associated with the
-address in the `addr`{.firrtl} field can be retrieved by reading from the
-`data`{.firrtl} field after the appropriate read latency. If the `en`{.firrtl}
-field is low, then the value in the `data`{.firrtl} field, after the appropriate
-read latency, is undefined. The port is driven by the clock signal in the
-`clk`{.firrtl} field.
-
-### Write Ports
-
-If a memory is declared with element type `T`{.firrtl}, has a size less than or
-equal to $2^N$, then its write ports have type:
-
-``` firrtl
-{addr: UInt<N>, en: UInt<1>, clk: Clock, data: T, mask: M}
+  flip rdata: T,
+  wdata: T,
+  wmask: M
+}
 ```
 
 where `M`{.firrtl} is the mask type calculated from the element type
@@ -1758,31 +1771,39 @@ where `M`{.firrtl} is the mask type calculated from the element type
 element type except with all ground types replaced with a single bit unsigned
 integer type. The *non-masked portion* of the data value is defined as the set
 of data value leaf sub-elements where the corresponding mask leaf sub-element is
-high.
+high, or the entire data value if no mask is present.
 
-If the `en`{.firrtl} field is high, then the non-masked portion of the
-`data`{.firrtl} field value is written, after the appropriate write latency, to
-the location indicated by the `addr`{.firrtl} field. If the `en`{.firrtl} field
-is low, then no value is written after the appropriate write latency. The port
-is driven by the clock signal in the `clk`{.firrtl} field.
+Some of those fields are absent if the capability is reduced. The
+functionalities and the condition of their presense is as followed:
 
-### Readwrite Ports
-
-Finally, the readwrite ports have type:
-
-``` firrtl
-{addr: UInt<N>, en: UInt<1>, clk: Clock, flip rdata: T, wmode: UInt<1>,
- wdata: T, wmask: M}
-```
-
-A readwrite port is a single port that, on a given cycle, can be used either as
-a read or a write port. If the readwrite port is not in write mode (the
-`wmode`{.firrtl} field is low), then the `rdata`{.firrtl}, `addr`{.firrtl},
-`en`{.firrtl}, and `clk`{.firrtl} fields constitute its read port fields, and
-should be used accordingly. If the readwrite port is in write mode (the
-`wmode`{.firrtl} field is high), then the `wdata`{.firrtl}, `wmask`{.firrtl},
-`addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its write
-port fields, and should be used accordingly.
+- `clk`{.firrtl}: Always presents.
+  The clock driving this port.
+- `en`{.firrtl}: Always presents.
+  When high, enables this port, and the read / write at that clock edge
+  initiates. Otherwise, no operation initiates at that clock edge.
+- `addr`{.firrtl}: Always presents.
+  The address of a read / write operation at a certain clock edge.
+- `wmode`{.firrtl}: Only presents if the read capability is `yes`{.firrtl}, and
+  the write capability is `no-mask`{.firrtl} or `with-mask`{.firrtl}.
+  This field decides whether a port having both read and write capability
+  functions as a read port or a write port at a certain clock edge. If
+  `en`{.firrtl} is high and `wmode`{.firrtl} is low, a read operation initiates.
+  If `en`{.firrtl} is high and `wmode`{.firrtl} is low, a read operation
+  initiates.
+- `rdata`{.firrtl}: Only presents if the read capability is `yes`{firrtl}.
+  Reading this field gives the element value associated with the address of a
+  read operation that initiated `read-latency`{.firrtl} cycles prior on this
+  port. If no read operations initiated at that clock edge (including the case
+  that a write operation initiated), the value in this field is undefined.
+- `wdata`{.firrtl}: Only presents if the write capability is `no-mask` or
+  `with-mask`.
+  When a write opartion initiates, the non-masked portion of the
+  `wdata`{.firrtl} field value is written, after the `write-latency` cycles, to
+  the location indicated by the address of the write operation.
+- `mask`{.firrtl}: Only presents if the write capability is
+  `with-mask`{.firrtl}.
+  The value of this field acts as the mask for the write operation taking effect
+  that cycle, if any.
 
 ### Read Under Write Behavior
 
@@ -1807,12 +1828,12 @@ memory after delaying the read address by the appropriate read latency.
 If the read-under-write flag is set to `undefined`{.firrtl}, then the value held
 by the read port after the appropriate read latency is undefined.
 
-For the purpose of defining such collisions, an "active write port" is a write
-port or a readwrite port that is used to initiate a write operation on a given
-clock edge, where `en`{.firrtl} is set and, for a readwriter, `wmode`{.firrtl}
-is set. An "active read port" is a read port or a readwrite port that is used to
+For the purpose of defining such collisions, an "active write port" is a port
+with write capability that is used to initiate a write operation on a given
+clock edge, where `en`{.firrtl} is set and, if presents, `wmode`{.firrtl}
+is set. An "active read port" is a port with read capability that is used to
 initiate a read operation on a given clock edge, where `en`{.firrtl} is set and,
-for a readwriter, `wmode`{.firrtl} is not set.  Each operation is defined to be
+if presents, `wmode`{.firrtl} is not set.  Each operation is defined to be
 "active" for the number of cycles set by its corresponding latency, starting
 from the cycle where its inputs were provided to its associated port. Note that
 this excludes combinational reads, which are simply modeled as combinationally
@@ -1833,8 +1854,8 @@ same cycle, the stored value is undefined.
 ### Constant memory type
 
 A memory with a constant data-type represents a ROM and may not have
-write-ports.  It is beyond the scope of this specification how ROMs are
-initialized.
+ports with write capability. It is beyond the scope of this specification how
+ROMs are initialized.
 
 ## Instances
 
@@ -3599,15 +3620,19 @@ ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
 
 (* Memory *)
 ruw = ( "old" | "new" | "undefined" ) ;
+read_cap = ( "no" | "yes" ) ;
+write_cap = ( "no" | "no-mask" | "with-mask" ) ;
+memory_port = "port" , id , ":" , [ info ] , newline , indent ,
+                "read" , "=>" , read_cap , newline ,
+                "write" , "=>" , write_cap , newline ,
+                [ "read-latency" , "=>" , int , newline ],
+                [ "write-latency" , "=>" , int , newline ],
+              dedent ;
 memory = "mem" , id , ":" , [ info ] , newline , indent ,
            "data-type" , "=>" , type , newline ,
            "depth" , "=>" , int , newline ,
-           "read-latency" , "=>" , int , newline ,
-           "write-latency" , "=>" , int , newline ,
            "read-under-write" , "=>" , ruw , newline ,
-           { "reader" , "=>" , id , newline } ,
-           { "writer" , "=>" , id , newline } ,
-           { "readwriter" , "=>" , id , newline } ,
+           { "port" , "=>" , memory_port , newline } ,
          dedent ;
 
 (* Force and Release *)

@@ -1672,16 +1672,16 @@ by the following parameters.
     memory.
 
 3.  A variable number of named ports, each having following parameters:
-  1.  A read flag indicating the reading capability of this port.
-  2.  A write flag indicating the writing capability of this port.
-  3.  If the port can read, a non-negative integer literal indicating the read
-      latency, which is the number of cycles after setting the port's read
-      address before the corresponding element's value can be read from the
-      port's rdata field.
-  4.  If the port can write, a positive integer literal indicating the write
-      latency, which is the number of cycles after setting the port's write
-      address and wdata before the corresponding element within the memory holds
-      the new value.
+    1.  A read flag indicating the read capability of this port.
+    2.  A write flag indicating the write capability of this port.
+    3.  If the port can read, a non-negative integer literal indicating the read
+        latency, which is the number of cycles after setting the port's read
+        address before the corresponding element's value can be read from the
+        port's rdata field.
+    4.  If the port can write, a positive integer literal indicating the write
+        latency, which is the number of cycles after setting the port's write
+        address and wdata before the corresponding element within the memory
+        holds the new value.
 4.  A read-under-write flag indicating the behavior when a memory location is
     written to while a read to that location is in progress.
 
@@ -1738,20 +1738,20 @@ the behavior of each type of memory port.
 
 ### Ports
 
-Ports can have the following read capability:
+Ports can have one of the following read capabilities:
 
 - `no`{.firrtl}: This port cannot read from the memory
-- `yes`{.firrtl}: THis port can read from the memory
+- `yes`{.firrtl}: This port can read from the memory
 
-Ports can have the following write capability:
+Ports can have one of the following write capabilities:
 
 - `no`{.firrtl}: This port cannot write into the memory
 - `no-mask`{.firrtl}: This port can only do full writes into the memory
 - `with-mask`{.firrtl}: This port can do partial writes into the memory
 
 If a memory is declared with element type `T`{.firrtl}, has a size less than or
-equal to $2^N$, then a port with maximum capability (read => yes, write =>
-with-mask) have type:
+equal to $2^N$, then a port with maximum capability (
+`read => yes, write => with-mask`{.firrtl}) has type:
 
 ``` firrtl
 {
@@ -1777,32 +1777,39 @@ Some of those fields are absent if the capability is reduced. The
 functionalities and the condition of their presense is as followed:
 
 - `clk`{.firrtl}: Always presents.
+
   The clock driving this port.
 - `en`{.firrtl}: Always presents.
+
   When high, enables this port, and the read / write at that clock edge
   initiates. Otherwise, no operation initiates at that clock edge.
 - `addr`{.firrtl}: Always presents.
+
   The address of a read / write operation at a certain clock edge.
 - `wmode`{.firrtl}: Only presents if the read capability is `yes`{.firrtl}, and
   the write capability is `no-mask`{.firrtl} or `with-mask`{.firrtl}.
+
   This field decides whether a port having both read and write capability
   functions as a read port or a write port at a certain clock edge. If
   `en`{.firrtl} is high and `wmode`{.firrtl} is low, a read operation initiates.
-  If `en`{.firrtl} is high and `wmode`{.firrtl} is low, a read operation
+  If `en`{.firrtl} is high and `wmode`{.firrtl} is low, a write operation
   initiates.
 - `rdata`{.firrtl}: Only presents if the read capability is `yes`{firrtl}.
+
   Reading this field gives the element value associated with the address of a
   read operation that initiated `read-latency`{.firrtl} cycles prior on this
   port. If no read operations initiated at that clock edge (including the case
   that a write operation initiated), the value in this field is undefined.
 - `wdata`{.firrtl}: Only presents if the write capability is `no-mask` or
   `with-mask`.
+
   When a write opartion initiates, the non-masked portion of the
   `wdata`{.firrtl} field value is written, after the `write-latency` cycles, to
   the location indicated by the address of the write operation.
-- `mask`{.firrtl}: Only presents if the write capability is
+- `wmask`{.firrtl}: Only presents if the write capability is
   `with-mask`{.firrtl}.
-  The value of this field acts as the mask for the write operation taking effect
+
+  The value of this field acts as the mask for the write operation initiating
   that cycle, if any.
 
 ### Read Under Write Behavior

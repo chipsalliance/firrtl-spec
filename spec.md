@@ -3567,7 +3567,7 @@ primop_2expr_keyword =
 primop_2expr =
     primop_2expr_keyword , "(" , expr , "," , expr ")" ;
 primop_1expr_keyword =
-    "asUInt" | "asSInt" | "asClock" | "cvt"
+    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
   | "neg"    | "not"
   | "andr"   | "orr"    | "xorr" ;
 primop_1expr =

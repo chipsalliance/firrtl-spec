@@ -1684,6 +1684,9 @@ by the following parameters.
         holds the new value.
 4.  A read-under-write flag indicating the behavior when a memory location is
     written to while a read to that location is in progress.
+5.  An optional type representing the custom port of this memory. This custom
+    port is intended for post-synthesis flows, and should be ignored in
+    behavioral simulation.
 
 Integer literals for the number of elements and the read/write latencies _may
 not be string-encoded integer literals_.
@@ -1713,6 +1716,7 @@ mem mymem :
     read => no
     write => with-mask
     write-latency => 1
+  custom-port => {a:UInt<4>, flip b:UInt<2>}
 ```
 
 In the example above, the type of `mymem`{.firrtl} is:
@@ -1730,7 +1734,8 @@ In the example above, the type of `mymem`{.firrtl} is:
           en: UInt<1>,
           clk: Clock,
           wdata: {real: SInt<16>, imag: SInt<16>},
-          mask: {real: UInt<1>, imag: UInt<1>}}}
+          mask: {real: UInt<1>, imag: UInt<1>}},
+ custom: {a:UInt<4>, flip b:UInt<2>}}
 ```
 
 The following sections describe how a memory's field types are calculated and
@@ -1773,8 +1778,8 @@ integer type. The *non-masked portion* of the data value is defined as the set
 of data value leaf sub-elements where the corresponding mask leaf sub-element is
 high, or the entire data value if no mask is present.
 
-Some of those fields are absent if the capability is reduced. The
-functionalities and the condition of their presense is as followed:
+Some of those fields are absent if the capability is reduced. Their
+functionalities and the condition of their presense are as followed:
 
 - `clk`{.firrtl}: Always presents.
 
@@ -1863,6 +1868,18 @@ same cycle, the stored value is undefined.
 A memory with a constant data-type represents a ROM and may not have
 ports with write capability. It is beyond the scope of this specification how
 ROMs are initialized.
+
+
+### Custom port
+
+Custom ports are intended for post synthesis flows that require memory instances
+to have additional control signals. Behavorial simulators should ignore these
+ports, in the following way:
+
+- All input signals (into the memory) should be treated as dangling
+  wires.
+- All output signals (from the memory) have unspecified (implementation defined)
+  values.
 
 ## Instances
 
@@ -3632,14 +3649,15 @@ write_cap = ( "no" | "no-mask" | "with-mask" ) ;
 memory_port = "port" , id , ":" , [ info ] , newline , indent ,
                 "read" , "=>" , read_cap , newline ,
                 "write" , "=>" , write_cap , newline ,
-                [ "read-latency" , "=>" , int , newline ],
-                [ "write-latency" , "=>" , int , newline ],
+                [ "read-latency" , "=>" , int , newline ] ,
+                [ "write-latency" , "=>" , int , newline ] ,
               dedent ;
 memory = "mem" , id , ":" , [ info ] , newline , indent ,
            "data-type" , "=>" , type , newline ,
            "depth" , "=>" , int , newline ,
            "read-under-write" , "=>" , ruw , newline ,
            { "port" , "=>" , memory_port , newline } ,
+           [ "custom-port" , "=>" , type , newline ] ,
          dedent ;
 
 (* Force and Release *)

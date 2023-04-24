@@ -3637,7 +3637,7 @@ statement = "wire" , id , ":" , type , [ info ]
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ]
           | "define" , static_reference , "=" , ref_expr , [ info ]
-          | "force_release" , [ info ] ;
+          | force_release , [ info ]
           | "connect" , reference , "," , expr , [ info ]
           | "invalidate" , reference , [ info ]
 

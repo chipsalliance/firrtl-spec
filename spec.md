@@ -3567,7 +3567,7 @@ primop_2expr_keyword =
 primop_2expr =
     primop_2expr_keyword , "(" , expr , "," , expr ")" ;
 primop_1expr_keyword =
-    "asUInt" | "asSInt" | "asClock" | "cvt"
+    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
   | "neg"    | "not"
   | "andr"   | "orr"    | "xorr" ;
 primop_1expr =
@@ -3637,7 +3637,7 @@ statement = "wire" , id , ":" , type , [ info ]
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ]
           | "define" , static_reference , "=" , ref_expr , [ info ]
-          | "force_release" , [ info ] ;
+          | force_release , [ info ]
           | "connect" , reference , "," , expr , [ info ]
           | "invalidate" , reference , [ info ]
 

@@ -4,6 +4,8 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
+    - Add 'asAsyncReset' to primop_1expr_keyword in "FIRRTL Language Definition"
+    - Fix grammar for force_release statements
 
   # Information about the old versions.  This should be static.
   oldVersions:

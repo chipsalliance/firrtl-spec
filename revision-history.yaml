@@ -4,6 +4,7 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
+    - Added fine-grind parameters and capabilities for memories.
 
   # Information about the old versions.  This should be static.
   oldVersions:

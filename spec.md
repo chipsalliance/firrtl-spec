@@ -1671,7 +1671,8 @@ by the following parameters.
 2.  A positive integer literal representing the number of elements in the
     memory.
 
-3.  A variable number of named ports, each having following parameters:
+3.  A variable number of named ports, each having the following parameters in
+    this order:
     1.  A read flag indicating the read capability of this port.
     2.  A write flag indicating the write capability of this port.
     3.  If the port can read, a non-negative integer literal indicating the read
@@ -1716,7 +1717,7 @@ mem mymem :
     read => no
     write => with-mask
     write-latency => 1
-  custom-port => {a:UInt<4>, flip b:UInt<2>}
+  custom-port custom => {a:UInt<4>, flip b:UInt<2>}
 ```
 
 In the example above, the type of `mymem`{.firrtl} is:
@@ -1869,17 +1870,12 @@ A memory with a constant data-type represents a ROM and may not have
 ports with write capability. It is beyond the scope of this specification how
 ROMs are initialized.
 
-
 ### Custom port
 
 Custom ports are intended for post synthesis flows that require memory instances
-to have additional control signals. Behavorial simulators should ignore these
-ports, in the following way:
-
-- All input signals (into the memory) should be treated as dangling
-  wires.
-- All output signals (from the memory) have unspecified (implementation defined)
-  values.
+to have additional control signals. During behavioral simulations, the behavior
+of custom ports is undefined. Behavorial simulators may reject custom ports,
+either by a compilation error, or a runtime error.
 
 ## Instances
 
@@ -3656,8 +3652,8 @@ memory = "mem" , id , ":" , [ info ] , newline , indent ,
            "data-type" , "=>" , type , newline ,
            "depth" , "=>" , int , newline ,
            "read-under-write" , "=>" , ruw , newline ,
-           { "port" , "=>" , memory_port , newline } ,
-           [ "custom-port" , "=>" , type , newline ] ,
+           { memory_port , newline } ,
+           [ "custom-port" , id , "=>" , type , newline ] ,
          dedent ;
 
 (* Force and Release *)

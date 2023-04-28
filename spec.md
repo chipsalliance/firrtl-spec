@@ -3588,7 +3588,7 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
 id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
-linecol = num_dec , ":" , num_dec ;
+linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
 lineinfo = string, " ", linecol
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
@@ -3677,7 +3677,7 @@ statement = "wire" , id , ":" , type , [ info ]
             indent , statement, { statement } , dedent ,
             [ "else" , ":" , indent , statement, { statement } , dedent ]
           | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
-          | "printf(" , expr , "," , expr , "," , string ,
+          | "printf(" , expr , "," , expr , "," , string_dq ,
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ]
           | "define" , static_reference , "=" , ref_expr , [ info ]
@@ -3709,7 +3709,7 @@ intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
 annotations = "%" , "[" , json_array , "]" ;
 
 (* Version definition *)
-sem_ver = num_dec , "."  , num_dec , "." , num_dec
+sem_ver = int , "."  , int , "." , int
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)

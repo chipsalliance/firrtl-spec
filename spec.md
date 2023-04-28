@@ -1072,7 +1072,7 @@ field.
 
 ### Alternate Syntax
 
-Connects may also be specified by keyword.  This form is identical to the `<=` 
+Connects may also be specified by keyword.  This form is identical to the `<=`
 form in operand order
 
 ``` firrtl
@@ -1309,7 +1309,7 @@ analog types within the component (as they cannot be connected to).
 
 ### Alternate Syntax
 
-`is invalid`.{.firrtl} may also be specified by keyword.
+`is invalid`{.firrtl} may also be specified by keyword.
 
 ``` firrtl
 module MyModule :
@@ -3197,8 +3197,8 @@ Targets are specific enough to refer to any specific module in a folded,
 unfolded, or partially folded representation.
 
 To show some examples of what these look like, consider the following example
-circuit. This consists of four instances of module `Baz`{.firrtl}, two
-instances of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
+circuit. This consists of four instances of module `Baz`{.firrtl}, two instances
+of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
 ```firrtl
 circuit Foo:
@@ -3589,7 +3589,8 @@ id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
-info = "@" , "[" , { string , " " , linecol } , "]" ;
+lineinfo = string, " ", linecol
+info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
 (* Type definitions *)
 width = "<" , int_any , ">" ;
@@ -3641,7 +3642,7 @@ ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
 
 (* Memory *)
-ruw = ( "old" | "new" | "undefined" ) ;
+ruw =  "old" | "new" | "undefined" ;
 memory = "mem" , id , ":" , [ info ] , newline , indent ,
            "data-type" , "=>" , type , newline ,
            "depth" , "=>" , int , newline ,
@@ -3671,11 +3672,11 @@ statement = "wire" , id , ":" , type , [ info ]
           | "node" , id , "=" , expr , [ info ]
           | reference , "<=" , expr , [ info ]
           | reference , "is invalid" , [ info ]
-          | "attach(" , { reference } , ")" , [ info ]
-          | "when" , expr , ":" [ info ] , newline , indent ,
-              { statement } ,
-            dedent , [ "else" , ":" , indent , { statement } , dedent ]
-          | "stop(" , expr , "," , expr , "," , int_any , ")" , [ info ]
+          | "attach(" , reference , { "," ,  reference } , ")" , [ info ]
+          | "when" , expr , ":" [ info ] , newline ,
+            indent , statement, { statement } , dedent ,
+            [ "else" , ":" , indent , statement, { statement } , dedent ]
+          | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
           | "printf(" , expr , "," , expr , "," , string_dq ,
             { expr } , ")" , [ ":" , id ] , [ info ]
           | "skip" , [ info ]
@@ -3685,7 +3686,7 @@ statement = "wire" , id , ":" , type , [ info ]
           | "invalidate" , reference , [ info ]
 
 (* Module definitions *)
-port = ( "input" | "output" ) , id , ":": , type , [ info ] ;
+port = ( "input" | "output" ) , id , ":" , type , [ info ] ;
 module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
@@ -3708,7 +3709,7 @@ intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
 annotations = "%" , "[" , json_array , "]" ;
 
 (* Version definition *)
-sem_ver = { digit_dec } , "."  , { digit_dec } , "." , { digit_dec }
+sem_ver = int , "."  , int , "." , int
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)
@@ -3721,7 +3722,7 @@ circuit =
 
 ## Deprecated Syntax
 
-`reference is invalid` and `reference <= expr` are deprecated and will be 
+`reference is invalid` and `reference <= expr` are deprecated and will be
 replaced with the alternate syntax in the next major revision.
 
 # Versioning Scheme of this Document

@@ -1248,6 +1248,21 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 A register is initialized with an indeterminate value (see
 [@sec:indeterminate-values]).
 
+### Alternative Syntax
+
+A register with a reset may also be declared using an alternative syntax using
+the keyword `regreset`{.firrtl}.  Using this syntax, the operation takes four
+arguments: a type, a clock, a reset, and a reset value.  This syntax will become
+mandatory in the 3.0.0 FIRRTL specification.
+
+``` firrtl
+wire clock: Clock
+wire reset: UInt<1>
+wire resetValue: UInt<8>(0)
+regreset a: UInt<8>, clock, reset, resetValue
+; equivalent to reg a: UInt<8>, clock with: (reset => (reset, resetValue))
+```
+
 ## Invalidates
 
 An invalidate statement is used to indicate that a circuit component contains
@@ -3670,6 +3685,8 @@ statement =
     [ "with" , ":" , "(" , "reset" , "=>" ,
       "(" , expr , "," , expr , ")", ")" ] ,
     [ info ]
+  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr ,
+    [info]
   | memory
   | "inst" , id , "of" , id , [ info ]
   | "node" , id , "=" , expr , [ info ]

@@ -117,6 +117,7 @@
         <AnyChar String=":=.,()" attribute="Separator" context="#stay"/>
         <DetectChar char="[" attribute="Operator" context="widthOrDepthOrLit"/>
         <DetectChar char="&quot;" attribute="String" context="string"/>
+        <StringDetect String="regreset" attribute="Keyword" context="register"/>
         <StringDetect String="reg" attribute="Keyword" context="register"/>
         <StringDetect String="mem" attribute="Keyword" context="memoryFirst"/>
         <StringDetect String="%[" attribute="Operator" context="inlineannotation"/>

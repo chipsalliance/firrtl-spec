@@ -4,11 +4,14 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    - Add 'asAsyncReset' to primop_1expr_keyword in "FIRRTL Language Definition"
-    - Fix grammar for force_release statements
-    - Add a description of conventions for modules
+
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 2.2.0
+      - Add 'asAsyncReset' to primop_1expr_keyword in "FIRRTL Language
+        Definition"
+      - Fix grammar for force_release statements
+      - Add a description of conventions for modules
     - version: 2.1.1
       changes:
       - Fix typos in force/release examples, force takes expr not int literal.

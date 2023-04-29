@@ -18,6 +18,7 @@ revisionHistory:
       - Restrict string-encoded integers to only being usable in the
         construction of hardware literals.
       - Change string-encoded integers to radix-encoded integers.
+      - Remove legacy connect (`<=`) and invalidate (`is invalid`) syntax
     abi:
       - Initial ABI description.
   # Information about the old versions.  This should be static.

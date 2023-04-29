@@ -13,8 +13,6 @@
       <item>defname</item>
       <item>parameter</item>
       <item>skip</item>
-      <item>is</item>
-      <item>invalid</item>
       <item>inst</item>
       <item>of</item>
       <item>wire</item>
@@ -114,7 +112,6 @@
         <Detect2Chars char="{" char1="|" context="field" attribute="Separator"/>
         <DetectChar char="{" context="field" attribute="Separator"/>
         <DetectChar char="`" context="field" attribute="ID"/>
-        <Detect2Chars char="&lt;" char1="=" attribute="Operator" context="#stay"/>
         <Detect2Chars char="&lt;" char1="-" attribute="Operator" context="#stay"/>
         <Detect2Chars char="=" char1="&gt;" attribute="Operator" context="#stay"/>
         <AnyChar String=":=.,()" attribute="Separator" context="#stay"/>

@@ -171,7 +171,7 @@ and one statement connecting the input port to the output port.  See
 module MyModule :
   input foo: UInt
   output bar: UInt
-  bar <= foo
+  connect bar, foo
 ```
 
 Note that a module definition does *not* indicate that the module will be
@@ -380,23 +380,23 @@ allow 0-bit integer constant zeros for convenience:
 
 ``` firrtl
 wire zero_u : UInt<0>
-zero_u is invalid
+invalidate zero_u
 wire zero_s : SInt<0>
-zero_s is invalid
+invalidate zero_s
 
 wire one_u : UInt<1>
-one_u <= zero_u
+connect one_u, zero_u
 wire one_s : SInt<1>
-one_s <= zero_s
+connect one_s, zero_s
 ```
 
 Is equivalent to:
 
 ``` firrtl
 wire one_u : UInt<1>
-one_u <= UInt<1>(0)
+connect one_u, UInt<1>(0)
 wire one_s : SInt<1>
-one_s <= SInt<1>(0)
+connect one_s, SInt<1>(0)
 ```
 
 ### Clock Type
@@ -432,7 +432,7 @@ synchronous reset.
 ``` firrtl
 input a : UInt<1>
 wire reset : Reset
-reset <= a
+connect reset, a
 ```
 
 After reset inference, `reset`{.firrtl} is inferred to the synchronous
@@ -441,7 +441,7 @@ After reset inference, `reset`{.firrtl} is inferred to the synchronous
 ``` firrtl
 input a : UInt<1>
 wire reset : UInt<1>
-reset <= a
+connect reset, a
 ```
 
 Asynchronous resets used in registers will be mapped to a hardware description
@@ -474,9 +474,9 @@ input a : UInt<1>
 output y : AsyncReset
 output z : Reset
 wire r : Reset
-r <= a
-y <= asAsyncReset(r)
-z <= asUInt(y)
+connect r, a
+connect y, asAsyncReset(r)
+connect z, asUInt(y)
 ```
 
 See [@sec:primitive-operations] for more details on casting.
@@ -738,7 +738,7 @@ module TypeAliasMod:
   input in: Data
   output out: Data
   wire w: AnotherWordType
-  w <= in.w
+  connect w, in.w
   ...
 ```
 
@@ -768,7 +768,7 @@ circuit ResetInferBad :
   module ResetInferBad :
     input in : Reset
     output out : AsyncReset
-    out <= read(probe(in))
+    connect out, read(probe(in))
 ```
 
 The following circuit has all resets inferred to `AsyncReset`{.firrtl},
@@ -780,8 +780,8 @@ circuit ResetInferGood :
     input in : Reset
     output out : Reset
     output out2 : AsyncReset
-    out <= read(probe(in))
-    out2 <= in
+    connect out, read(probe(in))
+    connect out2, in
 ```
 
 ### Input Probe References
@@ -822,7 +822,7 @@ module RefBouncing:
   define u1.in = probe(n)
   define u2.in = u1.out
 
-  y <= read(u2.out) ; = x
+  connect y, read(u2.out) ; = x
 ```
 
 In the above example, the probe of node `n`{.firrtl} is routed through two
@@ -839,7 +839,7 @@ module Foo:
   input in : Probe<UInt>
   output out : UInt
 
-  out <= read(in)
+  connect out, read(in)
 ```
 
 Even when the target resolves at or below, the path must be the same in all
@@ -854,14 +854,14 @@ circuit Top:
     output out : UInt
 
     inst ud1 of UpDown
-    ud1.in <= in
+    connect ud1.in, in
     define ud1.in_ref = ud1.r1
 
     inst ud2 of UpDown
-    ud2.in <= in
+    connect ud2.in, in
     define ud2.in_ref = ud2.r2
 
-    out <= add(ud1.out, ud2.out)
+    connect out, add(ud1.out, ud2.out)
 
   module UpDown:
     input in : UInt<4>
@@ -872,7 +872,7 @@ circuit Top:
 
     ; In ud1, this is UpDown.n1, in ud2 this is UpDown.n2 .
     ; However, this is not supported as it cannot be both at once.
-    out <= read(in_ref)
+    connect out, read(in_ref)
     node n1 = and(in, UInt<4>(1))
     node n2 = and(in, UInt<4>(3))
     define r1 = probe(n1)
@@ -912,7 +912,7 @@ module Producer:
   wire x : UInt
   define out.pref = probe(x)
   ; ...
-  out.a <= x
+  connect out.a, x
 
 module Connect:
   output out : {pref: Probe<UInt>, cref: Probe<UInt>}
@@ -921,7 +921,7 @@ module Connect:
   inst b of Producer
 
   ; Producer => Consumer
-  a.in.a <= b.out.a
+  connect a.in.a, b.out.a
   define a.in.pref = b.out.pref
   define b.out.cref = a.in.cref
 
@@ -1050,7 +1050,7 @@ output port, where port `myinput`{.firrtl} is connected to port
 module MyModule :
   input myinput: UInt
   output myoutput: UInt
-  myoutput <= myinput
+  connect myoutput, myinput
 ```
 
 In order for a connection to be legal the following conditions must hold:
@@ -1087,19 +1087,6 @@ connected to the left-hand side field.  Conversely, if the i'th field is
 flipped, then the left-hand side field is connected to the right-hand side
 field.
 
-### Alternate Syntax
-
-Connects may also be specified by keyword.  This form is identical to the `<=`
-form in operand order
-
-``` firrtl
-module MyModule :
-  input myinput: UInt
-  output myoutput: UInt
-  connect myoutput, myinput
-  ; equivalent to "myoutput <= myinput"
-```
-
 ### Last Connect Semantics
 
 Ordering of connects is significant.  Later connects take precedence over
@@ -1114,9 +1101,9 @@ module MyModule :
   output myport1: UInt
   output myport2: UInt
 
-  myport1 <= a
-  myport1 <= b
-  myport2 <= a
+  connect myport1, a
+  connect myport1, b
+  connect myport2, a
 ```
 
 Conditional statements are affected by last connect semantics.  For details see
@@ -1135,8 +1122,8 @@ module MyModule :
   input portx: {b: UInt, c: UInt}
   input porty: UInt
   output myport: {b: UInt, c: UInt}
-  myport <= portx
-  myport.b <= porty
+  connect myport, portx
+  connect myport.b, porty
 ```
 
 The above circuit can be rewritten as:
@@ -1146,8 +1133,8 @@ module MyModule :
   input portx: {b: UInt, c: UInt}
   input porty: UInt
   output myport: {b: UInt, c: UInt}
-  myport.b <= porty
-  myport.c <= portx.c
+  connect myport.b, porty
+  connect myport.c, portx.c
 ```
 
 When a connection to a sub-element of an aggregate component is followed by a
@@ -1159,8 +1146,8 @@ module MyModule :
   input portx: {b: UInt, c: UInt}
   input porty: UInt
   output myport: {b: UInt, c: UInt}
-  myport.b <= porty
-  myport <= portx
+  connect myport.b, porty
+  connect myport, portx
 ```
 
 The above circuit can be rewritten as:
@@ -1170,7 +1157,7 @@ module MyModule :
   input portx: {b: UInt, c: UInt}
   input porty: UInt
   output myport: {b: UInt, c: UInt}
-  myport <= portx
+  connect myport, portx
 ```
 
 See [@sec:sub-fields] for more details about sub-field expressions.
@@ -1183,16 +1170,16 @@ statement is expected. It is specified using the `skip`{.firrtl} keyword.
 The following example:
 
 ``` firrtl
-a <= b
+connect a, b
 skip
-c <= d
+connect c, d
 ```
 
 can be equivalently expressed as:
 
 ``` firrtl
-a <= b
-c <= d
+connect a, b
+connect c, d
 ```
 
 The empty statement is most often used as the `else`{.firrtl} branch in a
@@ -1222,6 +1209,11 @@ The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
 register must be a passive type (see [@sec:passive-types]) and may not be
 `const`{.firrtl}.
 
+Registers may be declared without a reset using the `reg`{.firrtl} syntax and
+with a reset using the `regreset`{.firrtl} syntax.
+
+### Registers without Reset
+
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
 `myclock`{.firrtl}.
@@ -1232,11 +1224,15 @@ reg myreg: SInt, myclock
 ; ...
 ```
 
-A register may be declared with a reset signal and value.  The register's value
-is updated with the reset value when the reset is asserted.  The reset signal
-must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and
-the type of initialization value must be equivalent to the declared type of the
-register (see [@sec:type-equivalence] for details).  If the reset signal is an
+### Registers with Reset
+
+A register with a reset is declared using `regreset`{.firrtl}.  A
+`regreset`{.firrtl} adds two expressions after the type and clock arguments: a
+reset signal and a reset value.  The register's value is updated with the reset
+value when the reset is asserted.  The reset signal must be a `Reset`{.firrtl},
+`UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization
+value must be equivalent to the declared type of the register (see
+[@sec:type-equivalence] for details).  If the reset signal is an
 `AsyncReset`{.firrtl}, then the reset value must be a constant type.  The
 behavior of the register depends on the type of the reset signal.
 `AsyncReset`{.firrtl} will immediately change the value of the register.
@@ -1250,27 +1246,12 @@ signal `myreset`{.firrtl} is high.
 wire myclock: Clock
 wire myreset: UInt<1>
 wire myinit: SInt
-reg myreg: SInt, myclock with: (reset => (myreset, myinit))
+regreset myreg: SInt, myclock, myreset, myinit
 ; ...
 ```
 
 A register is initialized with an indeterminate value (see
 [@sec:indeterminate-values]).
-
-### Alternative Syntax
-
-A register with a reset may also be declared using an alternative syntax using
-the keyword `regreset`{.firrtl}.  Using this syntax, the operation takes four
-arguments: a type, a clock, a reset, and a reset value.  This syntax will become
-mandatory in the 3.0.0 FIRRTL specification.
-
-``` firrtl
-wire clock: Clock
-wire reset: UInt<1>
-wire resetValue: UInt<8>(0)
-regreset a: UInt<8>, clock, reset, resetValue
-; equivalent to reg a: UInt<8>, clock with: (reset => (reset, resetValue))
-```
 
 ## Invalidates
 
@@ -1280,7 +1261,7 @@ follows:
 
 ``` firrtl
 wire w: UInt
-w is invalid
+invalidate w
 ```
 
 Invalidate statements can be applied to any circuit component of any
@@ -1298,9 +1279,9 @@ module MyModule :
   input in: {flip a: UInt, b: UInt}
   output out: {flip a: UInt, b: UInt}
   wire w: {flip a: UInt, b: UInt}
-  in is invalid
-  out is invalid
-  w is invalid
+  invalidate in
+  invalidate out
+  invalidate w
 ```
 
 is equivalent to the following:
@@ -1310,10 +1291,10 @@ module MyModule :
   input in: {flip a: UInt, b: UInt}
   output out: {flip a: UInt, b: UInt}
   wire w: {flip a: UInt, b: UInt}
-  in.a is invalid
-  out.b is invalid
-  w.a is invalid
-  w.b is invalid
+  invalidate in.a
+  invalidate out.b
+  invalidate w.a
+  invalidate w.b
 ```
 
 The handing of invalidated components is covered in [@sec:indeterminate-values].
@@ -1332,23 +1313,6 @@ sub-element in the bundle.
 
 Components of reference and analog type are ignored, as are any reference or
 analog types within the component (as they cannot be connected to).
-
-### Alternate Syntax
-
-`is invalid`{.firrtl} may also be specified by keyword.
-
-``` firrtl
-module MyModule :
-  input in: {flip a: UInt, b: UInt}
-  output out: {flip a: UInt, b: UInt}
-  wire w: {flip a: UInt, b: UInt}
-  invalidate in
-  ; equivalent to "in is invalid"
-  invalidate out
-  ; equivalent to "out is invalid"
-  invalidate w
-  ; equivalent to "w is invalid"
-```
 
 ## Attaches
 
@@ -1405,9 +1369,9 @@ module MyModule :
   input en: UInt<1>
   wire x: UInt
   when en :
-    x <= a
+    connect x, a
   else :
-    x <= b
+    connect x, b
 ```
 
 #### Syntactic Shorthands
@@ -1425,7 +1389,7 @@ module MyModule :
   input en: UInt<1>
   wire x: UInt
   when en :
-    x <= a
+    connect x, a
 ```
 
 can be equivalently expressed as:
@@ -1437,7 +1401,7 @@ module MyModule :
   input en: UInt<1>
   wire x: UInt
   when en :
-    x <= a
+    connect x, a
   else :
     skip
 ```
@@ -1459,15 +1423,15 @@ module MyModule :
   input c3: UInt<1>
   wire x: UInt
   when c1 :
-    x <= a
+    connect x, a
   else :
     when c2 :
-      x <= b
+      connect x, b
     else :
       when c3 :
-        x <= c
+        connect x, c
       else :
-        x <= d
+        connect x, d
 ```
 
 can be equivalently written as:
@@ -1483,13 +1447,13 @@ module MyModule :
   input c3: UInt<1>
   wire x: UInt
   when c1 :
-    x <= a
+    connect x, a
   else when c2 :
-    x <= b
+    connect x, b
   else when c3 :
-    x <= c
+    connect x, c
   else :
-    x <= d
+    connect x, d
 ```
 
 To additionally aid readability, a conditional statement where the contents of
@@ -1501,23 +1465,23 @@ The following statement:
 
 ``` firrtl
 when c :
-  a <= b
+  connect a, b
 else :
-  e <= f
+  connect e, f
 ```
 
 can have the `when`{.firrtl} keyword, the `when`{.firrtl} branch, and the
 `else`{.firrtl} keyword expressed as a single line:
 
 ``` firrtl
-when c : a <= b else :
-  e <= f
+when c : connect a, b else :
+  connect e, f
 ```
 
 The `else`{.firrtl} branch may also be added to the single line:
 
 ``` firrtl
-when c : a <= b else : e <= f
+when c : connect a, b else : connect e, f
 ```
 
 ### Match Statements
@@ -1530,9 +1494,9 @@ variant.
 ``` firrtl
 match x:
   some(v):
-    a <= v
+    connect a, v
   none:
-    e <= f
+    connect e, f
 ```
 
 ### Nested Declarations
@@ -1550,10 +1514,10 @@ module MyModule :
   input clk : Clock
   when en :
     reg myreg1 : UInt, clk
-    myreg1 <= a
+    connect myreg1, a
   else :
     reg myreg2 : UInt, clk
-    myreg2 <= b
+    connect myreg2, b
 ```
 
 Intuitively, a line can be drawn between a connection to a component and that
@@ -1575,7 +1539,7 @@ module MyModule :
   input a: UInt
   wire w: UInt
   when en :
-    w <= a
+    connect w, a
 ```
 
 This is an illegal FIRRTL circuit and an error will be thrown during
@@ -1610,9 +1574,9 @@ wire a: UInt
 wire b: UInt
 wire c: UInt<1>
 wire w: UInt
-w <= a
+connect w, a
 when c :
-  w <= b
+  connect w, b
 ```
 
 can be rewritten equivalently using a multiplexer as follows:
@@ -1622,7 +1586,7 @@ wire a: UInt
 wire b: UInt
 wire c: UInt<1>
 wire w: UInt
-w <= mux(c, b, a)
+connect w, mux(c, b, a)
 ```
 
 Because invalid statements assign indeterminate values to components, a FIRRTL
@@ -1634,9 +1598,9 @@ has an indeterminate value when `c`{.firrtl} is false.
 wire a: UInt
 wire c: UInt<1>
 wire w: UInt
-w is invalid
+invalidate w
 when c :
-  w <= a
+  connect w, a
 ```
 
 A FIRRTL compiler is free to optimize this to the following circuit by assuming
@@ -1646,7 +1610,7 @@ that `w`{.firrtl} takes on the value of `a`{.firrtl} when `c`{.firrtl} is false.
 wire a: UInt
 wire c: UInt<1>
 wire w: UInt
-w <= a
+connect w, a
 ```
 
 See [@sec:indeterminate-values] for more information on indeterminate values.
@@ -1663,9 +1627,9 @@ wire x: {a: UInt, b: UInt}
 wire y: {a: UInt, b: UInt}
 wire c: UInt<1>
 wire w: {a: UInt, b: UInt}
-w <= x
+connect w, x
 when c :
-  w <= y
+  connect w, y
 ```
 
 can be rewritten equivalently as follows:
@@ -1675,8 +1639,8 @@ wire x: {a:UInt, b:UInt}
 wire y: {a:UInt, b:UInt}
 wire c: UInt<1>
 wire w: {a:UInt, b:UInt}
-w.a <= mux(c, y.a, x.a)
-w.b <= mux(c, y.b, x.b)
+connect w.a, mux(c, y.a, x.a)
+connect w.b, mux(c, y.b, x.b)
 ```
 
 Similar to the behavior of aggregate types under last connect semantics (see
@@ -1691,9 +1655,9 @@ wire x: {a: UInt, b: UInt}
 wire y: UInt
 wire c: UInt<1>
 wire w: {a: UInt, b: UInt}
-w <= x
+connect w, x
 when c :
-  w.a <= y
+  connect w.a, y
 ```
 
 can be rewritten equivalently as follows:
@@ -1703,8 +1667,8 @@ wire x: {a: UInt, b: UInt}
 wire y: UInt
 wire c: UInt<1>
 wire w: {a: UInt, b: UInt}
-w.a <= mux(c, y, x.a)
-w.b <= x.b
+connect w.a, mux(c, y, x.a)
+connect w.b, x.b
 ```
 
 ## Memories
@@ -1890,7 +1854,7 @@ circuit Top :
   module MyModule :
     input a: UInt
     output b: UInt
-    b <= a
+    connect b, a
   module Top :
     inst myinstance of MyModule
 ```
@@ -2028,8 +1992,8 @@ implies predicate.
 wire clk: Clock
 wire pred: UInt<1>
 wire en: UInt<1>
-pred <= eq(X, Y)
-en <= Z_valid
+connect pred, eq(X, Y)
+connect en, Z_valid
 assert(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
@@ -2045,8 +2009,8 @@ as an assert.
 wire clk: Clock
 wire pred: UInt<1>
 wire en: UInt<1>
-pred <= eq(X, Y)
-en <= Z_valid
+connect pred, eq(X, Y)
+connect en, Z_valid
 assume(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
@@ -2062,8 +2026,8 @@ The string argument may be emitted as a comment with the cover.
 wire clk: Clock
 wire pred: UInt<1>
 wire en: UInt<1>
-pred <= eq(X, Y)
-en <= Z_valid
+connect pred, eq(X, Y)
+connect en, Z_valid
 cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
@@ -2118,8 +2082,8 @@ module Foo:
   output z : Probe<UInt>[2]
 
   wire w : UInt
-  w <= x
-  y.x <= w
+  connect w, x
+  connect y.x, w
 
   define y.p = probe(w)
   define z[0] = probe(w)
@@ -2149,8 +2113,8 @@ module Foo :
 
   wire p : {a: UInt, flip b: UInt} ; p is not passive
   define xp = probe(p)
-  p <= x
-  y <= p
+  connect p, x
+  connect y, p
 ```
 
 #### Exporting References to Nested Declarations
@@ -2166,7 +2130,7 @@ module RefProducer :
 
   when en :
     reg myreg : UInt, clk
-    myreg <= a
+    connect myreg, a
     define thereg = probe(myreg)
 ```
 
@@ -2255,7 +2219,7 @@ module AddRefs:
   node x = UInt<2>(0)
   node y = UInt<2>(0)
   node z = UInt<2>(0)
-  sum <= add(x, add(y, z))
+  connect sum, add(x, add(y, z))
 
   define a = rwprobe(x)
   define b = rwprobe(y)
@@ -2273,7 +2237,7 @@ module ForceAndRelease:
   output o : UInt<3>
 
   inst r of AddRefs
-  o <= r.sum
+  connect o, r.sum
 
   force_initial(r.a, UInt<2>(0))
   force_initial(r.a, UInt<2>(1))
@@ -2328,7 +2292,7 @@ module ForceAndRelease:
   output o : UInt<3>
 
   inst r of AddRefs
-  o <= r.sum
+  connect o, r.sum
 
   force(clock, cond, r.a, a)
   release(clock, not(cond), r.a)
@@ -2366,12 +2330,12 @@ module Top:
   output y : {a: UInt<2>, flip b: UInt<2>}
 
   inst d of DUT
-  d.x <= x
-  y <= d.y
+  connect d.x, x
+  connect y, d.y
 
   wire val : {a: UInt<2>, b: UInt<2>}
-  val.a <= UInt<2>(1)
-  val.b <= UInt<2>(2)
+  connect val.a, UInt<2>(1)
+  connect val.b, UInt<2>(2)
 
   ; Force takes a RWProbe and overrides the target with 'val'.
   force_initial(d.xp, val)
@@ -2384,8 +2348,8 @@ module DUT :
   ; Force drives p.a, p.b, y.a, and x.b, but not y.b and x.a
   wire p : {a: UInt<2>, flip b: UInt<2>}
   define xp = rwprobe(p)
-  p <= x
-  y <= p
+  connect p, x
+  connect y, p
 ```
 
 # Expressions
@@ -2473,7 +2437,7 @@ to the previously declared port `in`{.firrtl}, to the reference expression
 module MyModule :
   input in: UInt
   output out: UInt
-  out <= in
+  connect out, in
 ```
 
 In the rest of the document, for brevity, the names of components will be used
@@ -2505,7 +2469,7 @@ sub-element of the `out`{.firrtl} port.
 module MyModule :
   input in: UInt
   output out: {a: UInt, b: UInt}
-  out.a <= in
+  connect out.a, in
 ```
 
 The following example is the same as above, but with a constant output bundle.
@@ -2514,7 +2478,7 @@ The following example is the same as above, but with a constant output bundle.
 module MyModule :
   input in: const UInt
   output out: const {a: UInt, b: UInt}
-  out.a <= in ; out.a is of type const UInt
+  connect out.a, in ; out.a is of type const UInt
 ```
 
 The following example is the same as above, but with a bundle with a constant
@@ -2524,7 +2488,7 @@ field.
 module MyModule :
   input in: const UInt
   output out: {a: const UInt, b: UInt}
-  out.a <= in ; out.a is of type const UInt
+  connect out.a, in ; out.a is of type const UInt
 ```
 
 A sub-field referring to a field whose name is a literal identifier is shown
@@ -2534,7 +2498,7 @@ below:
 module MyModule :
   input a: { `0` : { `0` : { b : UInt<1> } } }
   output b: UInt<1>
-  b <= a.`0`.`0`.b
+  connect b, a.`0`.`0`.b
 ```
 
 ## Sub-indices
@@ -2552,7 +2516,7 @@ of the `out`{.firrtl} port.
 module MyModule :
   input in: UInt
   output out: UInt[10]
-  out[4] <= in
+  connect out[4], in
 ```
 
 The following example is the same as above, but with a constant vector.
@@ -2561,7 +2525,7 @@ The following example is the same as above, but with a constant vector.
 module MyModule :
   input in: const UInt
   output out: const UInt[10]
-  out[4] <= in ; out[4] has a type of const UInt
+  connect out[4], in ; out[4] has a type of const UInt
 ```
 
 
@@ -2584,7 +2548,7 @@ module MyModule :
   input in: UInt[3]
   input n: UInt<2>
   output out: UInt
-  out <= in[n]
+  connect out, in[n]
 ```
 
 A connection from a sub-access expression can be modeled by conditionally
@@ -2597,13 +2561,13 @@ module MyModule :
   input n: UInt<2>
   output out: UInt
   when eq(n, UInt(0)) :
-    out <= in[0]
+    connect out, in[0]
   else when eq(n, UInt(1)) :
-    out <= in[1]
+    connect out, in[1]
   else when eq(n, UInt(2)) :
-    out <= in[2]
+    connect out, in[2]
   else :
-    out is invalid
+    invalidate out
 ```
 
 The following example connects the `in`{.firrtl} port to the n'th sub-element of
@@ -2616,8 +2580,8 @@ module MyModule :
   input default: UInt[3]
   input n: UInt<2>
   output out: UInt[3]
-  out <= default
-  out[n] <= in
+  connect out, default
+  connect out[n], in
 ```
 
 A connection to a sub-access expression can be modeled by conditionally
@@ -2630,13 +2594,13 @@ module MyModule :
   input default: UInt[3]
   input n: UInt<2>
   output out: UInt[3]
-  out <= default
+  connect out, default
   when eq(n, UInt(0)) :
-    out[0] <= in
+    connect out[0], in
   else when eq(n, UInt(1)) :
-    out[1] <= in
+    connect out[1], in
   else when eq(n, UInt(2)) :
-    out[2] <= in
+    connect out[2], in
 ```
 
 The following example connects the `in`{.firrtl} port to the m'th
@@ -2651,8 +2615,8 @@ module MyModule :
   input n: UInt<1>
   input m: UInt<1>
   output out: UInt[2][2]
-  out <= default
-  out[n][m] <= in
+  connect out, default
+  connect out[n][m], in
 ```
 
 A connection to an expression containing multiple nested sub-access expressions
@@ -2667,15 +2631,15 @@ module MyModule :
   input n: UInt<1>
   input m: UInt<1>
   output out: UInt[2][2]
-  out <= default
+  connect out, default
   when and(eq(n, UInt(0)), eq(m, UInt(0))) :
-    out[0][0] <= in
+    connect out[0][0], in
   else when and(eq(n, UInt(0)), eq(m, UInt(1))) :
-    out[0][1] <= in
+    connect out[0][1], in
   else when and(eq(n, UInt(1)), eq(m, UInt(0))) :
-    out[1][0] <= in
+    connect out[1][0], in
   else when and(eq(n, UInt(1)), eq(m, UInt(1))) :
-    out[1][1] <= in
+    connect out[1][1], in
 ```
 
 ## Multiplexers
@@ -2694,7 +2658,7 @@ module MyModule :
   input b: UInt
   input sel: UInt<1>
   output c: UInt
-  c <= mux(sel, a, b)
+  connect c, mux(sel, a, b)
 ```
 
 A multiplexer expression is legal only if the following holds.
@@ -2755,7 +2719,7 @@ module Bar :
   output x : UInt
 
   inst f of Foo
-  x <= read(f.p) ; indirectly access the probed data
+  connect x, read(f.p) ; indirectly access the probed data
 ```
 
 Indexing statically (sub-field, sub-index) into a probed value is allowed as
@@ -2770,14 +2734,14 @@ module Bar :
   output x : UInt
 
   inst f of Foo
-  x <= read(f.p.b) ; indirectly access the probed data
+  connect x, read(f.p.b) ; indirectly access the probed data
 ```
 
 Read operations can be used anywhere a signal of the same underlying
 type can be used, such as the following:
 
 ```firrtl
-  x <= add(read(f.p).a, read(f.p).b)
+  connect x, add(read(f.p).a, read(f.p).b)
 ```
 
 The source of the probe must reside at or below the point of the
@@ -3161,8 +3125,8 @@ though the loop will be removed by last connect semantics.
 module Foo:
   input a: UInt<1>
   output b: UInt<1>
-  b <= b
-  b <= a
+  connect b, b
+  connect b, a
 ```
 
 The following module `Foo2`{.firrtl} has a combinational loop, even if it can
@@ -3173,8 +3137,8 @@ module Foo2 :
   input n2: UInt<2>
   wire tmp: UInt<1>
   wire vec: UInt<1>[3]
-  tmp <= vec[n1]
-  vec[n2] <= tmp
+  connect tmp, vec[n1]
+  connect vec[n2], tmp
 ```
 
 Module `Foo3`{.firrtl} is another example of an illegal combinational loop,
@@ -3185,8 +3149,8 @@ module Foo3
   wire a : UInt<2>
   wire b : UInt<1>
 
-  a <= cat(b, c)
-  b <= bits(a, 0, 0)
+  connect a, cat(b, c)
+  connect b, bits(a, 0, 0)
 ```
 
 
@@ -3375,10 +3339,10 @@ module IValue :
   input v : UInt<8>
 
   wire a : UInt<8>
-  a is invalid
+  invalidate a
   when c :
-    a <= v
-  o <= a
+    connect a, v
+  connect o, a
 ```
 is transformed to:
 ``` firrtl
@@ -3387,7 +3351,7 @@ module IValue :
   input c : UInt<1>
   input v : UInt<8>
 
-  o <= v
+  connect o, v
 ```
 Note that it is equally correct to produce:
 ``` firrtl
@@ -3398,10 +3362,10 @@ module IValue :
 
   wire a : UInt<8>
   when c :
-    a <= v
+    connect a, v
   else :
-    a <= UInt<3>("h42")
-  o <= a
+    connect a, UInt<3>("h42")
+  connect o, a
 ```
 
 The behavior of constructs which cause indeterminate values is implementation
@@ -3504,9 +3468,9 @@ circuit Foo :
      input a: UInt<1>
      output b: UInt<1>
      when a:
-         b <= a
+         connect b, a
      else:
-       b <= not(a)
+       connect b, not(a)
 ```
 
 All circuits, modules, ports and statements can optionally be followed with the
@@ -3526,10 +3490,10 @@ circuit Top : @[myfile.txt 14:8]
     input d: UInt<16> @[myfile.txt 19:3]
     wire a: UInt @[myfile.txt 21:8]
     when c : @[myfile.txt 24:8]
-      a <= b @[myfile.txt 27:16]
+      connect a, b @[myfile.txt 27:16]
     else :
-      a <= d @[myfile.txt 29:17]
-    out <= add(a,a) @[myfile.txt 34:4]
+      connect a, d @[myfile.txt 29:17]
+    connect out, add(a,a) @[myfile.txt 34:4]
 ```
 
 # FIRRTL Compiler Implementation Details
@@ -3750,17 +3714,12 @@ force_release =
 (* Statements *)
 statement =
     "wire" , id , ":" , type , [ info ]
-  | "reg" , id , ":" , type , expr ,
-    [ "with" , ":" , "(" , "reset" , "=>" ,
-      "(" , expr , "," , expr , ")", ")" ] ,
-    [ info ]
+  | "reg" , id , ":" , type , expr , [ info ]
   | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr ,
     [info]
   | memory
   | "inst" , id , "of" , id , [ info ]
   | "node" , id , "=" , expr , [ info ]
-  | reference , "<=" , expr , [ info ]
-  | reference , "is invalid" , [ info ]
   | "attach(" , reference , { "," ,  reference } , ")" , [ info ]
   | "when" , expr , ":" [ info ] , newline ,
     indent , statement, { statement } , dedent ,
@@ -3811,11 +3770,6 @@ circuit =
     { module | extmodule | intmodule | type_alias_decl } ,
   dedent ;
 ```
-
-## Deprecated Syntax
-
-`reference is invalid` and `reference <= expr` are deprecated and will be
-replaced with the alternate syntax in the next major revision.
 
 # Versioning Scheme of this Document
 

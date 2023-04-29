@@ -5,6 +5,7 @@
       <item>circuit</item>
       <item>module</item>
       <item>extmodule</item>
+      <item>intmodule</item>
     </list>
     <list name="keywords">
       <item>input</item>
@@ -20,6 +21,7 @@
       <item>node</item>
       <item>ref</item>
       <item>define</item>
+      <item>intrinsic</item>
     </list>
     <list name="types">
       <item>UInt</item>

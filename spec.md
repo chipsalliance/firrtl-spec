@@ -2467,26 +2467,6 @@ the data type is `UInt<0>(0)`, where it is implicitly defined to be
 {|some: UInt<8>, None|}(Some, x)
 ```
 
-## Vector Expressions
-
-A vector can be constructed by specifying a list of values and a return type
-specifier.
-
-``` firrtl
-[UInt(2), UInt(3), UInt(4)] : UInt<8>[3]
-[io.a, io.b, io.c] : UInt<32>[3]
-```
-
-## Bundle Expressions
-
-A bundle can be constructed by specifying the field values using a bundle-like
-syntax, and a return type specifier.
-
-``` firrtl
-{a: UInt(0)} : {a : UInt<8>}
-{enable: io.in} : {enable : UInt<1>}
-```
-
 ## References
 
 A reference is simply a name that refers to a previously declared circuit

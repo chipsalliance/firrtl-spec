@@ -558,8 +558,8 @@ defined to be `UInt<0>`. The variant types of an enumeration must all be
 passive and cannot contain analog types.
 
 ``` firrtl
-[#a, #b, #c]
-[#some: UInt<8>, #none]
+{|a, b, c|}
+{|some: UInt<8>, none|}
 ```
 
 ## Aggregate Types
@@ -1534,9 +1534,9 @@ variant.
 
 ``` firrtl
 match x:
-  #some(v):
+  some(v):
     a <= v
-  #none:
+  none:
     e <= f
 ```
 
@@ -2457,14 +2457,14 @@ SInt("h-2a")
 
 ## Enum Expressions
 
-An enumeration can be constructed by specifying the variant tag, a data value
-expression, and a return type specifier. The data value expression may be
-omitted when the data type is `UInt<0>(0)`, where it is implicitly defined to
-be `UInt<0>(0)`.
+An enumeration can be constructed by applying an enumeration type to a variant
+tag and a data value expression. The data value expression may be omitted when
+the data type is `UInt<0>(0)`, where it is implicitly defined to be
+`UInt<0>(0)`.
 
 ``` firrtl
-#a : [#a, #b, #c]
-#some(UInt<8>(1)) : [#some: UInt<8>, #none]
+{|a, b, c|}(a)
+{|some: UInt<8>, None|}(Some, x)
 ```
 
 ## Vector Expressions

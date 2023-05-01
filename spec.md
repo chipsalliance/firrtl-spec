@@ -584,8 +584,8 @@ UInt<16>[10][20]
 ### Bundle Types
 
 A bundle type is used to express a collection of nested and named types.  All
-fields in a bundle type must have a given name, and type.  All names must be
-legal identifiers.
+fields in a bundle type must have a given name, and type.  All names must either
+be legal identifiers or quoted strings.
 
 The following is an example of a possible type for representing a complex
 number. It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit
@@ -2490,6 +2490,16 @@ module MyModule :
   out.a <= in ; out.a is of type const UInt
 ```
 
+A sub-field referring to a field whose name is a quoted string must also be a
+quoted string.  E.g., the following is a legal sub-field referring to the field
+`'0'`{.firrtl}:
+
+``` firrtl
+module MyModule :
+  input a: { '0' : { '0' : { b : UInt<1> } } }
+  output b: UInt<1>
+  b <= a.'0'.'0'.b
+```
 
 ## Sub-indices
 
@@ -3617,7 +3627,7 @@ type_ground = "Clock" | "Reset" | "AsyncReset"
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
-field = [ "flip" ] , id , ":" , type ;
+field = [ "flip" ] , ( id | string_sq ) , ":" , type ;
 type = ( [ "const" ] , ( type_ground | type_aggregate ) ) | type_ref ;
 
 (* Primitive operations *)
@@ -3652,7 +3662,7 @@ expr =
   | "read" , "(" , ref_expr , ")"
   | primop ;
 static_reference = id
-                 | static_reference , "." , id
+                 | static_reference , "." , ( id | string_sq )
                  | static_reference , "[" , int_any , "]" ;
 reference = static_reference
           | reference , "[" , expr , "]" ;

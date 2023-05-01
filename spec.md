@@ -584,7 +584,8 @@ UInt<16>[10][20]
 ### Bundle Types
 
 A bundle type is used to express a collection of nested and named types.  All
-fields in a bundle type must have a given name, and type.
+fields in a bundle type must have a given name, and type.  All fields must be
+legal identifiers.
 
 The following is an example of a possible type for representing a complex
 number. It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit

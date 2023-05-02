@@ -3665,7 +3665,8 @@ type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
-type = ( [ "const" ] , ( type_ground | type_aggregate ) ) | type_ref ;
+type = ( [ "const" ] , ( type_ground | type_enum | type_aggregate ) )
+     | type_ref ;
 
 (* Primitive operations *)
 primop_2expr_keyword =

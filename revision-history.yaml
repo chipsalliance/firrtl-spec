@@ -4,11 +4,13 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    - Add intrinsic modules to syntax highlighting
-    - Add connect, invalidate to syntax highlighting
-    - Add alternative `regreset` syntax
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 2.3.0
+      changes:
+        - Add intrinsic modules to syntax highlighting
+        - Add connect, invalidate to syntax highlighting
+        - Add alternative `regreset` syntax
     - version: 2.2.0
       changes:
         - Add 'asAsyncReset' to primop_1expr_keyword in "FIRRTL Language

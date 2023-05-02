@@ -3659,6 +3659,8 @@ info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 width = "<" , int_any , ">" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ] ;
+type_enum = "{|" , { field_enum } , "|}" ;
+field_enum = id, [ ":" , type ] ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
@@ -3692,6 +3694,7 @@ primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 (* Expression definitions *)
 expr =
     ( "UInt" | "SInt" ) , [ width ] , "(" , int_any , ")"
+  | type_enum , "(" , id , [ expr ] , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
   | "read" , "(" , ref_expr , ")"
@@ -3742,6 +3745,9 @@ statement =
   | "when" , expr , ":" [ info ] , newline ,
     indent , statement, { statement } , dedent ,
     [ "else" , ":" , indent , statement, { statement } , dedent ]
+  | "match" , expr , ":" , [ info ] , newline ,
+    [ indent , { id , [ "(" , id , ")" ] , ":" , newline , 
+    [ indent , { statement } , dedent ] } , dedent ]
   | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "printf(" , expr , "," , expr , "," , string_dq ,
     { expr } , ")" , [ ":" , id ] , [ info ]

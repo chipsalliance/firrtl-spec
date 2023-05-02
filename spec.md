@@ -584,8 +584,8 @@ UInt<16>[10][20]
 ### Bundle Types
 
 A bundle type is used to express a collection of nested and named types.  All
-fields in a bundle type must have a given name, and type.  All names must either
-be legal identifiers or quoted strings.
+fields in a bundle type must have a given name, and type.  All names must be
+legal identifiers.
 
 The following is an example of a possible type for representing a complex
 number. It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit
@@ -2490,15 +2490,14 @@ module MyModule :
   out.a <= in ; out.a is of type const UInt
 ```
 
-A sub-field referring to a field whose name is a quoted string must also be a
-quoted string.  E.g., the following is a legal sub-field referring to the field
-`'0'`{.firrtl}:
+A sub-field referring to a field whose name is a literal identifier is shown
+below:
 
 ``` firrtl
 module MyModule :
-  input a: { '0' : { '0' : { b : UInt<1> } } }
+  input a: { `0` : { `0` : { b : UInt<1> } } }
   output b: UInt<1>
-  b <= a.'0'.'0'.b
+  b <= a.`0`.`0`.b
 ```
 
 ## Sub-indices
@@ -3396,8 +3395,21 @@ contain indeterminate values, do not need to be equal under comparison.
 FIRRTL's syntax is designed to be human-readable but easily algorithmically
 parsed.
 
-The following characters are allowed in identifiers: upper and lower case
+FIRRTL allows for two types of identifiers:
+
+1. Identifiers
+2. Literal Identifiers
+
+Identifiers may only have the following characters: upper and lower case
 letters, digits, and `_`{.firrtl}. Identifiers cannot begin with a digit.
+
+Literal identifiers allow for using a string as an identifier which is not a
+legal identifier.  Such an identifier is encoded using leading and trailing
+backticks, `\``{.firrtl}.  E.g., it is legal to use `\`0\``{.firrtl} as a
+literal identifier in a Bundle field (or anywhere else an identifier may be
+used).  A FIRRTL compiler is allowed to change a literal identifier to an
+identifier of the target language (e.g., Verilog) if the literal identifier is
+not representable in the target language.
 
 Comments begin with a semicolon and extend until the end of the line.  Commas
 are treated as whitespace, and may be used by the user for clarity if desired.
@@ -3613,7 +3625,8 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "h" | "i" | "j" | "k" | "l" | "m" | "n"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
-id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
+literal_id = "`" , string "`" ;
+id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;

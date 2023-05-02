@@ -3640,7 +3640,7 @@ type_ground = "Clock" | "Reset" | "AsyncReset"
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
-field = [ "flip" ] , ( id | string_sq ) , ":" , type ;
+field = [ "flip" ] , id , ":" , type ;
 type = ( [ "const" ] , ( type_ground | type_aggregate ) ) | type_ref ;
 
 (* Primitive operations *)
@@ -3675,7 +3675,7 @@ expr =
   | "read" , "(" , ref_expr , ")"
   | primop ;
 static_reference = id
-                 | static_reference , "." , ( id | string_sq )
+                 | static_reference , "." , id
                  | static_reference , "[" , int_any , "]" ;
 reference = static_reference
           | reference , "[" , expr , "]" ;

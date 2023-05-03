@@ -7,7 +7,7 @@ IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/img/%.eps)
 .PHONY: all clean images
 .PRECIOUS: build/ build/img/
 
-all: build/spec.pdf
+all: build/spec.pdf build/abi.pdf
 
 clean:
 	rm -rf build
@@ -23,6 +23,9 @@ PANDOC_FLAGS=\
 	--metadata version:$(VERSION)
 
 build/spec.pdf: spec.md revision-history.yaml include/spec-template.tex include/firrtl.xml include/ebnf.xml $(IMG_EPSS) | build/
+	pandoc $< --metadata-file=revision-history.yaml $(PANDOC_FLAGS) -o $@
+
+build/abi.pdf: abi.md revision-history.yaml include/spec-template.tex include/firrtl.xml $(IMG_EPSS) | build/
 	pandoc $< --metadata-file=revision-history.yaml $(PANDOC_FLAGS) -o $@
 
 build/img/%.eps: include/img_src/%.dot | build/img/

@@ -8,6 +8,7 @@ revisionHistory:
     - Delineate string and single-quoted/double-quoted string in grammar.
     - Deprecate reference-first statements.
     - Tweak grammar of 'read' to support 'read(probe(x))' as in examples.
+    - Initial ABI description.
 
   # Information about the old versions.  This should be static.
   oldVersions:

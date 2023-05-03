@@ -33,6 +33,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           fail_on_unmatched_files: true
-          files:
-            - build/spec.pdf
-            - build/abi.pdf
+          files: |
+            build/spec.pdf
+            build/abi.pdf

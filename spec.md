@@ -3405,10 +3405,10 @@ letters, digits, and `_`{.firrtl}. Identifiers cannot begin with a digit.
 
 Literal identifiers allow for using an expanded set of characters in an
 identifier.  Such an identifier is encoded using leading and trailing backticks,
-`\``{.firrtl}.  A literal identifier has the same restrictions as an identifier,
-_but it is allowed to start with a digit_.  E.g., it is legal to use
-`\`0\``{.firrtl} as a literal identifier in a Bundle field (or anywhere else an
-identifier may be used).
+`` ` ``{.firrtl}.  A literal identifier has the same restrictions as an
+identifier, _but it is allowed to start with a digit_.  E.g., it is legal to use
+`` `0` ``{.firrtl} as a literal identifier in a Bundle field (or anywhere else
+an identifier may be used).
 
 A FIRRTL compiler is allowed to change a literal identifier to a legal
 identifier in the target language (e.g., Verilog) if the literal identifier is

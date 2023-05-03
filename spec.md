@@ -143,6 +143,7 @@ contributors is below:
 - [`@debs-sifive`](https://github.com/debs-sifive)
 - [`@donggyukim`](https://github.com/donggyukim)
 - [`@dtzSiFive`](https://github.com/dtzSiFive)
+- [`@eigenform`](https://github.com/eigenform)
 - [`@ekiwi`](https://github.com/ekiwi)
 - [`@ekiwi-sifive`](https://github.com/ekiwi-sifive)
 - [`@felixonmars`](https://github.com/felixonmars)
@@ -153,6 +154,7 @@ contributors is below:
 - [`@mwachs5`](https://github.com/mwachs5)
 - [`@prithayan`](https://github.com/prithayan)
 - [`@richardxia`](https://github.com/richardxia)
+- [`@rwy7`](https://github.com/rwy7)
 - [`@seldridge`](https://github.com/seldridge)
 - [`@sequencer`](https://github.com/sequencer)
 - [`@shunshou`](https://github.com/shunshou)
@@ -582,7 +584,8 @@ UInt<16>[10][20]
 ### Bundle Types
 
 A bundle type is used to express a collection of nested and named types.  All
-fields in a bundle type must have a given name, and type.
+fields in a bundle type must have a given name, and type.  All names must be
+legal identifiers.
 
 The following is an example of a possible type for representing a complex
 number. It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit
@@ -1072,7 +1075,7 @@ field.
 
 ### Alternate Syntax
 
-Connects may also be specified by keyword.  This form is identical to the `<=` 
+Connects may also be specified by keyword.  This form is identical to the `<=`
 form in operand order
 
 ``` firrtl
@@ -1246,6 +1249,21 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 A register is initialized with an indeterminate value (see
 [@sec:indeterminate-values]).
 
+### Alternative Syntax
+
+A register with a reset may also be declared using an alternative syntax using
+the keyword `regreset`{.firrtl}.  Using this syntax, the operation takes four
+arguments: a type, a clock, a reset, and a reset value.  This syntax will become
+mandatory in the 3.0.0 FIRRTL specification.
+
+``` firrtl
+wire clock: Clock
+wire reset: UInt<1>
+wire resetValue: UInt<8>(0)
+regreset a: UInt<8>, clock, reset, resetValue
+; equivalent to reg a: UInt<8>, clock with: (reset => (reset, resetValue))
+```
+
 ## Invalidates
 
 An invalidate statement is used to indicate that a circuit component contains
@@ -1309,7 +1327,7 @@ analog types within the component (as they cannot be connected to).
 
 ### Alternate Syntax
 
-`is invalid`.{.firrtl} may also be specified by keyword.
+`is invalid`{.firrtl} may also be specified by keyword.
 
 ``` firrtl
 module MyModule :
@@ -2472,6 +2490,15 @@ module MyModule :
   out.a <= in ; out.a is of type const UInt
 ```
 
+A sub-field referring to a field whose name is a literal identifier is shown
+below:
+
+``` firrtl
+module MyModule :
+  input a: { `0` : { `0` : { b : UInt<1> } } }
+  output b: UInt<1>
+  b <= a.`0`.`0`.b
+```
 
 ## Sub-indices
 
@@ -3197,8 +3224,8 @@ Targets are specific enough to refer to any specific module in a folded,
 unfolded, or partially folded representation.
 
 To show some examples of what these look like, consider the following example
-circuit. This consists of four instances of module `Baz`{.firrtl}, two
-instances of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
+circuit. This consists of four instances of module `Baz`{.firrtl}, two instances
+of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
 ```firrtl
 circuit Foo:
@@ -3368,8 +3395,24 @@ contain indeterminate values, do not need to be equal under comparison.
 FIRRTL's syntax is designed to be human-readable but easily algorithmically
 parsed.
 
-The following characters are allowed in identifiers: upper and lower case
+FIRRTL allows for two types of identifiers:
+
+1. Identifiers
+2. Literal Identifiers
+
+Identifiers may only have the following characters: upper and lower case
 letters, digits, and `_`{.firrtl}. Identifiers cannot begin with a digit.
+
+Literal identifiers allow for using an expanded set of characters in an
+identifier.  Such an identifier is encoded using leading and trailing backticks,
+`` ` ``{.firrtl}.  A literal identifier has the same restrictions as an
+identifier, _but it is allowed to start with a digit_.  E.g., it is legal to use
+`` `0` ``{.firrtl} as a literal identifier in a Bundle field (or anywhere else
+an identifier may be used).
+
+A FIRRTL compiler is allowed to change a literal identifier to a legal
+identifier in the target language (e.g., Verilog) if the literal identifier is
+not directly representable in the target language.
 
 Comments begin with a semicolon and extend until the end of the line.  Commas
 are treated as whitespace, and may be used by the user for clarity if desired.
@@ -3460,45 +3503,88 @@ Compiler _implementation_.  A FIRRTL Compiler is a program that converts FIRRTL
 text to another representation, e.g., Verilog, VHDL, a programming language, or
 a binary program.
 
-## Aggregate Type Lowering (Lower Types)
+## Module Conventions
 
-A FIRRTL Compiler should provide a "Lower Types" pass that converts aggregate
-types to ground types.
+A module's convention describes how its ports are lowered to the output format,
+and serves as a kind of ABI for modules.
 
-A FIRRTL Compiler must apply such a pass to the ports of all "public" modules in
-a Verilog/VHDL representation.  Public modules are defined as (1) the top-level
-module and (2) any external modules.
+### The "Scalarized" Convention
 
-A FIRRTL Compiler may apply such a pass to other types in a FIRRTL circuit.
+The scalarized convention lowers aggregate ports to ground values. The
+scalarized convention should be the default convention for "public" modules,
+such as the top module of a circuit, "device under test", or an extmodule.
 
-The Lower Types algorithm operates as follows:
+The lowering algorithm for the scalarized convention operates as follows:
 
-1. Ground type names are unmodified.
+1. Ports are scalarized in the order they are declared.
 
-2. Vector types are converted to ground types by appending a suffix, `_<i>`, to
-   the i^th^ element of the vector.  (`<` and `>` are not included in the
-   suffix.)
+2. Ground-typed ports' names are unmodified.
 
-3. Bundle types are converted to ground types by appending a suffix, `_<name>`,
-   to the field called `name`.  (`<` and `>` are not included in the suffix.)
+3. Vector-typed ports are scalarized to ground-typed ports by appending a
+   suffix, `_<i>`, to the i^th^ element of the vector. Elements are scalarized
+   recursively, depth-first, and left-to-right.
 
-New names generated by Lower Types must be unique with respect to the current
-namespace (see [@sec:namespaces]).
+4. Bundle-typed ports are scalarized to ground-typed ports by appending a
+   suffix, `_<name>`, to the field called `name`. Fields are scalarized
+   recursively, depth-first, and left-to-right.
 
-E.g., consider the following wire:
-
-``` firrtl
-wire a : { b: UInt<1>, c: UInt<2> }[2]
-```
-
-The result of a Lower Types pass applied to this wire is:
+E.g., consider the following port:
 
 ``` firrtl
-wire a_0_b : UInt<1>
-wire a_0_c : UInt<2>
-wire a_1_b : UInt<1>
-wire a_1_c : UInt<2>
+module Top :
+  input a : { b: UInt<1>, c: UInt<2> }[2]
 ```
+
+Scalarization breaks `a` into the following ports:
+
+``` firrtl
+module Top :
+  input a_0_b : UInt<1>  ; a[0].b
+  input a_0_c : UInt<2>  ; a[0].c
+  input a_1_b : UInt<1>  ; a[1].b
+  input a_1_c : UInt<2>  ; a[1].c
+```
+
+The body of a module definition introduces a new, empty namespace. As new
+port names are added, these names must be unique with respect to this
+namespace. In the case of a collision during renaming, priority will be given
+to values that are converted first.
+
+If a name is already taken, that name will be made unique by appending a suffix
+`_<i>` to the name, where `i` is the lowest nonnegative integer that gives a
+unique name.
+
+E.g., consider the following ports:
+
+```
+module Top :
+  input a : { b: UInt<1>[2], b_0: UInt<2>, b_1: UInt<3> }
+  input a_b : UInt<4>[2]
+  input a_b_0 : UInt<5>
+```
+
+Scalarization breaks these ports into the following ports:
+
+```
+module Top :
+  input a_b_0: UInt<1>    ; a.b[0]
+  input a_b_1: UInt<1>    ; a.b[1]
+  input a_b_0_0: UInt<2>  ; a.b_0
+  input a_b_1_0: UInt<3>  ; a.b_1
+  input a_b_0_1: UInt<4>  ; a_b[0]
+  input a_b_1_1: UInt<4>  ; a_b[1]
+  input a_b_0_2: UInt<5>  ; a_b_0
+```
+
+Named components in the body of a module will be renamed as needed to ensure
+port names follow this convention.
+
+## The "Internal" Convention
+
+Private modules (i.e. modules that are _not_ the top of a circuit, device under
+test, or an extmodule) have no specified ABI. The compiler is free to transform
+the ports of a private module in any way, or not at all. Private modules are
+said to have "internal" convention.
 
 \clearpage
 
@@ -3542,11 +3628,14 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "h" | "i" | "j" | "k" | "l" | "m" | "n"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
-id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
+literal_id =
+  "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
+id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
-info = "@" , "[" , { string , " " , linecol } , "]" ;
+lineinfo = string, " ", linecol
+info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
 (* Type definitions *)
 width = "<" , int_any , ">" ;
@@ -3567,7 +3656,7 @@ primop_2expr_keyword =
 primop_2expr =
     primop_2expr_keyword , "(" , expr , "," , expr ")" ;
 primop_1expr_keyword =
-    "asUInt" | "asSInt" | "asClock" | "cvt"
+    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
   | "neg"    | "not"
   | "andr"   | "orr"    | "xorr" ;
 primop_1expr =
@@ -3598,7 +3687,7 @@ ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
 
 (* Memory *)
-ruw = ( "old" | "new" | "undefined" ) ;
+ruw =  "old" | "new" | "undefined" ;
 memory = "mem" , id , ":" , [ info ] , newline , indent ,
            "data-type" , "=>" , type , newline ,
            "depth" , "=>" , int , newline ,
@@ -3618,6 +3707,7 @@ force_release =
   | "release" , "(" , expr , "," , expr , "," , ref_expr , ")" ;
 
 (* Statements *)
+<<<<<<< HEAD
 statement = "wire" , id , ":" , type , [ info ]
           | "reg" , id , ":" , type , expr ,
             [ "with" , ":" , "(" , "reset" , "=>" ,
@@ -3640,9 +3730,36 @@ statement = "wire" , id , ":" , type , [ info ]
           | "force_release" , [ info ] ;
           | "connect" , reference , "," , expr , [ info ]
           | "invalidate" , reference , [ info ]
+=======
+statement =
+    "wire" , id , ":" , type , [ info ]
+  | "reg" , id , ":" , type , expr ,
+    [ "with" , ":" , "(" , "reset" , "=>" ,
+      "(" , expr , "," , expr , ")", ")" ] ,
+    [ info ]
+  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr ,
+    [info]
+  | memory
+  | "inst" , id , "of" , id , [ info ]
+  | "node" , id , "=" , expr , [ info ]
+  | reference , "<=" , expr , [ info ]
+  | reference , "is invalid" , [ info ]
+  | "attach(" , reference , { "," ,  reference } , ")" , [ info ]
+  | "when" , expr , ":" [ info ] , newline ,
+    indent , statement, { statement } , dedent ,
+    [ "else" , ":" , indent , statement, { statement } , dedent ]
+  | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
+  | "printf(" , expr , "," , expr , "," , string_dq ,
+    { expr } , ")" , [ ":" , id ] , [ info ]
+  | "skip" , [ info ]
+  | "define" , static_reference , "=" , ref_expr , [ info ]
+  | force_release , [ info ]
+  | "connect" , reference , "," , expr , [ info ]
+  | "invalidate" , reference , [ info ]
+>>>>>>> origin/main
 
 (* Module definitions *)
-port = ( "input" | "output" ) , id , ":": , type , [ info ] ;
+port = ( "input" | "output" ) , id , ":" , type , [ info ] ;
 module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
@@ -3665,7 +3782,7 @@ intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
 annotations = "%" , "[" , json_array , "]" ;
 
 (* Version definition *)
-sem_ver = { digit_dec } , "."  , { digit_dec } , "." , { digit_dec }
+sem_ver = int , "."  , int , "." , int
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)
@@ -3678,7 +3795,11 @@ circuit =
 
 ## Deprecated Syntax
 
+<<<<<<< HEAD
 `reference is invalid` and `reference <= expr` are deprecated and will be 
+=======
+`reference is invalid` and `reference <= expr` are deprecated and will be
+>>>>>>> origin/main
 replaced with the alternate syntax in the next major revision.
 
 # Versioning Scheme of this Document

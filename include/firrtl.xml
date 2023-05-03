@@ -5,6 +5,7 @@
       <item>circuit</item>
       <item>module</item>
       <item>extmodule</item>
+      <item>intmodule</item>
     </list>
     <list name="keywords">
       <item>input</item>
@@ -20,6 +21,9 @@
       <item>node</item>
       <item>ref</item>
       <item>define</item>
+      <item>connect</item>
+      <item>invalidate</item>
+      <item>intrinsic</item>
     </list>
     <list name="types">
       <item>UInt</item>
@@ -107,12 +111,14 @@
         <Detect2Chars char="(" char1="*" attribute="Info" context="info"/>
         <DetectChar char= ";" context="comment" attribute="Comment"/>
         <DetectChar char="{" context="field" attribute="Separator"/>
+        <DetectChar char="`" context="field" attribute="ID"/>
         <Detect2Chars char="&lt;" char1="=" attribute="Operator" context="#stay"/>
         <Detect2Chars char="&lt;" char1="-" attribute="Operator" context="#stay"/>
         <Detect2Chars char="=" char1="&gt;" attribute="Operator" context="#stay"/>
         <AnyChar String=":=.,()" attribute="Separator" context="#stay"/>
         <DetectChar char="[" attribute="Operator" context="widthOrDepthOrLit"/>
         <DetectChar char="&quot;" attribute="String" context="string"/>
+        <StringDetect String="regreset" attribute="Keyword" context="register"/>
         <StringDetect String="reg" attribute="Keyword" context="register"/>
         <StringDetect String="mem" attribute="Keyword" context="memoryFirst"/>
         <StringDetect String="%[" attribute="Operator" context="inlineannotation"/>

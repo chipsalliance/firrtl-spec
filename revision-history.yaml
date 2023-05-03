@@ -4,14 +4,25 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    - Fix typos in force/release examples, force takes expr not int literal.
-    - Delineate string and single-quoted/double-quoted string in grammar.
-    - Deprecate reference-first statements.
-    - Tweak grammar of 'read' to support 'read(probe(x))' as in examples.
+    - Add intrinsic modules to syntax highlighting
+    - Add connect, invalidate to syntax highlighting
+    - Add alternative `regreset` syntax
+    - Add literal identifiers to allow for legal numeric fields
     - Initial ABI description.
-
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 2.2.0
+      changes:
+        - Add 'asAsyncReset' to primop_1expr_keyword in "FIRRTL Language
+          Definition"
+        - Fix grammar for force_release statements
+        - Add a description of conventions for modules
+    - version: 2.1.1
+      changes:
+      - Fix typos in force/release examples, force takes expr not int literal.
+      - Delineate string and single-quoted/double-quoted string in grammar.
+      - Deprecate reference-first statements.
+      - Tweak grammar of 'read' to support 'read(probe(x))' as in examples.
     - version: 2.0.1
       changes:
         - Clarify int/string types and their allowed usage.

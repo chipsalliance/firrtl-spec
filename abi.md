@@ -15,7 +15,7 @@ described in FIRRTL and between other languages and FIRRTL output.
 
 This document describes multiple versions of the ABI, specifically calling
 specific changes in later versions.  It is expected that a conforming FIRRTL
-compile can lower to all specified ABIs.  This mechanism exist to allow
+compiler can lower to all specified ABIs.  This mechanism exists to allow
 improved representations when using tools which have better Verilog support and
 allow migration of existing development flows to significant representational
 changes.
@@ -46,7 +46,7 @@ Any module considered a "public" module shall be implemented in Verilog in a
 consistent way.  Any public module shall exist as a Verilog module of the same
 name.
 
-Each public modules with definitions (e.g. not external modules) shall be placed
+Each public module with definitions (e.g. not external modules) shall be placed
 in a file with the same name.  No assumption is made of the filename of an
 implementation of an external module, it is the user's job to include files in
 such a way in their tools to resolve the name.

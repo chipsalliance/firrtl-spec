@@ -91,7 +91,9 @@ Ports are lowered per the v1 ABI above, except for aggregate types.
 
 Vectors shall be lowered to Verilog packed vectors.
 
-Bundles shall be recursively split as per "Aggregate Type Lowering", except instead of recursively converting bundles to ground types, the recursion stops at passive types.
+Bundles shall be recursively split as per "Aggregate Type Lowering", except
+instead of recursively converting bundles to ground types, the recursion stops
+at passive types.
 
 Passive bundles shall be lowered to Verilog packed structs.
 

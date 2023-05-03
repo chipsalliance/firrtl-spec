@@ -2490,6 +2490,15 @@ module MyModule :
   out.a <= in ; out.a is of type const UInt
 ```
 
+A sub-field referring to a field whose name is a literal identifier is shown
+below:
+
+``` firrtl
+module MyModule :
+  input a: { `0` : { `0` : { b : UInt<1> } } }
+  output b: UInt<1>
+  b <= a.`0`.`0`.b
+```
 
 ## Sub-indices
 
@@ -3386,8 +3395,24 @@ contain indeterminate values, do not need to be equal under comparison.
 FIRRTL's syntax is designed to be human-readable but easily algorithmically
 parsed.
 
-The following characters are allowed in identifiers: upper and lower case
+FIRRTL allows for two types of identifiers:
+
+1. Identifiers
+2. Literal Identifiers
+
+Identifiers may only have the following characters: upper and lower case
 letters, digits, and `_`{.firrtl}. Identifiers cannot begin with a digit.
+
+Literal identifiers allow for using an expanded set of characters in an
+identifier.  Such an identifier is encoded using leading and trailing backticks,
+`` ` ``{.firrtl}.  A literal identifier has the same restrictions as an
+identifier, _but it is allowed to start with a digit_.  E.g., it is legal to use
+`` `0` ``{.firrtl} as a literal identifier in a Bundle field (or anywhere else
+an identifier may be used).
+
+A FIRRTL compiler is allowed to change a literal identifier to a legal
+identifier in the target language (e.g., Verilog) if the literal identifier is
+not directly representable in the target language.
 
 Comments begin with a semicolon and extend until the end of the line.  Commas
 are treated as whitespace, and may be used by the user for clarity if desired.
@@ -3603,7 +3628,9 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "h" | "i" | "j" | "k" | "l" | "m" | "n"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
-id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
+literal_id =
+  "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
+id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;

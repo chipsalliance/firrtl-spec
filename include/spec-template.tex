@@ -533,29 +533,67 @@ $endif$
 $if(has-frontmatter)$
 \mainmatter
 $endif$
+
+%% Populate the Revision History of the document.
 $if(revisionHistory)$
 \section{Revision History}
 \begin{itemize}
 $if(revisionHistory.thisVersion)$
+
+$if(revisionHistorySpec)$
+$if(revisionHistory.thisVersion.spec)$
 \item $version$
-$for(revisionHistory.thisVersion)$
 \begin{itemize}
+$for(revisionHistory.thisVersion.spec)$
 \item $it$
-\end{itemize}
 $endfor$
+\end{itemize}
 $endif$
+$endif$
+
+$if(revisionHistoryAbi)$
+$if(revisionHistory.thisVersion.abi)$
+\item $version$
+\begin{itemize}
+$for(revisionHistory.thisVersion.abi)$
+\item $it$
+$endfor$
+\end{itemize}
+$endif$
+$endif$
+
+$endif$
+
 $for(revisionHistory.oldVersions)$
+
+$if(revisionHistorySpec)$
+$if(it.spec)$
 \item $it.version$
-$if(it.changes)$
 \begin{itemize}
-$for(it.changes)$
+$for(it.spec)$
 \item $it$
 $endfor$
 \end{itemize}
 $endif$
+$endif$
+
+$if(revisionHistoryAbi)$
+$if(it.abi)$
+\item $it.version$
+\begin{itemize}
+$for(it.abi)$
+\item $it$
 $endfor$
 \end{itemize}
 $endif$
+$endif$
+
+$endfor$
+
+\end{itemize}
+$endif$
+
+%% This is the body which is generated from the input Markdown.
 $body$
 
 $if(has-frontmatter)$

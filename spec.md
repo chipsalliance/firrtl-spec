@@ -2,43 +2,7 @@
 author:
 - The FIRRTL Specification Contributors
 title: Specification for the FIRRTL Language
-date: \today
-# Options passed to the document class
-classoption:
-- 12pt
-# Link options
-colorlinks: true
-linkcolor: blue
-filecolor: magenta
-urlcolor: cyan
-toccolor: blue
-# General pandoc configuration
-toc: true
-numbersections: true
-# Header Setup
-pagestyle:
-  fancy: true
-# Margins
-geometry: margin=1in
-# pandoc-crossref
-autoSectionLabels: true
-figPrefix:
-  - Figure
-  - Figures
-eqnPrefix:
-  - Equation
-  - Equations
-tblPrefix:
-  - Table
-  - Tables
-lstPrefix:
-  - Listing
-  - Listings
-secPrefix:
-  - Section
-  - Sections
-# This 'lastDelim' option does not work...
-lastDelim: ", and"
+revisionHistorySpec: true
 ---
 
 # Introduction

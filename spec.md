@@ -3707,30 +3707,6 @@ force_release =
   | "release" , "(" , expr , "," , expr , "," , ref_expr , ")" ;
 
 (* Statements *)
-<<<<<<< HEAD
-statement = "wire" , id , ":" , type , [ info ]
-          | "reg" , id , ":" , type , expr ,
-            [ "with" , ":" , "(" , "reset" , "=>" ,
-              "(" , expr , "," , expr , ")", ")" ] ,
-            [ info ]
-          | memory
-          | "inst" , id , "of" , id , [ info ]
-          | "node" , id , "=" , expr , [ info ]
-          | reference , "<=" , expr , [ info ]
-          | reference , "is invalid" , [ info ]
-          | "attach(" , { reference } , ")" , [ info ]
-          | "when" , expr , ":" [ info ] , newline , indent ,
-              { statement } ,
-            dedent , [ "else" , ":" , indent , { statement } , dedent ]
-          | "stop(" , expr , "," , expr , "," , int_any , ")" , [ info ]
-          | "printf(" , expr , "," , expr , "," , string_dq ,
-            { expr } , ")" , [ ":" , id ] , [ info ]
-          | "skip" , [ info ]
-          | "define" , static_reference , "=" , ref_expr , [ info ]
-          | "force_release" , [ info ] ;
-          | "connect" , reference , "," , expr , [ info ]
-          | "invalidate" , reference , [ info ]
-=======
 statement =
     "wire" , id , ":" , type , [ info ]
   | "reg" , id , ":" , type , expr ,
@@ -3756,7 +3732,6 @@ statement =
   | force_release , [ info ]
   | "connect" , reference , "," , expr , [ info ]
   | "invalidate" , reference , [ info ]
->>>>>>> origin/main
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , type , [ info ] ;
@@ -3795,11 +3770,7 @@ circuit =
 
 ## Deprecated Syntax
 
-<<<<<<< HEAD
-`reference is invalid` and `reference <= expr` are deprecated and will be 
-=======
 `reference is invalid` and `reference <= expr` are deprecated and will be
->>>>>>> origin/main
 replaced with the alternate syntax in the next major revision.
 
 # Versioning Scheme of this Document

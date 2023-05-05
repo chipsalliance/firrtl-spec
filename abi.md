@@ -1,66 +1,30 @@
 ---
 author:
 - The FIRRTL Specification Contributors
-title: Specification for the FIRRTL Language
-date: \today
-# Options passed to the document class
-classoption:
-- 12pt
-# Link options
-colorlinks: true
-linkcolor: blue
-filecolor: magenta
-urlcolor: cyan
-toccolor: blue
-# General pandoc configuration
-toc: true
-numbersections: true
-# Header Setup
-pagestyle:
-  fancy: true
-# Margins
-geometry: margin=1in
-# pandoc-crossref
-autoSectionLabels: true
-figPrefix:
-  - Figure
-  - Figures
-eqnPrefix:
-  - Equation
-  - Equations
-tblPrefix:
-  - Table
-  - Tables
-lstPrefix:
-  - Listing
-  - Listings
-secPrefix:
-  - Section
-  - Sections
-# This 'lastDelim' option does not work...
-lastDelim: ", and"
+title: Specification for the FIRRTL ABI
+revisionHistoryAbi: true
 ---
 
 # Introduction
 
 FIRRTL defines a language/IR for describing synchronous hardware circuits.  This
-document specifies the mapping of FIRRTL constructs to verilog in a manner 
+document specifies the mapping of FIRRTL constructs to Verilog in a manner
 similar to an application binary interface (ABI) which enables predictability of
-the output of key constructs necessary for the interoperability between circuits 
+the output of key constructs necessary for the interoperability between circuits
 described in FIRRTL and between other languages and FIRRTL output.
 
-This document describes multiple versions of the ABI, specifically calling 
+This document describes multiple versions of the ABI, specifically calling
 specific changes in later versions.  It is expected that a conforming FIRRTL
-compile can lower to all specified ABIs.  This mechanism exist to allow 
-improved representations when using tools which have better verilog support and
-allow migration of existing development flows to significant representational 
+compiler can lower to all specified ABIs.  This mechanism exists to allow
+improved representations when using tools which have better Verilog support and
+allow migration of existing development flows to significant representational
 changes.
 
 # FIRRTL System Verilog Interface
 
-To use a circuit describe in FIRRTL in a predictable way, the mapping of certain 
-behaviors and boundary constructs in FIRRTL to System Verilog must be defined.  
-Where possible this ABI does not impose constraints on implementation, 
+To use a circuit describe in FIRRTL in a predictable way, the mapping of certain
+behaviors and boundary constructs in FIRRTL to System Verilog must be defined.
+Where possible this ABI does not impose constraints on implementation,
 concerning itself primarily with the boundaries of the circuit.
 
 ## On Modules
@@ -68,7 +32,7 @@ concerning itself primarily with the boundaries of the circuit.
 ### The Circuit and Top Level
 
 The top level module, as specified by the circuit name, shall be present as a
-System Verilog module of the same name.  This firrtl module is considered a 
+System Verilog module of the same name.  This firrtl module is considered a
 "public" module and subject to the lowering constraints for public modules.
 
 ### External Modules
@@ -78,11 +42,11 @@ for public modules.
 
 ###  Public Modules
 
-Any module considered a "public" module shall be implemented in verilog in a
-consistent way.  Any public module shall exist as a verilog module of the same 
+Any module considered a "public" module shall be implemented in Verilog in a
+consistent way.  Any public module shall exist as a Verilog module of the same
 name.
 
-Each public modules with definitions (e.g. not external modules) shall be placed 
+Each public module with definitions (e.g. not external modules) shall be placed
 in a file with the same name.  No assumption is made of the filename of an
 implementation of an external module, it is the user's job to include files in
 such a way in their tools to resolve the name.
@@ -92,66 +56,71 @@ such a way in their tools to resolve the name.
 Ports are generally lowered to netlist types, except where Verilog's type system
 prevents it.
 
-Ports of integer types shall be lowered to netlist ports (`wire`) as a packed 
-vector of equivalent size.
+Ports of integer types shall be lowered to netlist ports (`wire`{.verilog}) as a
+packed vector of equivalent size.  For example, consider the following FIRRTL:
 
-```
-// FIRRTL:
+```firrtl
 circuit Top :
   module Top :
     output out: UInt<16>
     input b: UInt<32>
+```
 
-// SV:
+This is lowered to the following Verilog:
+
+```verilog
 module Top(
     output wire [15:0] out,
     input wire [31:0] in
 );
 ```
 
-Ports of aggregate type shall be lowered according to the "Aggregate Type 
+Ports of aggregate type shall be lowered according to the "Aggregate Type
 Lowering" description in the firrtl spec.
 
 Ports of enum type shall be lowered to ports of a type consistent with the rules
-for lowering firrtl enum types to verilog.
+for lowering firrtl enum types to Verilog.
 
-Ports of ref type shall be lowered to a verilog macro of the form 
-"`define ref_<circuit name>_<module name>_<portname> <internal path from module>"
-in a file with name "ref_<circuit name>_<module name>.sv".
+Ports of ref type shall be lowered to a Verilog macro of the form `` `define
+ref_<circuit name>_<module name>_<portname> <internal path from module>`` in a
+file with name `ref_<circuit name>_<module name>.sv`.
 
 ### Port Lowering ABIv2
 
 Ports are lowered per the v1 ABI above, except for aggregate types.
 
-Vectors shall be lowered to verilog packed vectors.
+Vectors shall be lowered to Verilog packed vectors.
 
-Bundles shall be recursively split as per "Aggregate Type Lowering", except instead of recursively converting bundles to ground types, the recursion stops at passive types.
+Bundles shall be recursively split as per "Aggregate Type Lowering", except
+instead of recursively converting bundles to ground types, the recursion stops
+at passive types.
 
-Passive bundles shall be lowered to verilog packed structs.
+Passive bundles shall be lowered to Verilog packed structs.
 
 Reference types in ports shall be logically split out from aggregates and named
 as though "Aggregate Type Lowering" was used.
 
 ## On Types
 
-Types are only guaranteed to follow this lowering when the verilog type is 
+Types are only guaranteed to follow this lowering when the Verilog type is
 visible for some reason related to the visibility of the element.  These include
 use in ports and elements exported by reference through a public module.
 
-Ground types are lowered to the `logic` data type (SV.6.3.1), which is the 
-4-valued type.  It is important to distinguish the `logic` data type from using
-`logic` as a keyword to declare a variable instead of net-list object.
+Ground types are lowered to the `logic`{.verilog} data type (SV.6.3.1), which is
+the 4-valued type.  It is important to distinguish the `logic`{.verilog} data
+type from using `logic`{.verilog} as a keyword to declare a variable instead of
+net-list object.
 
-Unsigned integers produce an unsigned packed bit vector.  Whether variable or 
+Unsigned integers produce an unsigned packed bit vector.  Whether variable or
 netlist depends on the construct being used.
 
-Signed integers produce an unsigned packed bit vector.  Whether variable or 
+Signed integers produce an unsigned packed bit vector.  Whether variable or
 netlist depends on the construct being used.
 
 Passive bundles, when lowered, are lowered to packed structs with their fields
 recursively following these lowering rules.
 
-Vectors, when lowered, are lowered to packed vectors with their element type 
+Vectors, when lowered, are lowered to packed vectors with their element type
 recursively following these rules.
 
 

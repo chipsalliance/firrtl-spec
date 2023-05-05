@@ -394,7 +394,7 @@ one_s <= zero_s
 
 Is equivalent to:
 
-```
+``` firrtl
 wire one_u : UInt<1>
 one_u <= UInt<1>(0)
 wire one_s : SInt<1>
@@ -3090,7 +3090,7 @@ though the loop will be removed by last connect semantics.
     output b: UInt<1>
     b <= b
     b <= a
- ```
+```
 
 The following module `Foo2`{.firrtl} has a combinational loop, even if it can
 be proved that `n1`{.firrtl} and `n2`{.firrtl} never overlap.
@@ -3520,7 +3520,7 @@ unique name.
 
 E.g., consider the following ports:
 
-```
+``` firrtl
 module Top :
   input a : { b: UInt<1>[2], b_0: UInt<2>, b_1: UInt<3> }
   input a_b : UInt<4>[2]
@@ -3529,7 +3529,7 @@ module Top :
 
 Scalarization breaks these ports into the following ports:
 
-```
+``` firrtl
 module Top :
   input a_b_0: UInt<1>    ; a.b[0]
   input a_b_1: UInt<1>    ; a.b[1]

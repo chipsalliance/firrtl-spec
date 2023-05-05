@@ -38,7 +38,8 @@ System Verilog module of the same name.  This firrtl module is considered a
 ### External Modules
 
 An external module may be presumed to exist following the lowering constraints
-for public modules.
+for public modules.  The module shall exist with a verilog name matching the 
+defname value or, lacking that, the module name.
 
 ###  Public Modules
 

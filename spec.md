@@ -3085,11 +3085,11 @@ transformation to remove or break such combinational loops.
 The module `Foo`{.firrtl} has a combinational loop and is not legal, even
 though the loop will be removed by last connect semantics.
 ``` firrtl
-  module Foo:
-    input a: UInt<1>
-    output b: UInt<1>
-    b <= b
-    b <= a
+module Foo:
+  input a: UInt<1>
+  output b: UInt<1>
+  b <= b
+  b <= a
 ```
 
 The following module `Foo2`{.firrtl} has a combinational loop, even if it can
@@ -3114,7 +3114,6 @@ module Foo3
 
   a <= cat(b, c)
   b <= bits(a, 0, 0)
-
 ```
 
 

@@ -9,6 +9,7 @@ revisionHistory:
       - Add connect, invalidate to syntax highlighting
       - Add alternative `regreset` syntax
       - Add literal identifiers to allow for legal numeric fields
+      - Add type alias
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 2.2.0

@@ -124,6 +124,7 @@ contributors is below:
 - [`@shunshou`](https://github.com/shunshou)
 - [`@tdb-alcorn`](https://github.com/tdb-alcorn)
 - [`@tymcauley`](https://github.com/tymcauley)
+- [`@uenoku`](https://github.com/uenoku)
 - [`@youngar`](https://github.com/youngar)
 
 # File Preamble
@@ -702,6 +703,36 @@ Probe types may target `const`{.firrtl} signals, but cannot use
 `rwprobe`{.firrtl} with a constant signal to produce a
 `RWProbe<const T>`{.firrtl}, as constant values should never be mutated at
 runtime.
+
+## Type Alias
+
+A type alias provides a way to assign names to existing FIRRTL types, enabling
+their reuse across multiple declarations and potentially serving as hints in
+verilog code generation.
+
+```firrtl
+type WordType = UInt<32>
+type ValidType = UInt<1>
+type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
+type AnotherWordType = UInt<32>
+
+module TypeAliasMod:
+  input in: Data
+  output out: Data
+  wire w: AnotherWordType
+  w <= in.w
+  ...
+```
+
+The `type` declaration is globally defined and all named types exist in the same
+namespace and thus must all have a unique name. Type alias doesn't share the same
+type scope as modules; hence it is allowed for type aliaes to conflict with module
+names. In the output verilog the given names may not be preserved by the FIRRTL
+compiler, as names must be unique in the output relative to target-dependent scoping
+rules which may require changing names or dropping. Note that type aliases do not
+introduce nominal types unlike bundle field names; the type equivalence is determined
+solely by their structure. For instance types of `w`{.firrtl} and `in.w`{.wirrtl} are
+equivalent even though they are different type alias.
 
 #### Width and Reset Inference
 
@@ -3610,6 +3641,9 @@ type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
 type = ( [ "const" ] , ( type_ground | type_aggregate ) ) | type_ref ;
 
+(* Type alias declaration *)
+type_alias_decl = "type", id, "=", type ;
+
 (* Primitive operations *)
 primop_2expr_keyword =
     "add"  | "sub" | "mul" | "div" | "mod"
@@ -3727,7 +3761,7 @@ version = "FIRRTL" , "version" , sem_ver ;
 circuit =
   version , newline ,
   "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
-    { module | extmodule | intmodule } ,
+    { module | extmodule | intmodule | type_alias_decl } ,
   dedent ;
 ```
 

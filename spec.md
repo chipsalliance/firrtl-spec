@@ -3634,8 +3634,10 @@ type_ground = "Clock" | "Reset" | "AsyncReset"
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
+type_alias = id ;
 field = [ "flip" ] , id , ":" , type ;
-type = ( [ "const" ] , ( type_ground | type_aggregate ) ) | type_ref ;
+type = ( [ "const" ] , ( type_ground | type_aggregate | type_alias ) )
+     | type_ref | type_alias ;
 
 (* Type alias declaration *)
 type_alias_decl = "type", id, "=", type ;

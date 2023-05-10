@@ -706,9 +706,8 @@ runtime.
 
 ## Type Alias
 
-A type alias provides a way to assign names to existing FIRRTL types, enabling
-their reuse across multiple declarations and potentially serving as hints in
-verilog code generation.
+A type alias is a mechanism to assign names to existing FIRRTL types. Type aliases
+enables their reuse across multiple declarations.
 
 ```firrtl
 type WordType = UInt<32>
@@ -725,13 +724,10 @@ module TypeAliasMod:
 ```
 
 The `type` declaration is globally defined and all named types exist in the same
-namespace and thus must all have a unique name. Type alias doesn't share the same
-type scope as modules; hence it is allowed for type aliaes to conflict with module
-names. In the output verilog the given names may not be preserved by the FIRRTL
-compiler, as names must be unique in the output relative to target-dependent scoping
-rules which may require changing names or dropping. Note that type aliases do not
-introduce nominal types unlike bundle field names; the type equivalence is determined
-solely by their structure. For instance types of `w`{.firrtl} and `in.w`{.wirrtl} are
+namespace and thus must all have a unique name. Type aliases do not share the same
+namespace as modules; hence it is allowed for type aliases to conflict with module
+names. Note that when we compare two types, the equivalence is determined solely by
+their structures. For instance types of `w`{.firrtl} and `in.w`{.wirrtl} are
 equivalent even though they are different type alias.
 
 #### Width and Reset Inference

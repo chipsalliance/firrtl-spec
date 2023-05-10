@@ -22,7 +22,7 @@ changes.
 
 # FIRRTL System Verilog Interface
 
-To use a circuit describe in FIRRTL in a predictable way, the mapping of certain
+To use a circuit described in FIRRTL in a predictable way, the mapping of certain
 behaviors and boundary constructs in FIRRTL to System Verilog must be defined.
 Where possible this ABI does not impose constraints on implementation,
 concerning itself primarily with the boundaries of the circuit.

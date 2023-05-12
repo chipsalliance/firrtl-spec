@@ -27,6 +27,13 @@ behaviors and boundary constructs in FIRRTL to System Verilog must be defined.
 Where possible this ABI does not impose constraints on implementation,
 concerning itself primarily with the boundaries of the circuit.
 
+Two ABIs are defined.  ABIv1 describes a system in which no aggregate types
+appear on circuit boundaries (publicly visible locations).  This ABI captures
+and formalizes the historic behavior of FIRRTL to verilog lowering.  
+Specifically, this ABI, by construction, produces no aggregate Verilog types.
+ABIv2 defines an ABI in which aggregate types are preserved.  Both these ABIs 
+may evolve as new FIRRTL constructs are added.
+
 ## On Modules
 
 ### The Circuit and Top Level
@@ -124,6 +131,12 @@ recursively following these lowering rules.
 Vectors, when lowered, are lowered to packed vectors with their element type
 recursively following these rules.
 
+Enums shall have their payloads lowered as per this section.  By construction,
+enums are passive FIRRTL types, so any valid variant payload will lower to a 
+verilog type.  An enum with empty or 0-bit payloads for all variants will lower 
+to a Verilog enum with tags for each FIRRTL enum tag value.  A FIRRTL enum with
+at least one payload will lower to a struct containing a tag field which is a 
+Verilog enum
 
 # Versioning Scheme of this Document
 

@@ -17,8 +17,8 @@ This document describes multiple versions of the ABI, specifically calling
 specific changes in later versions.  It is expected that a conforming FIRRTL
 compiler can lower to all specified ABIs.  This mechanism exists to allow
 improved representations when using tools which have better Verilog support and
-allow migration of existing development flows to significant representational
-changes.
+allow incremental migration of existing development flows to the significant 
+representational changes introduced by ABI changes.
 
 # FIRRTL System Verilog Interface
 

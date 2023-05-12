@@ -110,6 +110,51 @@ Passive bundles shall be lowered to Verilog packed structs.
 Reference types in ports shall be logically split out from aggregates and named
 as though "Aggregate Type Lowering" was used.
 
+### Remotely Instantiated Modules
+
+Remotely instantiated modules are lowered using the SystemVerilog
+`bind`{.verilog} statement.  All bind statements are placed in a separate file
+named `bindings_<circuit name>.sv`.
+
+For example, consider the following circuit `Foo`{.firrtl}` with remotely
+instantiated module `Bar`{.firrtl}:
+
+``` firrtl
+circuit Foo :
+  module Bar :
+    input a: UInt<1>
+
+  module Foo :
+    input b: UInt<1>
+
+    remote_inst bar of Bar
+    remote_inst.a <= b
+```
+
+This will produce the following two SystemVerilog modules:
+
+``` verilog
+module Foo(
+  input b
+);
+endmodule
+
+module Bar(
+  input a
+);
+endmodule
+```
+
+Additionally a `bindings_Foo.sv` file will be produced with the following
+contents:
+
+``` verilog
+bind Foo bar bar(.a(b));
+```
+
+Future changes to this ABI document will enable more fine-grained control of
+remote instantiation.
+
 ## On Types
 
 Types are only guaranteed to follow this lowering when the Verilog type is on an

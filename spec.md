@@ -1847,6 +1847,33 @@ To disallow infinitely recursive hardware, modules cannot contain instances of
 itself, either directly, or indirectly through instances of other modules it
 instantiates.
 
+## Remote Instances
+
+FIRRTL modules may also be remotely instantiated.  A remotely instantiated
+module will cause the instantiation to be emitted outside its instantiating
+module.  (See the FIRRTL ABI for more information on this lowering.)
+
+Remotely instantiated modules must only contain input ports of passive types or
+probe types.
+
+Remote instantiation uses the `remote_inst`{.firrtl} syntax as shown below:
+
+``` firrtl
+circuit Foo :
+  module Bar :
+    input a: UInt<1>
+
+  module Foo :
+    input b: UInt<1>
+
+    remote_inst bar of Bar
+    remote_inst.a <= b
+```
+
+Remotely instantiated modules are intended to be used to keep verification,
+debugging, or informational FIRRTL statements, not relevant to the operation of
+the main circuit, in a separate area.
+
 ## Stops
 
 The stop statement is used to halt simulations of the circuit. Backends are free
@@ -3679,7 +3706,7 @@ statement =
   | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr ,
     [info]
   | memory
-  | "inst" , id , "of" , id , [ info ]
+  | ( "inst" | "remote_inst" ) , id , "of" , id , [ info ]
   | "node" , id , "=" , expr , [ info ]
   | reference , "<=" , expr , [ info ]
   | reference , "is invalid" , [ info ]

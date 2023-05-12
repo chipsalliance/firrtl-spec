@@ -127,8 +127,8 @@ circuit Foo :
   module Foo :
     input b: UInt<1>
 
-    remote_inst bar of Bar
-    remote_inst.a <= b
+    remoteinst bar of Bar
+    bar.a <= b
 ```
 
 This will produce the following two SystemVerilog modules:

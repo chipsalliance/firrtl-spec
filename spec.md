@@ -1856,7 +1856,7 @@ module.  (See the FIRRTL ABI for more information on this lowering.)
 Remotely instantiated modules must only contain input ports of passive types or
 probe types.
 
-Remote instantiation uses the `remote_inst`{.firrtl} syntax as shown below:
+Remote instantiation uses the `remoteinst`{.firrtl} syntax as shown below:
 
 ``` firrtl
 circuit Foo :
@@ -1866,8 +1866,8 @@ circuit Foo :
   module Foo :
     input b: UInt<1>
 
-    remote_inst bar of Bar
-    remote_inst.a <= b
+    remoteinst bar of Bar
+    bar.a <= b
 ```
 
 Remotely instantiated modules are intended to be used to keep verification,

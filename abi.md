@@ -149,7 +149,7 @@ Additionally a `bindings_Foo.sv` file will be produced with the following
 contents:
 
 ``` verilog
-bind Foo bar bar(.a(b));
+bind Foo Bar bar(.a(b));
 ```
 
 Future changes to this ABI document will enable more fine-grained control of

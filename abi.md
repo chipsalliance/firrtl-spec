@@ -146,5 +146,5 @@ The MAJOR digit is bumped for backwards-incompatible changes such as features
 being removed from the spec, changing their interpretation, or new required
 features being added to the specification.
 
-In other words, any `.fir` file that was compliant with `x.y.z` will be compliant
-with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.
+In other words, any verilog generated that was emitted with `x.y.z` will be 
+compliant with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.

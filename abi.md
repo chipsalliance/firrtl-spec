@@ -17,12 +17,12 @@ This document describes multiple versions of the ABI, specifically calling
 specific changes in later versions.  It is expected that a conforming FIRRTL
 compiler can lower to all specified ABIs.  This mechanism exists to allow
 improved representations when using tools which have better Verilog support and
-allow migration of existing development flows to significant representational
-changes.
+allow incremental migration of existing development flows to the significant 
+representational changes introduced by ABI changes.
 
 # FIRRTL System Verilog Interface
 
-To use a circuit describe in FIRRTL in a predictable way, the mapping of certain
+To use a circuit described in FIRRTL in a predictable way, the mapping of certain
 behaviors and boundary constructs in FIRRTL to System Verilog must be defined.
 Where possible this ABI does not impose constraints on implementation,
 concerning itself primarily with the boundaries of the circuit.
@@ -38,7 +38,8 @@ System Verilog module of the same name.  This firrtl module is considered a
 ### External Modules
 
 An external module may be presumed to exist following the lowering constraints
-for public modules.
+for public modules.  The module shall exist with a verilog name matching the 
+defname value or, lacking that, the module name.
 
 ###  Public Modules
 

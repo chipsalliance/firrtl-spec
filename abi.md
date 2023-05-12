@@ -32,7 +32,7 @@ concerning itself primarily with the boundaries of the circuit.
 ### The Circuit and Top Level
 
 The top level module, as specified by the circuit name, shall be present as a
-System Verilog module of the same name.  This firrtl module is considered a
+System Verilog module of the same name.  This FIRRTL module is considered a
 "public" module and subject to the lowering constraints for public modules.
 
 ### External Modules
@@ -60,7 +60,7 @@ prevents it.
 Ports of integer types shall be lowered to netlist ports (`wire`{.verilog}) as a
 packed vector of equivalent size.  For example, consider the following FIRRTL:
 
-```firrtl
+```FIRRTL
 circuit Top :
   module Top :
     output out: UInt<16>
@@ -77,10 +77,10 @@ module Top(
 ```
 
 Ports of aggregate type shall be scalarized according to the "Aggregate Type
-Lowering" description in the firrtl spec.
+Lowering" description in the FIRRTL spec.
 
 Ports of enum type shall be lowered to ports of a type consistent with the rules
-for lowering firrtl enum types to Verilog.
+for lowering FIRRTL enum types to Verilog.
 
 Ports of ref type shall be lowered to a Verilog macro of the form `` `define
 ref_<circuit name>_<module name>_<portname> <internal path from module>`` in a

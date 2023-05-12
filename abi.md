@@ -115,8 +115,9 @@ the 4-valued type.  It is important to distinguish the `logic`{.verilog} data
 type from using `logic`{.verilog} as a keyword to declare a variable instead of
 net-list object.
 
-Both unsigned and signed integers produce an unsigned packed bit vector.  
-Whether variable or netlist depends on the construct being used.
+Both unsigned and signed integers produce an unsigned packed bit vector of the 
+form `[width-1:0]`.  Whether Verilog variable or netlist depends on the 
+construct being used.
 
 Passive bundles, when lowered, are lowered to packed structs with their fields
 recursively following these lowering rules.

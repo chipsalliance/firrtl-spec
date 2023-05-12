@@ -25,9 +25,6 @@ PANDOC_FLAGS=\
 build/%.pdf: %.md revision-history.yaml include/common.yaml include/spec-template.tex include/firrtl.xml include/ebnf.xml $(IMG_EPSS) | build/
 	pandoc $< --metadata-file=revision-history.yaml --metadata-file=include/common.yaml $(PANDOC_FLAGS) -o $@
 
-build/abi.pdf: abi.md revision-history.yaml include/spec-template.tex include/firrtl.xml $(IMG_EPSS) | build/
-	pandoc $< --metadata-file=revision-history.yaml $(PANDOC_FLAGS) -o $@
-
 build/img/%.eps: include/img_src/%.dot | build/img/
 	dot -Teps $< -o $@
 

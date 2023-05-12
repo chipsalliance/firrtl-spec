@@ -112,8 +112,8 @@ as though "Aggregate Type Lowering" was used.
 
 ## On Types
 
-Types are only guaranteed to follow this lowering when the Verilog type is
-visible for some reason related to the visibility of the element.  These include
+Types are only guaranteed to follow this lowering when the Verilog type is on an
+element which is part of the ABI defined public elements.  These include
 use in ports and elements exported by reference through a public module.
 
 Ground types are lowered to the `logic`{.verilog} data type (SV.6.3.1), which is
@@ -135,8 +135,12 @@ Enums shall have their payloads lowered as per this section.  By construction,
 enums are passive FIRRTL types, so any valid variant payload will lower to a 
 verilog type.  An enum with empty or 0-bit payloads for all variants will lower 
 to a Verilog enum with tags for each FIRRTL enum tag value.  A FIRRTL enum with
-at least one payload will lower to a struct containing a tag field which is a 
-Verilog enum
+at least one payload will lower to a packed struct containing a tag field which 
+is a Verilog enum, as well as a data field containing a packed union of the 
+padded types of the payloads.  A padded payload is a packed struct with the 
+payload as the first field and a packed bit vector as a second field.  The 
+padding for each payload is set to ensure all padded payloads have the same bit
+width as required by Verilog packed unions.
 
 # Versioning Scheme of this Document
 

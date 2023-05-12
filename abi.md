@@ -79,15 +79,14 @@ module Top(
 Ports of aggregate type shall be scalarized according to the "Aggregate Type
 Lowering" description in the FIRRTL spec.
 
-Ports of enum type shall be lowered to ports of a type consistent with the rules
-for lowering FIRRTL enum types to Verilog.
-
 Ports of ref type shall be lowered to a Verilog macro of the form `` `define
 ref_<circuit name>_<module name>_<portname> <internal path from module>`` in a
 file with name `ref_<circuit name>_<module name>.sv`.  References to aggregates
 will be lowered to a series of references to ground types.  This ABI does not
 specify whether the original aggregate referent is scalarized or not.
 
+All other port types shall lower according ot the type lowering in 
+section ["On Types"](#On-Types).
 
 ### Port Lowering ABIv2
 

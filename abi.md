@@ -17,7 +17,7 @@ This document describes multiple versions of the ABI, specifically calling
 specific changes in later versions.  It is expected that a conforming FIRRTL
 compiler can lower to all specified ABIs.  This mechanism exists to allow
 improved representations when using tools which have better Verilog support and
-allow incremental migration of existing development flows to the significant 
+allow incremental migration of existing development flows to the significant
 representational changes introduced by ABI changes.
 
 # FIRRTL System Verilog Interface
@@ -29,9 +29,9 @@ concerning itself primarily with the boundaries of the circuit.
 
 Two ABIs are defined.  ABIv1 describes a system in which no aggregate types
 appear on circuit boundaries (publicly visible locations).  This ABI captures
-and formalizes the historic behavior of FIRRTL to verilog lowering.  
+and formalizes the historic behavior of FIRRTL to verilog lowering.
 Specifically, this ABI, by construction, produces no aggregate Verilog types.
-ABIv2 defines an ABI in which aggregate types are preserved.  Both these ABIs 
+ABIv2 defines an ABI in which aggregate types are preserved.  Both these ABIs
 may evolve as new FIRRTL constructs are added.
 
 ## On Modules
@@ -45,7 +45,7 @@ System Verilog module of the same name.  This FIRRTL module is considered a
 ### External Modules
 
 An external module may be presumed to exist following the lowering constraints
-for public modules.  The module shall exist with a verilog name matching the 
+for public modules.  The module shall exist with a verilog name matching the
 defname value or, lacking that, the module name.
 
 ###  Public Modules
@@ -92,7 +92,7 @@ file with name `ref_<circuit name>_<module name>.sv`.  References to aggregates
 will be lowered to a series of references to ground types.  This ABI does not
 specify whether the original aggregate referent is scalarized or not.
 
-All other port types shall lower according ot the type lowering in 
+All other port types shall lower according ot the type lowering in
 section ["On Types"](#On-Types).
 
 ### Port Lowering ABIv2
@@ -121,8 +121,8 @@ the 4-valued type.  It is important to distinguish the `logic`{.verilog} data
 type from using `logic`{.verilog} as a keyword to declare a variable instead of
 net-list object.
 
-Both unsigned and signed integers produce an unsigned packed bit vector of the 
-form `[width-1:0]`.  Whether Verilog variable or netlist depends on the 
+Both unsigned and signed integers produce an unsigned packed bit vector of the
+form `[width-1:0]`.  Whether Verilog variable or netlist depends on the
 construct being used.
 
 Passive bundles, when lowered, are lowered to packed structs with their fields
@@ -132,13 +132,13 @@ Vectors, when lowered, are lowered to packed vectors with their element type
 recursively following these rules.
 
 Enums shall have their payloads lowered as per this section.  By construction,
-enums are passive FIRRTL types, so any valid variant payload will lower to a 
-verilog type.  An enum with empty or 0-bit payloads for all variants will lower 
+enums are passive FIRRTL types, so any valid variant payload will lower to a
+verilog type.  An enum with empty or 0-bit payloads for all variants will lower
 to a Verilog enum with tags for each FIRRTL enum tag value.  A FIRRTL enum with
-at least one payload will lower to a packed struct containing a tag field which 
-is a Verilog enum, as well as a data field containing a packed union of the 
-padded types of the payloads.  A padded payload is a packed struct with the 
-payload as the first field and a packed bit vector as a second field.  The 
+at least one payload will lower to a packed struct containing a tag field which
+is a Verilog enum, as well as a data field containing a packed union of the
+padded types of the payloads.  A padded payload is a packed struct with the
+payload as the first field and a packed bit vector as a second field.  The
 padding for each payload is set to ensure all padded payloads have the same bit
 width as required by Verilog packed unions.
 
@@ -160,5 +160,5 @@ The MAJOR digit is bumped for backwards-incompatible changes such as features
 being removed from the spec, changing their interpretation, or new required
 features being added to the specification.
 
-In other words, any verilog generated that was emitted with `x.y.z` will be 
+In other words, any verilog generated that was emitted with `x.y.z` will be
 compliant with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.

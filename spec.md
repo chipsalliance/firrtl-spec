@@ -1050,11 +1050,12 @@ module MyModule :
   ; equivalent to "myoutput <= myinput"
 ```
 
-## Statement Groups
+### Last Connect Semantics
 
-An ordered sequence of one or more statements can be grouped into a single
-statement, called a statement group. The following example demonstrates a
-statement group composed of three connect statements.
+Ordering of connects is significant.  Later connects take precedence over
+earlier ones.  In the following example port `b`{.firrtl} will be connected to
+`myport1`{.firrtl}, and port `a`{.firrtl} will be connected to
+`myport2`{.firrtl}:
 
 ``` firrtl
 module MyModule :
@@ -1062,29 +1063,22 @@ module MyModule :
   input b: UInt
   output myport1: UInt
   output myport2: UInt
+
   myport1 <= a
   myport1 <= b
   myport2 <= a
 ```
 
-### Last Connect Semantics
+Conditional statements are affected by last connect semantics.  For details see
+[@sec:conditional-last-connect-semantics].
 
-Ordering of statements is significant in a statement group. Intuitively, during
-elaboration, statements execute in order, and the effects of later statements
-take precedence over earlier ones. In the previous example, in the resultant
-circuit, port `b`{.firrtl} will be connected to `myport1`{.firrtl}, and port
-`a`{.firrtl} will be connected to `myport2`{.firrtl}.
-
-Conditional statements are also affected by last connect semantics, and for
-details see [@sec:conditional-last-connect-semantics].
-
-In the case where a connection to a circuit component with an aggregate type is
-followed by a connection to a sub-element of that component, only the connection
-to the sub-element is overwritten. Connections to the other sub-elements remain
-unaffected. In the following example, in the resultant circuit, the `c`{.firrtl}
-sub-element of port `portx`{.firrtl} will be connected to the `c`{.firrtl}
-sub-element of `myport`{.firrtl}, and port `porty`{.firrtl} will be connected to
-the `b`{.firrtl} sub-element of `myport`{.firrtl}.
+When a connection to a component with an aggregate type is followed by a
+connection to a sub-element of that same component, only the connection to the
+sub-element is overwritten.  Connections to the other sub-elements remain
+unaffected.  In the following example the `c`{.firrtl} sub-element of port
+`portx`{.firrtl} will be connected to the `c`{.firrtl} sub-element of
+`myport`{.firrtl}, and port `porty`{.firrtl} will be connected to the
+`b`{.firrtl} sub-element of `myport`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1095,7 +1089,7 @@ module MyModule :
   myport.b <= porty
 ```
 
-The above circuit can be rewritten equivalently as follows.
+The above circuit can be rewritten as:
 
 ``` firrtl
 module MyModule :
@@ -1106,9 +1100,9 @@ module MyModule :
   myport.c <= portx.c
 ```
 
-In the case where a connection to a sub-element of an aggregate circuit
-component is followed by a connection to the entire circuit component, the later
-connection overwrites the earlier connections completely.
+When a connection to a sub-element of an aggregate component is followed by a
+connection to the entire circuit component, the later connection overwrites the
+earlier sub-element connection.
 
 ``` firrtl
 module MyModule :
@@ -1119,7 +1113,7 @@ module MyModule :
   myport <= portx
 ```
 
-The above circuit can be rewritten equivalently as follows.
+The above circuit can be rewritten as:
 
 ``` firrtl
 module MyModule :

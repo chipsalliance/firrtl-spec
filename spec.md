@@ -3688,7 +3688,7 @@ statement =
   | "define" , static_reference , "=" , ref_expr , [ info ]
   | force_release , [ info ]
   | "connect" , reference , "," , expr , [ info ]
-  | "invalidate" , reference , [ info ]
+  | "invalidate" , reference , [ info ] ;
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , type , [ info ] ;

@@ -1997,7 +1997,7 @@ wire pred: UInt<1>
 wire en: UInt<1>
 pred <= eq(X, Y)
 en <= Z_valid
-cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
+cover(clk, pred, en) : optional_name
 ```
 
 ## Probes

@@ -1207,6 +1207,20 @@ reg myreg: SInt, myclock with: (reset => (myreset, myinit))
 A register is initialized with an indeterminate value (see
 [@sec:indeterminate-values]).
 
+A register may not be declared with references to itself.  Any circuit that
+requires this must use a wire as a temporary.  E.g., the following shows an
+illegal register that references itself and an equivalent version that avoids
+the self reference:
+
+``` firrtl
+reg r: UInt<1>, asClock(r)
+
+; The above can be rewritten to:
+wire tmp: UInt<1>
+reg s: UInt<1>, asClock(tmp)
+tmp <= s
+```
+
 ### Alternative Syntax
 
 A register with a reset may also be declared using an alternative syntax using

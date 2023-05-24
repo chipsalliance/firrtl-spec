@@ -515,8 +515,8 @@ Analog     ; analog type with inferred width
 
 ## Aggregate Types
 
-FIRRTL supports two aggregate types: vectors and bundles.  Aggregate types are
-composed of ground types or other aggregate types.
+FIRRTL supports three aggregate types: vectors, bundles, and enumeration.
+Aggregate types are composed of ground types or other aggregate types.
 
 ### Vector Types
 
@@ -604,6 +604,28 @@ the module.  The `c`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field
 flows into the module, and the `d`{.firrtl} sub-field contained in the
 `b`{.firrtl} sub-field flows out of the module.
 
+### Enumeration Types
+
+Enumerations are structural disjoint union types.  An enumeration has a number
+of variants, each with a type.  The different variants are specified with tags.
+The variant types of an enumeration must all be passive and cannot contain
+analog or probe types.
+
+In the following example, the first variant has the tag `a`{.firrtl} with type
+`UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type 
+`UInt<16>`{.firrtl}.
+
+``` firrtl
+{|a: UInt<8>, b: UInt<16>|}
+```
+
+A variant may optionally omit the type, in which case it is implicitly defined
+to be `UInt<0>`{.firrtl}. In the following example, all variants have the type
+`UInt<0>`{.firrtl}.
+
+``` firrtl
+{|a, b, c|}
+```
 
 ## Reference Types
 
@@ -973,6 +995,10 @@ It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
 The `AsyncReset`{.firrtl} type can be connected to another
 `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
 
+Two enumeration types are equivalent if both have the same number of variants,
+and both the enumerations' i'th variants have matching names and equivalent
+types.
+
 Two vector types are equivalent if they have the same length, and if their
 element types are equivalent.
 
@@ -1335,7 +1361,12 @@ node mynode = mux(pred, a, b)
 
 ## Conditionals
 
-Connections within a conditional statement that connect to previously declared
+Several statements provide branching in the data-flow and conditional control
+of verification constructs.
+
+### When Statements
+
+Connections within a when statement that connect to previously declared
 components hold only when the given condition is high. The condition must have a
 1-bit unsigned integer type.
 
@@ -1355,7 +1386,7 @@ module MyModule :
     x <= b
 ```
 
-### Syntactic Shorthands
+#### Syntactic Shorthands
 
 The `else`{.firrtl} branch of a conditional statement may be omitted, in which
 case a default `else`{.firrtl} branch is supplied consisting of the empty
@@ -1463,6 +1494,21 @@ The `else`{.firrtl} branch may also be added to the single line:
 
 ``` firrtl
 when c : a <= b else : e <= f
+```
+
+### Match Statements
+
+Match statements are used to discriminate the active variant of an enumeration
+typed expression.  A match statement must exhaustively test every variant of an
+enumeration.  An optional binder may be specified to extract the data of the
+variant.
+
+``` firrtl
+match x:
+  some(v):
+    a <= v
+  none:
+    e <= f
 ```
 
 ### Nested Declarations
@@ -2378,6 +2424,18 @@ SInt("b-101010")
 SInt("o-52")
 SInt("h-2A")
 SInt("h-2a")
+```
+
+## Enum Expressions
+
+An enumeration can be constructed by applying an enumeration type to a variant
+tag and a data value expression. The data value expression may be omitted when
+the data type is `UInt<0>(0)`{.firrtl}, where it is implicitly defined to be
+`UInt<0>(0)`{.firrtl}.
+
+``` firrtl
+{|a, b, c|}(a)
+{|some: UInt<8>, None|}(Some, x)
 ```
 
 ## References
@@ -3598,11 +3656,14 @@ info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 width = "<" , int_any , ">" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ] ;
+type_enum = "{|" , { field_enum } , "|}" ;
+field_enum = id, [ ":" , type_simple_child ] ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
-type = ( [ "const" ] , ( type_ground | type_aggregate ) ) | type_ref ;
+type_simple_child = type_ground | type_enum | type_aggregate ;
+type = ( [ "const" ] , type_simple_child ) | type_ref ;
 
 (* Primitive operations *)
 primop_2expr_keyword =
@@ -3631,6 +3692,7 @@ primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 (* Expression definitions *)
 expr =
     ( "UInt" | "SInt" ) , [ width ] , "(" , int_any , ")"
+  | type_enum , "(" , id , [ "," , expr ] , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
   | "read" , "(" , ref_expr , ")"
@@ -3681,6 +3743,9 @@ statement =
   | "when" , expr , ":" [ info ] , newline ,
     indent , statement, { statement } , dedent ,
     [ "else" , ":" , indent , statement, { statement } , dedent ]
+  | "match" , expr , ":" , [ info ] , newline ,
+    [ indent , { id , [ "(" , id , ")" ] , ":" , newline , 
+    [ indent , { statement } , dedent ] } , dedent ]
   | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "printf(" , expr , "," , expr , "," , string_dq ,
     { expr } , ")" , [ ":" , id ] , [ info ]

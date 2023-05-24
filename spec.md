@@ -549,32 +549,10 @@ Analog<32> ; 32-bit analog type
 Analog     ; analog type with inferred width
 ```
 
-### Enumeration Types
-
-Enumerations are structural disjoint union types.  An enumeration has a number
-of variants, each with a type.  The different variants are specified with tags.
-The variant types of an enumeration must all be passive and cannot contain
-analog or probe types.
-
-In the following example, the first variant has the tag `a` with type `UInt<8>`,
-and the second variant has the tag `b` with type `UInt<16>`.
-
-``` firrtl
-{|a: UInt<8>, b: UInt<16>|}
-```
-
-A variant may optionally omit the type, in which case it is implicitly defined
-to be `UInt<0>`. In the following example, all variants have the type
-`UInt<0>`.
-
-``` firrtl
-{|a, b, c|}
-```
-
 ## Aggregate Types
 
-FIRRTL supports two aggregate types: vectors and bundles.  Aggregate types are
-composed of ground types or other aggregate types.
+FIRRTL supports three aggregate types: vectors, bundles, and enumeration.
+Aggregate types are composed of ground types or other aggregate types.
 
 ### Vector Types
 
@@ -662,6 +640,28 @@ the module.  The `c`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field
 flows into the module, and the `d`{.firrtl} sub-field contained in the
 `b`{.firrtl} sub-field flows out of the module.
 
+### Enumeration Types
+
+Enumerations are structural disjoint union types.  An enumeration has a number
+of variants, each with a type.  The different variants are specified with tags.
+The variant types of an enumeration must all be passive and cannot contain
+analog or probe types.
+
+In the following example, the first variant has the tag `a`{.firrtl} with type
+`UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type 
+`UInt<16>`{.firrtl}.
+
+``` firrtl
+{|a: UInt<8>, b: UInt<16>|}
+```
+
+A variant may optionally omit the type, in which case it is implicitly defined
+to be `UInt<0>`{.firrtl}. In the following example, all variants have the type
+`UInt<0>`{.firrtl}.
+
+``` firrtl
+{|a, b, c|}
+```
 
 ## Reference Types
 

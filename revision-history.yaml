@@ -13,6 +13,7 @@ revisionHistory:
         (which are not part of the spec) which are only used in the original
         explanation
       - Add enumeration types, match statements, and enumeration expressions
+      - Fixup probe endpoint and non-passive force examples.
     abi:
       - Initial ABI description.
   # Information about the old versions.  This should be static.

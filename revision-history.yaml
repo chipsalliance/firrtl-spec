@@ -12,7 +12,7 @@ revisionHistory:
       - Simplify last-connect semantics explanation, remove "statement groups"
         (which are not part of the spec) which are only used in the original
         explanation
-    - Add enumeration types, match statements, and enumeration expressions
+      - Add enumeration types, match statements, and enumeration expressions
     abi:
       - Initial ABI description.
   # Information about the old versions.  This should be static.

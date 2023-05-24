@@ -2,43 +2,7 @@
 author:
 - The FIRRTL Specification Contributors
 title: Specification for the FIRRTL Language
-date: \today
-# Options passed to the document class
-classoption:
-- 12pt
-# Link options
-colorlinks: true
-linkcolor: blue
-filecolor: magenta
-urlcolor: cyan
-toccolor: blue
-# General pandoc configuration
-toc: true
-numbersections: true
-# Header Setup
-pagestyle:
-  fancy: true
-# Margins
-geometry: margin=1in
-# pandoc-crossref
-autoSectionLabels: true
-figPrefix:
-  - Figure
-  - Figures
-eqnPrefix:
-  - Equation
-  - Equations
-tblPrefix:
-  - Table
-  - Tables
-lstPrefix:
-  - Listing
-  - Listings
-secPrefix:
-  - Section
-  - Sections
-# This 'lastDelim' option does not work...
-lastDelim: ", and"
+revisionHistorySpec: true
 ---
 
 # Introduction
@@ -430,7 +394,7 @@ one_s <= zero_s
 
 Is equivalent to:
 
-```
+``` firrtl
 wire one_u : UInt<1>
 one_u <= UInt<1>(0)
 wire one_s : SInt<1>
@@ -1112,11 +1076,12 @@ module MyModule :
   ; equivalent to "myoutput <= myinput"
 ```
 
-## Statement Groups
+### Last Connect Semantics
 
-An ordered sequence of one or more statements can be grouped into a single
-statement, called a statement group. The following example demonstrates a
-statement group composed of three connect statements.
+Ordering of connects is significant.  Later connects take precedence over
+earlier ones.  In the following example port `b`{.firrtl} will be connected to
+`myport1`{.firrtl}, and port `a`{.firrtl} will be connected to
+`myport2`{.firrtl}:
 
 ``` firrtl
 module MyModule :
@@ -1124,29 +1089,22 @@ module MyModule :
   input b: UInt
   output myport1: UInt
   output myport2: UInt
+
   myport1 <= a
   myport1 <= b
   myport2 <= a
 ```
 
-### Last Connect Semantics
+Conditional statements are affected by last connect semantics.  For details see
+[@sec:conditional-last-connect-semantics].
 
-Ordering of statements is significant in a statement group. Intuitively, during
-elaboration, statements execute in order, and the effects of later statements
-take precedence over earlier ones. In the previous example, in the resultant
-circuit, port `b`{.firrtl} will be connected to `myport1`{.firrtl}, and port
-`a`{.firrtl} will be connected to `myport2`{.firrtl}.
-
-Conditional statements are also affected by last connect semantics, and for
-details see [@sec:conditional-last-connect-semantics].
-
-In the case where a connection to a circuit component with an aggregate type is
-followed by a connection to a sub-element of that component, only the connection
-to the sub-element is overwritten. Connections to the other sub-elements remain
-unaffected. In the following example, in the resultant circuit, the `c`{.firrtl}
-sub-element of port `portx`{.firrtl} will be connected to the `c`{.firrtl}
-sub-element of `myport`{.firrtl}, and port `porty`{.firrtl} will be connected to
-the `b`{.firrtl} sub-element of `myport`{.firrtl}.
+When a connection to a component with an aggregate type is followed by a
+connection to a sub-element of that same component, only the connection to the
+sub-element is overwritten.  Connections to the other sub-elements remain
+unaffected.  In the following example the `c`{.firrtl} sub-element of port
+`portx`{.firrtl} will be connected to the `c`{.firrtl} sub-element of
+`myport`{.firrtl}, and port `porty`{.firrtl} will be connected to the
+`b`{.firrtl} sub-element of `myport`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1157,7 +1115,7 @@ module MyModule :
   myport.b <= porty
 ```
 
-The above circuit can be rewritten equivalently as follows.
+The above circuit can be rewritten as:
 
 ``` firrtl
 module MyModule :
@@ -1168,9 +1126,9 @@ module MyModule :
   myport.c <= portx.c
 ```
 
-In the case where a connection to a sub-element of an aggregate circuit
-component is followed by a connection to the entire circuit component, the later
-connection overwrites the earlier connections completely.
+When a connection to a sub-element of an aggregate component is followed by a
+connection to the entire circuit component, the later connection overwrites the
+earlier sub-element connection.
 
 ``` firrtl
 module MyModule :
@@ -1181,7 +1139,7 @@ module MyModule :
   myport <= portx
 ```
 
-The above circuit can be rewritten equivalently as follows.
+The above circuit can be rewritten as:
 
 ``` firrtl
 module MyModule :
@@ -2545,6 +2503,15 @@ module MyModule :
   out.a <= in ; out.a is of type const UInt
 ```
 
+A sub-field referring to a field whose name is a literal identifier is shown
+below:
+
+``` firrtl
+module MyModule :
+  input a: { `0` : { `0` : { b : UInt<1> } } }
+  output b: UInt<1>
+  b <= a.`0`.`0`.b
+```
 
 ## Sub-indices
 
@@ -3167,12 +3134,12 @@ transformation to remove or break such combinational loops.
 The module `Foo`{.firrtl} has a combinational loop and is not legal, even
 though the loop will be removed by last connect semantics.
 ``` firrtl
-  module Foo:
-    input a: UInt<1>
-    output b: UInt<1>
-    b <= b
-    b <= a
- ```
+module Foo:
+  input a: UInt<1>
+  output b: UInt<1>
+  b <= b
+  b <= a
+```
 
 The following module `Foo2`{.firrtl} has a combinational loop, even if it can
 be proved that `n1`{.firrtl} and `n2`{.firrtl} never overlap.
@@ -3196,7 +3163,6 @@ module Foo3
 
   a <= cat(b, c)
   b <= bits(a, 0, 0)
-
 ```
 
 
@@ -3441,8 +3407,24 @@ contain indeterminate values, do not need to be equal under comparison.
 FIRRTL's syntax is designed to be human-readable but easily algorithmically
 parsed.
 
-The following characters are allowed in identifiers: upper and lower case
+FIRRTL allows for two types of identifiers:
+
+1. Identifiers
+2. Literal Identifiers
+
+Identifiers may only have the following characters: upper and lower case
 letters, digits, and `_`{.firrtl}. Identifiers cannot begin with a digit.
+
+Literal identifiers allow for using an expanded set of characters in an
+identifier.  Such an identifier is encoded using leading and trailing backticks,
+`` ` ``{.firrtl}.  A literal identifier has the same restrictions as an
+identifier, _but it is allowed to start with a digit_.  E.g., it is legal to use
+`` `0` ``{.firrtl} as a literal identifier in a Bundle field (or anywhere else
+an identifier may be used).
+
+A FIRRTL compiler is allowed to change a literal identifier to a legal
+identifier in the target language (e.g., Verilog) if the literal identifier is
+not directly representable in the target language.
 
 Comments begin with a semicolon and extend until the end of the line.  Commas
 are treated as whitespace, and may be used by the user for clarity if desired.
@@ -3586,7 +3568,7 @@ unique name.
 
 E.g., consider the following ports:
 
-```
+``` firrtl
 module Top :
   input a : { b: UInt<1>[2], b_0: UInt<2>, b_1: UInt<3> }
   input a_b : UInt<4>[2]
@@ -3595,7 +3577,7 @@ module Top :
 
 Scalarization breaks these ports into the following ports:
 
-```
+``` firrtl
 module Top :
   input a_b_0: UInt<1>    ; a.b[0]
   input a_b_1: UInt<1>    ; a.b[1]
@@ -3658,7 +3640,9 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "h" | "i" | "j" | "k" | "l" | "m" | "n"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
-id = ( "_" | letter ) , { "_" | letter | digit_dec } ;
+literal_id =
+  "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
+id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
@@ -3766,7 +3750,7 @@ statement =
   | "define" , static_reference , "=" , ref_expr , [ info ]
   | force_release , [ info ]
   | "connect" , reference , "," , expr , [ info ]
-  | "invalidate" , reference , [ info ]
+  | "invalidate" , reference , [ info ] ;
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , type , [ info ] ;

@@ -1031,8 +1031,8 @@ It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
 The `AsyncReset`{.firrtl} type can be connected to another
 `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
 
-Two enumeration types' are equivalent if both have the same number of variants,
-and both the enumeration's i'th variants have matching names and equivalent
+Two enumeration types are equivalent if both have the same number of variants,
+and both the enumerations' i'th variants have matching names and equivalent
 types.
 
 Two vector types are equivalent if they have the same length, and if their
@@ -2469,8 +2469,8 @@ SInt("h-2a")
 
 An enumeration can be constructed by applying an enumeration type to a variant
 tag and a data value expression. The data value expression may be omitted when
-the data type is `UInt<0>(0)`, where it is implicitly defined to be
-`UInt<0>(0)`.
+the data type is `UInt<0>(0)`{.firrtl}, where it is implicitly defined to be
+`UInt<0>(0)`{.firrtl}.
 
 ``` firrtl
 {|a, b, c|}(a)
@@ -3558,18 +3558,6 @@ The lowering algorithm for the scalarized convention operates as follows:
    suffix, `_<name>`, to the field called `name`. Fields are scalarized
    recursively, depth-first, and left-to-right.
 
-5. Enumeration-typed ports are scalarized to a tag port and a value port. The
-   tag port is appended with the suffix `_tag` and is a `UInt` type with the
-   minimum number of bits needed to represent the tags of all members of the
-   enumeration type.  The data port is appended with the suffix `_data` and is
-   a `UInt` with the minimum number of bits needed to represent the largest
-   data of all members of the enumeration type. Each member of the enumeration
-   has its data mapped to the lowered data port starting at the most
-   significant byte and taking up as many bits as they are wide.  Aggregate
-   data is mapped recursively, depth-first, and left-to-right to contiguous
-   bits of the data port. Enumeration data maps the tag followed by the value
-   port.
-
 E.g., consider the following port:
 
 ``` firrtl
@@ -3682,13 +3670,13 @@ width = "<" , int_any , ">" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ] ;
 type_enum = "{|" , { field_enum } , "|}" ;
-field_enum = id, [ ":" , type ] ;
+field_enum = id, [ ":" , type_simple_child ] ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
-type = ( [ "const" ] , ( type_ground | type_enum | type_aggregate ) )
-     | type_ref ;
+type_simple_child = type_ground | type_enum | type_aggregate ;
+type = ( [ "const" ] , type_simple_child ) | type_ref ;
 
 (* Primitive operations *)
 primop_2expr_keyword =

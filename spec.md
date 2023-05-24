@@ -1361,6 +1361,9 @@ node mynode = mux(pred, a, b)
 
 ## Conditionals
 
+Several statements provide branching in the data-flow and conditional control
+of verification constructs.
+
 ### When Statements
 
 Connections within a when statement that connect to previously declared

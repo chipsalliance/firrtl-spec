@@ -891,12 +891,12 @@ module Producer:
   out.a <= x
 
 module Connect:
-  output out : {x: Probe<UInt>, y: Probe<UInt>}
+  output out : {pref: Probe<UInt>, cref: Probe<UInt>}
 
-  inst a of A
-  inst b of B
+  inst a of Consumer
+  inst b of Producer
 
-  ; A => B
+  ; Producer => Consumer
   a.in.a <= b.out.a
   define a.in.pref = b.out.pref
   define b.out.cref = a.in.cref
@@ -908,8 +908,8 @@ module Connect:
 module Top:
   inst c of Connect
 
-  node producer_debug = read(c.pref); ; Producer-side signal
-  node consumer_debug = read(c.cref); ; Consumer-side signal
+  node producer_debug = read(c.out.pref); ; Producer-side signal
+  node consumer_debug = read(c.out.cref); ; Consumer-side signal
 ```
 
 ## Type Modifiers
@@ -2341,8 +2341,8 @@ Example:
 
 ```firrtl
 module Top:
-  input x : {a: UInt, flip b: UInt}
-  output y : {a: UInt, flip b: UInt}
+  input x : {a: UInt<2>, flip b: UInt<2>}
+  output y : {a: UInt<2>, flip b: UInt<2>}
 
   inst d of DUT
   d.x <= x
@@ -2356,12 +2356,12 @@ module Top:
   force_initial(d.xp, val)
 
 module DUT :
-  input x : {a: UInt, flip b: UInt}
-  output y : {a: UInt, flip b: UInt}
-  output xp : RWProbe<{a: UInt, b: UInt}>
+  input x : {a: UInt<2>, flip b: UInt<2>}
+  output y : {a: UInt<2>, flip b: UInt<2>}
+  output xp : RWProbe<{a: UInt<2>, b: UInt<2>}>
 
   ; Force drives p.a, p.b, y.a, and x.b, but not y.b and x.a
-  wire p : {a: UInt, flip b: UInt}
+  wire p : {a: UInt<2>, flip b: UInt<2>}
   define xp = rwprobe(p)
   p <= x
   y <= p

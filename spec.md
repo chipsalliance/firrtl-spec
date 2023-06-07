@@ -728,7 +728,7 @@ namespace and thus must all have a unique name. Type aliases do not share the sa
 namespace as modules; hence it is allowed for type aliases to conflict with module
 names. Note that when we compare two types, the equivalence is determined solely by
 their structures. For instance types of `w`{.firrtl} and `in.w`{.firrtl} are
-equivalent even though they are different type alias.
+equivalent in the example above even though they are different type alias.
 
 #### Width and Reset Inference
 

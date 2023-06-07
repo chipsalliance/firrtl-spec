@@ -3689,13 +3689,11 @@ type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
-
 type_simple_child = type_ground | type_enum | type_aggregate | id ;
 type = ( [ "const" ] , type_simple_child ) | type_ref ;
 
 (* Type alias declaration *)
 type_alias_decl = "type", id, "=", type ;
-
 
 (* Primitive operations *)
 primop_2expr_keyword =

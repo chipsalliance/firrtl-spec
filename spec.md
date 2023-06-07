@@ -124,6 +124,7 @@ contributors is below:
 - [`@shunshou`](https://github.com/shunshou)
 - [`@tdb-alcorn`](https://github.com/tdb-alcorn)
 - [`@tymcauley`](https://github.com/tymcauley)
+- [`@uenoku`](https://github.com/uenoku)
 - [`@youngar`](https://github.com/youngar)
 
 # File Preamble
@@ -724,6 +725,32 @@ Probe types may target `const`{.firrtl} signals, but cannot use
 `rwprobe`{.firrtl} with a constant signal to produce a
 `RWProbe<const T>`{.firrtl}, as constant values should never be mutated at
 runtime.
+
+## Type Alias
+
+A type alias is a mechanism to assign names to existing FIRRTL types. Type aliases
+enables their reuse across multiple declarations.
+
+```firrtl
+type WordType = UInt<32>
+type ValidType = UInt<1>
+type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
+type AnotherWordType = UInt<32>
+
+module TypeAliasMod:
+  input in: Data
+  output out: Data
+  wire w: AnotherWordType
+  w <= in.w
+  ...
+```
+
+The `type` declaration is globally defined and all named types exist in the same
+namespace and thus must all have a unique name. Type aliases do not share the same
+namespace as modules; hence it is allowed for type aliases to conflict with module
+names. Note that when we compare two types, the equivalence is determined solely by
+their structures. For instance types of `w`{.firrtl} and `in.w`{.firrtl} are
+equivalent in the example above even though they are different type alias.
 
 #### Width and Reset Inference
 
@@ -3662,8 +3689,11 @@ type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
-type_simple_child = type_ground | type_enum | type_aggregate ;
+type_simple_child = type_ground | type_enum | type_aggregate | id ;
 type = ( [ "const" ] , type_simple_child ) | type_ref ;
+
+(* Type alias declaration *)
+type_alias_decl = "type", id, "=", type ;
 
 (* Primitive operations *)
 primop_2expr_keyword =
@@ -3786,7 +3816,7 @@ version = "FIRRTL" , "version" , sem_ver ;
 circuit =
   version , newline ,
   "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
-    { module | extmodule | intmodule } ,
+    { module | extmodule | intmodule | type_alias_decl } ,
   dedent ;
 ```
 

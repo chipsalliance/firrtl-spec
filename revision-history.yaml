@@ -14,6 +14,7 @@ revisionHistory:
         explanation
       - Add enumeration types, match statements, and enumeration expressions
       - Fixup probe endpoint and non-passive force examples.
+      - Add type alias
     abi:
       - Initial ABI description.
   # Information about the old versions.  This should be static.

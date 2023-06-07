@@ -44,6 +44,7 @@
     <list name="conditionals">
       <item>when</item>
       <item>else</item>
+      <item>match</item>
     </list>
     <list name="primops">
       <item>attach</item>
@@ -110,6 +111,7 @@
         <keyword attribute="Conditional" context="#stay" String="conditionals" />
         <Detect2Chars char="(" char1="*" attribute="Info" context="info"/>
         <DetectChar char= ";" context="comment" attribute="Comment"/>
+        <Detect2Chars char="{" char1="|" context="field" attribute="Separator"/>
         <DetectChar char="{" context="field" attribute="Separator"/>
         <DetectChar char="`" context="field" attribute="ID"/>
         <Detect2Chars char="&lt;" char1="=" attribute="Operator" context="#stay"/>
@@ -157,6 +159,8 @@
       <context name="outertype" attribute="Keyword" lineEndContext="#pop">
         <DetectChar char="&lt;" attribute="Operator" context="#stay"/>
         <keyword String="types" attribute="Keyword" context="type"/>
+        <Detect2Chars char="{" char1="|" context="field" attribute="Separator"/>
+        <Detect2Chars char="|" char1="}" attribute="Separator" context="#pop#pop"/>
         <DetectChar char="{" context="field" attribute="Separator"/>
         <DetectChar char="}" attribute="Separator" context="#pop#pop"/>
         <DetectChar char= ";" context="comment" attribute="Comment"/>
@@ -167,6 +171,7 @@
         <AnyChar String="&lt;[(" attribute="Operator" context="widthOrDepthOrLit"/>
         <AnyChar String="," attribute="Separator" context="#pop"/>
         <AnyChar String="}" attribute="Separator" context="#pop#pop"/>
+        <Detect2Chars char="|" char1="}" attribute="Separator" context="#pop#pop"/>
         <DetectChar char= ";" context="comment" attribute="Comment"/>
         <AnyChar String="&gt;" attribute="Operator" context="#pop"/>
       </context>
@@ -179,6 +184,8 @@
         <keyword String="types" attribute="Keyword" context="type"/>
         <keyword String="outertype" attribute="Keyword" context="outertype"/>
         <keyword String="typemodifiers" attribute="Keyword" context="#stay"/>
+        <Detect2Chars char="{" char1="|" attribute="Separator" context="field"/>
+        <Detect2Chars char="|" char1="}" attribute="Separator" context="#pop"/>
         <DetectChar char="{" attribute="Separator" context="field"/>
         <DetectChar char="}" attribute="Separator" context="#pop"/>
         <AnyChar String=":," attribute="Separator" context="#stay"/>

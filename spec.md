@@ -516,8 +516,8 @@ Analog     ; analog type with inferred width
 
 ## Aggregate Types
 
-FIRRTL supports two aggregate types: vectors and bundles.  Aggregate types are
-composed of ground types or other aggregate types.
+FIRRTL supports three aggregate types: vectors, bundles, and enumeration.
+Aggregate types are composed of ground types or other aggregate types.
 
 ### Vector Types
 
@@ -605,6 +605,28 @@ the module.  The `c`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field
 flows into the module, and the `d`{.firrtl} sub-field contained in the
 `b`{.firrtl} sub-field flows out of the module.
 
+### Enumeration Types
+
+Enumerations are structural disjoint union types.  An enumeration has a number
+of variants, each with a type.  The different variants are specified with tags.
+The variant types of an enumeration must all be passive and cannot contain
+analog or probe types.
+
+In the following example, the first variant has the tag `a`{.firrtl} with type
+`UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type 
+`UInt<16>`{.firrtl}.
+
+``` firrtl
+{|a: UInt<8>, b: UInt<16>|}
+```
+
+A variant may optionally omit the type, in which case it is implicitly defined
+to be `UInt<0>`{.firrtl}. In the following example, all variants have the type
+`UInt<0>`{.firrtl}.
+
+``` firrtl
+{|a, b, c|}
+```
 
 ## Reference Types
 
@@ -896,12 +918,12 @@ module Producer:
   out.a <= x
 
 module Connect:
-  output out : {x: Probe<UInt>, y: Probe<UInt>}
+  output out : {pref: Probe<UInt>, cref: Probe<UInt>}
 
-  inst a of A
-  inst b of B
+  inst a of Consumer
+  inst b of Producer
 
-  ; A => B
+  ; Producer => Consumer
   a.in.a <= b.out.a
   define a.in.pref = b.out.pref
   define b.out.cref = a.in.cref
@@ -913,8 +935,8 @@ module Connect:
 module Top:
   inst c of Connect
 
-  node producer_debug = read(c.pref); ; Producer-side signal
-  node consumer_debug = read(c.cref); ; Consumer-side signal
+  node producer_debug = read(c.out.pref); ; Producer-side signal
+  node consumer_debug = read(c.out.cref); ; Consumer-side signal
 ```
 
 ## Type Modifiers
@@ -1000,6 +1022,10 @@ It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
 The `AsyncReset`{.firrtl} type can be connected to another
 `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
 
+Two enumeration types are equivalent if both have the same number of variants,
+and both the enumerations' i'th variants have matching names and equivalent
+types.
+
 Two vector types are equivalent if they have the same length, and if their
 element types are equivalent.
 
@@ -1077,11 +1103,12 @@ module MyModule :
   ; equivalent to "myoutput <= myinput"
 ```
 
-## Statement Groups
+### Last Connect Semantics
 
-An ordered sequence of one or more statements can be grouped into a single
-statement, called a statement group. The following example demonstrates a
-statement group composed of three connect statements.
+Ordering of connects is significant.  Later connects take precedence over
+earlier ones.  In the following example port `b`{.firrtl} will be connected to
+`myport1`{.firrtl}, and port `a`{.firrtl} will be connected to
+`myport2`{.firrtl}:
 
 ``` firrtl
 module MyModule :
@@ -1089,29 +1116,22 @@ module MyModule :
   input b: UInt
   output myport1: UInt
   output myport2: UInt
+
   myport1 <= a
   myport1 <= b
   myport2 <= a
 ```
 
-### Last Connect Semantics
+Conditional statements are affected by last connect semantics.  For details see
+[@sec:conditional-last-connect-semantics].
 
-Ordering of statements is significant in a statement group. Intuitively, during
-elaboration, statements execute in order, and the effects of later statements
-take precedence over earlier ones. In the previous example, in the resultant
-circuit, port `b`{.firrtl} will be connected to `myport1`{.firrtl}, and port
-`a`{.firrtl} will be connected to `myport2`{.firrtl}.
-
-Conditional statements are also affected by last connect semantics, and for
-details see [@sec:conditional-last-connect-semantics].
-
-In the case where a connection to a circuit component with an aggregate type is
-followed by a connection to a sub-element of that component, only the connection
-to the sub-element is overwritten. Connections to the other sub-elements remain
-unaffected. In the following example, in the resultant circuit, the `c`{.firrtl}
-sub-element of port `portx`{.firrtl} will be connected to the `c`{.firrtl}
-sub-element of `myport`{.firrtl}, and port `porty`{.firrtl} will be connected to
-the `b`{.firrtl} sub-element of `myport`{.firrtl}.
+When a connection to a component with an aggregate type is followed by a
+connection to a sub-element of that same component, only the connection to the
+sub-element is overwritten.  Connections to the other sub-elements remain
+unaffected.  In the following example the `c`{.firrtl} sub-element of port
+`portx`{.firrtl} will be connected to the `c`{.firrtl} sub-element of
+`myport`{.firrtl}, and port `porty`{.firrtl} will be connected to the
+`b`{.firrtl} sub-element of `myport`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1122,7 +1142,7 @@ module MyModule :
   myport.b <= porty
 ```
 
-The above circuit can be rewritten equivalently as follows.
+The above circuit can be rewritten as:
 
 ``` firrtl
 module MyModule :
@@ -1133,9 +1153,9 @@ module MyModule :
   myport.c <= portx.c
 ```
 
-In the case where a connection to a sub-element of an aggregate circuit
-component is followed by a connection to the entire circuit component, the later
-connection overwrites the earlier connections completely.
+When a connection to a sub-element of an aggregate component is followed by a
+connection to the entire circuit component, the later connection overwrites the
+earlier sub-element connection.
 
 ``` firrtl
 module MyModule :
@@ -1146,7 +1166,7 @@ module MyModule :
   myport <= portx
 ```
 
-The above circuit can be rewritten equivalently as follows.
+The above circuit can be rewritten as:
 
 ``` firrtl
 module MyModule :
@@ -1368,7 +1388,12 @@ node mynode = mux(pred, a, b)
 
 ## Conditionals
 
-Connections within a conditional statement that connect to previously declared
+Several statements provide branching in the data-flow and conditional control
+of verification constructs.
+
+### When Statements
+
+Connections within a when statement that connect to previously declared
 components hold only when the given condition is high. The condition must have a
 1-bit unsigned integer type.
 
@@ -1388,7 +1413,7 @@ module MyModule :
     x <= b
 ```
 
-### Syntactic Shorthands
+#### Syntactic Shorthands
 
 The `else`{.firrtl} branch of a conditional statement may be omitted, in which
 case a default `else`{.firrtl} branch is supplied consisting of the empty
@@ -1496,6 +1521,21 @@ The `else`{.firrtl} branch may also be added to the single line:
 
 ``` firrtl
 when c : a <= b else : e <= f
+```
+
+### Match Statements
+
+Match statements are used to discriminate the active variant of an enumeration
+typed expression.  A match statement must exhaustively test every variant of an
+enumeration.  An optional binder may be specified to extract the data of the
+variant.
+
+``` firrtl
+match x:
+  some(v):
+    a <= v
+  none:
+    e <= f
 ```
 
 ### Nested Declarations
@@ -2328,8 +2368,8 @@ Example:
 
 ```firrtl
 module Top:
-  input x : {a: UInt, flip b: UInt}
-  output y : {a: UInt, flip b: UInt}
+  input x : {a: UInt<2>, flip b: UInt<2>}
+  output y : {a: UInt<2>, flip b: UInt<2>}
 
   inst d of DUT
   d.x <= x
@@ -2343,12 +2383,12 @@ module Top:
   force_initial(d.xp, val)
 
 module DUT :
-  input x : {a: UInt, flip b: UInt}
-  output y : {a: UInt, flip b: UInt}
-  output xp : RWProbe<{a: UInt, b: UInt}>
+  input x : {a: UInt<2>, flip b: UInt<2>}
+  output y : {a: UInt<2>, flip b: UInt<2>}
+  output xp : RWProbe<{a: UInt<2>, b: UInt<2>}>
 
   ; Force drives p.a, p.b, y.a, and x.b, but not y.b and x.a
-  wire p : {a: UInt, flip b: UInt}
+  wire p : {a: UInt<2>, flip b: UInt<2>}
   define xp = rwprobe(p)
   p <= x
   y <= p
@@ -2411,6 +2451,18 @@ SInt("b-101010")
 SInt("o-52")
 SInt("h-2A")
 SInt("h-2a")
+```
+
+## Enum Expressions
+
+An enumeration can be constructed by applying an enumeration type to a variant
+tag and a data value expression. The data value expression may be omitted when
+the data type is `UInt<0>(0)`{.firrtl}, where it is implicitly defined to be
+`UInt<0>(0)`{.firrtl}.
+
+``` firrtl
+{|a, b, c|}(a)
+{|some: UInt<8>, None|}(Some, x)
 ```
 
 ## References
@@ -3631,14 +3683,19 @@ info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 width = "<" , int_any , ">" ;
 type_ground = "Clock" | "Reset" | "AsyncReset"
             | ( "UInt" | "SInt" | "Analog" ) , [ width ] ;
+type_enum = "{|" , { field_enum } , "|}" ;
+field_enum = id, [ ":" , type_simple_child ] ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int_any , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
-type = ( [ "const" ] , ( type_ground | type_aggregate | id ) ) | type_ref;
+
+type_simple_child = type_ground | type_enum | type_aggregate | id ;
+type = ( [ "const" ] , type_simple_child ) | type_ref ;
 
 (* Type alias declaration *)
 type_alias_decl = "type", id, "=", type ;
+
 
 (* Primitive operations *)
 primop_2expr_keyword =
@@ -3667,6 +3724,7 @@ primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 (* Expression definitions *)
 expr =
     ( "UInt" | "SInt" ) , [ width ] , "(" , int_any , ")"
+  | type_enum , "(" , id , [ "," , expr ] , ")"
   | reference
   | "mux" , "(" , expr , "," , expr , "," , expr , ")"
   | "read" , "(" , ref_expr , ")"
@@ -3717,6 +3775,9 @@ statement =
   | "when" , expr , ":" [ info ] , newline ,
     indent , statement, { statement } , dedent ,
     [ "else" , ":" , indent , statement, { statement } , dedent ]
+  | "match" , expr , ":" , [ info ] , newline ,
+    [ indent , { id , [ "(" , id , ")" ] , ":" , newline , 
+    [ indent , { statement } , dedent ] } , dedent ]
   | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "printf(" , expr , "," , expr , "," , string_dq ,
     { expr } , ")" , [ ":" , id ] , [ info ]
@@ -3724,7 +3785,7 @@ statement =
   | "define" , static_reference , "=" , ref_expr , [ info ]
   | force_release , [ info ]
   | "connect" , reference , "," , expr , [ info ]
-  | "invalidate" , reference , [ info ]
+  | "invalidate" , reference , [ info ] ;
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , type , [ info ] ;

@@ -9,7 +9,14 @@ revisionHistory:
       - Add connect, invalidate to syntax highlighting
       - Add alternative `regreset` syntax
       - Add literal identifiers to allow for legal numeric fields
+      - Simplify last-connect semantics explanation, remove "statement groups"
+        (which are not part of the spec) which are only used in the original
+        explanation
+      - Add enumeration types, match statements, and enumeration expressions
+      - Fixup probe endpoint and non-passive force examples.
       - Add type alias
+    abi:
+      - Initial ABI description.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 2.2.0

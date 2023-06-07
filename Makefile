@@ -7,7 +7,7 @@ IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/img/%.eps)
 .PHONY: all clean images
 .PRECIOUS: build/ build/img/
 
-all: build/spec.pdf
+all: build/spec.pdf build/abi.pdf
 
 clean:
 	rm -rf build

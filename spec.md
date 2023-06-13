@@ -318,7 +318,7 @@ following leading characters to indicate the numerical encoding:
 - `0d`{.firrtl} -- for representing decimal numbers
 - `0h`{.firrtl} -- for representing hexadecimal numbers
 
-Signed radix-specified integer literals have their sign following the leading
+Signed radix-specified integer literals have their sign before the leading
 encoding character.
 
 The following string-encoded integer literals all have the value `42`:
@@ -339,7 +339,7 @@ The following string-encoded integer literals all have the value `-42`:
 -0h2a
 ```
 
-Radix-encoded integer literals are only usable when constructing hardware
+Radix-specified integer literals are only usable when constructing hardware
 integer literals.  Any use in place of an integer is disallowed.
 
 # Types

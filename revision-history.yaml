@@ -4,6 +4,7 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
+    - Add missing deprecation notice for "reg with" syntax.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 2.3.0

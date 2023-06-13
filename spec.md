@@ -3742,8 +3742,13 @@ circuit =
 
 ## Deprecated Syntax
 
-`reference is invalid` and `reference <= expr` are deprecated and will be
-replaced with the alternate syntax in the next major revision.
+The following syntaxes are deprecated and will be removed in the next major
+version:
+
+1. Invalidation will change from `foo is invalid` to `invalidate foo`.
+2. Connection will change from `foo <= bar` to `connect foo, bar`.
+3. A register with a reset value will change from using `with` syntax to using
+   `regreset` syntax.
 
 # Versioning Scheme of this Document
 

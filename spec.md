@@ -380,6 +380,43 @@ The following string-encoded integer literals all have the value `-42`:
 String-encoded integer literals are usable in any place where an integer would
 be unless explicitly disallowed.
 
+### Alternative Syntax
+
+A _radix-specified integer literal_ is a special integer literal with one of the
+following leading character sequences to indicate the numerical encoding:
+
+- `0b`{.firrtl} -- for representing binary numbers
+- `0o`{.firrtl} -- for representing octal numbers
+- `0d`{.firrtl} -- for representing decimal numbers
+- `0h`{.firrtl} -- for representing hexadecimal numbers
+
+Signed radix-specified integer literals have their sign _before_ the leading
+character sequence.
+
+The following radix-encoded integer literals all have the value `42`:
+
+``` firrtl
+0b101010
+0o52
+0d42
+0h2a
+```
+
+The following radix-encoded integer literals all have the value `-42`:
+
+``` firrtl
+-0b101010
+-0o52
+-0d42
+-0h2a
+```
+
+Radix-encoded integer literals are usable in any place where an integer would be
+unless explicitly disallowed.
+
+Radix-specified integer literals will replace string-encoded integer literals in
+the 3.0.0 FIRRTL specification.
+
 # Types
 
 FIRRTL has three classes of types: _ground_ types, _aggregate_ types, and
@@ -1703,7 +1740,7 @@ by the following parameters.
     written to while a read to that location is in progress.
 
 Integer literals for the number of elements and the read/write latencies _may
-not be string-encoded integer literals_.
+not be string-encoded integer literals or radix-encoded integer literals_.
 
 The following example demonstrates instantiating a memory containing 256 complex
 numbers, each with 16-bit signed integer fields for its real and imaginary
@@ -3585,8 +3622,15 @@ int_se =
   | '"' , "o" , [ "-" ] , digit_oct , { digit_oct } , '"'
   | '"' , "h" , [ "-" ] , digit_hex , { digit_hex } , '"' ;
 
+(* Radix-specified Integer Literals *)
+rint =
+    [ "-" ] , "0b" , digit_bin , { digit_bin }
+  | [ "-" ] , "0o" , digit_oct , { digit_oct }
+  | [ "-" ] , "0d" , digit_oct , { digit_dec }
+  | [ "-" ] , "0h" , digit_hex , { digit_hex } ;
+
 (* An Integer or String-encoded Integer Literal *)
-int_any = int | int_se ;
+int_any = int | int_se | rint ;
 
 (* String Literals *)
 string = ? a string ? ;

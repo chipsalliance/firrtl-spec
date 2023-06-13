@@ -4,6 +4,8 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
+    - Add radix-encoded integer literals as alternative syntax for
+      string-encoded integer literals.
     - Add missing deprecation notice for "reg with" syntax.
   # Information about the old versions.  This should be static.
   oldVersions:

@@ -23,6 +23,16 @@ revisionHistory:
       - Initial ABI description.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 2.4.0
+      spec:
+        - Add radix-encoded integer literals as alternative syntax for
+          string-encoded integer literals.
+        - Add missing deprecation notice for "reg with" syntax.
+    - version: 2.3.0
+      spec:
+        - Add intrinsic modules to syntax highlighting
+        - Add connect, invalidate to syntax highlighting
+        - Add alternative `regreset` syntax
     - version: 2.2.0
       spec:
         - Add 'asAsyncReset' to primop_1expr_keyword in "FIRRTL Language

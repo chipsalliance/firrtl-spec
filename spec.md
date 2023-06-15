@@ -1103,9 +1103,7 @@ In order for a connection to be legal the following conditions must hold:
 
 Connect statements from a narrower ground type component to a wider ground type
 component will have its value automatically sign-extended or zero-extended to
-the larger bit width. Connect statements from a wider ground type component to a
-narrower ground type component will have its value automatically truncated to
-fit the smaller bit width. The behavior of connect statements between two
+the larger bit width. The behavior of connect statements between two
 circuit components with aggregate types is defined by the connection algorithm
 in [@sec:the-connection-algorithm].
 

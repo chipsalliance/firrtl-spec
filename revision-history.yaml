@@ -19,6 +19,7 @@ revisionHistory:
         construction of hardware literals.
       - Change string-encoded integers to radix-encoded integers.
       - Remove legacy connect (`<=`) and invalidate (`is invalid`) syntax
+      - Make connect disallow implicit truncation (again).
     abi:
       - Initial ABI description.
   # Information about the old versions.  This should be static.

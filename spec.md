@@ -158,26 +158,29 @@ circuit MyTop :
 
 ## Modules
 
-Each module has a given name, a list of ports, and a list of statements
-representing the circuit connections within the module. A module port is
-specified by its direction, which may be input or output, a name, and the data
-type of the port.
+Each module has a given name, an optional desired name, a list of
+ports, and a list of statements representing the circuit connections
+within the module. A module port is specified by its direction, which
+may be input or output, a name, and the data type of the port.
 
 The following example declares a module with one input port, one output port,
 and one statement connecting the input port to the output port.  See
 [@sec:connects] for details on the connect statement.
 
 ``` firrtl
-module MyModule :
+module MyModule | MyModuleDesiredName :
   input foo: UInt
   output bar: UInt
   connect bar, foo
 ```
 
-Note that a module definition does *not* indicate that the module will be
-physically present in the final circuit. Refer to the description of the
-instance statement for details on how to instantiate a module
+Note that a module definition does *not* indicate that the module will
+be physically present in the final circuit. Refer to the description
+of the instance statement for details on how to instantiate a module
 ([@sec:instances]).
+
+The desired name provides an additional attribute for modules which
+may be used by backends to group modules.
 
 ## Externally Defined Modules
 
@@ -3791,7 +3794,7 @@ statement =
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , type , [ info ] ;
-module = "module" , id , ":" , [ info ] , newline , indent ,
+module = "module" , id , [ "|", id ] , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;

@@ -112,7 +112,6 @@
         <Detect2Chars char="{" char1="|" context="field" attribute="Separator"/>
         <DetectChar char="{" context="field" attribute="Separator"/>
         <DetectChar char="`" context="field" attribute="ID"/>
-        <Detect2Chars char="&lt;" char1="-" attribute="Operator" context="#stay"/>
         <Detect2Chars char="=" char1="&gt;" attribute="Operator" context="#stay"/>
         <AnyChar String=":=.,()" attribute="Separator" context="#stay"/>
         <DetectChar char="[" attribute="Operator" context="widthOrDepthOrLit"/>
@@ -138,12 +137,6 @@
       <context name="register" attribute="ID" lineEndContext="#pop">
         <keyword String="types" attribute="Keyword" context="type"/>
         <AnyChar String=":=&gt;.,()" attribute="Separator" context="#stay"/>
-        <StringDetect String="with" attribute="Keyword" context="#pop!registerinit"/>
-      </context>
-      <context name="registerinit" attribute="comment" lineEndContext="#stay">
-        <AnyChar String=":=&gt;.,()" attribute="Separator" context="#stay"/>
-        <StringDetect String="reset" attribute="Keyword" context="#pop"/>
-        <DetectChar char= ";" context="comment" attribute="Comment"/>
       </context>
       <context name="comment" attribute="Comment" lineEndContext="#pop">
       </context>

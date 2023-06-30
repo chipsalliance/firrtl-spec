@@ -342,43 +342,6 @@ The following string-encoded integer literals all have the value `-42`:
 Radix-specified integer literals are only usable when constructing hardware
 integer literals.  Any use in place of an integer is disallowed.
 
-### Alternative Syntax
-
-A _radix-specified integer literal_ is a special integer literal with one of the
-following leading character sequences to indicate the numerical encoding:
-
-- `0b`{.firrtl} -- for representing binary numbers
-- `0o`{.firrtl} -- for representing octal numbers
-- `0d`{.firrtl} -- for representing decimal numbers
-- `0h`{.firrtl} -- for representing hexadecimal numbers
-
-Signed radix-specified integer literals have their sign _before_ the leading
-character sequence.
-
-The following radix-encoded integer literals all have the value `42`:
-
-``` firrtl
-0b101010
-0o52
-0d42
-0h2a
-```
-
-The following radix-encoded integer literals all have the value `-42`:
-
-``` firrtl
--0b101010
--0o52
--0d42
--0h2a
-```
-
-Radix-encoded integer literals are usable in any place where an integer would be
-unless explicitly disallowed.
-
-Radix-specified integer literals will replace string-encoded integer literals in
-the 3.0.0 FIRRTL specification.
-
 # Types
 
 FIRRTL has three classes of types: _ground_ types, _aggregate_ types, and
@@ -490,7 +453,7 @@ The following example demonstrates usage of an asynchronous reset.
 input clock : Clock
 input reset : AsyncReset
 input x : UInt<8>
-reg y : UInt<8>, clock with : (reset => (reset, UInt(123)))
+regreset y : UInt<8>, clock, reset, UInt(123)
 ; ...
 ```
 
@@ -1287,21 +1250,6 @@ regreset myreg: SInt, myclock, myreset, myinit
 
 A register is initialized with an indeterminate value (see
 [@sec:indeterminate-values]).
-
-### Alternative Syntax
-
-A register with a reset may also be declared using an alternative syntax using
-the keyword `regreset`{.firrtl}.  Using this syntax, the operation takes four
-arguments: a type, a clock, a reset, and a reset value.  This syntax will become
-mandatory in the 3.0.0 FIRRTL specification.
-
-``` firrtl
-wire clock: Clock
-wire reset: UInt<1>
-wire resetValue: UInt<8>(0)
-regreset a: UInt<8>, clock, reset, resetValue
-; equivalent to reg a: UInt<8>, clock with: (reset => (reset, resetValue))
-```
 
 ## Invalidates
 

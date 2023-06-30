@@ -4,26 +4,27 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    spec:
-      - Add intrinsic modules to syntax highlighting
-      - Add connect, invalidate to syntax highlighting
-      - Add alternative `regreset` syntax
-      - Add literal identifiers to allow for legal numeric fields
-      - Simplify last-connect semantics explanation, remove "statement groups"
-        (which are not part of the spec) which are only used in the original
-        explanation
-      - Add enumeration types, match statements, and enumeration expressions
-      - Fixup probe endpoint and non-passive force examples.
-      - Add type alias
-      - Restrict string-encoded integers to only being usable in the
-        construction of hardware literals.
-      - Change string-encoded integers to radix-encoded integers.
-      - Remove legacy connect (`<=`) and invalidate (`is invalid`) syntax
-      - Make connect disallow implicit truncation (again).
-    abi:
-      - Initial ABI description.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 3.0.0
+      spec:
+        - Add intrinsic modules to syntax highlighting
+        - Add connect, invalidate to syntax highlighting
+        - Add alternative `regreset` syntax
+        - Add literal identifiers to allow for legal numeric fields
+        - Simplify last-connect semantics explanation, remove "statement groups"
+          (which are not part of the spec) which are only used in the original
+          explanation
+        - Add enumeration types, match statements, and enumeration expressions
+        - Fixup probe endpoint and non-passive force examples.
+        - Add type alias
+        - Restrict string-encoded integers to only being usable in the
+          construction of hardware literals.
+        - Change string-encoded integers to radix-encoded integers.
+        - Remove legacy connect (`<=`) and invalidate (`is invalid`) syntax
+        - Make connect disallow implicit truncation (again).
+      abi:
+        - Initial ABI description.
     - version: 2.4.0
       spec:
         - Add radix-encoded integer literals as alternative syntax for

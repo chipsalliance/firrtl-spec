@@ -142,6 +142,10 @@ payload as the first field and a packed bit vector as a second field.  The
 padding for each payload is set to ensure all padded payloads have the same bit
 width as required by Verilog packed unions.
 
+Type aliases shall be lowered to Verilog `typedef`{.verilog} with their inner types
+recursively following these rules. Type aliases will be dropped if inner types are
+mutated, for example by the type inference.
+
 # Versioning Scheme of this Document
 
 This is the versioning scheme that applies to version 1.0.0 and later.

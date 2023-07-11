@@ -3726,8 +3726,11 @@ statement =
     indent , statement, { statement } , dedent ,
     [ "else" , ":" , indent , statement, { statement } , dedent ]
   | "match" , expr , ":" , [ info ] , newline ,
-    [ indent , { id , [ "(" , id , ")" ] , ":" , newline ,
-    [ indent , { statement } , dedent ] } , dedent ]
+    [ indent ,
+      { id , [ "(" , id , ")" ] , ":" , newline ,
+        [ indent , { statement } , dedent ]
+      } ,
+      dedent ]
   | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "printf(" , expr , "," , expr , "," , string_dq ,
     { expr } , ")" , [ ":" , id ] , [ info ]

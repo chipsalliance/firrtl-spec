@@ -142,6 +142,36 @@ payload as the first field and a packed bit vector as a second field.  The
 padding for each payload is set to ensure all padded payloads have the same bit
 width as required by Verilog packed unions.
 
+## On Macros
+
+### Randomization of Undefined Values
+
+The following macros are emitted in the RTL that simulators or instantiators
+can use configure the initialization and randomization
+of registers and memories before their reset:
+
+* `INIT_RANDOM`
+* `RANDOM`
+* `RANDOMIZE`
+* `RANDOMIZE_DELAY`
+* `RANDOMIZE_GARBAGE_ASSIGN`
+* `RANDOMIZE_INVALID_ASSIGN`
+* `RANDOMIZE_REG_INIT`
+* `RANDOMIZE_MEM_INIT`
+
+### Conditionals
+
+The following macros are emitted in the RTL that simulators or instantiators
+can use configure behavior of certain events:
+
+* `PRINTF_COND`
+* `STOP_COND`
+
+### General
+
+* `SYNTHESIS`
+* `VCS`
+
 # Versioning Scheme of this Document
 
 This is the versioning scheme that applies to version 1.0.0 and later.

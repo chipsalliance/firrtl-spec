@@ -4,6 +4,10 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
+    spec:
+      - Add initial description of property types.
+    abi:
+      - Add initial description of property types.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 3.0.0

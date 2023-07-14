@@ -5,6 +5,7 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
+      - Add Integer property type.
       - Add initial description of property types.
     abi:
       - Add initial description of property types.

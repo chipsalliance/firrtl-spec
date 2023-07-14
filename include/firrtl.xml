@@ -31,6 +31,7 @@
       <item>Clock</item>
       <item>Reset</item>
       <item>AsyncReset</item>
+      <item>Integer</item>
     </list>
     <list name="outertype">
       <item>Probe</item>

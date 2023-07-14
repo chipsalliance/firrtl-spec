@@ -8,6 +8,9 @@ revisionHistory:
       - Add initial description of property types.
     abi:
       - Add initial description of property types.
+      - Change/clarify mux selector width inference to align with other operations
+        (must infer to some width by itself, pad if infers to less than 1-bit).
+      - Fix printf grammar, expect commas between arguments.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 3.0.0

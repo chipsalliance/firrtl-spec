@@ -2689,9 +2689,11 @@ A multiplexer expression is legal only if the following holds.
 
 1. The width of the selection signal is any of:
 
+    1. Zero-bit
+
     1. One-bit
 
-    1. Unspecified, but will infer to one-bit
+    1. Unspecified, but is illegal if infers to wider than one-bit
 
 1. The types of the two input expressions are equivalent.
 
@@ -3754,7 +3756,7 @@ statement =
       dedent ]
   | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "printf(" , expr , "," , expr , "," , string_dq ,
-    { expr } , ")" , [ ":" , id ] , [ info ]
+    { "," , expr } , ")" , [ ":" , id ] , [ info ]
   | "skip" , [ info ]
   | "define" , static_reference , "=" , ref_expr , [ info ]
   | force_release , [ info ]

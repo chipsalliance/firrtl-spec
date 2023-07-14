@@ -3735,7 +3735,7 @@ statement =
       dedent ]
   | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "printf(" , expr , "," , expr , "," , string_dq ,
-    { expr } , ")" , [ ":" , id ] , [ info ]
+    { "," , expr } , ")" , [ ":" , id ] , [ info ]
   | "skip" , [ info ]
   | "define" , static_reference , "=" , ref_expr , [ info ]
   | force_release , [ info ]

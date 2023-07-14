@@ -4,10 +4,11 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-  # Information about the old versions.  This should be static.
     spec:
       - Change/clarify mux selector width inference to align with other operations
         (must infer to some width by itself, pad if infers to less than 1-bit).
+      - Fix printf grammar, expect commas between arguments.
+  # Information about the old versions.  This should be static.
   oldVersions:
     - version: 3.0.0
       spec:

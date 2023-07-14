@@ -142,7 +142,8 @@ payload as the first field and a packed bit vector as a second field.  The
 padding for each payload is set to ensure all padded payloads have the same bit
 width as required by Verilog packed unions.
 
-Property types have no defined ABI.
+Property types have no defined ABI, and may not affect any other guarantees of
+the ABI.
 
 # Versioning Scheme of this Document
 

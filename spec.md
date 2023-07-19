@@ -344,11 +344,12 @@ integer literals.  Any use in place of an integer is disallowed.
 
 # Types
 
-FIRRTL has three classes of types: _ground_ types, _aggregate_ types, and
-_reference_ types.  Ground types are fundamental and are not composed of other
-types.  Aggregate types and reference types are composed of one or more
+FIRRTL has four classes of types: _ground_ types, _aggregate_ types, _reference_
+types, and _property_ types.  Ground types are fundamental and are not composed
+of other types.  Aggregate types and reference types are composed of one or more
 aggregate or ground types.  Reference types may not contain other reference
-types.
+types. Property types represent information about the circuit that is not
+hardware.
 
 ## Ground Types
 
@@ -936,6 +937,22 @@ module Top:
   node consumer_debug = read(c.out.cref); ; Consumer-side signal
 ```
 
+## Property Types
+
+FIRRTL property types represent information about the circuit that is not
+hardware. This is useful to capture domain-specific knowledge and design intent
+alongside the hardware description within the same FIRRTL.
+
+Property types cannot affect hardware functionality or the hardware ABI. They
+cannot be used in any hardware types, including aggregates and references. They
+only exist to augment the hardware description with extra information.
+
+Handling of property types is completely implementation-defined. A valid FIRRTL
+compiler implementation may do anything with property types as long as the
+existence of property types does not affect hardware functionality or the
+hardware ABI. For example, it is valid to drop property types from the IR
+completely.
+
 ## Type Modifiers
 
 ### Constant Type
@@ -1032,6 +1049,8 @@ equivalent types. Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to
 `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent
 to `{flip a: {b: UInt}}`{.firrtl}.
 
+Two property types are equivalent if they are the same concrete property type.
+
 # Statements
 
 Statements are used to describe the components within a module and how they
@@ -1063,6 +1082,8 @@ In order for a connection to be legal the following conditions must hold:
 
 3.  Either the flow of the right-hand side expression is source or duplex, or
     the right-hand side expression has a passive type.
+
+4.  The left-hand side and right-hand side types are not property types.
 
 Connect statements from a narrower ground type component to a wider ground type
 component will have its value automatically sign-extended or zero-extended to

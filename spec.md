@@ -940,14 +940,14 @@ module Top:
 ## Property Types
 
 FIRRTL property types represent information about the circuit that is not
-hardware. This is useful to capture domain specific knowledge and design intent
+hardware. This is useful to capture domain-specific knowledge and design intent
 alongside the hardware description within the same FIRRTL.
 
 Property types cannot affect hardware functionality or the hardware ABI. They
-cannot be used in any hardware types, including aggregates. They only exist to
-augment the hardware description with extra information.
+cannot be used in any hardware types, including aggregates and references. They
+only exist to augment the hardware description with extra information.
 
-Handling of property types is completely implementation defined. A valid FIRRTL
+Handling of property types is completely implementation-defined. A valid FIRRTL
 compiler implementation may do anything with property types as long as the
 existence of property types does not affect hardware functionality or the
 hardware ABI. For example, it is valid to drop property types from the IR

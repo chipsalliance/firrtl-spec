@@ -959,8 +959,7 @@ Property types are legal in the following constructs:
 
 ### Integer Property Types
 
-Integer properties represent arbitrary bit width signed integer values with a
-two's complement representation.
+Integer property types represent arbitrary precision signed integer values.
 
 ``` firrtl
 module Example:

@@ -953,6 +953,19 @@ existence of property types does not affect hardware functionality or the
 hardware ABI. For example, it is valid to drop property types from the IR
 completely.
 
+Property types are legal in the following constructs:
+
+* Port declarations on modules and external modules
+
+### Integer Property Types
+
+Integer property types represent arbitrary precision signed integer values.
+
+``` firrtl
+module Example:
+  input intProp : Integer ; an input port of Integer property type
+```
+
 ## Type Modifiers
 
 ### Constant Type
@@ -3669,6 +3682,7 @@ type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
+type_property = "Integer" ;
 type_simple_child = type_ground | type_enum | type_aggregate | id ;
 type = ( [ "const" ] , type_simple_child ) | type_ref ;
 
@@ -3764,7 +3778,7 @@ statement =
   | "invalidate" , reference , [ info ] ;
 
 (* Module definitions *)
-port = ( "input" | "output" ) , id , ":" , type , [ info ] ;
+port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
 module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,

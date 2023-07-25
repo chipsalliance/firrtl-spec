@@ -5,6 +5,7 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
+      - Add property assignment.
       - Add Integer property type.
       - Add initial description of property types.
       - Change/clarify mux selector width inference to align with other operations

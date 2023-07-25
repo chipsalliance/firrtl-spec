@@ -22,6 +22,7 @@
       <item>connect</item>
       <item>invalidate</item>
       <item>intrinsic</item>
+      <item>propassign</item>
     </list>
     <list name="types">
       <item>UInt</item>

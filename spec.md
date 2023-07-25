@@ -3823,7 +3823,7 @@ statement =
   | force_release , [ info ]
   | "connect" , reference , "," , expr , [ info ]
   | "invalidate" , reference , [ info ] ;
-  | "propassign" , reference , "," , reference , [ info ]
+  | "propassign" , static_reference , "," , static_reference , [ info ]
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;

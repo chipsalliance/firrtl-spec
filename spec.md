@@ -2401,18 +2401,15 @@ Property typed expressions have the normal rules for flow (see [@sec:flows]),
 but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In
 order for a property assignment to be legal, the following conditions must hold:
 
-1. The left-hand and right-hand side expressions must be references (see
-   [@sec:references]).
+1. The left-hand and right-hand side expressions must be of property types.
 
-2. The left-hand and right-hand side expressions must be of property types.
+2. The types of the left-hand and right-hand side expressions must be the same.
 
-3. The types of the left-hand and right-hand side expressions must be the same.
+3. The flow of the left-hand side expression must be sink.
 
-4. The flow of the left-hand side expression must be sink.
+4. The flow of the right-hand side expression must be source.
 
-5. The flow of the right-hand side expression must be source.
-
-6. The left-hand side expression must be used as the left-hand side in at most
+5. The left-hand side expression may be used as the left-hand side in at most
    one property assignment.
 
 7. The property assignment may not occur within a conditional scope.
@@ -2421,15 +2418,11 @@ Note that property types are not legal for any expressions with duplex flow.
 
 There is no notion of a connection algorithm (see
 [@sec:the-connection-algorithm]) for sub-elements of property typed expressions.
-Unlike vectors and bundles, property types are always passive (see
-[@sec:passive-types]).
+Unlike vectors and bundles, property types are always connected as a whole.
 
 There is no notion of last connect semantics (see [@sec:last-connect-semantics])
 for property types. Property typed expressions may only be assigned once, and
 must not be assigned in conditional scopes.
-
-This is why property assignment is called "assignment". Property typed
-expressions require static single assignment.
 
 The following example demonstrates a property assignment from a module's input
 property type port to its output property type port.

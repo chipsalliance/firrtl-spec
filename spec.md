@@ -2412,7 +2412,7 @@ order for a property assignment to be legal, the following conditions must hold:
 5. The left-hand side expression may be used as the left-hand side in at most
    one property assignment.
 
-7. The property assignment may not occur within a conditional scope.
+7. The property assignment must not occur within a conditional scope.
 
 Note that property types are not legal for any expressions with duplex flow.
 

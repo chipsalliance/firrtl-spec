@@ -2426,12 +2426,22 @@ module Example:
   propassign propOut, propIn
 ```
 
+The following example demonstrates a property assignment from a property literal
+expression to a module's output property type port.
+
+``` firrtl
+module Example:
+  output propOut : Integer
+  propassign propOut, Integer(42)
+```
+
 # Expressions
 
-FIRRTL expressions are used for creating constant integers, for referring to a
-declared circuit component, for statically and dynamically accessing a nested
-element within a component, for creating multiplexers, for performing primitive
-operations, and for reading a remote reference to a probe.
+FIRRTL expressions are used for creating constant integers, for creating
+literal property type expressions, for referring to a declared circuit
+component, for statically and dynamically accessing a nested element within a
+component, for creating multiplexers, for performing primitive operations, and
+for reading a remote reference to a probe.
 
 ## Constant Integer Expressions
 
@@ -2483,6 +2493,23 @@ SInt(-0b101010)
 SInt(-0o52)
 SInt(-0h2A)
 SInt(-0h2a)
+```
+
+## Property Literal Expressions
+
+A literal property type expression can be created for a given property type.
+The property type name is followed by an appropriate literal value for the
+property type, enclosed in parentheses.
+
+### Integer Property Literal Expresssions
+
+A literal `Integer` property type expression can be created from an integer
+literal. The following examples show literal `Integer` property type
+expressions.
+
+``` firrtl
+Integer(42)
+Integer(-42)
 ```
 
 ## Enum Expressions
@@ -3767,6 +3794,8 @@ reference = static_reference
           | reference , "[" , expr , "]" ;
 ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
+property_literal_expr = "Integer", "(", int, ")" ;
+property_expr = static_reference | property_literal_expr ;
 
 (* Memory *)
 ruw =  "old" | "new" | "undefined" ;
@@ -3814,8 +3843,8 @@ statement =
   | "define" , static_reference , "=" , ref_expr , [ info ]
   | force_release , [ info ]
   | "connect" , reference , "," , expr , [ info ]
-  | "invalidate" , reference , [ info ] ;
-  | "propassign" , static_reference , "," , static_reference , [ info ]
+  | "invalidate" , reference , [ info ]
+  | "propassign" , static_reference , "," , property_expr , [ info ] ;
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;

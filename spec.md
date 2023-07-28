@@ -1028,6 +1028,8 @@ flipped orientations. Thus all ground types are passive types. Vector types are
 passive if their element type is passive. And bundle types are passive if no
 fields are flipped and if all field types are passive.
 
+All property types are passive.
+
 ## Type Equivalence
 
 The type equivalence relation is used to determine whether a connection between
@@ -2385,6 +2387,43 @@ module DUT :
   define xp = rwprobe(p)
   connect p, x
   connect y, p
+```
+
+## Property Assignments
+
+Connections between property typed expressions (see [@sec:property-types]) are
+not supported in the `connect`{.firrtl} statement (see [@sec:connects]).
+
+Instead, property typed expressions are assigned with the `propassign`{.firrtl}
+statement.
+
+Property typed expressions have the normal rules for flow (see [@sec:flows]),
+but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In
+order for a property assignment to be legal, the following conditions must hold:
+
+1. The left-hand and right-hand side expressions must be of property types.
+
+2. The types of the left-hand and right-hand side expressions must be the same.
+
+3. The flow of the left-hand side expression must be sink.
+
+4. The flow of the right-hand side expression must be source.
+
+5. The left-hand side expression may be used as the left-hand side in at most
+   one property assignment.
+
+6. The property assignment must not occur within a conditional scope.
+
+Note that property types are not legal for any expressions with duplex flow.
+
+The following example demonstrates a property assignment from a module's input
+property type port to its output property type port.
+
+``` firrtl
+module Example:
+  input propIn : Integer
+  output propOut : Integer
+  propassign propOut, propIn
 ```
 
 # Expressions
@@ -3776,6 +3815,7 @@ statement =
   | force_release , [ info ]
   | "connect" , reference , "," , expr , [ info ]
   | "invalidate" , reference , [ info ] ;
+  | "propassign" , static_reference , "," , static_reference , [ info ]
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;

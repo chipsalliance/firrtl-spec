@@ -13,6 +13,8 @@ revisionHistory:
       - Fix printf grammar, expect commas between arguments.
       - Fix spec bug where string-encoded literals were still used in examples
         of "Constant Integer Expression".
+      - Fix bug in grammar where int was incorrectly specified as being binary
+        instead of decimal.
     abi:
       - Add initial description of property types.
   # Information about the old versions.  This should be static.

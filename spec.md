@@ -3679,7 +3679,7 @@ digit_dec = digit_oct | "8" | "9" ;
 digit_hex = digit_dec
           | "A" | "B" | "C" | "D" | "E" | "F"
           | "a" | "b" | "c" | "d" | "e" | "f" ;
-int = [ "-" ] , digit_bin , { digit_bin } ;
+int = [ "-" ] , digit_dec , { digit_dec } ;
 
 (* Radix-specified Integer Literals *)
 rint =

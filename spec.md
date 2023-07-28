@@ -2443,10 +2443,10 @@ representing the number `42`:
 
 ``` firrtl
 UInt<10>(42)
-UInt<10>("b101010")
-UInt<10>("o52")
-UInt<10>("h2A")
-UInt<10>("h2a")
+UInt<10>(0b101010)
+UInt<10>(0o52)
+UInt<10>(0h2A)
+UInt<10>(0h2a)
 ```
 
 Note that it is an error to supply a bit width that is not large enough to fit
@@ -2456,10 +2456,10 @@ infer a bit width of five:
 
 ``` firrtl
 UInt(42)
-UInt("b101010")
-UInt("o52")
-UInt("h2A")
-UInt("h2a")
+UInt(0b101010)
+UInt(0o52)
+UInt(0h2A)
+UInt(0h2a)
 ```
 
 Signed constant integer expressions may be created from a signed integer literal
@@ -2468,10 +2468,10 @@ a 10-bit signed hardware integer representing the number `-42`:
 
 ``` firrtl
 SInt<10>(-42)
-SInt<10>("b-101010")
-SInt<10>("o-52")
-SInt<10>("h-2A")
-SInt<10>("h-2a")
+SInt<10>(-0b101010)
+SInt<10>(-0o52)
+SInt<10>(-0h2A)
+SInt<10>(-0h2a)
 ```
 
 Signed constant integer expressions may also have an inferred width.  All of the
@@ -2479,10 +2479,10 @@ following examples create and infer a 6-bit signed integer with value `-42`:
 
 ``` firrtl
 SInt(-42)
-SInt("b-101010")
-SInt("o-52")
-SInt("h-2A")
-SInt("h-2a")
+SInt(-0b101010)
+SInt(-0o52)
+SInt(-0h2A)
+SInt(-0h2a)
 ```
 
 ## Enum Expressions

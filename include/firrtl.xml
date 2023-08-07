@@ -6,6 +6,7 @@
       <item>module</item>
       <item>extmodule</item>
       <item>intmodule</item>
+      <item>declgroup</item>
     </list>
     <list name="keywords">
       <item>input</item>
@@ -14,6 +15,7 @@
       <item>parameter</item>
       <item>skip</item>
       <item>inst</item>
+      <item>group</item>
       <item>of</item>
       <item>wire</item>
       <item>node</item>
@@ -148,7 +150,7 @@
       <context name="info" attribute="Info" lineEndContext="#stay">
         <DetectChar char="]" context="#pop"/>
       </context>
-      <context name="outertype" attribute="Keyword" lineEndContext="#pop">
+      <context name="outertype" attribute="ID" lineEndContext="#pop">
         <DetectChar char="&lt;" attribute="Operator" context="#stay"/>
         <keyword String="types" attribute="Keyword" context="type"/>
         <Detect2Chars char="{" char1="|" context="field" attribute="Separator"/>

@@ -110,6 +110,179 @@ Passive bundles shall be lowered to Verilog packed structs.
 Reference types in ports shall be logically split out from aggregates and named
 as though "Aggregate Type Lowering" was used.
 
+## On Groups
+
+The lowering convention of a declared optional group specifies how an optional
+group will be lowered.  Currently, the only lowering convention that must be
+supported is `"bind"`{.firrtl.}.  FIRRTL compilers may implement other
+non-standard lowering conventions.
+
+### Bind Lowering Convention
+
+The bind lowering convention is indicated by the `"bind"`{.firrtl} string on a
+declared group.  When using this convention, optional groups are lowered to
+separate modules that are instantiated via SystemVerilog `bind`{.verilog}
+statements ("bind instantiation").
+
+Each module that contains group instances will produce one additional module per
+group that has "internal" module convention.  I.e., the modules are private and
+have no defined ABI---the name of each module is implementation defined, the
+instantiation name of a bound instance is implementation defined, and any ports
+created on the module may have any name and may be optimized away.
+
+Practically speaking, additional ports of each generated module must be created
+whenever a value defined outside the group is used by the group.  The values
+captured by the group will create input ports.  Values defined in a group and
+used by a nested group will create output ports because SystemVerilog disallows
+the use of a bind instantiation underneath the scope of another bind
+instantiation.  The names of additional ports are implementation defined.
+
+For each optional group, one binding file will be produced for each group or
+nested group.  The circuit, group name, and any nested groups are used to derive
+a predictable filename of the binding file.  The file format uses the format
+below:
+
+``` ebnf
+filename = "groups_" , circuit , "_", root , { "_" , nested } , ".sv" ;
+```
+
+As an example, consider the following circuit with three optional groups:
+
+``` firrtl
+circuit Foo:
+  declgroup Group1, bind:
+    declgroup Group2, bind:
+      declgroup Group3, bind:
+```
+
+When compiled to Verilog, this will produce three bind files:
+
+```
+groups_Foo_Group1.sv
+groups_Foo_Group1_Group2.sv
+groups_Foo_Group1_Group2_Group3_.sv
+```
+
+The contents of each binding files must have the effect of including all code
+defined in a group or its parent groups.
+
+#### Example
+
+The end-to-end below example shows a circuit with one two groups that is lowered
+to Verilog.  This shows example Verilog output which is not part of the ABI, but
+is included for informative reasons.
+
+Consider the following circuit containing one optional group, `Group1`, and one
+nested optional group, `Group2`.  Module `Foo` contains one instantiation of
+module `Bar`.  Both `Foo` and `Bar` contain groups.  To make the example
+simpler, no constant propagation is done:
+
+``` firrtl
+circuit Foo:
+  declgroup Group1, bind:
+    declgroup Group2, bind:
+
+  module Bar:
+    output _notA: Probe<UInt<1>, Group1>
+    output _notNotA: Probe<UInt<1>, Group1.Group2>
+
+    wire a: UInt<1>
+    connect a, UInt<1>(0)
+
+    group Group1:
+      node notA = not(a)
+      define _notA = probe(notA)
+
+      group Group2:
+        node notNotA = not(notA)
+        define _notNotA = probe(notNotA)
+
+  module Foo:
+    inst bar of Bar
+
+    group Group1:
+      node x = bar._notA
+
+      group Group2:
+        node y = bar._notNotA
+```
+
+The following Verilog will be produced for the modules without the groups:
+
+``` verilog
+module Foo();
+  Bar bar();
+endmodule
+
+module Bar();
+  wire a = 1'b0;
+endmodule
+```
+
+The following Verilog associated with `Group1` is produced.  Note that all
+module names and ports are implementation defined:
+
+``` verilog
+module Bar_Group1(
+  input a
+);
+  wire notA = ~a;
+endmodule
+
+module Foo_Group1(
+  input bar_notA
+);
+  wire x = bar_notA;
+endmodule
+```
+
+The following Verilog associated with `Group2` is produced. Note that all module
+names and ports are implementation defined:
+
+``` verilog
+module Bar_Group1_Group2(
+  input notA
+);
+  wire notNotA = ~notA;
+endmodule
+
+module Foo_Group1_Group2(
+  input bar_notNotA
+);
+  wire y = bar_notNotA;
+endmodule
+```
+
+Because there are two groups, two bindings files will be produced.  The first
+bindings file is associated with `Group1`:
+
+``` verilog
+// Inside file "groups_Foo_Group1.sv" :
+`ifndef groups_Foo_Group1
+`define groups_Foo_Group1
+bind Foo Foo_Group1 group1(.bar_notA(Foo.bar.group1.notA));
+bind Bar Bar_Group1 group1(.a(Bar.a));
+`endif
+```
+
+The second bindings file is associated with `Group2`.  This group, because it
+depends on `Group1` being available, will automatically bind in this dependent
+group:
+
+``` verilog
+// Inside file "groups_Foo_Group1_Group2.sv" :
+`ifndef groups_Foo_Group1_Group2
+`define groups_Foo_Group1_Group2
+`include "groups_Foo_Group1.sv"
+bind Foo Foo_Group1_Group2 group1_group2(.bar_notNotA(Foo.bar.group1_group2.notNotA));
+bind Bar Bar_Group1_Group2 group1_group2(.notA(Bar.group1.notA));
+`endif
+```
+
+The `` `ifdef ``{.verilog} guards enable any combination of the bind files to be
+included while still producing legal SystemVerilog.  I.e., the end user may
+safely include none, either, or both of the bindings files.
+
 ## On Types
 
 Types are only guaranteed to follow this lowering when the Verilog type is on an

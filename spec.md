@@ -179,6 +179,138 @@ physically present in the final circuit. Refer to the description of the
 instance statement for details on how to instantiate a module
 ([@sec:instances]).
 
+## Optional Groups
+
+Optional groups are named collections of statements inside a module.  Optional
+groups contain functionality which will not be present in all executions of a
+circuit.  Optional groups are intended to be used to keep verification,
+debugging, or other collateral, not relevant to the operation of the circuit, in
+a separate area.  Each group can then be optionally included in the resulting
+design.
+
+The `declgroup`{.firrtl} keyword declares an optional group with a specific
+identifier.  An optional group may be declared in a circuit or in another
+optional group declaration.  An optional group's identifier must be unique
+within the current namespace.  I.e., the identifier of a top-level group
+declared in a circuit must not conflict with the identifier of a module,
+external module, or implementation defined module.
+
+Each optional group declaration must include a string that sets the lowering
+convention for that group.  The FIRRTL ABI specification defines supported
+lowering convention.  One such strategy is `"bind"`{.firrtl} which lowers to
+modules and instances which are instantiated using the SystemVerilog
+`bind`{.verilog} feature.
+
+The `group`{.firrtl} keyword defines optional functionality inside a module.  An
+optional group may only be defined inside a module.  An optional group must
+reference a group declared in the current circuit.  Declarations of identifiers
+and references to existing identifiers following the same lexical scoping rules
+as FIRRTL conditional statements (see: [@sec:scoping])---identifiers declared in
+the group definition may not be used outside the group while groups may refer to
+identifiers declared outside the group.  __The statements in a group are
+restricted in what identifiers they are allowed to drive.__ A statement in a
+group may drive no sinks declared outside the group _with one exception_: a
+statement in a group may drive reference types declared outside the group if the
+reference types are associated with the group in which the statement is declared
+(see: [@sec:reference-types]).
+
+The circuit below contains one optional group declaration, `Bar`.  Module `Foo`
+contains a group definition that creates a node computed from a port defined in
+the scope of `Foo`.
+
+``` firrtl
+circuit Foo:
+  declgroup Bar, bind:  ; Declaration of group Bar with convention "bind"
+
+  module Foo:
+    input a: UInt<1>
+
+    group Bar:            ; Definition of group Bar inside module Foo
+      node notA = not(a)
+```
+
+Optional group declarations may be nested.  Optional group declarations are
+declared with the `declgroup`{.firrtl} keyword indented under an existing
+`declgroup`{.firrtl} keyword.  The circuit below contains four optional group
+declarations, three of which are nested.  `Bar` is the top-level group.  `Baz`
+and `Qux` are nested under `Bar`.  `Quz` is nested under `Qux`.
+
+``` firrtl
+circuit Foo:
+  declgroup Bar, bind:
+    declgroup Baz, bind:
+    declgroup Qux, bind:
+      declgroup Quz, bind:
+```
+
+Optional group definitions must match the nesting of declared groups.  Optional
+groups are defined under existing groups with the `group`{.firrtl} keyword
+indented under an existing `group`{.firrtl} keyword.  For the four declared
+groups in the circuit above, the following is a legal nesting of group
+definitions:
+
+``` firrtl
+module Foo:
+  input a: UInt<1>
+
+  group Bar:
+    node notA = not(a)
+    group Baz:
+    group Qux:
+      group Quz:
+        node notNotA = not(notA)
+```
+
+Statements in a nested optional group may only read from ports or declarations
+of the current module, the current group, or a parent group---statements in a
+group may not drive components declared outside the group except reference types
+associated with the same group.  In the above example, `notA` is accessible in
+the group definition of `Quz` because `notA` is declared in a parent group.
+
+In the example below, module `Baz` defines a group `Bar`.  Module `Baz` has an
+output port, `_a`, that is associated with the group, `Bar`.  This port can then
+be driven from inside the group.  In module `Foo`, the port may be read from
+inside the group.  _Stated differently, module `Baz` has an additional port `_a`
+that is only accessible inside a defined group `Bar`_.
+
+``` firrtl
+circuit Foo:
+  declgroup Bar, bind:
+
+  module Baz:
+    output _a: Probe<UInt<1>, Bar>
+
+    wire a: UInt<1>
+
+    group Bar:
+      node notA = not(a)
+      define _a = probe(notA)
+
+  module Foo:
+
+    inst baz of Baz
+
+    group Bar:
+      node _b = baz._a
+```
+
+If a port is associated with a nested group then a period is used to indicate
+the nesting.  E.g., the following circuit has a port associated with the nested
+group `Bar.Baz`:
+
+``` firrtl
+circuit Foo:
+  declgroup Bar, bind:
+    declgroup Baz, bind:
+
+  module Foo:
+    output a: Probe<UInt<1>, Bar.Baz>
+```
+
+Optional groups will be compiled to modules whose ports are derived from what
+they capture from their visible scope.  For full details of the way optional
+groups are compiled, see the FIRRTL ABI specification.
+
 ## Externally Defined Modules
 
 Externally defined modules are modules whose implementation is not provided in
@@ -665,6 +797,11 @@ Probe references must always be able to be statically traced to their target,
 or to an external module's output reference.  This means no conditional
 connections via sub-accesses, multiplexers, or other means.
 
+Reference types compose with optional groups (see [@sec:optional-groups].  A
+reference type may be associated with an optional group.  When associated with
+an optional group, the reference type may only be driven from that optional
+group.
+
 ### Probe Types
 
 Probe types are reference types used to access circuit elements' data remotely.
@@ -686,6 +823,7 @@ Examples:
 ```firrtl
 Probe<UInt> ; readable reference to unsigned integer with inferred width
 RWProbe<{x: {y: UInt}}> ; readable and forceable reference to bundle
+Probe<UInt, A.B> ; readable reference associated with group A.B
 ```
 
 For details of how to read and write through probe types, see
@@ -3746,7 +3884,7 @@ type_enum = "{|" , { field_enum } , "|}" ;
 field_enum = id, [ ":" , type_simple_child ] ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
-type_ref = ( "Probe" | "RWProbe" ) , "<", type , ">" ;
+type_ref = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
 field = [ "flip" ] , id , ":" , type ;
 type_property = "Integer" ;
 type_simple_child = type_ground | type_enum | type_aggregate | id ;
@@ -3825,6 +3963,11 @@ statement =
     [info]
   | memory
   | "inst" , id , "of" , id , [ info ]
+  | "group" , id , "of" , id , ":" , [ info ] , newline ,
+    indent ,
+      { port , newline } ,
+      { statement , newline } ,
+    dedent
   | "node" , id , "=" , expr , [ info ]
   | "attach(" , reference , { "," ,  reference } , ")" , [ info ]
   | "when" , expr , ":" [ info ] , newline ,
@@ -3866,6 +4009,12 @@ intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
               { "parameter" , "=" , ( int | string_dq ) , newline } ,
             dedent ;
 
+(* Group definitions *)
+declgroup =
+  "declgroup" , id , string , ":" , [ info ] , newline , indent ,
+    { declgroup , newline } ,
+  dedent ;
+
 (* In-line Annotations *)
 annotations = "%" , "[" , json_array , "]" ;
 
@@ -3877,7 +4026,7 @@ version = "FIRRTL" , "version" , sem_ver ;
 circuit =
   version , newline ,
   "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
-    { module | extmodule | intmodule | type_alias_decl } ,
+    { module | extmodule | intmodule | declgroup | type_alias_decl } ,
   dedent ;
 ```
 

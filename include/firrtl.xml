@@ -37,6 +37,7 @@
       <item>Integer</item>
     </list>
     <list name="outertype">
+      <item>List</item>
       <item>Probe</item>
       <item>RWProbe</item>
     </list>

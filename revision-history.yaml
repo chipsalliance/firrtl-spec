@@ -8,6 +8,7 @@ revisionHistory:
       - Add optional groups.
       - Fix position of "Type Alias" (it used to be in the middle of
         "Reference Types").
+      - Add List property type and expression.
     abi:
       - Add ABI for optional groups.
   # Information about the old versions.  This should be static.

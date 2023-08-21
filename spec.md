@@ -1104,6 +1104,17 @@ module Example:
   input intProp : Integer ; an input port of Integer property type
 ```
 
+### List Property TYpes
+
+List property types represent zero or more property values of the same type.
+List property types are parameterized over the element type.
+
+```firrtl
+module Example:
+  input list : List<Integer> ; an input port of List<Integer> property type
+  input listOfList : List<List<Integer>> ; an input port of List<Integer> property type
+```
+
 ## Type Modifiers
 
 ### Constant Type
@@ -2650,6 +2661,17 @@ Integer(42)
 Integer(-42)
 ```
 
+### List Property Literal Expresssions
+
+A literal `List`{.firrtl} property type expression can be created from a
+sequence of property values of the element type.  The following examples show
+literal `List`{.firrtl} property type expressions.
+
+```firrtl
+List<Integer>(Integer(42), Integer(0))
+List<List<Integer>>(List<Integer>(), List<Integer>(Integer(5)))
+```
+
 ## Enum Expressions
 
 An enumeration can be constructed by applying an enumeration type to a variant
@@ -3885,8 +3907,9 @@ field_enum = id, [ ":" , type_simple_child ] ;
 type_aggregate = "{" , field , { field } , "}"
                | type , "[" , int , "]" ;
 type_ref = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
+type_list = "List" , "<" , type , ">" ;
 field = [ "flip" ] , id , ":" , type ;
-type_property = "Integer" ;
+type_property = "Integer"  | type_list ;
 type_simple_child = type_ground | type_enum | type_aggregate | id ;
 type = ( [ "const" ] , type_simple_child ) | type_ref ;
 
@@ -3932,7 +3955,10 @@ reference = static_reference
           | reference , "[" , expr , "]" ;
 ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
-property_literal_expr = "Integer", "(", int, ")" ;
+list_expr =
+    type_list , "(" , ( property_expr , { "," , property_expr } ) , ")"
+property_literal_expr = "Integer", "(", int, ")" 
+                      | list_expr
 property_expr = static_reference | property_literal_expr ;
 
 (* Memory *)

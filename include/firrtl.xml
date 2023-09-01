@@ -118,7 +118,7 @@
         <DetectChar char="`" context="field" attribute="ID"/>
         <Detect2Chars char="=" char1="&gt;" attribute="Operator" context="#stay"/>
         <AnyChar String=":=.,()" attribute="Separator" context="#stay"/>
-        <DetectChar char="[" attribute="Operator" context="widthOrDepthOrLit"/>
+        <DetectChar char="[" attribute="Operator" context="widthOrDepth"/>
         <DetectChar char="&quot;" attribute="String" context="string"/>
         <StringDetect String="regreset" attribute="Keyword" context="register"/>
         <StringDetect String="reg" attribute="Keyword" context="register"/>
@@ -152,26 +152,26 @@
       </context>
       <context name="outertype" attribute="ID" lineEndContext="#pop">
         <DetectChar char="&lt;" attribute="Operator" context="#stay"/>
+        <keyword String="outertype" attribute="Keyword" context="outertype"/>
         <keyword String="types" attribute="Keyword" context="type"/>
         <Detect2Chars char="{" char1="|" context="field" attribute="Separator"/>
-        <Detect2Chars char="|" char1="}" attribute="Separator" context="#pop#pop"/>
         <DetectChar char="{" context="field" attribute="Separator"/>
-        <DetectChar char="}" attribute="Separator" context="#pop#pop"/>
         <DetectChar char= ";" context="comment" attribute="Comment"/>
-        <AnyChar String="&gt;," attribute="Operator" context="#pop"/>
-        <DetectChar char="[" attribute="Operator" context="widthOrDepthOrLit"/>
+        <DetectChar char="&gt;" attribute="Operator" context="#pop"/>
+        <DetectChar char="[" attribute="Operator" context="widthOrDepth"/>
+        <DetectChar char="," attribute="Separator" context="#stay"/>
       </context>
       <context name="type" attribute="String" lineEndContext="#pop">
-        <AnyChar String="&lt;[(" attribute="Operator" context="widthOrDepthOrLit"/>
+        <AnyChar String="&lt;[" attribute="Operator" context="widthOrDepth"/>
+        <DetectChar char="(" attribute="Separator" context="#pop"/>
         <AnyChar String="," attribute="Separator" context="#pop"/>
-        <AnyChar String="}" attribute="Separator" context="#pop#pop"/>
-        <Detect2Chars char="|" char1="}" attribute="Separator" context="#pop#pop"/>
+        <AnyChar String="}" attribute="Separator" context="#pop" lookAhead="true"/>
+        <Detect2Chars char="|" char1="}" attribute="Separator" context="#pop" lookAhead="true"/>
         <DetectChar char= ";" context="comment" attribute="Comment"/>
-        <AnyChar String="&gt;" attribute="Operator" context="#pop"/>
+        <AnyChar String="&gt;" attribute="Operator" context="#pop" lookAhead="true"/>
       </context>
-      <context name="widthOrDepthOrLit" attribute="String" lineEndContext="#stay">
-        <DetectChar char="&lt;" attribute="Operator" context="widthOrDepthOrLit"/>
-        <AnyChar String="&gt;])" attribute="Operator" context="#pop"/>
+      <context name="widthOrDepth" attribute="String" lineEndContext="#stay">
+        <AnyChar String="&gt;]" attribute="Operator" context="#pop"/>
       </context>
       <context name="field" attribute="ID" lineEndContext="#stay">
         <StringDetect String="flip" attribute="Keyword" context="#stay"/>

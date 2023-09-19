@@ -1103,7 +1103,7 @@ Integer property types represent arbitrary precision signed integer values.
 
 ``` firrtl
 module Example:
-input intProp : Integer ; an input port of Integer property type
+  input intProp : Integer ; an input port of Integer property type
 ```
 
 ## Type Modifiers

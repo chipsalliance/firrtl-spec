@@ -6,6 +6,8 @@ revisionHistory:
   thisVersion:
     spec:
       - Add optional groups.
+      - Fix position of "Type Alias" (it used to be in the middle of
+        "Reference Types").
     abi:
       - Add ABI for optional groups.
   # Information about the old versions.  This should be static.
@@ -16,8 +18,9 @@ revisionHistory:
         - Add property assignment.
         - Add Integer property type.
         - Add initial description of property types.
-        - Change/clarify mux selector width inference to align with other operations
-          (must infer to some width by itself, pad if infers to less than 1-bit).
+        - Change/clarify mux selector width inference to align with other
+          operations (must infer to some width by itself, pad if infers to less
+          than 1-bit).
         - Fix printf grammar, expect commas between arguments.
         - Fix spec bug where string-encoded literals were still used in examples
           of "Constant Integer Expression".
@@ -87,8 +90,8 @@ revisionHistory:
       spec:
         - Specify behavior of zero bit width integers, add zero-width literals
         - Specify behavior of indeterminate values
-        - Add an explicit section about "Aggregate Types" and move "Vector Type" and
-          "Bundle Type" under it.
+        - Add an explicit section about "Aggregate Types" and move "Vector Type"
+          and "Bundle Type" under it.
         - Move "head" and "tail" from primop_1expr_keyword to
           primop_1expr1int_keyword in the "FIRRTL Language Definition".
         - Add in-line annotation format

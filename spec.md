@@ -862,32 +862,6 @@ Probe types may target `const`{.firrtl} signals, but cannot use
 `RWProbe<const T>`{.firrtl}, as constant values should never be mutated at
 runtime.
 
-## Type Alias
-
-A type alias is a mechanism to assign names to existing FIRRTL types. Type aliases
-enables their reuse across multiple declarations.
-
-```firrtl
-type WordType = UInt<32>
-type ValidType = UInt<1>
-type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
-type AnotherWordType = UInt<32>
-
-module TypeAliasMod:
-  input in: Data
-  output out: Data
-  wire w: AnotherWordType
-  connect w, in.w
-  ...
-```
-
-The `type` declaration is globally defined and all named types exist in the same
-namespace and thus must all have a unique name. Type aliases do not share the same
-namespace as modules; hence it is allowed for type aliases to conflict with module
-names. Note that when we compare two types, the equivalence is determined solely by
-their structures. For instance types of `w`{.firrtl} and `in.w`{.firrtl} are
-equivalent in the example above even though they are different type alias.
-
 #### Width and Reset Inference
 
 Probe types do participate in global width and reset inference, but only in the
@@ -969,9 +943,10 @@ modules before its resolution.
 
 #### Invalid Input Reference
 
-When using a probe reference, the target must reside at or below the point of use
-in the design hierarchy.  Input references make it possible to create designs
-where this is not the case, and such upwards references are not supported:
+When using a probe reference, the target must reside at or below the point of
+use in the design hierarchy.  Input references make it possible to create
+designs where this is not the case, and such upwards references are not
+supported:
 
 ```firrtl
 module Foo:
@@ -1075,6 +1050,33 @@ module Top:
   node consumer_debug = read(c.out.cref); ; Consumer-side signal
 ```
 
+## Type Alias
+
+A type alias is a mechanism to assign names to existing FIRRTL types. Type
+aliases enables their reuse across multiple declarations.
+
+```firrtl
+type WordType = UInt<32>
+type ValidType = UInt<1>
+type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
+type AnotherWordType = UInt<32>
+
+module TypeAliasMod:
+  input in: Data
+  output out: Data
+  wire w: AnotherWordType
+  connect w, in.w
+  ...
+```
+
+The `type` declaration is globally defined and all named types exist in the
+same namespace and thus must all have a unique name. Type aliases do not share
+the same namespace as modules; hence it is allowed for type aliases to conflict
+with module names. Note that when we compare two types, the equivalence is
+determined solely by their structures. For instance types of `w`{.firrtl} and
+`in.w`{.firrtl} are equivalent in the example above even though they are
+different type alias.
+
 ## Property Types
 
 FIRRTL property types represent information about the circuit that is not
@@ -1101,7 +1103,7 @@ Integer property types represent arbitrary precision signed integer values.
 
 ``` firrtl
 module Example:
-  input intProp : Integer ; an input port of Integer property type
+input intProp : Integer ; an input port of Integer property type
 ```
 
 ## Type Modifiers
@@ -4039,8 +4041,8 @@ The versioning scheme complies with
 
 Specifically,
 
-The PATCH digit is bumped upon release which only includes non-functional changes,
-such as grammar edits, further examples, and clarifications.
+The PATCH digit is bumped upon release which only includes non-functional
+changes, such as grammar edits, further examples, and clarifications.
 
 The MINOR digit is bumped for feature additions to the spec.
 
@@ -4048,5 +4050,5 @@ The MAJOR digit is bumped for backwards-incompatible changes such as features
 being removed from the spec, changing their interpretation, or new required
 features being added to the specification.
 
-In other words, any `.fir` file that was compliant with `x.y.z` will be compliant
-with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.
+In other words, any `.fir` file that was compliant with `x.y.z` will be
+compliant with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.

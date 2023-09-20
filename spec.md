@@ -943,10 +943,9 @@ modules before its resolution.
 
 #### Invalid Input Reference
 
-When using a probe reference, the target must reside at or below the point of
-use in the design hierarchy.  Input references make it possible to create
-designs where this is not the case, and such upwards references are not
-supported:
+When using a probe reference, the target must reside at or below the point of use
+in the design hierarchy.  Input references make it possible to create designs
+where this is not the case, and such upwards references are not supported:
 
 ```firrtl
 module Foo:
@@ -1052,8 +1051,8 @@ module Top:
 
 ## Type Alias
 
-A type alias is a mechanism to assign names to existing FIRRTL types. Type
-aliases enables their reuse across multiple declarations.
+A type alias is a mechanism to assign names to existing FIRRTL types. Type aliases
+enables their reuse across multiple declarations.
 
 ```firrtl
 type WordType = UInt<32>
@@ -1069,13 +1068,12 @@ module TypeAliasMod:
   ...
 ```
 
-The `type` declaration is globally defined and all named types exist in the
-same namespace and thus must all have a unique name. Type aliases do not share
-the same namespace as modules; hence it is allowed for type aliases to conflict
-with module names. Note that when we compare two types, the equivalence is
-determined solely by their structures. For instance types of `w`{.firrtl} and
-`in.w`{.firrtl} are equivalent in the example above even though they are
-different type alias.
+The `type` declaration is globally defined and all named types exist in the same
+namespace and thus must all have a unique name. Type aliases do not share the same
+namespace as modules; hence it is allowed for type aliases to conflict with module
+names. Note that when we compare two types, the equivalence is determined solely by
+their structures. For instance types of `w`{.firrtl} and `in.w`{.firrtl} are
+equivalent in the example above even though they are different type alias.
 
 ## Property Types
 
@@ -4041,8 +4039,8 @@ The versioning scheme complies with
 
 Specifically,
 
-The PATCH digit is bumped upon release which only includes non-functional
-changes, such as grammar edits, further examples, and clarifications.
+The PATCH digit is bumped upon release which only includes non-functional changes,
+such as grammar edits, further examples, and clarifications.
 
 The MINOR digit is bumped for feature additions to the spec.
 
@@ -4050,5 +4048,5 @@ The MAJOR digit is bumped for backwards-incompatible changes such as features
 being removed from the spec, changing their interpretation, or new required
 features being added to the specification.
 
-In other words, any `.fir` file that was compliant with `x.y.z` will be
-compliant with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.
+In other words, any `.fir` file that was compliant with `x.y.z` will be compliant
+with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.

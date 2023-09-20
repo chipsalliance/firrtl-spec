@@ -862,32 +862,6 @@ Probe types may target `const`{.firrtl} signals, but cannot use
 `RWProbe<const T>`{.firrtl}, as constant values should never be mutated at
 runtime.
 
-## Type Alias
-
-A type alias is a mechanism to assign names to existing FIRRTL types. Type aliases
-enables their reuse across multiple declarations.
-
-```firrtl
-type WordType = UInt<32>
-type ValidType = UInt<1>
-type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
-type AnotherWordType = UInt<32>
-
-module TypeAliasMod:
-  input in: Data
-  output out: Data
-  wire w: AnotherWordType
-  connect w, in.w
-  ...
-```
-
-The `type` declaration is globally defined and all named types exist in the same
-namespace and thus must all have a unique name. Type aliases do not share the same
-namespace as modules; hence it is allowed for type aliases to conflict with module
-names. Note that when we compare two types, the equivalence is determined solely by
-their structures. For instance types of `w`{.firrtl} and `in.w`{.firrtl} are
-equivalent in the example above even though they are different type alias.
-
 #### Width and Reset Inference
 
 Probe types do participate in global width and reset inference, but only in the
@@ -1074,6 +1048,32 @@ module Top:
   node producer_debug = read(c.out.pref); ; Producer-side signal
   node consumer_debug = read(c.out.cref); ; Consumer-side signal
 ```
+
+## Type Alias
+
+A type alias is a mechanism to assign names to existing FIRRTL types. Type aliases
+enables their reuse across multiple declarations.
+
+```firrtl
+type WordType = UInt<32>
+type ValidType = UInt<1>
+type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
+type AnotherWordType = UInt<32>
+
+module TypeAliasMod:
+  input in: Data
+  output out: Data
+  wire w: AnotherWordType
+  connect w, in.w
+  ...
+```
+
+The `type` declaration is globally defined and all named types exist in the same
+namespace and thus must all have a unique name. Type aliases do not share the same
+namespace as modules; hence it is allowed for type aliases to conflict with module
+names. Note that when we compare two types, the equivalence is determined solely by
+their structures. For instance types of `w`{.firrtl} and `in.w`{.firrtl} are
+equivalent in the example above even though they are different type alias.
 
 ## Property Types
 

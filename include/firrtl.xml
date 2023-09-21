@@ -25,6 +25,7 @@
       <item>invalidate</item>
       <item>intrinsic</item>
       <item>propassign</item>
+      <item>public</item>
     </list>
     <list name="types">
       <item>UInt</item>

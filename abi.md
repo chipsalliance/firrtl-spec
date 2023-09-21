@@ -36,30 +36,68 @@ may evolve as new FIRRTL constructs are added.
 
 ## On Modules
 
-### The Circuit and Top Level
+### The Circuit
 
-The top level module, as specified by the circuit name, shall be present as a
-System Verilog module of the same name.  This FIRRTL module is considered a
-"public" module and subject to the lowering constraints for public modules.
+The circuit is a container of public modules.  The circuit, by itself, does not
+have any ABI.
 
 ### External Modules
 
 An external module may be presumed to exist following the lowering constraints
-for public modules.  The module shall exist with a verilog name matching the
-defname value or, lacking that, the module name.
+for public modules.  The module shall exist with a Verilog name matching the
+defname value or, lacking that, the FIRRTL module name.  The ports of an
+external module shall adhere to one of the port lowering ABIs.
 
-###  Public Modules
+No assumption is made of the filename of an implementation of an external
+module.  It is the user's job to include files in such a way in their tools to
+resolve the name.
 
-Any module considered a "public" module shall be implemented in Verilog in a
-consistent way.  Any public module shall exist as a Verilog module of the same
-name.
+### Public Modules
 
-Each public module with definitions (e.g. not external modules) shall be placed
-in a file with the same name.  No assumption is made of the filename of an
-implementation of an external module, it is the user's job to include files in
-such a way in their tools to resolve the name.
+All public modules shall be implemented in Verilog in a consistent way.  All
+public modules shall exist as Verilog modules of the same name.  Each public
+module shall be placed in a file with a format as follows where `module` is the
+name of the public module:
 
-### Port Lowering ABIv1
+``` ebnf
+filename = module , ".sv" ;
+```
+
+Each public module in a circuit shall produce a filelist that contains the
+filename of the file containing the public module and any necessary files that
+define all public or private module files instantiated under it.  Files that
+define external modules are not included.  This filelist shall have a name as
+follows where `module` is the name of the public module:
+
+``` ebnf
+filelist_filename = "filelist_" , module , ".f" ;
+```
+
+The filelist contents are a newline-delimited list of filenames.
+
+The ports of public modules shall be lowered using one of the Port Lowering ABIs.
+
+No information about the instantiations of a public module may be used to
+compile a public module---a public module is compiled as if it is never
+instantiated.  However, it is legal to compile modules which instantiate public
+modules with full knowledge of the public module internals.
+
+### Private Modules
+
+Private modules have no defined ABI.  If the compilation of private modules
+produces files, then those files shall be included when necessary in public
+module filelists.
+
+FIRRTL compilers shall mangle the names of private modules that are not removed
+by compilation.  The mangling scheme is implementation defined.  This is done to
+avoid name collisions with the private modules produced by other compilations.
+
+### Port Lowering ABIs
+
+There are two supported port lowering ABIs.  These ABIs are applicable to public
+modules or external modules only.
+
+#### Port Lowering ABIv1
 
 Ports are generally lowered to netlist types, except where Verilog's type system
 prevents it.
@@ -68,8 +106,8 @@ Ports of integer types shall be lowered to netlist ports (`wire`{.verilog}) as a
 packed vector of equivalent size.  For example, consider the following FIRRTL:
 
 ```FIRRTL
-circuit Top :
-  module Top :
+circuit :
+  public module Top :
     output out: UInt<16>
     input b: UInt<32>
 ```
@@ -86,16 +124,16 @@ module Top(
 Ports of aggregate type shall be scalarized according to the "Aggregate Type
 Lowering" description in the FIRRTL spec.
 
-Ports of ref type shall be lowered to a Verilog macro of the form `` `define
-ref_<circuit name>_<module name>_<portname> <internal path from module>`` in a
-file with name `ref_<circuit name>_<module name>.sv`.  References to aggregates
-will be lowered to a series of references to ground types.  This ABI does not
-specify whether the original aggregate referent is scalarized or not.
+Ports of ref type on public modules shall, for each public module, be lowered to
+a Verilog macro of the form `` `define ref_<module name>_<portname> <internal
+path from module>`` in a file with name `ref_<module name>.sv`.  References to
+aggregates will be lowered to a series of references to ground types.  This ABI
+does not specify whether the original aggregate referent is scalarized or not.
 
 All other port types shall lower according ot the type lowering in
 section ["On Types"](#On-Types).
 
-### Port Lowering ABIv2
+#### Port Lowering ABIv2
 
 Ports are lowered per the v1 ABI above, except for aggregate types.
 
@@ -137,30 +175,37 @@ used by a nested group will create output ports because SystemVerilog disallows
 the use of a bind instantiation underneath the scope of another bind
 instantiation.  The names of additional ports are implementation defined.
 
-For each optional group, one binding file will be produced for each group or
-nested group.  The circuit, group name, and any nested groups are used to derive
-a predictable filename of the binding file.  The file format uses the format
-below:
+For each optional group and public module, one binding file will be produced for
+each group or nested group.  The public module, group name, and any nested
+groups are used to derive a predictable filename of the binding file.  The file
+format uses the format below where `module` is the name of the public module,
+`root` is the name of the root-level group and `nested` is the name of zero or
+more nested groups:
 
 ``` ebnf
-filename = "groups_" , circuit , "_", root , { "_" , nested } , ".sv" ;
+filename = "groups_" , module , "_", root , { "_" , nested } , ".sv" ;
 ```
 
 As an example, consider the following circuit with three optional groups:
 
 ``` firrtl
-circuit Foo:
+circuit:
   declgroup Group1, bind:
     declgroup Group2, bind:
       declgroup Group3, bind:
+  public module Bar:
+  public module Baz:
 ```
 
-When compiled to Verilog, this will produce three bind files:
+When compiled to Verilog, this will produce six bind files:
 
 ```
-groups_Foo_Group1.sv
-groups_Foo_Group1_Group2.sv
-groups_Foo_Group1_Group2_Group3_.sv
+groups_Bar_Group1.sv
+groups_Bar_Group1_Group2.sv
+groups_Bar_Group1_Group2_Group3_.sv
+groups_Baz_Group1.sv
+groups_Baz_Group1_Group2.sv
+groups_Baz_Group1_Group2_Group3_.sv
 ```
 
 The contents of each binding files must have the effect of including all code
@@ -178,7 +223,7 @@ module `Bar`.  Both `Foo` and `Bar` contain groups.  To make the example
 simpler, no constant propagation is done:
 
 ``` firrtl
-circuit Foo:
+circuit:
   declgroup Group1, bind:
     declgroup Group2, bind:
 
@@ -197,7 +242,7 @@ circuit Foo:
         node notNotA = not(notA)
         define _notNotA = probe(notNotA)
 
-  module Foo:
+  public module Foo:
     inst bar of Bar
 
     group Group1:

@@ -137,24 +137,60 @@ versioned release of this standard to include this preamble.
 
 ``` firrtl
 FIRRTL version 1.1.0
-circuit MyTop...
+circuit :
 ```
 
 # Circuits and Modules
 
 ## Circuits
 
-All FIRRTL circuits consist of a list of modules, each representing a hardware
-block that can be instantiated. The circuit must specify the name of the
-top-level module.
+A FIRRTL circuit is a collection of FIRRTL modules.  Each module is a hardware
+"unit" that has ports, registers, wires, and may instantiate other modules (see:
+[@sec:modules]).  (This is the same concept as a Verilog `module`{.verilog}.)  A
+public module may be instantiated outside the current circuit.  Public modules
+are the exported identifiers of a circuit.  Any non-public module may not be
+instantiated outside the current circuit.
+
+Consider the following circuit.  This contains two modules, `Bar` and `Baz`.
+Module `Baz` is marked public.
 
 ``` firrtl
-circuit MyTop :
-  module MyTop :
-    ; ...
-  module MyModule :
-    ; ...
+circuit :
+  module Bar :
+    input a: UInt<1>
+    output b: UInt<1>
+
+    connect b, a
+
+  public module Baz :
+    input a: UInt<1>
+    output b: UInt<1>
+
+    inst bar of Bar
+    connect bar.a, a
+    connect b, bar.b
 ```
+
+The circuit below is more complex.  This circuit contains three public modules,
+`Foo`, `Bar`, and `Baz`, and one non-public module, `Qux`.  Module `Foo` has no
+common instances with `Bar` or `Baz`.  `Bar` and `Baz` both instantiate `Qux`:
+
+``` firrtl
+circuit :
+  public module Foo :
+
+  public module Bar :
+    inst qux of Qux
+
+  public module Baz :
+    inst qux of Qux
+
+  module Qux :
+```
+
+A circuit that contains no public modules is trivially equivalent to a circuit
+that contains no modules.  It is not enforced that a circuit has at least one
+public module, but it is expected that it does.
 
 ## Modules
 
@@ -178,6 +214,38 @@ Note that a module definition does *not* indicate that the module will be
 physically present in the final circuit. Refer to the description of the
 instance statement for details on how to instantiate a module
 ([@sec:instances]).
+
+### Public Modules
+
+A public module is a module that is marked with the `public`{.firrtl} keyword.
+A public module may be instantiated outside by other circuits.
+
+The example below shows a public module `Foo`:
+
+``` firrtl
+public module Foo:
+  input a: UInt<1>
+  output b: UInt<1>
+
+  connect b, a
+```
+
+A public module has a number of restrictions:
+
+1. A public module may have no ports of uninferred width.
+1. A public module may have no ports of abstract reset type.
+1. A public module may have no ports of input probe type.
+1. A `RWProbe`{.firrtl} may not be used to access a public module's ports.
+1. A public module may be instantiated by other modules within a circuit, but
+   the behavior of the module must not be affected by these instantiations.
+
+For more information on the lowering of public modules, see the FIRRTL ABI
+Specification.
+
+### Private Modules
+
+A private module is any module which is not public.  Private modules have none
+of the restrictions of public modules.
 
 ## Optional Groups
 
@@ -219,7 +287,7 @@ contains a group definition that creates a node computed from a port defined in
 the scope of `Foo`.
 
 ``` firrtl
-circuit Foo:
+circuit:
   declgroup Bar, bind:  ; Declaration of group Bar with convention "bind"
 
   module Foo:
@@ -236,7 +304,7 @@ declarations, three of which are nested.  `Bar` is the top-level group.  `Baz`
 and `Qux` are nested under `Bar`.  `Quz` is nested under `Qux`.
 
 ``` firrtl
-circuit Foo:
+circuit:
   declgroup Bar, bind:
     declgroup Baz, bind:
     declgroup Qux, bind:
@@ -274,7 +342,7 @@ inside the group.  _Stated differently, module `Baz` has an additional port `_a`
 that is only accessible inside a defined group `Bar`_.
 
 ``` firrtl
-circuit Foo:
+circuit:
   declgroup Bar, bind:
 
   module Baz:
@@ -299,7 +367,7 @@ the nesting.  E.g., the following circuit has a port associated with the nested
 group `Bar.Baz`:
 
 ``` firrtl
-circuit Foo:
+circuit:
   declgroup Bar, bind:
     declgroup Baz, bind:
 
@@ -877,8 +945,8 @@ with inferring the input port as `AsyncReset`{.firrtl} if a direct connection
 was used:
 
 ```firrtl
-circuit ResetInferBad :
-  module ResetInferBad :
+circuit :
+  public module ResetInferBad :
     input in : Reset
     output out : AsyncReset
     connect out, read(probe(in))
@@ -888,8 +956,8 @@ The following circuit has all resets inferred to `AsyncReset`{.firrtl},
 however:
 
 ```firrtl
-circuit ResetInferGood :
-  module ResetInferGood :
+circuit :
+  public module ResetInferGood :
     input in : Reset
     output out : Reset
     output out2 : AsyncReset
@@ -961,8 +1029,8 @@ contexts so a single description of the module may be generated.
 The following example demonstrates such an invalid use of probe references:
 
 ```firrtl
-circuit Top:
-  module Top:
+circuit:
+  public module Top:
     input in : UInt<4>
     output out : UInt
 
@@ -1119,7 +1187,7 @@ with some non-constant arguments produce a non-constant.  Constants can be used
 in any context with a source flow which allows a non-constant.  Constants may be
 used as the target of a connect so long as the source of the connect is itself
 constant.  These rules ensure all constants are derived from constant integer
-expressions or from constant-typed input ports of the top-level module.
+expressions or from constant-typed input ports of a public module.
 
 ``` firrtl
 const UInt<3>
@@ -1132,7 +1200,7 @@ control flow is conditioned on an expression which has a constant type.  This
 means if a constant is being assigned to in a `when`{.firrtl} block, the
 `when`{.firrtl}'s condition must be a constant.
 
-Output ports of external modules and input ports to the top-level module may be
+Output ports of external modules and input ports to a public module may be
 constant.  In such case, the value of the port is not known, but that it is
 non-mutating at runtime is known.
 
@@ -2025,12 +2093,12 @@ example demonstrates creating an instance named `myinstance`{.firrtl} of the
 `MyModule`{.firrtl} module within the top level module `Top`{.firrtl}.
 
 ``` firrtl
-circuit Top :
+circuit :
   module MyModule :
     input a: UInt
     output b: UInt
     connect b, a
-  module Top :
+  public module Top :
     inst myinstance of MyModule
 ```
 
@@ -3416,11 +3484,12 @@ namespace.
 Annotations encode arbitrary metadata and associate it with zero or more
 targets ([@sec:targets]) in a FIRRTL circuit.
 
-Annotations are represented as a dictionary, with a "class" field which
-describes which annotation it is, and a "target" field which represents the IR
-object it is attached to. Annotations may have arbitrary additional fields
-attached. Some annotation classes extend other annotations, which effectively
-means that the subclass annotation implies to effect of the parent annotation.
+Annotations are represented as a dictionary, with a required "class" field which
+describes which annotation it is. An annotation has an optional "target" field
+which represents the IR object it is attached to. Annotations may have arbitrary
+additional fields attached. Some annotation classes extend other annotations,
+which effectively means that the subclass annotation implies to effect of the
+parent annotation.
 
 Annotations are serializable to JSON.
 
@@ -3429,7 +3498,15 @@ Below is an example annotation used to mark some module `foo`{.firrtl}:
 ```json
 {
   "class":"myannotationpackage.FooAnnotation",
-  "target":"~MyCircuit|MyModule>foo"
+  "target":"MyModule>foo"
+}
+```
+
+Below is an example of an annotation which does not have a target:
+
+```json
+{
+  "class":"myannotationpackage.BarAnnotation"
 }
 ```
 
@@ -3440,18 +3517,17 @@ example, there may be multiple instances of a module which will eventually
 become multiple physical copies of that module on the die.
 
 Targets are a mechanism to identify specific hardware in specific instances of
-modules in a FIRRTL circuit.  A target consists of a circuit, a root module, an
-optional instance hierarchy, and an optional reference. A target can only
-identify hardware with a name, e.g., a circuit, module, instance, register,
-wire, or node. References may further refer to specific fields or subindices in
+modules in a FIRRTL circuit.  A target consists of a root module, an optional
+instance hierarchy, and an optional reference. A target can only identify
+hardware with a name, e.g., a module, instance, register, wire, or
+node. References may further refer to specific fields or subindices in
 aggregates. A target with no instance hierarchy is local. A target with an
 instance hierarchy is non-local.
 
 Targets use a shorthand syntax of the form:
 
 ```ebnf
-target = “~” , circuit ,
-         [ “|” , module , { “/” (instance) “:” (module) } , [ “>” , ref ] ]
+target = module , [ { “/” (instance) “:” (module) } , [ “>” , ref ] ]
 ```
 
 A reference is a name inside a module and one or more qualifying tokens that
@@ -3469,7 +3545,7 @@ circuit. This consists of four instances of module `Baz`{.firrtl}, two instances
 of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
 ```firrtl
-circuit Foo:
+circuit:
   module Foo:
     inst a of Bar
     inst b of Bar
@@ -3492,14 +3568,13 @@ representation where each instance is broken out into its own module.
 Using targets (or multiple targets), any specific module, instance, or
 combination of instances can be expressed. Some examples include:
 
-Target                   Description
------------------------  -------------
-`~Foo`                   refers to the whole circuit
-`~Foo|Foo`               refers to the top module
-`~Foo|Bar`               refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})
-`~Foo|Foo/a:Bar`         refers just to one instance of module `Bar`{.firrtl}
-`~Foo|Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`{.firrtl}
-`~Foo|Bar/d:Baz`         refers to two instances of module `Baz`{.firrtl}
+Target              Description
+------------------  -------------
+`Foo`               refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl})
+`Bar`               refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})
+`Foo/a:Bar`         refers just to one instance of module `Bar`{.firrtl}
+`Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`{.firrtl}
+`Bar/d:Baz`         refers to two instances of module `Baz`{.firrtl}
 
 If a target does not contain an instance path, it is a _local_ target.  A local
 target points to all instances of a module.  If a target contains an instance
@@ -3517,11 +3592,11 @@ containing two annotations:
 [
   {
     "class":"hello",
-    "target":"~Foo|Bar"
+    "target":"Bar"
   },
   {
     "class":"world",
-    "target":"~Foo|Baz"
+    "target":"Baz"
   }
 ]
 ```
@@ -3531,14 +3606,14 @@ Annotation JSON in `%[ ... ]`{.firrtl}.  The following shows the above
 annotation file stored in-line:
 
 ``` firrtl
-circuit Foo: %[[
+circuit: %[[
   {
     "class":"hello",
-    "target":"~Foo|Bar"
+    "target":"Bar"
   },
   {
     "class":"world",
-    "target":"~Foo|Baz"
+    "target":"Baz"
   }
 ]]
   module Foo :
@@ -3702,8 +3777,8 @@ As an example illustrating some of these points, the following is a legal FIRRTL
 circuit:
 
 ``` firrtl
-circuit Foo :
-    module Foo :
+circuit :
+    public module Foo :
       skip
     module Bar :
      input a: UInt<1>
@@ -3723,8 +3798,8 @@ and '`\`' itself.
 The following example shows the info tokens included:
 
 ``` firrtl
-circuit Top : @[myfile.txt 14:8]
-  module Top : @[myfile.txt 15:2]
+circuit : @[myfile.txt 14:8]
+  public module Top : @[myfile.txt 15:2]
     output out: UInt @[myfile.txt 16:3]
     input b: UInt<32> @[myfile.txt 17:3]
     input c: UInt<1> @[myfile.txt 18:3]
@@ -3991,7 +4066,7 @@ statement =
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
-module = "module" , id , ":" , [ info ] , newline , indent ,
+module = [ "public" ] , "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;
@@ -4025,7 +4100,7 @@ version = "FIRRTL" , "version" , sem_ver ;
 (* Circuit definition *)
 circuit =
   version , newline ,
-  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
+  "circuit" , ":" , [ annotations ] , [ info ] , newline , indent ,
     { module | extmodule | intmodule | declgroup | type_alias_decl } ,
   dedent ;
 ```

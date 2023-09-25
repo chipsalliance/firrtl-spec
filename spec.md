@@ -1112,7 +1112,6 @@ List property types are parameterized over the element type.
 ```firrtl
 module Example:
   input list : List<Integer> ; an input port of List<Integer> property type
-  input listOfList : List<List<Integer>> ; an input port of List<Integer> property type
 ```
 
 ## Type Modifiers

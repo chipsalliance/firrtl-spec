@@ -168,7 +168,7 @@ defined in a group or its parent groups.
 
 #### Example
 
-The end-to-end below example shows a circuit with one two groups that is lowered
+The end-to-end below example shows a circuit with two groups that are lowered
 to Verilog.  This shows example Verilog output which is not part of the ABI, but
 is included for informative reasons.
 

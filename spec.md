@@ -491,10 +491,12 @@ Example:
 ```
 
 Nodes are given a name and a definition.
-Unlike wires, they must be assigned to at the point they are defined.
-(TODO: "The value is given as part of the definition and the expression cannot be changed.")
+(TODO: "They cannot be connected (see [@sec:connects])." Yeah, they kinda can, but not in a source position?)
+
+The principal type of a node (see [@sec:principal-types-of-circuit-components])
+is inferred from the type of the expression on the right hand side of the equals sign `=`.
+
 (TODO: Do all values need to be in scope above the point of definition?)
-They cannot be connected (see [@sec:connects]).
 
 ## Wires
 
@@ -513,7 +515,7 @@ Example:
 
 ## Registers
 
-Registers are the stateful elements of a design.
+Registers are small stateful elements of a design.
 
 Registers can be connected (see [@sec:connects]).
 The state of the register is controlled through what is connected to it.
@@ -547,8 +549,9 @@ wire myinit: SInt
 regreset myreg: SInt, myclock, myreset, myinit
 ```
 
-Semantically, the next value is latched on the positive edge of the clock.
-Additionally, a register's initial value is indeterminate (see [@sec:indeterminate-values]).
+Semantically, registers become flip-flops in the design.
+The the next value is latched on the positive edge of the clock.
+For registers without a reset, the initial value is indeterminate (see [@sec:indeterminate-values]).
 
 
 ## Ports
@@ -569,7 +572,7 @@ The two keywords only differ in the rules for how they may be connected (see [@s
 
 A module in FIRRTL is allowed to contain submodules.
 Each submodule instance must be given a name.
-It must also name the FIRRTL module it is instantiating.
+It must also name the FIRRTL module or external module it is instantiating.
 
 Example:
 

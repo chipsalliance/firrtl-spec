@@ -465,7 +465,7 @@ Any use in place of an integer is disallowed.
 Circuit components are the named objects which may be contained within a module.
 They are: nodes, wires, registers, ports, and submodule instances.
 
-TODO: What about `mem`\s?
+TODO: What about `mem`s?
 
 ## Nodes
 
@@ -481,7 +481,7 @@ Example:
 Nodes are given a name and a definition.
 Unlike wires, they can only be assigned to at the point they are defined.
 (TODO: Do all values need to be in scope above the point of definition?)
-They cannot be connected to and so they do not have last connect semantics [@sec:conditional-last-connect-semantics].
+They cannot be connected (see [@sec:connects]).
 
 ## Wires
 
@@ -512,7 +512,7 @@ The state of a register may be any passive type (see [@sec:passive-types]) and m
 (TODO: is the `const` restriction a consequence of the passive part or not? Why is this required?)
 (TODO: Is this true with probes and stufff?)
 Registers are always associated with a clock.
-Optionally, registers may have a reset signal. (TODO: What about an initial value?)
+Optionally, registers may have a reset signal.
 
 On every cycle, a register will drive its current value and then latch the value it will take on for the next cycle.
 
@@ -573,6 +573,7 @@ The keyword `of` is used instead of the colon `:` since `Passthrough` is not a t
 A submodule may not be connected to.
 However, a module may connect to the ports of a submodule instance.
 The rules for connecting to these ports is mirrored from the rules for how to connect to them when inside the module.
+TODO: Does `inst` require that the thing after the `of` is a FIRRTL `module`? Can it be a `mem` or an `extmodule`?
 
 
 # Types

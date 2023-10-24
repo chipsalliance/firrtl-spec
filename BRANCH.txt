@@ -1,0 +1,29 @@
+As of version 3.2.0, the FIRRTL Spec makes several references to a notion called a "circuit component", including in the introductory chapter.
+This latent concept seems to capture the important notion we informally refer to at the Chisel level as "hardware".
+I'm adding a section early on to properly define this concept and to raise salience of this important notion of FIRRTL.
+
+The sections these references appear are given with the numbers above each section:
+
+2.1
+Chisel designers manipulate circuit components using Scala functions, encode their interfaces in Scala types, and use Scala’s object-orientation features to write their own circuit libraries.
+
+7.2.2
+In a connection between circuit components with bundle types, the data carried by the flipped fields flow in the opposite direction as the data carried by the non-flipped fields.
+
+7.7
+It is inappropriate for some circuit components to be declared with a type that allows for data to flow in both directions. For example, all sub-elements in a memory should flow in the same direction. These components are restricted to only have a passive type.
+
+8.1
+The connect statement is used to specify a physically wired connection between two circuit components.
+
+8.1
+Connect statements from a narrower ground type component to a wider ground type component will have its value automatically sign-extended or zero-extended to the larger bit width. The behavior of connect statements between two circuit components with aggregate types is defined by the connection algorithm in Section 8.1.1.
+
+8.5
+The following example demonstrates the effect of invalidating a variety of circuit components with aggregate types. See Section 8.5.1 for details on the algorithm for determining what is invalidated.
+
+8.8.6
+The behavior of conditional connections to circuit components with aggregate types can be modeled by first expanding each connect into individual connect statements on its ground elements (see Section 8.1.1 for the connection algorithm) and then applying the conditional last connect semantics.
+
+12
+For all circuit components declared with unspecified widths, the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections. If a component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.

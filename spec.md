@@ -493,16 +493,14 @@ Example:
 ```
 
 Nodes are given a name and a definition.
-Unlike wires, they can only be assigned to at the point they are defined.
+Unlike wires, they must be assigned to at the point they are defined.
+(TODO: "The value is given as part of the definition and the expression cannot be changed.")
 (TODO: Do all values need to be in scope above the point of definition?)
 They cannot be connected (see [@sec:connects]).
 
 ## Wires
 
-A wire is a named combinational circuit component that can be connected to and from using connect statements.
-
 Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
-Unlike nodes, last connect semantics [@sec:conditional-last-connect-semantics] apply to wires.
 Also unlike nodes, the type of a wire must be explicitly declared, since it cannot be inferred from the value of the definition.
 
 TODO: Circular definitions? c.f. with nodes.
@@ -524,7 +522,7 @@ The state of the register is controlled through what is connected to it.
 
 The state of a register may be any passive type (see [@sec:passive-types]) and may not be `const`{.firrtl}.
 (TODO: is the `const` restriction a consequence of the passive part or not? Why is this required?)
-(TODO: Is this true with probes and stufff?)
+(TODO: Is this true with probes and stuff?)
 Registers are always associated with a clock.
 Optionally, registers may have a reset signal.
 
@@ -1230,8 +1228,7 @@ does not imply a literal value at a point in the emitted design.  Constant types
 may be used in ports, wire, and nodes.  Operations on constant type are well defined.
 With any exception listed in the definition for such operations as have exceptions,
 an operation whose arguments are constant produces a constant.  An operation
-with some non-constant arguments produce a non-constant.  Constants can be used
-in any context with a source flow which allows a non-constant.  Constants may be
+with some non-constant arguments produce a non-constant.  Constants may be
 used as the target of a connect so long as the source of the connect is itself
 constant.  These rules ensure all constants are derived from constant integer
 expressions or from constant-typed input ports of the top-level module.
@@ -1282,6 +1279,19 @@ passive if their element type is passive. And bundle types are passive if no
 fields are flipped and if all field types are passive.
 
 All property types are passive.
+
+## Principal Types of Circuit Components
+
+Each circuit component in a module is associated to a type called its principal type.
+This is the type of data that flows through the component.
+
+The principal type is used to determine whether two circuit components may be connected.
+
+For wires, registers, ports, the principal component is declared after the colon `:` when the circuit component is declared.
+
+For nodes, the principal type is inferred from the type of the expression on the left hand side of the equals sign `=` when the node is declared.
+
+For submodule instances, TODO: ???
 
 ## Type Equivalence
 

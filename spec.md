@@ -477,9 +477,7 @@ integer literals.  Any use in place of an integer is disallowed.
 # Circuit Components
 
 Circuit components are the named objects which may be contained within a module.
-They are: nodes, wires, registers, ports, and submodule instances.
-
-TODO: What about `mem`s?
+They are: nodes, wires, registers, ports, submodule instances, and memories.
 
 ## Nodes
 
@@ -582,10 +580,35 @@ inst passthrough of Passthrough
 This assumes you have a module named `Passthrough` declared elsewhere in your FIRRTL design.
 The keyword `of` is used instead of the colon `:` since `Passthrough` is not a type.
 
-A submodule may not be connected to.
-However, a module may connect to the ports of a submodule instance.
-The rules for connecting to these ports is mirrored from the rules for how to connect to them when inside the module.
-TODO: Does `inst` require that the thing after the `of` is a FIRRTL `module`? Can it be a `mem` or an `extmodule`?
+The principal type of a submodule instance is bundle type determined by its ports.
+
+
+## Memories
+
+Memories are large stateful elements of a design.
+
+Example:
+
+```firrtl
+mem mymem :
+  data-type => {real:SInt<16>, imag:SInt<16>}
+  depth => 256
+  reader => r1
+  reader => r2
+  writer => w
+  read-latency => 0
+  write-latency => 1
+  read-under-write => undefined
+```
+
+The principal type of a memory (see [@sec:principal-types-of-circuit-components])
+is a bundle type derived from the declaration. [@sec:memories]
+
+The type named in `data-type` must be passive.
+It indicates the type of the data being stored inside of the memory.
+
+TODO: How much detail to go into here? CF the other memories section.
+TODO: Will that @sec hyperlink work if there are two sections called the same thing?
 
 
 # Types

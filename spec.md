@@ -477,7 +477,9 @@ integer literals.  Any use in place of an integer is disallowed.
 # Circuit Components
 
 Circuit components are the named objects which may be contained within a module.
-They are: nodes, wires, registers, submodule instances, and ports.
+They are: nodes, wires, registers, ports, and submodule instances.
+
+TODO: What about `mem`\s?
 
 ## Nodes
 
@@ -515,15 +517,77 @@ Example:
 
 ## Registers
 
-TODO
+Registers are the stateful elements of a design.
 
-## Submodule Instances
+Registers can be connected (see [@sec:connects]).
+The state of the register is controlled through what is connected to it.
 
-TODO
+The state of a register may be any passive type (see [@sec:passive-types]) and may not be `const`{.firrtl}.
+(TODO: is the `const` restriction a consequence of the passive part or not? Why is this required?)
+(TODO: Is this true with probes and stufff?)
+Registers are always associated with a clock.
+Optionally, registers may have a reset signal. (TODO: What about an initial value?)
+
+On every cycle, a register will drive its current value and then latch the value it will take on for the next cycle.
+
+The `regreset` keyword is used to declare a register with a reset.
+The `reg` keyword is used to declare a register without a reset.
+
+Examples:
+
+``` firrtl
+wire myclock: Clock
+reg myreg: SInt, myclock
+```
+
+``` firrtl
+wire myclock: Clock
+reg myreg: SInt, myclock
+```
+```firrtl
+wire myclock: Clock
+wire myreset: UInt<1>
+wire myinit: SInt
+regreset myreg: SInt, myclock, myreset, myinit
+```
+
+Semantically, the next value is latched on the positive edge of the clock.
+Additionally, a register's initial value is indeterminate (see [@sec:indeterminate-values]).
+
 
 ## Ports
 
-TODO
+The way a module interacts with the outside world is through its ports.
+
+Example:
+
+``` firrtl
+    input myinput : UInt<1>
+    output myinput : SInt<8>
+```
+
+Ports are declared with the keywords `input` and `output`.
+The two keywords only differ in the rules for how they may be connected (see [@sec:connects]).
+
+## Submodule Instances
+
+A module in FIRRTL is allowed to contain submodules.
+Each submodule instance must be given a name.
+It must also name the FIRRTL module it is instantiating.
+
+Example:
+
+```firrtl
+inst passthrough of Passthrough
+```
+
+This assumes you have a module named `Passthrough` declared elsewhere in your FIRRTL design.
+The keyword `of` is used instead of the colon `:` since `Passthrough` is not a type.
+
+A submodule may not be connected to.
+However, a module may connect to the ports of a submodule instance.
+The rules for connecting to these ports is mirrored from the rules for how to connect to them when inside the module.
+
 
 # Types
 
@@ -1429,6 +1493,8 @@ with a reset using the `regreset`{.firrtl} syntax.
 
 ### Registers without Reset
 
+TODO: Do I remove this?
+
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
 `myclock`{.firrtl}.
@@ -1440,6 +1506,8 @@ reg myreg: SInt, myclock
 ```
 
 ### Registers with Reset
+
+TODO: Do I remove this?
 
 A register with a reset is declared using `regreset`{.firrtl}.  A
 `regreset`{.firrtl} adds two expressions after the type and clock arguments: a

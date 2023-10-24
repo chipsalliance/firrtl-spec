@@ -474,6 +474,57 @@ The following string-encoded integer literals all have the value `-42`:
 Radix-specified integer literals are only usable when constructing hardware
 integer literals.  Any use in place of an integer is disallowed.
 
+# Circuit Components
+
+Circuit components are the named objects which may be contained within a module.
+They are: nodes, wires, registers, submodule instances, and ports.
+
+## Nodes
+
+Nodes are named expressions in FIRRTL.
+They represent a small piece of combinational logic.
+
+Example:
+
+```firrtl
+    node mynode = and(in, UInt<4>(1))
+```
+
+Nodes are given a name and a definition.
+Unlike wires, they can only be assigned to at the point they are defined.
+(TODO: Do all values need to be in scope above the point of definition?)
+They cannot be connected to and so they do not have last connect semantics [@sec:conditional-last-connect-semantics].
+
+## Wires
+
+A wire is a named combinational circuit component that can be connected to and from using connect statements.
+
+Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
+Unlike nodes, last connect semantics [@sec:conditional-last-connect-semantics] apply to wires.
+Also unlike nodes, the type of a wire must be explicitly declared, since it cannot be inferred from the value of the definition.
+
+TODO: Circular definitions? c.f. with nodes.
+
+Example:
+
+``` firrtl
+    wire mywire: UInt<1>
+
+    connect mywire, UInt<1>(0)
+```
+
+## Registers
+
+TODO
+
+## Submodule Instances
+
+TODO
+
+## Ports
+
+TODO
+
 # Types
 
 FIRRTL has four classes of types: _ground_ types, _aggregate_ types, _reference_
@@ -1361,15 +1412,7 @@ conditional statement.
 
 ## Wires
 
-A wire is a named combinational circuit component that can be connected to and
-from using connect statements.
-
-The following example demonstrates instantiating a wire with the given name
-`mywire`{.firrtl} and type `UInt`{.firrtl}.
-
-``` firrtl
-wire mywire: UInt
-```
+TODO: Moved to circuit components
 
 ## Registers
 

@@ -1227,9 +1227,8 @@ module Example:
 A constant type is a type whose value is guaranteed to be unchanging at circuit
 execution time.  Constant is a constraint on the mutability of the value, it
 does not imply a literal value at a point in the emitted design.  Constant types
-may be used in ports, wire, nodes, and generally anywhere a non-constant type is
-usable.  Operations on constant type are well defined.  As a general rule (with
-any exception listed in the definition for such operations as have exceptions),
+may be used in ports, wire, and nodes.  Operations on constant type are well defined.
+With any exception listed in the definition for such operations as have exceptions,
 an operation whose arguments are constant produces a constant.  An operation
 with some non-constant arguments produce a non-constant.  Constants can be used
 in any context with a source flow which allows a non-constant.  Constants may be

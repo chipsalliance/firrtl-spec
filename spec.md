@@ -1341,6 +1341,10 @@ module MyModule :
   connect myoutput, myinput
 ```
 
+TODO: Define a notion of "connectable circuit component".
+TODO: These currently include only wires, registers, and ports.
+TODO: Every "connectable circuit component" has a "principle type" which governs what it can connect to.
+
 In order for a connection to be legal the following conditions must hold:
 
 1.  The types of the left-hand and right-hand side expressions must be

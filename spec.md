@@ -2728,10 +2728,12 @@ module Example:
 
 # Expressions
 
-FIRRTL expressions are used for creating constant integers, for creating
-literal property type expressions, for referring to a declared circuit
-component, for statically and dynamically accessing a nested element within a
-component, for creating multiplexers, for performing primitive operations, and
+FIRRTL expressions are used for creating constant integers,
+for creating literal property type expressions,
+for referencing a circuit component,
+for statically and dynamically accessing a nested element within a component,
+for creating multiplexers,
+for performing primitive operations, and
 for reading a remote reference to a probe.
 
 ## Constant Integer Expressions

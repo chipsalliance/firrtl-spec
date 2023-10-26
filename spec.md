@@ -2509,7 +2509,6 @@ The data value expression may be omitted when the data type is `UInt<0>(0)`{.fir
 ## References
 
 A reference is simply a name that refers to a previously declared circuit component.
-It may refer to a module port, node, wire, register, instance, or memory.
 
 The following example connects a reference expression `in`{.firrtl}, referring to the previously declared port `in`{.firrtl}, to the reference expression `out`{.firrtl}, referring to the previously declared port `out`{.firrtl}.
 

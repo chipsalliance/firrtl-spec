@@ -214,12 +214,18 @@ I.e., the identifier of a top-level group declared in a circuit must not conflic
 Each optional group declaration must include a string that sets the lowering convention for that group.
 The FIRRTL ABI specification defines supported lowering convention.  One such strategy is `"bind"`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
 
-The `group`{.firrtl} keyword defines optional functionality inside a module.
-An optional group may only be defined inside a module.
-An optional group must reference a group declared in the current circuit.
-Declarations of identifiers and references to existing identifiers following the same lexical scoping rules as FIRRTL conditional statements (see: [@sec:scoping])---identifiers declared in the group definition may not be used outside the group while groups may refer to identifiers declared outside the group.
-__The statements in a group are restricted in what identifiers they are allowed to drive.__
-A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:reference-types]).
+The `group`{.firrtl} keyword defines optional functionality inside a module.  An
+optional group may only be defined inside a module.  An optional group must
+reference a group declared in the current circuit.  Declarations of identifiers
+and references to existing identifiers following the same lexical scoping rules
+as FIRRTL conditional statements (see: [@sec:conditional-scopes])---identifiers declared in
+the group definition may not be used outside the group while groups may refer to
+identifiers declared outside the group.  __The statements in a group are
+restricted in what identifiers they are allowed to drive.__ A statement in a
+group may drive no sinks declared outside the group _with one exception_: a
+statement in a group may drive reference types declared outside the group if the
+reference types are associated with the group in which the statement is declared
+(see: [@sec:reference-types]).
 
 The circuit below contains one optional group declaration, `Bar`.
 Module `Foo` contains a group definition that creates a node computed from a port defined in the scope of `Foo`.
@@ -1649,8 +1655,10 @@ match x:
 
 ### Nested Declarations
 
-If a component is declared within a conditional statement, connections to the component are unaffected by the condition.
-In the following example, register `myreg1`{.firrtl} is always connected to `a`{.firrtl}, and register `myreg2`{.firrtl} is always connected to `b`{.firrtl}.
+If a circuit component is declared within a conditional statement,
+connections to the it are unaffected by the condition.
+In the following example, register `myreg1`{.firrtl} is always connected to `a`{.firrtl},
+and register `myreg2`{.firrtl} is always connected to `b`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1688,11 +1696,16 @@ This is an illegal FIRRTL circuit and an error will be thrown during compilation
 All wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
 Registers do not need to be connected to under all conditions, as it will keep its previous value if unconnected.
 
-### Scoping
+### Conditional Scopes
 
-The conditional statement creates a new *scope* within each of its `when`{.firrtl} and `else`{.firrtl} branches.
-It is an error to refer to any component declared within a branch after the branch has ended.
-As mention in [@sec:namespaces], circuit component declarations in a module must be unique within the module's flat namespace; this means that shadowing a component in an enclosing scope with a component of the same name inside a conditional statement is not allowed.
+Conditional statements create a new *conditional scope* within each of its `when`{.firrtl} and `else`{.firrtl} branches.
+
+Circuit components may be declared locally within a conditional scope.
+The name given to a circuit component declared this way must still be unique across all circuit components declared the module (see [@sec:namespaces]).
+This differs from the behavior in most programming languages, where variables in a local scope can shadow variables declared outside that scope.
+
+A circuit components declared locally within a conditional scope may only be connected to within that scope.
+
 
 ### Conditional Last Connect Semantics
 

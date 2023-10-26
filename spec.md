@@ -1527,9 +1527,9 @@ TODO: Moved to circuit components
 
 ## Registers
 
-A register is a named stateful circuit component.  Reads from a register return
-the current value of the element, writes are not visible until after a positive
-edges of the register's clock port.
+A register is a stateful circuit component.
+Reads from a register return the current value of the element,
+writes are not visible until after the next positive edge of the register's clock.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
 register must be a passive type (see [@sec:passive-types]) and may not be
@@ -1585,9 +1585,8 @@ A register is initialized with an indeterminate value (see
 
 ## Invalidates
 
-An invalidate statement is used to indicate that a circuit component contains
-indeterminate values (see [@sec:indeterminate-values]). It is specified as
-follows:
+An invalidate statement is used to indicate that a circuit component contains indeterminate values (see [@sec:indeterminate-values]).
+It is specified as follows:
 
 ``` firrtl
 wire w: UInt
@@ -3487,11 +3486,10 @@ The flow of all other expressions are source.
 
 # Width Inference
 
-For all circuit components declared with unspecified widths, the FIRRTL compiler
-will infer the minimum possible width that maintains the legality of all its
-incoming connections. If a component has no incoming connections, and the width
-is unspecified, then an error is thrown to indicate that the width could not be
-inferred.
+For all circuit components declared with unspecified widths,
+the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
+If a circuit component has no incoming connections, and the width is unspecified,
+then an error is thrown to indicate that the width could not be inferred.
 
 For module input ports with unspecified widths, the inferred width is the
 minimum possible width that maintains the legality of all incoming connections

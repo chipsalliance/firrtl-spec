@@ -1435,20 +1435,18 @@ A register is initialized with an indeterminate value (see [@sec:indeterminate-v
 
 ## Invalidates
 
-An invalidate statement is used to indicate that a circuit component contains indeterminate values (see [@sec:indeterminate-values]).
+The `invalidate`{.firrtl} statement allows a circuit component to be left uninitialized or only partially initialized.
+The uninitialized part is left with an indeterminate value (see [@sec:indeterminate-values]).
+
 It is specified as follows:
 
 ``` firrtl
 wire w: UInt
 invalidate w
 ```
-
-Invalidate statements can be applied to any circuit component of any type.
-This allows the invalidate statement to be applied to any component,
-to explicitly ignore initialization coverage errors.
-
-The following example demonstrates the effect of invalidating a variety of circuit components with aggregate types.
-See [@sec:the-invalidate-algorithm] for details on the algorithm for determining what is invalidated.
+The following example demonstrates the effect of invalidating a variety of
+circuit components with aggregate types. See [@sec:the-invalidate-algorithm] for
+details on the algorithm for determining what is invalidated.
 
 ``` firrtl
 module MyModule :

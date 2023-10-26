@@ -1239,7 +1239,8 @@ Two property types are equivalent if they are the same concrete property type.
 
 # Statements
 
-Statements are used to describe the components within a module and how they interact.
+A module body consists of a sequence of statements.
+Statements declare the circuit components and describe their connectivity.
 
 ## Connects
 

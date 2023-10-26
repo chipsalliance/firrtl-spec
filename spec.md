@@ -1587,11 +1587,9 @@ wire w: UInt
 invalidate w
 ```
 
-Invalidate statements can be applied to any circuit component of any
-type. However, if the circuit component cannot be connected to, then the
-statement has no effect on the component. This allows the invalidate statement
-to be applied to any component, to explicitly ignore initialization coverage
-errors.
+Invalidate statements can be applied to any circuit component of any type.
+This allows the invalidate statement to be applied to any component,
+to explicitly ignore initialization coverage errors.
 
 The following example demonstrates the effect of invalidating a variety of
 circuit components with aggregate types. See [@sec:the-invalidate-algorithm] for

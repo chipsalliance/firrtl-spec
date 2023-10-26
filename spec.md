@@ -1176,16 +1176,23 @@ It is, for example, expected that a module with a constant input port be fully c
 
 ## Passive Types
 
-It is inappropriate for some circuit components to be declared with a type that allows for data to flow in both directions.
-For example, all sub-elements in a memory should flow in the same direction.
-These components are restricted to only have a passive type.
+Stateful elements, such as registers and memories, may contain data of aggregate types.
+Registers with bundle types are especially common.
+However, when using bundle types in stateful elements, the notion of `flip` is meaningless.
+There is no directionality to the data inside a register; the data just is.
 
-Intuitively, a passive type is a type where all data flows in the same direction, and is defined to be a type that recursively contains no fields with flipped orientations.
-Thus all ground types are passive types.
-Vector types are passive if their element type is passive.
-And bundle types are passive if no fields are flipped and if all field types are passive.
+A passive type is a which does not make use of `flip`.
+More precisely, a passive type is defined recursively:
 
-All property types are passive.
+* All ground types are passive.
+* Probe types are passive.
+* Properties types are passive.
+* A vector type is passive if and only if the element type is passive.
+* A bundle type is passive if and only if it contains no field which is marked `flip` and the type of each field is passive.
+* Enums are passive if and only if each of their variants is passive. (TODO: Is this the proper terminology?)
+
+Registers and memories may only be parametrized over passive types.
+
 
 ## Principal Types of Circuit Components
 

@@ -1237,7 +1237,10 @@ Statements are used to describe the components within a module and how they inte
 
 ## Connects
 
-The connect statement is used to specify a physically wired connection between two circuit components.
+Circuit components can be connected together.
+This connection is both physical, as if the components were connected together with a wire,
+but also logical, allowing metadata such as probes (see [@sec:probe-types;@sec:probe])
+and properties (see [@sec:property-types]) to flow across it during elaboration.
 
 The following example demonstrates connecting a module's input port to its output port, where port `myinput`{.firrtl} is connected to port `myoutput`{.firrtl}.
 

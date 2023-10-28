@@ -4010,13 +4010,6 @@ ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
 property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = static_reference | property_literal_expr ;
 
-(* Force and Release *)
-force_release =
-    "force_initial" , "(" , ref_expr , "," , expr , ")"
-  | "release_initial" , "(" , ref_expr , ")"
-  | "force" , "(" , expr , "," , expr , "," , ref_expr , "," , expr , ")"
-  | "release" , "(" , expr , "," , expr , "," , ref_expr , ")" ;
-
 (* Statements *)
 statement =
     circuit_component
@@ -4081,10 +4074,12 @@ conditional_when = "match" , expr , ":" , [ info ] , newline ,
 
 (* Commands *)
 command =
-  | "printf(" , expr , "," , expr , "," , string_dq ,
-    { "," , expr } , ")" , [ ":" , id ] , [ info ]
-  | force_release , [ info ]
+  | "printf(" , expr , "," , expr , "," , string_dq , { "," , expr } , ")" , [ ":" , id ] , [ info ]
   | "stop(" , expr , "," , expr , "," , int , ")" , [ info ] ;
+  | "force" , "(" , expr , "," , expr , "," , ref_expr , "," , expr , ")"
+  | "force_initial" , "(" , ref_expr , "," , expr , ")"
+  | "release" , "(" , expr , "," , expr , "," , ref_expr , ")" ;
+  | "release_initial" , "(" , ref_expr , ")"
 
 (* Groups *)
 group = "group" , id , "of" , id , ":" , [ info ] , newline ,

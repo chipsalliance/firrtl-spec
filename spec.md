@@ -3821,7 +3821,9 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
 
-(* Tokens: Info *)
+(* Fileinfo communicates Chisel source file and line/column info *)
+linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
+lineinfo = string, " ", linecol ;
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 lineinfo = string, " ", linecol ;
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;

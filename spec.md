@@ -3948,7 +3948,7 @@ id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
-lineinfo = string, " ", linecol
+lineinfo = string, " ", linecol ;
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
 (* Type definitions *)
@@ -4124,7 +4124,7 @@ declgroup =
 annotations = "%" , "[" , json_array , "]" ;
 
 (* Version definition *)
-sem_ver = int , "."  , int , "." , int
+sem_ver = int , "."  , int , "." , int ;
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)

@@ -4030,9 +4030,9 @@ expr =
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
 expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
-expr_read = "read" , "(" , ref_expr , ")" ;
+expr_read = "read" , "(" , expr_probe , ")" ;
 
-ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
+expr_probe = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
 
 static_reference = id
@@ -4088,7 +4088,7 @@ connectlike =
     "connect" , reference , "," , expr , [ info ]
   | "invalidate" , reference , [ info ]
   | "attach" , "(" , reference , { "," ,  reference } , ")" , [ info ]
-  | "define" , static_reference , "=" , ref_expr , [ info ]
+  | "define" , static_reference , "=" , expr_probe , [ info ]
   | "propassign" , static_reference , "," , property_expr , [ info ] ;
 
 (* Conditionals *)
@@ -4112,10 +4112,10 @@ conditional_match_branch =
 (* Commands *)
 command =
     "stop" , "(" , expr , "," , expr , "," , int , ")" , [ info ]
-  | "force" , "(" , expr , "," , expr , "," , ref_expr , "," , expr , ")"
-  | "force_initial" , "(" , ref_expr , "," , expr , ")"
-  | "release" , "(" , expr , "," , expr , "," , ref_expr , ")"
-  | "release_initial" , "(" , ref_expr , ")"
+  | "force" , "(" , expr , "," , expr , "," , expr_probe , "," , expr , ")"
+  | "force_initial" , "(" , expr_probe , "," , expr , ")"
+  | "release" , "(" , expr , "," , expr , "," , expr_probe , ")"
+  | "release_initial" , "(" , expr_probe , ")"
   | "printf" , "(" ,
         expr , "," ,
         expr , "," ,

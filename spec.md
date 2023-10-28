@@ -4021,12 +4021,11 @@ group = "group" , id , "of" , id , ":" , [ info ] , newline ,
 skip = "skip" , [ info ] ;
 
 (* Module definitions *)
-port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
 module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;
-type_param = int | string_dq | string_sq ;
+
 extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               [ "defname" , "=" , id , newline ] ,
@@ -4034,11 +4033,15 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
               { "ref" , static_reference , "is" ,
                 '"' , static_reference , '"' , newline } ,
             dedent ;
+
 intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               "intrinsic" , "=" , id , newline ,
               { "parameter" , "=" , ( int | string_dq ) , newline } ,
             dedent ;
+
+port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
+type_param = int | string_dq | string_sq ;
 
 (* Group definitions *)
 declgroup =
@@ -4054,11 +4057,20 @@ sem_ver = int , "."  , int , "." , int ;
 version = "FIRRTL" , "version" , sem_ver ;
 
 (* Circuit definition *)
+top_level_decl =
+      module
+    | extmodule
+    | intmodule
+    | declgroup
+    | type_alias_decl ;
+
 circuit =
   version , newline ,
   "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
-    { module | extmodule | intmodule | declgroup | type_alias_decl } ,
+    { top_level_decl } ,
   dedent ;
+
+
 ```
 
 # Versioning Scheme of this Document

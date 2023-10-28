@@ -846,8 +846,8 @@ module NoSubAccessesWithProbes :
   input c : const UInt
   output p : Probe<UInt>
 
-  ; Illegal: x[i], x[c]
-  ; Illegal: x[0].a[i], x[0].a[c]
+  ; Illegal: x[[i]], x[[c]]
+  ; Illegal: x[0].a[[i]], x[0].a[[c]]
 
   ; Legal:
   define p = x[0].a[1]
@@ -2787,7 +2787,7 @@ module MyModule :
   input in: UInt[3]
   input n: UInt<2>
   output out: UInt
-  connect out, in[n]
+  connect out, in[[n]]
 ```
 
 A connection from a sub-access expression can be modeled by conditionally
@@ -2820,7 +2820,7 @@ module MyModule :
   input n: UInt<2>
   output out: UInt[3]
   connect out, default
-  connect out[n], in
+  connect out[[n]], in
 ```
 
 A connection to a sub-access expression can be modeled by conditionally
@@ -2855,7 +2855,7 @@ module MyModule :
   input m: UInt<1>
   output out: UInt[2][2]
   connect out, default
-  connect out[n][m], in
+  connect out[[n]][[m]], in
 ```
 
 A connection to an expression containing multiple nested sub-access expressions
@@ -3378,8 +3378,8 @@ module Foo2 :
   input n2: UInt<2>
   wire tmp: UInt<1>
   wire vec: UInt<1>[3]
-  connect tmp, vec[n1]
-  connect vec[n2], tmp
+  connect tmp, vec[[n1]]
+  connect vec[[n2]], tmp
 ```
 
 Module `Foo3`{.firrtl} is another example of an illegal combinational loop,

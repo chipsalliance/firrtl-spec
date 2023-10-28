@@ -3889,7 +3889,7 @@ expr =
   | expr_read
   | expr_primop ;
 
-expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
+expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , int , ")" ;
 expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
 expr_read = "read" , "(" , expr_probe , ")" ;

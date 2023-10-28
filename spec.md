@@ -468,10 +468,19 @@ Any use in place of an integer is disallowed.
 
 # Circuit Components
 
-Circuit components are the named objects which may be contained within a module.
+Circuit components are the named parts of a module corresponding to physical hardware.
 
-There are six kinds of circuit components.
+There are six **kinds** of circuit components.
 They are: nodes, wires, registers, ports, submodule instances, and memories.
+
+We show how the circuit components are wired together in the hardware
+through connections (see [@sec:connects]).
+
+Each circuit component in a module is associated
+with a type called its **principal type** ([@sec:types]).
+This is the type of data that flows through the component.
+It is used to determine the legality of connections.
+
 
 ## Nodes
 
@@ -483,6 +492,8 @@ Example:
 ```firrtl
     node mynode = and(in, UInt<4>(1))
 ```
+
+The principal type of a node is the inferred type of the expression given in the definition.
 
 The value of a node is determined by the expression given in the definition.
 The principal type of a node (see [@sec:principal-types-of-circuit-components])
@@ -509,6 +520,9 @@ Example:
     connect mywire, UInt<1>(0)
 ```
 
+The principal type of a wire is given after the colon (`:`{.firrtl}).
+
+
 ## Registers
 
 Registers are small stateful elements of a design.
@@ -529,20 +543,22 @@ The `reg` keyword is used to declare a register without a reset.
 Examples:
 
 ``` firrtl
-wire myclock: Clock
-reg myreg: SInt, myclock
+wire myclock : Clock
+reg myreg : SInt, myclock
 ```
 
 ``` firrtl
-wire myclock: Clock
-reg myreg: SInt, myclock
+wire myclock : Clock
+reg myreg : SInt, myclock
 ```
 ```firrtl
-wire myclock: Clock
-wire myreset: UInt<1>
-wire myinit: SInt
-regreset myreg: SInt, myclock, myreset, myinit
+wire myclock : Clock
+wire myreset : UInt<1>
+wire myinit : SInt
+regreset myreg : SInt, myclock, myreset, myinit
 ```
+
+For both variants of register, the principal type is given after the colon (`:`{.firrtl}).
 
 Semantically, registers become flip-flops in the design.
 The the next value is latched on the positive edge of the clock.
@@ -563,6 +579,9 @@ Example:
 Ports are declared with the keywords `input` and `output`.
 The two keywords only differ in the rules for how they may be connected (see [@sec:connects]).
 
+For both variants of port, the principal type is given after the colon (`:`{.firrtl}).
+
+
 ## Submodule Instances
 
 A module in FIRRTL is allowed to contain submodules.
@@ -576,9 +595,27 @@ inst passthrough of Passthrough
 ```
 
 This assumes you have a module named `Passthrough` declared elsewhere in your FIRRTL design.
-The keyword `of` is used instead of the colon (`:`) since `Passthrough` is not a type.
+The keyword `of`{.firrtl} is used instead of the colon (`:`{.firrtl})
+since `Passthrough` is not a type.
 
 The principal type of a submodule instance is bundle type determined by its ports.
+Each port creates a field in the bundle of the same name.
+Among these fields, `input` ports are flipped, while `output` fields are unflipped.
+
+For example:
+
+```firrtl
+module Passthrough :
+  input in : UInt<8>
+  output out : UInt<8>
+  connect out, in
+```
+
+The principal type of the submodule instance `passthrough` above is thus:
+
+```firrtl
+{ flip in : UInt<8>, out : UInt<8> }
+```
 
 
 ## Memories
@@ -599,8 +636,7 @@ mem mymem :
   read-under-write => undefined
 ```
 
-The principal type of a memory (see [@sec:principal-types-of-circuit-components])
-is a bundle type derived from the declaration (see [@sec:mem]).
+The principal type of a memory is a bundle type derived from the declaration (see [@sec:mem]).
 
 The type named in `data-type` must be passive.
 It indicates the type of the data being stored inside of the memory.
@@ -1202,30 +1238,6 @@ More precisely, a passive type is defined recursively:
 
 Registers and memories may only be parametrized over passive types.
 
-
-## Principal Types of Circuit Components
-
-Each circuit component in a module is associated to a type called its principal type.
-This is the type of data that flows through the component.
-It is used to determine the legality of connections (see [@sec:connects]).
-
-The term "principal type" is used to emphasize it is the FIRRTL type ([@sec:types])
-associated with a circuit component.
-The term is meant to distinguish it from the kind of component.
-(i.e., nodes, wires, registers, ports, submodule instances, and memories).
-
-For wires, registers, ports, the principal component is declared after the colon (`:`)
-when the circuit component is declared.
-
-For nodes, the principal type is inferred from the type of the expression on the left hand side
-of the equals sign (`=`) when the node is declared.
-
-For submodule instances, the principal type is a bundle type determined by the ports it contains.
-Each `output` port introduces a new field with matching name and type.
-Each `input` port indtroduces a new field with matching name and type, which which is is flipped.
-
-The principal type of memories is a bundle type.
-The details are given in `[@sec:mem]`.
 
 ## Type Equivalence
 

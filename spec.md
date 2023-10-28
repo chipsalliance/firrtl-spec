@@ -3952,18 +3952,43 @@ lineinfo = string, " ", linecol ;
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
 (* Type definitions *)
+type = ( [ "const" ] , type_constable ) | type_probe ;
+
+type_constable =
+    type_ground
+  | type_bundle
+  | type_vec
+  | type_enum
+  | id ;
+
+(* Ground Types *)
+type_ground =  type_ground_nowidth | type_ground_width ;
+
+type_ground_nowidth =
+    "Clock"
+  | "Reset"
+  | "AsyncReset" ;
+
+type_ground_width =
+    "UInt" , [ width ]
+  | "SInt" , [ width ]
+  | "Analog" , [ width ] ;
+
 width = "<" , int , ">" ;
-type_ground = "Clock" | "Reset" | "AsyncReset"
-            | ( "UInt" | "SInt" | "Analog" ) , [ width ] ;
-type_enum = "{|" , { field_enum } , "|}" ;
-field_enum = id, [ ":" , type_simple_child ] ;
-type_aggregate = "{" , field , { field } , "}"
-               | type , "[" , int , "]" ;
-type_ref = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
-field = [ "flip" ] , id , ":" , type ;
-type_property = "Integer" ;
-type_simple_child = type_ground | type_enum | type_aggregate | id ;
-type = ( [ "const" ] , type_simple_child ) | type_ref ;
+
+(* Bundle Types *)
+type_bundle = "{" , type_bundle_field , { type_bundle_field } , "}" ;
+type_bundle_field = [ "flip" ] , id , ":" , type ;
+
+(* Vec Types *)
+type_vec = type , "[" , int , "]" ;
+
+(* Enum Types *)
+type_enum = "{|" , { type_enum_alt } , "|}" ;
+type_enum_alt = id, [ ":" , type_constable ] ;
+
+(* Probe Types *)
+type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
 
 (* Type alias declaration *)
 type_alias_decl = "type", id, "=", type ;
@@ -3993,7 +4018,7 @@ primop_1expr2int_keyword =
 primop_1expr2int =
     primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 
-(* Expression definitions *)
+(* Expressions *)
 expr =
     reference
   | expr_lit
@@ -4129,7 +4154,9 @@ intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
             dedent ;
 
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
+
 type_param = int | string_dq | string_sq ;
+type_property = "Integer" ;
 
 (* Group definitions *)
 declgroup =

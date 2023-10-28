@@ -469,6 +469,7 @@ Any use in place of an integer is disallowed.
 # Circuit Components
 
 Circuit components are the named objects which may be contained within a module.
+There are six kinds of circuit components.
 They are: nodes, wires, registers, ports, submodule instances, and memories.
 
 ## Nodes
@@ -570,7 +571,7 @@ inst passthrough of Passthrough
 ```
 
 This assumes you have a module named `Passthrough` declared elsewhere in your FIRRTL design.
-The keyword `of` is used instead of the colon `:` since `Passthrough` is not a type.
+The keyword `of` is used instead of the colon (`:`) since `Passthrough` is not a type.
 
 The principal type of a submodule instance is bundle type determined by its ports.
 
@@ -1191,7 +1192,7 @@ More precisely, a passive type is defined recursively:
 * Properties types are passive.
 * A vector type is passive if and only if the element type is passive.
 * A bundle type is passive if and only if it contains no field which is marked `flip` and the type of each field is passive.
-* Enums are passive if and only if each of their variants is passive. (TODO: Is this the proper terminology?)
+* An enum is passive if and only if the type of each of its variants is passive.
 
 Registers and memories may only be parametrized over passive types.
 
@@ -1200,14 +1201,25 @@ Registers and memories may only be parametrized over passive types.
 
 Each circuit component in a module is associated to a type called its principal type.
 This is the type of data that flows through the component.
+It is used to determine the legality of connections (see [@sec:connects]).
 
-The principal type is used to determine whether two circuit components may be connected.
+The term "principal type" is used to emphasize it is the FIRRTL type ([@sec:types])
+associated with a circuit component.
+The term is meant to distinguish it from the kind of component.
+(i.e., nodes, wires, registers, ports, submodule instances, and memories).
 
-For wires, registers, ports, the principal component is declared after the colon `:` when the circuit component is declared.
+For wires, registers, ports, the principal component is declared after the colon (`:`)
+when the circuit component is declared.
 
-For nodes, the principal type is inferred from the type of the expression on the left hand side of the equals sign `=` when the node is declared.
+For nodes, the principal type is inferred from the type of the expression on the left hand side
+of the equals sign (`=`) when the node is declared.
 
-For submodule instances, TODO: ???
+For submodule instances, the principal type is a bundle type determined by the ports it contains.
+Each `output` port introduces a new field with matching name and type.
+Each `input` port indtroduces a new field with matching name and type, which which is is flipped.
+
+The principal type of memories is a bundle type.
+The details are given in `[@sec:mem]`.
 
 ## Type Equivalence
 

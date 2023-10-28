@@ -1328,7 +1328,7 @@ The term is meant to distinguish it from the kind of component.
 For wires, registers, ports, the principal component is declared after the colon (`:`)
 when the circuit component is declared.
 
-For nodes, the principal type is inferred from the type of the expression on the left hand side
+For nodes, the principal type is inferred from the type of the expression on the left-hand side
 of the equals sign (`=`) when the node is declared.
 
 For submodule instances, the principal type is a bundle type determined by the ports it contains.
@@ -1382,9 +1382,7 @@ These connections are both physical, as if the components were connected togethe
 but also logical, allowing metadata such as probes (see [@sec:probe-types;@sec:probe])
 and properties (see [@sec:property-types]) to flow across it during elaboration.
 
-The following example demonstrates connecting a module's input port to its
-output port, where port `myinput`{.firrtl} is connected to port
-`myoutput`{.firrtl}.
+The following example demonstrates connecting an input port to an output port.
 
 ``` firrtl
 module MyModule :
@@ -1393,28 +1391,94 @@ module MyModule :
   connect myoutput, myinput
 ```
 
-In order for a connection to be legal the following conditions must hold:
+In the syntax for a `connect` statement, the first argument is referred to as the "right-hand side".
+The second argument is referred to as the "left-hand side".
 
-1.  The types of the left-hand and right-hand side expressions must be
-    equivalent (see [@sec:type-equivalence] for details).
+Generally, we think of this as being like assignment in a programming language,
+with data flowing from the left-hand side to the right-hand side,
+with the caveat that data can flow in both directions, thanks to the presence of bundles with flips.
 
-2.  The flow of the left-hand side expression must be sink or duplex (see
-    [@sec:flows] for an explanation of flow).
 
-3.  Either the flow of the right-hand side expression is source or duplex, or
-    the right-hand side expression has a passive type.
+## Flow
 
-4.  The left-hand side and right-hand side types are not property types.
+The direction that signals travel across a connection is determined by multiple factors:
+the kind of circuit component (e.g., `input` vs `output`),
+the side of a connect statement it appears on,
+and the presence of `flip`s if the signal is a bundle type.
+
+To ensure connections are meaningful when taking directionality into account,
+every expression in FIRRTL has a flow.
+
+The flow of an expression can be one of *source*, *sink*, or *duplex*.
+
+A source expression supplies a signal, and can be used to drive a circuit component.
+A sink expression can be driven by another expression.
+A duplex expression is simply an expression that is both a source and sink.
+
+The rules for the flow of an expression are as follows:
+
+If the expression is a reference, we look at the kind of the circuit component:
+
+* Nodes are sources.
+* Wires and registers are duplex.
+* For ports, `input` ports are sources and `output` ports are sinks.
+* Submodule instances are sources.
+* Memories are sources.
+
+Here are a few comments to help with intuition:
+Nodes may only appear "on the left side" of a connect.
+Wires and registers may appear "on either side of a connect statement".
+Ports are always considered from the perspective of "inside the module".
+Moreover, input ports may only appear "on the left side" of a connect,
+while output ports may only appear "on the right side" of a connect.
+Finally, while submodules instances and memories are strictly sources,
+they interact with the sub-field rule below, allowing connections to their input ports.
+
+If the expression is a sub-field expression, the flow depends on whether the field is flipped.
+If the field is not flipped, the flow is the same as the expression itself.
+If the field is flipped, the flow is the reversed flow:
+
+* The reverse of a source is a sink.
+* The reverse of a sink is a source.
+* The reverse of a duplex is a duplex.
+
+All remaining expressions are sources:
+
+* constant literals
+* primitive operations
+* multiplexers
+* enum expressions
+* all probe expressions (`probe` `rwprobe` and `read`)
+
+
+## Connection Rules
+
+Knowing both the type and flow of both sides of a `connect` statement,
+you can determine whether the connection is legal.
+
+The types of the left-hand and right-hand side expressions must be
+equivalent (see [@sec:type-equivalence] for details).
+
+The flow of the right-hand side expression must be source or duplex,
+or else the right-hand side expression has a passive type.
+
+TODO: Why is a passive type acceptable?
+TODO: Is this because passive types "can be flipped for free" intuitively?
+
+The flow of the left-hand side expression must be sink or duplex.
+
+Neither side of the connect may have a property type.
+
+TODO: I think this is fraught. What if a property ends up in a bundle type?
+
+
+## The Connection Algorithm
+
+TODO: I don't know what this means: "Connect statements between ground types cannot be expanded further."
 
 Connect statements from a narrower ground type component to a wider ground type
 component will have its value automatically sign-extended or zero-extended to
-the larger bit width. The behavior of connect statements between two
-circuit components with aggregate types is defined by the connection algorithm
-in [@sec:the-connection-algorithm].
-
-### The Connection Algorithm
-
-Connect statements between ground types cannot be expanded further.
+the larger bit width.
 
 Connect statements between two vector typed components recursively connects each
 sub-element in the right-hand side expression to the corresponding sub-element
@@ -1427,7 +1491,8 @@ connected to the left-hand side field.  Conversely, if the i'th field is
 flipped, then the left-hand side field is connected to the right-hand side
 field.
 
-### Last Connect Semantics
+
+## Last Connect Semantics
 
 Ordering of connects is significant.  Later connects take precedence over
 earlier ones.  In the following example port `b`{.firrtl} will be connected to
@@ -1501,57 +1566,6 @@ module MyModule :
 ```
 
 See [@sec:sub-fields] for more details about sub-field expressions.
-
-## Flow
-
-The direction that signals travel across wires is determined by multiple factors:
-the kind of circuit component (e.g., `input` vs `output`),
-the side of a connect statement it appears on,
-and the presence of `flip`s if the signal is a bundle type.
-
-To ensure connections are meaningful when taking directionality into account,
-every expression in FIRRTL has a flow, in addition to its type.
-
-The flow of an expression can be one of *source*, *sink*, or *duplex*.
-
-A source expression supplies a signal, and can be used to drive a circuit component.
-A sink expression can be driven by another expression.
-A duplex expression is simply an expression that is both a source and sink.
-
-The rules for the flow of an expression are as follows:
-
-If the expression is a reference, we look at the kind of the circuit component:
-
-* Nodes are sources.
-* Wires and registers are duplex.
-* For ports, `input` ports are sources and `output` ports are sinks.
-* Submodule instances are sources.
-* Memories are sources.
-
-Here are a few comments to help with intuition:
-Nodes may only appear "on the left side" of a connect.
-Wires and registers may appear "on either side of a connect statement".
-Ports are always considered from the perspective of "inside the module".
-Moreover, input ports may only appear "on the left side" of a connect,
-while output ports may only appear "on the right side" of a connect.
-Finally, while submodules instances and memories are strictly sources,
-they interact with the sub-field rule below, allowing connections to their input ports.
-
-If the expression is a sub-field expression, the flow depends on whether the field is flipped.
-If the field is not flipped, the flow is the same as the expression itself.
-If the field is flipped, the flow is the reversed flow:
-
-* The reverse of a source is a sink.
-* The reverse of a sink is a source.
-* The reverse of a duplex is a duplex.
-
-All remaining expressions are sources:
-
-* constant literals
-* primitive operations
-* multiplexers
-* enum expressions
-* all probe expressions (`probe` `rwprobe` and `read`)
 
 
 # Statements

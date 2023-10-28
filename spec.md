@@ -3949,6 +3949,17 @@ expr =
   | expr_read
   | expr_primop ;
 
+reference =
+    static_reference
+  | dynamic_reference ;
+
+static_reference =
+    id
+  | static_reference , "." , id
+  | static_reference , "[" , int , "]" ;
+
+dynamic_reference = reference , "[[" , expr , "]]" ;
+
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
 expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
@@ -3956,14 +3967,6 @@ expr_read = "read" , "(" , expr_probe , ")" ;
 
 expr_probe = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
-
-static_reference =
-    id
-  | static_reference , "." , id
-  | static_reference , "[" , int , "]" ;
-
-reference = static_reference
-          | reference , "[" , expr , "]" ;
 
 property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = static_reference | property_literal_expr ;

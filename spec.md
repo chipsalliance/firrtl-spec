@@ -3920,7 +3920,7 @@ primop_1expr2int =
 
 (* Expression definitions *)
 expr =
-  reference
+    reference
   | expr_lit
   | expr_enum
   | expr_mux
@@ -4082,8 +4082,6 @@ circuit =
   "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
     { top_level_decl } ,
   dedent ;
-
-
 ```
 
 # Versioning Scheme of this Document

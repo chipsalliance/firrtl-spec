@@ -469,6 +469,7 @@ Any use in place of an integer is disallowed.
 # Circuit Components
 
 Circuit components are the named objects which may be contained within a module.
+
 There are six kinds of circuit components.
 They are: nodes, wires, registers, ports, submodule instances, and memories.
 

@@ -4032,9 +4032,10 @@ expr_read = "read" , "(" , expr_probe , ")" ;
 expr_probe = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
 
-static_reference = id
-                 | static_reference , "." , id
-                 | static_reference , "[" , int , "]" ;
+static_reference =
+    id
+  | static_reference , "." , id
+  | static_reference , "[" , int , "]" ;
 
 reference = static_reference
           | reference , "[" , expr , "]" ;
@@ -4104,7 +4105,7 @@ conditional_match = "match" , expr , ":" , [ info ] , newline ,
 
 conditional_match_branch =
   id , [ "(" , id , ")" ] , ":" , newline ,
-    [ indent , { statement } , dedent ]
+    [ indent , { statement } , dedent ] ;
 
 (* Commands *)
 command =

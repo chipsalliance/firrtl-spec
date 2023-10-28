@@ -4075,16 +4075,18 @@ conditional_when = "when" , expr , ":" [ info ] , newline ,
     indent , statement, { statement } , dedent ,
     [ "else" , ":" , indent , statement, { statement } , dedent ] ;
 
-conditional_when = "match" , expr , ":" , [ info ] , newline ,
+conditional_match = "match" , expr , ":" , [ info ] , newline ,
     [ indent ,
-      { id , [ "(" , id , ")" ] , ":" , newline ,
-        [ indent , { statement } , dedent ]
-      } ,
+        { conditional_match_branch } ,
       dedent ] ;
+
+conditional_match_branch =
+  id , [ "(" , id , ")" ] , ":" , newline ,
+    [ indent , { statement } , dedent ]
 
 (* Commands *)
 command =
-  "stop" , "(" , expr , "," , expr , "," , int , ")" , [ info ]
+    "stop" , "(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "force" , "(" , expr , "," , expr , "," , ref_expr , "," , expr , ")"
   | "force_initial" , "(" , ref_expr , "," , expr , ")"
   | "release" , "(" , expr , "," , expr , "," , ref_expr , ")"

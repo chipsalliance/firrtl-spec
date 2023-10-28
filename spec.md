@@ -3880,31 +3880,6 @@ type_enum_alt = id, [ ":" , type_constable ] ;
 (* Probe Types *)
 type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
 
-(* Primitive operations *)
-expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
-
-primop_2expr_keyword =
-    "add"  | "sub" | "mul" | "div" | "mod"
-  | "lt"   | "leq" | "gt"  | "geq" | "eq" | "neq"
-  | "dshl" | "dshr"
-  | "and"  | "or"  | "xor" | "cat" ;
-primop_2expr =
-    primop_2expr_keyword , "(" , expr , "," , expr ")" ;
-primop_1expr_keyword =
-    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
-  | "neg"    | "not"
-  | "andr"   | "orr"    | "xorr" ;
-primop_1expr =
-    primop_1expr_keyword , "(" , expr , ")" ;
-primop_1expr1int_keyword =
-    "pad" | "shl" | "shr" | "head" | "tail" ;
-primop_1expr1int =
-    primop_1exrp1int_keyword , "(", expr , "," , int , ")" ;
-primop_1expr2int_keyword =
-    "bits" ;
-primop_1expr2int =
-    primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
-
 (* Expressions *)
 expr =
     reference
@@ -3921,6 +3896,14 @@ expr_read = "read" , "(" , expr_probe , ")" ;
 
 expr_probe = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
            | static_reference ;
+
+expr_primop = id , "(" , expr_list , ")" ;
+
+expr_list =
+    expr
+  | expr , "," , expr
+  | expr , "," , int
+  | expr , "," , int , "," , int ;
 
 static_reference = id
                  | static_reference , "." , id

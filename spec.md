@@ -496,15 +496,18 @@ The value of a node is determined by the expression given in the definition.
 The principal type of a node (see [@sec:principal-types-of-circuit-components])
 is the inferred type of this expression.
 
-The defining expression may reference circuit components defines *above* the declaration of the node itself.
+The defining expression may reference circuit components defines
+*above* the declaration of the node itself.
 It may not reference the node being define.
 Similarly, it may not reference circuit components defined after it.
 
 
 ## Wires
 
-Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
-Also unlike nodes, the type of a wire must be explicitly declared, since it cannot be inferred from the value of the definition.
+Wires represent named expressions whose value is determined
+by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
+Also unlike nodes, the type of a wire must be explicitly declared,
+since it cannot be inferred from the value of the definition.
 
 Example:
 
@@ -525,7 +528,8 @@ The state of a register may be any non-`const`{.firrtl} passive type (see [@sec:
 Registers are always associated with a clock.
 Optionally, registers may have a reset signal.
 
-On every cycle, a register will drive its current value and then latch the value it will take on for the next cycle.
+On every cycle, a register will drive its current value
+and then latch the value it will take on for the next cycle.
 
 The `regreset` keyword is used to declare a register with a reset.
 The `reg` keyword is used to declare a register without a reset.
@@ -1303,7 +1307,8 @@ More precisely, a passive type is defined recursively:
 * All probe types are passive.
 * All properties types are passive.
 * A vector type is passive if and only if the element type is passive.
-* A bundle type is passive if and only if it contains no field which is marked `flip` and the type of each field is passive.
+* A bundle type is passive if and only if it contains no field which is marked `flip`
+  and the type of each field is passive.
 * An enum type is passive if and only if the type of each of its variants is passive.
 
 Registers and memories may only be parametrized over passive types.
@@ -1587,7 +1592,8 @@ A register is initialized with an indeterminate value (see
 
 ## Invalidates
 
-The `invalidate`{.firrtl} statement allows a circuit component to be left uninitialized or only partially initialized.
+The `invalidate`{.firrtl} statement allows a circuit component to be left uninitialized
+or only partially initialized.
 The uninitialized part is left with an indeterminate value (see [@sec:indeterminate-values]).
 
 It is specified as follows:
@@ -1876,13 +1882,17 @@ if unconnected.
 
 ### Conditional Scopes
 
-Conditional statements create a new *conditional scope* within each of its `when`{.firrtl} and `else`{.firrtl} branches.
+Conditional statements create a new *conditional scope* within each
+of its `when`{.firrtl} and `else`{.firrtl} branches.
 
 Circuit components may be declared locally within a conditional scope.
-The name given to a circuit component declared this way must still be unique across all circuit components declared the module (see [@sec:namespaces]).
-This differs from the behavior in most programming languages, where variables in a local scope can shadow variables declared outside that scope.
+The name given to a circuit component declared this way must still be unique
+across all circuit components declared the module (see [@sec:namespaces]).
+This differs from the behavior in most programming languages,
+where variables in a local scope can shadow variables declared outside that scope.
 
-A circuit components declared locally within a conditional scope may only be connected to within that scope.
+A circuit components declared locally within a conditional scope
+may only be connected to within that scope.
 
 
 ### Conditional Last Connect Semantics
@@ -3486,7 +3496,8 @@ The flow of all other expressions are source.
 # Width Inference
 
 For all circuit components declared with unspecified widths,
-the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
+the FIRRTL compiler will infer the minimum possible width that
+maintains the legality of all its incoming connections.
 If a circuit component has no incoming connections, and the width is unspecified,
 then an error is thrown to indicate that the width could not be inferred.
 

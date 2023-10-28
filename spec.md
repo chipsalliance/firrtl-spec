@@ -4042,17 +4042,18 @@ conditional_reg =
     "reg" , id , ":" , type , expr , [ info ]
   | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
 
-ruw =  "old" | "new" | "undefined" ;
 circuit_component_mem = "mem" , id , ":" , [ info ] , newline , indent ,
            "data-type" , "=>" , type , newline ,
            "depth" , "=>" , int , newline ,
            "read-latency" , "=>" , int , newline ,
            "write-latency" , "=>" , int , newline ,
-           "read-under-write" , "=>" , ruw , newline ,
+           "read-under-write" , "=>" , read_under_write , newline ,
            { "reader" , "=>" , id , newline } ,
            { "writer" , "=>" , id , newline } ,
            { "readwriter" , "=>" , id , newline } ,
          dedent ;
+
+read_under_write =  "old" | "new" | "undefined" ;
 
 (* Connect-like Statements *)
 connectlike =

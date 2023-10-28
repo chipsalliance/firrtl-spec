@@ -1392,10 +1392,6 @@ module MyModule :
   connect myoutput, myinput
 ```
 
-TODO: Define a notion of "connectable circuit component".
-TODO: These currently include only wires, registers, and ports.
-TODO: Every "connectable circuit component" has a "principle type" which governs what it can connect to.
-
 In order for a connection to be legal the following conditions must hold:
 
 1.  The types of the left-hand and right-hand side expressions must be
@@ -1530,9 +1526,9 @@ conditional statement, or as a convenient placeholder for removed components
 during transformational passes. See [@sec:conditionals] for details on the
 conditional statement.
 
-## Wires
+## Wire
 
-TODO: Moved to circuit components
+See [@sec:wires].
 
 ## Registers
 
@@ -1549,8 +1545,6 @@ with a reset using the `regreset`{.firrtl} syntax.
 
 ### Registers without Reset
 
-TODO: Do I remove this?
-
 The following example demonstrates instantiating a register with the given name
 `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
 `myclock`{.firrtl}.
@@ -1562,8 +1556,6 @@ reg myreg: SInt, myclock
 ```
 
 ### Registers with Reset
-
-TODO: Do I remove this?
 
 A register with a reset is declared using `regreset`{.firrtl}.  A
 `regreset`{.firrtl} adds two expressions after the type and clock arguments: a

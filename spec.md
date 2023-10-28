@@ -1375,8 +1375,9 @@ Statements declare the circuit components and describe their connectivity.
 
 ## Connects
 
-Circuit components can be connected together.
-This connection can be both physical, as if the components were connected together with a wire,
+The components of a module can be connected together using connect statements.
+
+These connections can be both physical, as if the components were connected together with a wire,
 but also logical, allowing metadata such as probes (see [@sec:probe-types;@sec:probe])
 and properties (see [@sec:property-types]) to flow across it during elaboration.
 

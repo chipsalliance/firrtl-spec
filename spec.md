@@ -4003,7 +4003,7 @@ expr =
   | expr_primop ;
 
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
-expr_enum = type_enum , "(" , id , [ "," , expr ] , ")"
+expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
 expr_read = "read" , "(" , ref_expr , ")" ;
 
@@ -4062,7 +4062,7 @@ read_under_write =  "old" | "new" | "undefined" ;
 connectlike =
     "connect" , reference , "," , expr , [ info ]
   | "invalidate" , reference , [ info ]
-  | "attach(" , reference , { "," ,  reference } , ")" , [ info ]
+  | "attach" , "(" , reference , { "," ,  reference } , ")" , [ info ]
   | "define" , static_reference , "=" , ref_expr , [ info ]
   | "propassign" , static_reference , "," , property_expr , [ info ] ;
 

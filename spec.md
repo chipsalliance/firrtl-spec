@@ -4010,9 +4010,40 @@ ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
 property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = static_reference | property_literal_expr ;
 
-(* Memory *)
+(* Force and Release *)
+force_release =
+    "force_initial" , "(" , ref_expr , "," , expr , ")"
+  | "release_initial" , "(" , ref_expr , ")"
+  | "force" , "(" , expr , "," , expr , "," , ref_expr , "," , expr , ")"
+  | "release" , "(" , expr , "," , expr , "," , ref_expr , ")" ;
+
+(* Statements *)
+statement =
+    circuit_component
+  | connectlike
+  | conditional
+  | command
+  | group
+  | skip ;
+
+(* Circuit Components *)
+circuit_component =
+    circuit_component_node
+  | circuit_component_wire
+  | circuit_component_reg
+  | circuit_component_inst
+  | circuit_component_mem ;
+
+circuit_component_node = "node" , id , "=" , expr , [ info ] ;
+circuit_component_wire = "wire" , id , ":" , type , [ info ] ;
+circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
+
+conditional_reg =
+    "reg" , id , ":" , type , expr , [ info ]
+  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
+
 ruw =  "old" | "new" | "undefined" ;
-memory = "mem" , id , ":" , [ info ] , newline , indent ,
+circuit_component_mem = "mem" , id , ":" , [ info ] , newline , indent ,
            "data-type" , "=>" , type , newline ,
            "depth" , "=>" , int , newline ,
            "read-latency" , "=>" , int , newline ,
@@ -4023,46 +4054,45 @@ memory = "mem" , id , ":" , [ info ] , newline , indent ,
            { "readwriter" , "=>" , id , newline } ,
          dedent ;
 
-(* Force and Release *)
-force_release =
-    "force_initial" , "(" , ref_expr , "," , expr , ")"
-  | "release_initial" , "(" , ref_expr , ")"
-  | "force" , "(" , expr , "," , expr , "," , ref_expr , "," , expr , ")"
-  | "release" , "(" , expr , "," , expr , "," , ref_expr , ")" ;
-
-(* Statements *)
-statement =
-    "wire" , id , ":" , type , [ info ]
-  | "reg" , id , ":" , type , expr , [ info ]
-  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr ,
-    [info]
-  | memory
-  | "inst" , id , "of" , id , [ info ]
-  | "group" , id , "of" , id , ":" , [ info ] , newline ,
-    indent ,
-      { port , newline } ,
-      { statement , newline } ,
-    dedent
-  | "node" , id , "=" , expr , [ info ]
+(* Connect-like Statements *)
+connectlike =
+    "connect" , reference , "," , expr , [ info ]
+  | "invalidate" , reference , [ info ]
   | "attach(" , reference , { "," ,  reference } , ")" , [ info ]
-  | "when" , expr , ":" [ info ] , newline ,
+  | "define" , static_reference , "=" , ref_expr , [ info ]
+  | "propassign" , static_reference , "," , property_expr , [ info ] ;
+
+(* Conditionals *)
+conditional =
+    conditional_when
+  | conditional_match ;
+
+conditional_when = "when" , expr , ":" [ info ] , newline ,
     indent , statement, { statement } , dedent ,
-    [ "else" , ":" , indent , statement, { statement } , dedent ]
-  | "match" , expr , ":" , [ info ] , newline ,
+    [ "else" , ":" , indent , statement, { statement } , dedent ] ;
+
+conditional_when = "match" , expr , ":" , [ info ] , newline ,
     [ indent ,
       { id , [ "(" , id , ")" ] , ":" , newline ,
         [ indent , { statement } , dedent ]
       } ,
-      dedent ]
-  | "stop(" , expr , "," , expr , "," , int , ")" , [ info ]
+      dedent ] ;
+
+(* Commands *)
+command =
   | "printf(" , expr , "," , expr , "," , string_dq ,
     { "," , expr } , ")" , [ ":" , id ] , [ info ]
-  | "skip" , [ info ]
-  | "define" , static_reference , "=" , ref_expr , [ info ]
   | force_release , [ info ]
-  | "connect" , reference , "," , expr , [ info ]
-  | "invalidate" , reference , [ info ]
-  | "propassign" , static_reference , "," , property_expr , [ info ] ;
+  | "stop(" , expr , "," , expr , "," , int , ")" , [ info ] ;
+
+(* Groups *)
+group = "group" , id , "of" , id , ":" , [ info ] , newline ,
+    indent ,
+      { port , newline } ,
+      { statement , newline } ,
+    dedent ;
+
+skip = "skip" , [ info ] ;
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;

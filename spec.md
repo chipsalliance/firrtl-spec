@@ -3915,9 +3915,6 @@ type_enum_alt = id, [ ":" , type_constable ] ;
 (* Probe Types *)
 type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
 
-(* Type alias declaration *)
-type_alias_decl = "type", id, "=", type ;
-
 (* Primitive operations *)
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
@@ -4088,6 +4085,9 @@ declgroup =
   "declgroup" , id , string , ":" , [ info ] , newline , indent ,
     { declgroup , newline } ,
   dedent ;
+
+(* Type alias declaration *)
+type_alias_decl = "type", id, "=", type ;
 
 (* In-line Annotations *)
 annotations = "%" , "[" , json_array , "]" ;

@@ -3894,8 +3894,10 @@ expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
 expr_read = "read" , "(" , expr_probe , ")" ;
 
-expr_probe = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
-           | static_reference ;
+expr_probe =
+    "probe" , "(" , static_reference , ")"
+  | "rwprobe" , "(" , static_reference , ")"
+  | static_reference ;
 
 expr_primop = id , "(" , expr_list , ")" ;
 
@@ -3905,12 +3907,14 @@ expr_list =
   | expr , "," , int
   | expr , "," , int , "," , int ;
 
-static_reference = id
-                 | static_reference , "." , id
-                 | static_reference , "[" , int , "]" ;
+static_reference =
+    id
+  | static_reference , "." , id
+  | static_reference , "[" , int , "]" ;
 
-reference = static_reference
-          | reference , "[" , expr , "]" ;
+reference =
+    static_reference
+  | reference , "[" , expr , "]" ;
 
 property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = static_reference | property_literal_expr ;
@@ -3940,16 +3944,17 @@ conditional_reg =
     "reg" , id , ":" , type , expr , [ info ]
   | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
 
-circuit_component_mem = "mem" , id , ":" , [ info ] , newline , indent ,
-           "data-type" , "=>" , type , newline ,
-           "depth" , "=>" , int , newline ,
-           "read-latency" , "=>" , int , newline ,
-           "write-latency" , "=>" , int , newline ,
-           "read-under-write" , "=>" , read_under_write , newline ,
-           { "reader" , "=>" , id , newline } ,
-           { "writer" , "=>" , id , newline } ,
-           { "readwriter" , "=>" , id , newline } ,
-         dedent ;
+circuit_component_mem =
+  "mem" , id , ":" , [ info ] , newline , indent ,
+    "data-type" , "=>" , type , newline ,
+    "depth" , "=>" , int , newline ,
+    "read-latency" , "=>" , int , newline ,
+    "write-latency" , "=>" , int , newline ,
+    "read-under-write" , "=>" , read_under_write , newline ,
+    { "reader" , "=>" , id , newline } ,
+    { "writer" , "=>" , id , newline } ,
+    { "readwriter" , "=>" , id , newline } ,
+  dedent ;
 
 read_under_write =  "old" | "new" | "undefined" ;
 

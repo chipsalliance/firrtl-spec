@@ -602,13 +602,12 @@ mem mymem :
 ```
 
 The principal type of a memory (see [@sec:principal-types-of-circuit-components])
-is a bundle type derived from the declaration. [@sec:memories]
+is a bundle type derived from the declaration (see [@sec:mem]).
 
 The type named in `data-type` must be passive.
 It indicates the type of the data being stored inside of the memory.
 
-TODO: How much detail to go into here? CF the other memories section.
-TODO: Will that @sec hyperlink work if there are two sections called the same thing?
+See [@sec:mem] for more details.
 
 
 # Types
@@ -1293,7 +1292,7 @@ compilable to non-parameterized Verilog.
 Stateful elements, such as registers and memories, may contain data of aggregate types.
 Registers with bundle types are especially common.
 However, when using bundle types in stateful elements, the notion of `flip` is meaningless.
-There is no directionality to the data inside a register; the data just is.
+There is no directionality to the data inside a register; the data just *is*.
 
 A passive type is a which does not make use of `flip`.
 More precisely, a passive type is defined recursively:
@@ -1365,7 +1364,7 @@ Statements declare the circuit components and describe their connectivity.
 ## Connects
 
 Circuit components can be connected together.
-This connection is both physical, as if the components were connected together with a wire,
+This connection can be both physical, as if the components were connected together with a wire,
 but also logical, allowing metadata such as probes (see [@sec:probe-types;@sec:probe])
 and properties (see [@sec:property-types]) to flow across it during elaboration.
 
@@ -1823,7 +1822,7 @@ match x:
 ### Nested Declarations
 
 If a circuit component is declared within a conditional statement,
-connections to the it are unaffected by the condition.
+connections to it are unaffected by the condition.
 In the following example, register `myreg1`{.firrtl} is always connected to `a`{.firrtl},
 and register `myreg2`{.firrtl} is always connected to `b`{.firrtl}.
 
@@ -1993,7 +1992,7 @@ connect w.a, mux(c, y, x.a)
 connect w.b, x.b
 ```
 
-## Memories
+## Mem
 
 A memory is an abstract representation of a hardware memory. It is characterized
 by the following parameters.

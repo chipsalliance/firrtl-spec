@@ -3894,6 +3894,8 @@ type = ( [ "const" ] , type_simple_child ) | type_ref ;
 type_alias_decl = "type", id, "=", type ;
 
 (* Primitive operations *)
+expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
+
 primop_2expr_keyword =
     "add"  | "sub" | "mul" | "div" | "mod"
   | "lt"   | "leq" | "gt"  | "geq" | "eq" | "neq"
@@ -3915,23 +3917,31 @@ primop_1expr2int_keyword =
     "bits" ;
 primop_1expr2int =
     primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
-primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Expression definitions *)
 expr =
-    ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")"
-  | type_enum , "(" , id , [ "," , expr ] , ")"
-  | reference
-  | "mux" , "(" , expr , "," , expr , "," , expr , ")"
-  | "read" , "(" , ref_expr , ")"
-  | primop ;
+  reference
+  | expr_lit
+  | expr_enum
+  | expr_mux
+  | expr_read
+  | expr_primop ;
+
+expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
+expr_enum = type_enum , "(" , id , [ "," , expr ] , ")"
+expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
+expr_read = "read" , "(" , ref_expr , ")" ;
+
+ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
+           | static_reference ;
+
 static_reference = id
                  | static_reference , "." , id
                  | static_reference , "[" , int , "]" ;
+
 reference = static_reference
           | reference , "[" , expr , "]" ;
-ref_expr = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
-           | static_reference ;
+
 property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = static_reference | property_literal_expr ;
 

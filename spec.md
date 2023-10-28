@@ -1504,25 +1504,54 @@ See [@sec:sub-fields] for more details about sub-field expressions.
 
 ## Flow
 
-An expression's flow partially determines the legality of connecting to and from the expression.
-Every expression is classified as either *source*, *sink*, or *duplex*.
+The direction that signals travel across wires is determined by multiple factors:
+the kind of circuit component (e.g., `input` vs `output`),
+the side of a connect statement it appears on,
+and the presence of `flip`s if the signal is a bundle type.
 
-The flow of a reference to a declared circuit component depends on the kind of
-circuit component. A reference to an input port, an instance, a memory, and a
-node, is a source. A reference to an output port is a sink. A reference to a
-wire or register is duplex.
+To ensure connections are meaningful when taking directionality into account,
+every expression in FIRRTL has a flow, in addition to its type.
 
-The flow of a sub-index or sub-access expression is the flow of the vector-typed
-expression it indexes or accesses.
+The flow of an expression can be one of *source*, *sink*, or *duplex*.
 
-The flow of a sub-field expression depends upon the orientation of the field. If
-the field is not flipped, its flow is the same flow as the bundle-typed
-expression it selects its field from. If the field is flipped, then its flow is
-the reverse of the flow of the bundle-typed expression it selects its field
-from. The reverse of source is sink, and vice-versa. The reverse of duplex
-remains duplex.
+A source expression supplies a signal, and can be used to drive a circuit component.
+A sink expression can be driven by another expression.
+A duplex expression is simply an expression that is both a source and sink.
 
-The flow of all other expressions are source.
+The rules for the flow of an expression are as follows:
+
+If the expression is a reference, we look at the kind of the circuit component:
+
+* Nodes are sources.
+* Wires and registers are duplex.
+* For ports, `input` ports are sources and `output` ports are sinks.
+* Submodule instances are sources.
+* Memories are sources.
+
+Here are a few comments to help with intuition:
+Nodes may only appear "on the left side" of a connect.
+Wires and registers may appear "on either side of a connect statement".
+Ports are always considered from the perspective of "inside the module".
+Moreover, input ports may only appear "on the left side" of a connect,
+while output ports may only appear "on the right side" of a connect.
+Finally, while submodules instances and memories are strictly sources,
+they interact with the sub-field rule below, allowing connections to their input ports.
+
+If the expression is a sub-field expression, the flow depends on whether the field is flipped.
+If the field is not flipped, the flow is the same as the expression itself.
+If the field is flipped, the flow is the reversed flow:
+
+* The reverse of a source is a sink.
+* The reverse of a sink is a source.
+* The reverse of a duplex is a duplex.
+
+All remaining expressions are sources:
+
+* constant literals
+* primitive operations
+* multiplexers
+* enum expressions
+* all probe expressions (`probe` `rwprobe` and `read`)
 
 
 # Statements

@@ -3832,49 +3832,14 @@ said to have "internal" convention.
 # FIRRTL Language Definition
 
 ``` ebnf
-(* Whitespace definitions *)
-indent = " " , { " " } ;
-dedent = ? remove one level of indentation ? ;
+(* Tokens *)
+indent = ? indentation by one level ? ;
+dedent = ? de-indentation by one level ? ;
 newline = ? a newline character ? ;
-
-(* Integer Literals *)
-digit_bin = "0" | "1" ;
-digit_oct = digit_bin | "2" | "3" | "4" | "5" | "6" | "7" ;
-digit_dec = digit_oct | "8" | "9" ;
-digit_hex = digit_dec
-          | "A" | "B" | "C" | "D" | "E" | "F"
-          | "a" | "b" | "c" | "d" | "e" | "f" ;
-int = [ "-" ] , digit_dec , { digit_dec } ;
-
-(* Radix-specified Integer Literals *)
-rint =
-    [ "-" ] , "0b" , digit_bin , { digit_bin }
-  | [ "-" ] , "0o" , digit_oct , { digit_oct }
-  | [ "-" ] , "0d" , digit_oct , { digit_dec }
-  | [ "-" ] , "0h" , digit_hex , { digit_hex } ;
-
-(* String Literals *)
-string = ? a string ? ;
-string_dq = '"' , string , '"' ;
-string_sq = "'" , string , "'" ;
-
-(* Identifiers define legal FIRRTL or Verilog names *)
-letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
-       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
-       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
-       | "V" | "W" | "X" | "Y" | "Z"
-       | "a" | "b" | "c" | "d" | "e" | "f" | "g"
-       | "h" | "i" | "j" | "k" | "l" | "m" | "n"
-       | "o" | "p" | "q" | "r" | "s" | "t" | "u"
-       | "v" | "w" | "x" | "y" | "z" ;
-literal_id =
-  "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
-id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
-
-(* Fileinfo communicates Chisel source file and line/column info *)
-linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
-lineinfo = string, " ", linecol ;
-info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
+int = ? integer literal ? ;
+string = ? string literal ? ;
+id = ? an identifier ? ;
+info = ? a line indicator, beginning with @ ? ;
 
 (* Type definitions *)
 type = ( [ "const" ] , type_constable ) | type_probe ;
@@ -4041,7 +4006,7 @@ command =
   | "printf" , "(" ,
         expr , "," ,
         expr , "," ,
-        string_dq ,
+        string ,
         { "," , expr }
     , ")" ,
     [ ":" , id ] , [ info ] ;
@@ -4072,12 +4037,12 @@ extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
 intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
               { port , newline } ,
               "intrinsic" , "=" , id , newline ,
-              { "parameter" , "=" , ( int | string_dq ) , newline } ,
+              { "parameter" , "=" , ( int | string ) , newline } ,
             dedent ;
 
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
 
-type_param = int | string_dq | string_sq ;
+type_param = int | string ;
 type_property = "Integer" ;
 
 (* Group definitions *)

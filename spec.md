@@ -1300,11 +1300,11 @@ A passive type is a which does not make use of `flip`.
 More precisely, a passive type is defined recursively:
 
 * All ground types are passive.
-* Probe types are passive.
-* Properties types are passive.
+* All probe types are passive.
+* All properties types are passive.
 * A vector type is passive if and only if the element type is passive.
 * A bundle type is passive if and only if it contains no field which is marked `flip` and the type of each field is passive.
-* An enum is passive if and only if the type of each of its variants is passive.
+* An enum type is passive if and only if the type of each of its variants is passive.
 
 Registers and memories may only be parametrized over passive types.
 

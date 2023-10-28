@@ -4009,12 +4009,18 @@ conditional_when = "match" , expr , ":" , [ info ] , newline ,
 
 (* Commands *)
 command =
-  | "printf(" , expr , "," , expr , "," , string_dq , { "," , expr } , ")" , [ ":" , id ] , [ info ]
-  | "stop(" , expr , "," , expr , "," , int , ")" , [ info ] ;
+  "stop" , "(" , expr , "," , expr , "," , int , ")" , [ info ]
   | "force" , "(" , expr , "," , expr , "," , ref_expr , "," , expr , ")"
   | "force_initial" , "(" , ref_expr , "," , expr , ")"
-  | "release" , "(" , expr , "," , expr , "," , ref_expr , ")" ;
+  | "release" , "(" , expr , "," , expr , "," , ref_expr , ")"
   | "release_initial" , "(" , ref_expr , ")"
+  | "printf" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+    [ ":" , id ] , [ info ] ;
 
 (* Groups *)
 group = "group" , id , "of" , id , ":" , [ info ] , newline ,

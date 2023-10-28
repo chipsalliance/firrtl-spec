@@ -1504,9 +1504,8 @@ See [@sec:sub-fields] for more details about sub-field expressions.
 
 ## Flow
 
-An expression's flow partially determines the legality of connecting to and from
-the expression. Every expression is classified as either *source*, *sink*, or
-*duplex*. For details on connection rules refer back to [@sec:connects].
+An expression's flow partially determines the legality of connecting to and from the expression.
+Every expression is classified as either *source*, *sink*, or *duplex*.
 
 The flow of a reference to a declared circuit component depends on the kind of
 circuit component. A reference to an input port, an instance, a memory, and a

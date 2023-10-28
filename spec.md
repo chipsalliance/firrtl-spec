@@ -490,20 +490,19 @@ Example:
     node mynode = and(in, UInt<4>(1))
 ```
 
-Nodes are given a name and a definition.
-(TODO: "They cannot be connected (see [@sec:connects])." Yeah, they kinda can, but not in a source position?)
-
+The value of a node is determined by the expression given in the definition.
 The principal type of a node (see [@sec:principal-types-of-circuit-components])
-is inferred from the type of the expression on the right hand side of the equals sign `=`.
+is the inferred type of this expression.
 
-(TODO: Do all values need to be in scope above the point of definition?)
+The defining expression may reference circuit components defines *above* the declaration of the node itself.
+It may not reference the node being define.
+Similarly, it may not reference circuit components defined after it.
+
 
 ## Wires
 
 Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
 Also unlike nodes, the type of a wire must be explicitly declared, since it cannot be inferred from the value of the definition.
-
-TODO: Circular definitions? c.f. with nodes.
 
 Example:
 
@@ -520,9 +519,7 @@ Registers are small stateful elements of a design.
 Registers can be connected (see [@sec:connects]).
 The state of the register is controlled through what is connected to it.
 
-The state of a register may be any passive type (see [@sec:passive-types]) and may not be `const`{.firrtl}.
-(TODO: is the `const` restriction a consequence of the passive part or not? Why is this required?)
-(TODO: Is this true with probes and stuff?)
+The state of a register may be any non-`const`{.firrtl} passive type (see [@sec:passive-types]).
 Registers are always associated with a clock.
 Optionally, registers may have a reset signal.
 

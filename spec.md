@@ -599,7 +599,7 @@ since `Passthrough` is not a type.
 
 The principal type of a submodule instance is bundle type determined by its ports.
 Each port creates a field in the bundle of the same name.
-Among these fields, `input` ports are flipped, while `output` fields are unflipped.
+Among these fields, `output` ports are flipped, while `input` fields are unflipped.
 
 For example:
 

@@ -473,8 +473,7 @@ Circuit components are the named parts of a module corresponding to physical har
 There are six **kinds** of circuit components.
 They are: nodes, wires, registers, ports, submodule instances, and memories.
 
-We show how the circuit components are wired together in the hardware
-through connections (see [@sec:connects]).
+We use connections to wire circuit components together in the hardware (see [@sec:connects]).
 
 Each circuit component in a module is associated
 with a type called its **principal type** ([@sec:types]).
@@ -1230,7 +1229,7 @@ More precisely, a passive type is defined recursively:
 
 * All ground types are passive.
 * All probe types are passive.
-* All properties types are passive.
+* All property types are passive.
 * A vector type is passive if and only if the element type is passive.
 * A bundle type is passive if and only if it contains no field which is marked `flip`
   and the type of each field is passive.

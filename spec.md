@@ -3952,9 +3952,9 @@ lineinfo = string, " ", linecol ;
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
 (* Type definitions *)
-type = ( [ "const" ] , type_constable ) | type_probe ;
+type = ( [ "const" ] , type_hardware ) | type_probe ;
 
-type_constable =
+type_hardware =
     type_ground
   | type_bundle
   | type_vec

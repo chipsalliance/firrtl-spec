@@ -3911,24 +3911,24 @@ said to have "internal" convention.
 circuit =
   version , newline ,
   "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
-    { top_level_decl } ,
+    { decl } ,
   dedent ;
 
 (* Top-level Declarations *)
-top_level_decl =
-    module
-  | extmodule
-  | intmodule
-  | declgroup
-  | type_alias_decl ;
+decl =
+    decl_module
+  | decl_extmodule
+  | decl_intmodule
+  | decl_group
+  | decl_type_alias ;
 
-module =
+decl_module =
   "module" , id , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     { statement , newline } ,
   dedent ;
 
-extmodule =
+decl_extmodule =
   "extmodule" , id , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
@@ -3937,19 +3937,19 @@ extmodule =
       '"' , static_reference , '"' , newline } ,
   dedent ;
 
-intmodule =
+decl_intmodule =
   "intmodule" , id , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     "intrinsic" , "=" , id , newline ,
     { "parameter" , "=" , ( int | string_dq ) , newline } ,
   dedent ;
 
-declgroup =
+decl_group =
   "declgroup" , id , string , ":" , [ info ] , newline , indent ,
     { declgroup , newline } ,
   dedent ;
 
-type_alias_decl = "type", id, "=", type ;
+decl_type_alias = "type", id, "=", type ;
 
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
 type_param = int | string_dq | string_sq ;

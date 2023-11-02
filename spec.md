@@ -4047,34 +4047,39 @@ group =
 skip = "skip" , [ info ] ;
 
 (* References *)
+reference =
+    static_reference
+  | dynamic_reference
+
 static_reference =
     id
   | static_reference , "." , id
   | static_reference , "[" , int , "]" ;
 
-reference = static_reference
-          | reference , "[" , expr , "]" ;
+dynamic_reference =
+    reference , "[" , expr , "]" ;
 
 (* Expressions *)
 expr =
-    reference
+    expr_reference
   | expr_lit
   | expr_enum
   | expr_mux
   | expr_read
   | expr_primop ;
 
+expr_reference = reference
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
 expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
 expr_read = "read" , "(" , expr_probe , ")" ;
 
-expr_probe = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
-           | static_reference ;
+expr_probe =
+    ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
+  | static_reference ;
 
 property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = static_reference | property_literal_expr ;
-
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Types *)

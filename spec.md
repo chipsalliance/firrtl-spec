@@ -3910,7 +3910,7 @@ said to have "internal" convention.
 (* Circuit Definition *)
 circuit =
   version , newline ,
-  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
+  "circuit" , ":" , [ annotations ] , [ info ] , newline , indent ,
     { decl } ,
   dedent ;
 
@@ -3923,7 +3923,7 @@ decl =
   | decl_type_alias ;
 
 decl_module =
-  "module" , id , ":" , [ info ] , newline , indent ,
+  [ "public" ], "module" , id , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     { statement , newline } ,
   dedent ;

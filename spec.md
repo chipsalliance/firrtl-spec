@@ -103,12 +103,12 @@ circuit :
 
 ## Circuits
 
-A FIRRTL circuit is a collection of FIRRTL modules.  Each module is a hardware
-"unit" that has ports, registers, wires, and may instantiate other modules (see:
-[@sec:modules]).  (This is the same concept as a Verilog `module`{.verilog}.)  A
-public module may be instantiated outside the current circuit.  Public modules
-are the exported identifiers of a circuit.  Any non-public module may not be
-instantiated outside the current circuit.
+A FIRRTL circuit is a collection of FIRRTL modules.
+Each module is a hardware "unit" that has ports, registers, wires, and may instantiate other modules (see: [@sec:modules]).
+(This is the same concept as a Verilog `module`{.verilog}.)
+A public module may be instantiated outside the current circuit.
+Public modules are the exported identifiers of a circuit.
+Any non-public module may not be instantiated outside the current circuit.
 
 Consider the following circuit.  This contains two modules, `Bar` and `Baz`.
 Module `Baz` is marked public.
@@ -130,9 +130,10 @@ circuit :
     connect b, bar.b
 ```
 
-The circuit below is more complex.  This circuit contains three public modules,
-`Foo`, `Bar`, and `Baz`, and one non-public module, `Qux`.  Module `Foo` has no
-common instances with `Bar` or `Baz`.  `Bar` and `Baz` both instantiate `Qux`:
+The circuit below is more complex.
+This circuit contains three public modules, `Foo`, `Bar`, and `Baz`, and one non-public module, `Qux`.
+Module `Foo` has no common instances with `Bar` or `Baz`.
+`Bar` and `Baz` both instantiate `Qux`:
 
 ``` firrtl
 circuit :
@@ -147,20 +148,16 @@ circuit :
   module Qux :
 ```
 
-A circuit that contains no public modules is trivially equivalent to a circuit
-that contains no modules.  It is not enforced that a circuit has at least one
-public module, but it is expected that it does.
+A circuit that contains no public modules is trivially equivalent to a circuit that contains no modules.
+It is not enforced that a circuit has at least one public module, but it is expected that it does.
 
 ## Modules
 
-Each module has a given name, a list of ports, and a list of statements
-representing the circuit connections within the module. A module port is
-specified by its direction, which may be input or output, a name, and the data
-type of the port.
+Each module has a given name, a list of ports, and a list of statements representing the circuit connections within the module.
+A module port is specified by its direction, which may be input or output, a name, and the data type of the port.
 
-The following example declares a module with one input port, one output port,
-and one statement connecting the input port to the output port.  See
-[@sec:connects] for details on the connect statement.
+The following example declares a module with one input port, one output port, and one statement connecting the input port to the output port.
+See [@sec:connects] for details on the connect statement.
 
 ``` firrtl
 module MyModule :
@@ -169,10 +166,8 @@ module MyModule :
   connect bar, foo
 ```
 
-Note that a module definition does *not* indicate that the module will be
-physically present in the final circuit. Refer to the description of the
-instance statement for details on how to instantiate a module
-([@sec:instances]).
+Note that a module definition does *not* indicate that the module will be physically present in the final circuit.
+Refer to the description of the instance statement for details on how to instantiate a module ([@sec:instances]).
 
 ### Public Modules
 
@@ -195,55 +190,39 @@ A public module has a number of restrictions:
 1. A public module may have no ports of abstract reset type.
 1. A public module may have no ports of input probe type.
 1. A `RWProbe`{.firrtl} may not be used to access a public module's ports.
-1. A public module may be instantiated by other modules within a circuit, but
-   the behavior of the module must not be affected by these instantiations.
+1. A public module may be instantiated by other modules within a circuit, but the behavior of the module must not be affected by these instantiations.
 
-For more information on the lowering of public modules, see the FIRRTL ABI
-Specification.
+For more information on the lowering of public modules, see the FIRRTL ABI Specification.
 
 ### Private Modules
 
-A private module is any module which is not public.  Private modules have none
-of the restrictions of public modules.
+A private module is any module which is not public.
+Private modules have none of the restrictions of public modules.
 
 ## Optional Groups
 
-Optional groups are named collections of statements inside a module.  Optional
-groups contain functionality which will not be present in all executions of a
-circuit.  Optional groups are intended to be used to keep verification,
-debugging, or other collateral, not relevant to the operation of the circuit, in
-a separate area.  Each group can then be optionally included in the resulting
-design.
+Optional groups are named collections of statements inside a module.
+Optional groups contain functionality which will not be present in all executions of a circuit.
+Optional groups are intended to be used to keep verification, debugging, or other collateral, not relevant to the operation of the circuit, in a separate area.
+Each group can then be optionally included in the resulting design.
 
-The `declgroup`{.firrtl} keyword declares an optional group with a specific
-identifier.  An optional group may be declared in a circuit or in another
-optional group declaration.  An optional group's identifier must be unique
-within the current namespace.  I.e., the identifier of a top-level group
-declared in a circuit must not conflict with the identifier of a module,
-external module, or implementation defined module.
+The `declgroup`{.firrtl} keyword declares an optional group with a specific identifier.
+An optional group may be declared in a circuit or in another optional group declaration.
+An optional group's identifier must be unique within the current namespace.
+I.e., the identifier of a top-level group declared in a circuit must not conflict with the identifier of a module, external module, or implementation defined module.
 
-Each optional group declaration must include a string that sets the lowering
-convention for that group.  The FIRRTL ABI specification defines supported
-lowering convention.  One such strategy is `"bind"`{.firrtl} which lowers to
-modules and instances which are instantiated using the SystemVerilog
-`bind`{.verilog} feature.
+Each optional group declaration must include a string that sets the lowering convention for that group.
+The FIRRTL ABI specification defines supported lowering convention.  One such strategy is `"bind"`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
 
-The `group`{.firrtl} keyword defines optional functionality inside a module.  An
-optional group may only be defined inside a module.  An optional group must
-reference a group declared in the current circuit.  Declarations of identifiers
-and references to existing identifiers following the same lexical scoping rules
-as FIRRTL conditional statements (see: [@sec:scoping])---identifiers declared in
-the group definition may not be used outside the group while groups may refer to
-identifiers declared outside the group.  __The statements in a group are
-restricted in what identifiers they are allowed to drive.__ A statement in a
-group may drive no sinks declared outside the group _with one exception_: a
-statement in a group may drive reference types declared outside the group if the
-reference types are associated with the group in which the statement is declared
-(see: [@sec:reference-types]).
+The `group`{.firrtl} keyword defines optional functionality inside a module.
+An optional group may only be defined inside a module.
+An optional group must reference a group declared in the current circuit.
+Declarations of identifiers and references to existing identifiers following the same lexical scoping rules as FIRRTL conditional statements (see: [@sec:scoping])---identifiers declared in the group definition may not be used outside the group while groups may refer to identifiers declared outside the group.
+__The statements in a group are restricted in what identifiers they are allowed to drive.__
+A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:reference-types]).
 
-The circuit below contains one optional group declaration, `Bar`.  Module `Foo`
-contains a group definition that creates a node computed from a port defined in
-the scope of `Foo`.
+The circuit below contains one optional group declaration, `Bar`.
+Module `Foo` contains a group definition that creates a node computed from a port defined in the scope of `Foo`.
 
 ``` firrtl
 circuit:
@@ -256,11 +235,12 @@ circuit:
       node notA = not(a)
 ```
 
-Optional group declarations may be nested.  Optional group declarations are
-declared with the `declgroup`{.firrtl} keyword indented under an existing
-`declgroup`{.firrtl} keyword.  The circuit below contains four optional group
-declarations, three of which are nested.  `Bar` is the top-level group.  `Baz`
-and `Qux` are nested under `Bar`.  `Quz` is nested under `Qux`.
+Optional group declarations may be nested.
+Optional group declarations are declared with the `declgroup`{.firrtl} keyword indented under an existing `declgroup`{.firrtl} keyword.
+The circuit below contains four optional group declarations, three of which are nested.
+`Bar` is the top-level group.
+`Baz` and `Qux` are nested under `Bar`.
+`Quz` is nested under `Qux`.
 
 ``` firrtl
 circuit:
@@ -270,11 +250,9 @@ circuit:
       declgroup Quz, bind:
 ```
 
-Optional group definitions must match the nesting of declared groups.  Optional
-groups are defined under existing groups with the `group`{.firrtl} keyword
-indented under an existing `group`{.firrtl} keyword.  For the four declared
-groups in the circuit above, the following is a legal nesting of group
-definitions:
+Optional group definitions must match the nesting of declared groups.
+Optional groups are defined under existing groups with the `group`{.firrtl} keyword indented under an existing `group`{.firrtl} keyword.
+For the four declared groups in the circuit above, the following is a legal nesting of group definitions:
 
 ``` firrtl
 module Foo:
@@ -288,17 +266,14 @@ module Foo:
         node notNotA = not(notA)
 ```
 
-Statements in a nested optional group may only read from ports or declarations
-of the current module, the current group, or a parent group---statements in a
-group may not drive components declared outside the group except reference types
-associated with the same group.  In the above example, `notA` is accessible in
-the group definition of `Quz` because `notA` is declared in a parent group.
+Statements in a nested optional group may only read from ports or declarations of the current module, the current group, or a parent group---statements in a group may not drive components declared outside the group except reference types associated with the same group.
+In the above example, `notA` is accessible in the group definition of `Quz` because `notA` is declared in a parent group.
 
-In the example below, module `Baz` defines a group `Bar`.  Module `Baz` has an
-output port, `_a`, that is associated with the group, `Bar`.  This port can then
-be driven from inside the group.  In module `Foo`, the port may be read from
-inside the group.  _Stated differently, module `Baz` has an additional port `_a`
-that is only accessible inside a defined group `Bar`_.
+In the example below, module `Baz` defines a group `Bar`.
+Module `Baz` has an output port, `_a`, that is associated with the group, `Bar`.
+This port can then be driven from inside the group.
+In module `Foo`, the port may be read from inside the group.
+_Stated differently, module `Baz` has an additional port `_a` that is only accessible inside a defined group `Bar`_.
 
 ``` firrtl
 circuit:
@@ -321,9 +296,8 @@ circuit:
       node _b = baz._a
 ```
 
-If a port is associated with a nested group then a period is used to indicate
-the nesting.  E.g., the following circuit has a port associated with the nested
-group `Bar.Baz`:
+If a port is associated with a nested group then a period is used to indicate the nesting.
+E.g., the following circuit has a port associated with the nested group `Bar.Baz`:
 
 ``` firrtl
 circuit:
@@ -334,29 +308,21 @@ circuit:
     output a: Probe<UInt<1>, Bar.Baz>
 ```
 
-Optional groups will be compiled to modules whose ports are derived from what
-they capture from their visible scope.  For full details of the way optional
-groups are compiled, see the FIRRTL ABI specification.
+Optional groups will be compiled to modules whose ports are derived from what they capture from their visible scope.
+For full details of the way optional groups are compiled, see the FIRRTL ABI specification.
 
 ## Externally Defined Modules
 
-Externally defined modules are modules whose implementation is not provided in
-the current circuit.  Only the ports and name of the externally defined module
-are specified in the circuit.  An externally defined module may include, in
-order, an optional _defname_ which sets the name of the external module in the
-resulting Verilog, zero or more name--value _parameter_ statements, and zero or
-more _ref_ statements indicating the resolved paths of the module's exported
-references.  Each name--value parameter statement will result in a value being
-passed to the named parameter in the resulting Verilog.  Every port or port
-sub-element of reference type must have exactly one `ref`{.firrtl} statement.
+Externally defined modules are modules whose implementation is not provided in the current circuit.
+Only the ports and name of the externally defined module are specified in the circuit.
+An externally defined module may include, in order, an optional _defname_ which sets the name of the external module in the resulting Verilog, zero or more name--value _parameter_ statements, and zero or more _ref_ statements indicating the resolved paths of the module's exported references.
+Each name--value parameter statement will result in a value being passed to the named parameter in the resulting Verilog.
+Every port or port sub-element of reference type must have exactly one `ref`{.firrtl} statement.
 
-The widths of all externally defined module ports must be specified.  Width
-inference, described in [@sec:width-inference], is not supported for externally
-defined module ports.
+The widths of all externally defined module ports must be specified.
+Width inference, described in [@sec:width-inference], is not supported for externally defined module ports.
 
-A common use of an externally defined module is to represent a Verilog module
-that will be written separately and provided together with FIRRTL-generated
-Verilog to downstream tools.
+A common use of an externally defined module is to represent a Verilog module that will be written separately and provided together with FIRRTL-generated Verilog to downstream tools.
 
 An example of an externally defined module with parameters is:
 
@@ -380,21 +346,20 @@ extmodule MyExternalModuleWithRefs :
   ref mysignal is "a.b"
   ref myreg is "x.y"
 ```
-These resolved reference paths capture important information for use in the
-current FIRRTL design. While they are part of the FIRRTL-level interface to the
-external module, they are not expected to correspond to a particular Verilog
-construct. They exist to carry information about the implementation of the
-extmodule necessary for code generation of the current circuit.
+These resolved reference paths capture important information for use in the current FIRRTL design.
+While they are part of the FIRRTL-level interface to the external module, they are not expected to correspond to a particular Verilog construct.
+They exist to carry information about the implementation of the extmodule necessary for code generation of the current circuit.
 
-The types of parameters may be any of the following literal types.  See
-[@sec:literals] for more information:
+The types of parameters may be any of the following literal types.
+See [@sec:literals] for more information:
 
 1. Integer literal, e.g. `42`{.firrtl}
 1. String literal, e.g., `"hello"`{.firrtl}
 1. Raw String Literal, e.g., `'world'`{.firrtl}
 
-An integer literal is lowered to a Verilog literal.  A string literal is lowered
-to a Verilog string.  A raw string literal is lowered verbatim to Verilog.
+An integer literal is lowered to a Verilog literal.
+A string literal is lowered to a Verilog string.
+A raw string literal is lowered verbatim to Verilog.
 
 As an example, consider the following external module:
 
@@ -417,16 +382,13 @@ Foo #(
 
 ## Implementation Defined Modules (Intrinsics)
 
-Intrinsic modules are modules which represent implementation-defined,
-compiler-provided functionality.  Intrinsics generally are used for
-functionality which requires knowledge of the implementation or circuit not
-available to a library writer.  What intrinsics are supported by an
-implementation is defined by the implementation.  The particular intrinsic
-represented by an intrinsic module is encoded in _intrinsic_.  The name of the
-intmodule is only used to identify a specific instance.  An
-implementation shall type-check all ports and parameters.  Ports may be
-uninferred (either width or reset) if specified by the implementation (which is
-useful for inspecting and interacting with those inference features).
+Intrinsic modules are modules which represent implementation-defined, compiler-provided functionality.
+Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
+What intrinsics are supported by an implementation is defined by the implementation.
+The particular intrinsic represented by an intrinsic module is encoded in _intrinsic_.
+The name of the intmodule is only used to identify a specific instance.
+An implementation shall type-check all ports and parameters.
+Ports may be uninferred (either width or reset) if specified by the implementation (which is useful for inspecting and interacting with those inference features).
 
 ``` firrtl
 intmodule MyIntrinsicModule_xhello_y64 :
@@ -438,30 +400,29 @@ intmodule MyIntrinsicModule_xhello_y64 :
   parameter y = 42
 ```
 
-The types of intrinsic module parameters may only be literal integers or
-string literals.
+The types of intrinsic module parameters may only be literal integers or string literals.
 
 # Literals
 
 FIRRTL has both integer, string, and raw string literals.
 
-An integer literal is a signed or unsigned decimal integer.  The following are
-examples of integer literals:
+An integer literal is a signed or unsigned decimal integer.
+The following are examples of integer literals:
 
 ``` firrtl
 42
 -9000
 ```
 
-A string literal is a sequence of characters with a leading `"`{.firrtl} and a
-trailing `"`{.firrtl}.  The following is an example of a string literal:
+A string literal is a sequence of characters with a leading `"`{.firrtl} and a trailing `"`{.firrtl}.
+The following is an example of a string literal:
 
 ``` firrtl
 "hello"
 ```
 
-A raw string literal is a sequence of characters with a leading `'`{.firrtl} and
-a trailing `'`{.firrtl}.  The following is an example of a raw string literal:
+A raw string literal is a sequence of characters with a leading `'`{.firrtl} and a trailing `'`{.firrtl}.
+The following is an example of a raw string literal:
 
 ``` firrtl
 'world'
@@ -469,16 +430,14 @@ a trailing `'`{.firrtl}.  The following is an example of a raw string literal:
 
 ## Radix-specified Integer Literal
 
-A radix-specified integer literal is a special integer literal with one of the
-following leading characters to indicate the numerical encoding:
+A radix-specified integer literal is a special integer literal with one of the following leading characters to indicate the numerical encoding:
 
 - `0b`{.firrtl} -- for representing binary numbers
 - `0o`{.firrtl} -- for representing octal numbers
 - `0d`{.firrtl} -- for representing decimal numbers
 - `0h`{.firrtl} -- for representing hexadecimal numbers
 
-Signed radix-specified integer literals have their sign before the leading
-encoding character.
+Signed radix-specified integer literals have their sign before the leading encoding character.
 
 The following string-encoded integer literals all have the value `42`:
 
@@ -498,8 +457,8 @@ The following string-encoded integer literals all have the value `-42`:
 -0h2a
 ```
 
-Radix-specified integer literals are only usable when constructing hardware
-integer literals.  Any use in place of an integer is disallowed.
+Radix-specified integer literals are only usable when constructing hardware integer literals.
+Any use in place of an integer is disallowed.
 
 # Types
 

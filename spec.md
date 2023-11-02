@@ -470,8 +470,8 @@ Any use in place of an integer is disallowed.
 
 Circuit components are the named parts of a module corresponding to physical hardware.
 
-There are six **kinds** of circuit components.
-They are: nodes, wires, registers, ports, submodule instances, and memories.
+There are seven **kinds** of circuit components.
+They are: nodes, wires, registers, output ports, input ports, submodule instances, and memories.
 
 We use connections to wire circuit components together in the hardware (see [@sec:connects]).
 
@@ -564,7 +564,7 @@ The the next value is latched on the positive edge of the clock.
 For registers without a reset, the initial value is indeterminate (see [@sec:indeterminate-values]).
 
 
-## Ports
+## Output Ports and Input Ports
 
 The way a module interacts with the outside world is through its ports.
 

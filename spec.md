@@ -4127,40 +4127,42 @@ primop_1expr     = primop_1expr_keyword , "(" , expr , ")" ;
 primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 
-(* In-line Annotations *)
+(* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;
 
-(* Version definition *)
+(* Tokens: Version *)
 sem_ver = int , "."  , int , "." , int ;
 version = "FIRRTL" , "version" , sem_ver ;
 
-(* Whitespace definitions *)
+(* Tokens: Whitespace *)
 indent = " " , { " " } ;
 dedent = ? remove one level of indentation ? ;
 newline = ? a newline character ? ;
 
-(* Integer Literals *)
+(* Tokens: Integer Literals *)
+int = [ "-" ] , digit_dec , { digit_dec } ;
 digit_bin = "0" | "1" ;
 digit_oct = digit_bin | "2" | "3" | "4" | "5" | "6" | "7" ;
 digit_dec = digit_oct | "8" | "9" ;
 digit_hex = digit_dec
           | "A" | "B" | "C" | "D" | "E" | "F"
           | "a" | "b" | "c" | "d" | "e" | "f" ;
-int = [ "-" ] , digit_dec , { digit_dec } ;
 
-(* Radix-specified Integer Literals *)
+(* Tokens: Radix-specified Integer Literals *)
 rint =
     [ "-" ] , "0b" , digit_bin , { digit_bin }
   | [ "-" ] , "0o" , digit_oct , { digit_oct }
   | [ "-" ] , "0d" , digit_oct , { digit_dec }
   | [ "-" ] , "0h" , digit_hex , { digit_hex } ;
 
-(* String Literals *)
+(* Tokens: String Literals *)
 string = ? a string ? ;
 string_dq = '"' , string , '"' ;
 string_sq = "'" , string , "'" ;
 
-(* Identifiers define legal FIRRTL or Verilog names *)
+(* Tokens: Identifiers *)
+id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
+literal_id = "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
 letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "H" | "I" | "J" | "K" | "L" | "M" | "N"
        | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
@@ -4170,14 +4172,12 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
 
-literal_id = "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
-id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
-
-(* Fileinfo communicates Chisel source file and line/column info *)
-linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
-lineinfo = string, " ", linecol ;
+(* Tokens: Info *)
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
+lineinfo = string, " ", linecol ;
+linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
 
+(* Tokens: PrimOp Keywords *)
 primop_1expr_keyword =
     "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
   | "neg"    | "not"

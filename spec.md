@@ -9,75 +9,45 @@ revisionHistorySpec: true
 
 ## Background
 
-The ideas for FIRRTL (Flexible Intermediate Representation for RTL) originated
-from work on Chisel, a hardware description language (HDL) embedded in Scala
-used for writing highly-parameterized circuit design generators. Chisel
-designers manipulate circuit components using Scala functions, encode their
-interfaces in Scala types, and use Scala's object-orientation features to write
-their own circuit libraries. This form of meta-programming enables expressive,
-reliable and type-safe generators that improve RTL design productivity and
-robustness.
+The ideas for FIRRTL (Flexible Intermediate Representation for RTL) originated from work on Chisel, a hardware description language (HDL) embedded in Scala used for writing highly-parameterized circuit design generators.
+Chisel designers manipulate circuit components using Scala functions, encode their interfaces in Scala types, and use Scala's object-orientation features to write their own circuit libraries.
+This form of meta-programming enables expressive, reliable and type-safe generators that improve RTL design productivity and robustness.
 
-The computer architecture research group at U.C. Berkeley relies critically on
-Chisel to allow small teams of graduate students to design sophisticated RTL
-circuits. Over a three year period with under twelve graduate students, the
-architecture group has taped-out over ten different designs.
+The computer architecture research group at U.C. Berkeley relies critically on Chisel to allow small teams of graduate students to design sophisticated RTL circuits.
+Over a three year period with under twelve graduate students, the architecture group has taped-out over ten different designs.
 
-Internally, the investment in developing and learning Chisel was rewarded with
-huge gains in productivity. However, Chisel's external rate of adoption was slow
-for the following reasons.
+Internally, the investment in developing and learning Chisel was rewarded with huge gains in productivity.
+However, Chisel's external rate of adoption was slow for the following reasons.
 
-1.  Writing custom circuit transformers requires intimate knowledge about the
-    internals of the Chisel compiler.
+1.  Writing custom circuit transformers requires intimate knowledge about the internals of the Chisel compiler.
 
-2.  Chisel semantics are under-specified and thus impossible to target from
-    other languages.
+2.  Chisel semantics are under-specified and thus impossible to target from other languages.
 
-3.  Error checking is unprincipled due to under-specified semantics resulting in
-    incomprehensible error messages.
+3.  Error checking is unprincipled due to under-specified semantics resulting in incomprehensible error messages.
 
-4.  Learning a functional programming language (Scala) is difficult for RTL
-    designers with limited programming language experience.
+4.  Learning a functional programming language (Scala) is difficult for RTL designers with limited programming language experience.
 
-5.  Confounding the previous point, conceptually separating the embedded Chisel
-    HDL from the host language is difficult for new users.
+5.  Confounding the previous point, conceptually separating the embedded Chisel HDL from the host language is difficult for new users.
 
 6.  The output of Chisel (Verilog) is unreadable and slow to simulate.
 
-As a consequence, Chisel needed to be redesigned from the ground up to
-standardize its semantics, modularize its compilation process, and cleanly
-separate its front-end, intermediate representation, and backends. A well
-defined intermediate representation (IR) allows the system to be targeted by
-other HDLs embedded in other host programming languages, making it possible for
-RTL designers to work within a language they are already comfortable with. A
-clearly defined IR with a concrete syntax also allows for inspection of the
-output of circuit generators and transformers thus making clear the distinction
-between the host language and the constructed circuit. Clearly defined semantics
-allows users without knowledge of the compiler implementation to write circuit
-transformers; examples include optimization of circuits for simulation speed,
-and automatic insertion of signal activity counters.  An additional benefit of a
-well defined IR is the structural invariants that can be enforced before and
-after each compilation stage, resulting in a more robust compiler and structured
-mechanism for error checking.
+As a consequence, Chisel needed to be redesigned from the ground up to standardize its semantics, modularize its compilation process, and cleanly separate its front-end, intermediate representation, and backends.
+A well defined intermediate representation (IR) allows the system to be targeted by other HDLs embedded in other host programming languages, making it possible for RTL designers to work within a language they are already comfortable with.
+A clearly defined IR with a concrete syntax also allows for inspection of the output of circuit generators and transformers thus making clear the distinction between the host language and the constructed circuit.
+Clearly defined semantics allows users without knowledge of the compiler implementation to write circuit transformers; examples include optimization of circuits for simulation speed, and automatic insertion of signal activity counters.
+An additional benefit of a well defined IR is the structural invariants that can be enforced before and after each compilation stage, resulting in a more robust compiler and structured mechanism for error checking.
 
 ## Design Philosophy
 
-FIRRTL represents the standardized elaborated circuit that the Chisel HDL
-produces. FIRRTL represents the circuit immediately after Chisel's
-elaboration. It is designed to resemble the Chisel HDL after all
-meta-programming has executed. Thus, a user program that makes little use of
-meta-programming facilities should look almost identical to the generated
-FIRRTL.
+FIRRTL represents the standardized elaborated circuit that the Chisel HDL produces.
+FIRRTL represents the circuit immediately after Chisel's elaboration.
+It is designed to resemble the Chisel HDL after all meta-programming has executed.
+Thus, a user program that makes little use of meta-programming facilities should look almost identical to the generated FIRRTL.
 
-For this reason, FIRRTL has first-class support for high-level constructs such
-as vector types, bundle types, conditional statements, and modules. A FIRRTL
-compiler may choose to convert high-level constructs into low-level constructs
-before generating Verilog.
+For this reason, FIRRTL has first-class support for high-level constructs such as vector types, bundle types, conditional statements, and modules.
+A FIRRTL compiler may choose to convert high-level constructs into low-level constructs before generating Verilog.
 
-Because the host language is now used solely for its meta-programming
-facilities, the frontend can be very light-weight, and additional HDLs written
-in other languages can target FIRRTL and reuse the majority of the compiler
-toolchain.
+Because the host language is now used solely for its meta-programming facilities, the frontend can be very light-weight, and additional HDLs written in other languages can target FIRRTL and reuse the majority of the compiler toolchain.
 
 # Acknowledgments
 

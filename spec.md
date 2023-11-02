@@ -51,20 +51,12 @@ Because the host language is now used solely for its meta-programming facilities
 
 # Acknowledgments
 
-The FIRRTL specification was originally published as a UC Berkeley Tech Report
-([UCB/EECS-2016-9](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-9.html))
-authored by Adam Izraelevitz ([`@azidar`](https://github.com/azidar)), Patrick
-Li ([`@CuppoJava`](https://github.com/CuppoJava)), and Jonathan Bachrach
-([`@jackbackrack`](https://github.com/jackbackrack)).  The vision for FIRRTL was
-then expanded in an [ICCAD
-paper](https://ieeexplore.ieee.org/abstract/document/8203780) and in [Adam's
-thesis](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2019/EECS-2019-168.html).
+The FIRRTL specification was originally published as a UC Berkeley Tech Report ([UCB/EECS-2016-9](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-9.html)) authored by Adam Izraelevitz ([`@azidar`](https://github.com/azidar)), Patrick Li ([`@CuppoJava`](https://github.com/CuppoJava)), and Jonathan Bachrach ([`@jackbackrack`](https://github.com/jackbackrack)).
+The vision for FIRRTL was then expanded in an [ICCAD paper](https://ieeexplore.ieee.org/abstract/document/8203780) and in [Adam's thesis](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2019/EECS-2019-168.html).
 
-During that time and since, there have been a number of contributions and
-improvements to the specification.  To better reflect the work of contributors
-after the original tech report, the FIRRTL specification was changed to be
-authored by _The FIRRTL Specification Contributors_.  A list of these
-contributors is below:
+During that time and since, there have been a number of contributions and improvements to the specification.
+To better reflect the work of contributors after the original tech report, the FIRRTL specification was changed to be authored by _The FIRRTL Specification Contributors_.
+A list of these contributors is below:
 
 <!-- This can be generated using ./scripts/get-authors.sh -->
 - [`@albert-magyar`](https://github.com/albert-magyar)
@@ -99,11 +91,8 @@ contributors is below:
 
 # File Preamble
 
-A FIRRTL file begins with a magic string and version identifier indicating the
-version of this standard the file conforms to
-(see [@sec:versioning-scheme-of-this-document]).  This will not be present on
-files generated according to versions of this standard prior to the first
-versioned release of this standard to include this preamble.
+A FIRRTL file begins with a magic string and version identifier indicating the version of this standard the file conforms to (see [@sec:versioning-scheme-of-this-document]).
+This will not be present on files generated according to versions of this standard prior to the first versioned release of this standard to include this preamble.
 
 ``` firrtl
 FIRRTL version 1.1.0

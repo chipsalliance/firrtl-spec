@@ -4048,7 +4048,7 @@ skip = "skip" , [ info ] ;
 (* References *)
 reference =
     reference_static
-  | reference_dynamic
+  | reference_dynamic ;
 
 reference_static =
     id
@@ -4067,7 +4067,7 @@ expr =
   | expr_read
   | expr_primop ;
 
-expr_reference = reference
+expr_reference = reference ;
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
 expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;

@@ -4074,7 +4074,8 @@ expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
 expr_read = "read" , "(" , expr_probe , ")" ;
 
 expr_probe =
-    ( "probe" | "rwprobe" ) , "(" , reference_static , ")"
+  "probe" , "(" , reference_static , ")"
+  "rwprobe" , "(" , reference_static , ")"
   | reference_static ;
 
 property_literal_expr = "Integer", "(", int, ")" ;

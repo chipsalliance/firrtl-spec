@@ -4066,7 +4066,7 @@ statement =
 
 (* Module definitions *)
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
-module = [ "public" ] , "module" , id , ":" , [ info ] , newline , indent ,
+module = "module" , id , ":" , [ info ] , newline , indent ,
            { port , newline } ,
            { statement , newline } ,
          dedent ;
@@ -4100,7 +4100,7 @@ version = "FIRRTL" , "version" , sem_ver ;
 (* Circuit definition *)
 circuit =
   version , newline ,
-  "circuit" , ":" , [ annotations ] , [ info ] , newline , indent ,
+  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
     { module | extmodule | intmodule | declgroup | type_alias_decl } ,
   dedent ;
 ```

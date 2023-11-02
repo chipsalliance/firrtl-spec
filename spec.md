@@ -3916,30 +3916,33 @@ circuit =
 
 (* Top-level Declarations *)
 top_level_decl =
-      module
-    | extmodule
-    | intmodule
-    | declgroup
-    | type_alias_decl ;
+    module
+  | extmodule
+  | intmodule
+  | declgroup
+  | type_alias_decl ;
 
-module = "module" , id , ":" , [ info ] , newline , indent ,
-           { port , newline } ,
-           { statement , newline } ,
-         dedent ;
+module =
+  "module" , id , ":" , [ info ] , newline , indent ,
+    { port , newline } ,
+    { statement , newline } ,
+  dedent ;
 
-extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
-              { port , newline } ,
-              [ "defname" , "=" , id , newline ] ,
-              { "parameter" , id , "=" , type_param , newline } ,
-              { "ref" , static_reference , "is" ,
-                '"' , static_reference , '"' , newline } ,
-            dedent ;
+extmodule =
+  "extmodule" , id , ":" , [ info ] , newline , indent ,
+    { port , newline } ,
+    [ "defname" , "=" , id , newline ] ,
+    { "parameter" , id , "=" , type_param , newline } ,
+    { "ref" , static_reference , "is" ,
+      '"' , static_reference , '"' , newline } ,
+  dedent ;
 
-intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
-              { port , newline } ,
-              "intrinsic" , "=" , id , newline ,
-              { "parameter" , "=" , ( int | string_dq ) , newline } ,
-            dedent ;
+intmodule =
+  "intmodule" , id , ":" , [ info ] , newline , indent ,
+    { port , newline } ,
+    "intrinsic" , "=" , id , newline ,
+    { "parameter" , "=" , ( int | string_dq ) , newline } ,
+  dedent ;
 
 declgroup =
   "declgroup" , id , string , ":" , [ info ] , newline , indent ,
@@ -3978,19 +3981,19 @@ conditional_reg =
     "reg" , id , ":" , type , expr , [ info ]
   | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
 
-circuit_component_mem = "mem" , id , ":" , [ info ] , newline , indent ,
-           "data-type" , "=>" , type , newline ,
-           "depth" , "=>" , int , newline ,
-           "read-latency" , "=>" , int , newline ,
-           "write-latency" , "=>" , int , newline ,
-           "read-under-write" , "=>" , read_under_write , newline ,
-           { "reader" , "=>" , id , newline } ,
-           { "writer" , "=>" , id , newline } ,
-           { "readwriter" , "=>" , id , newline } ,
-         dedent ;
+circuit_component_mem =
+  "mem" , id , ":" , [ info ] , newline , indent ,
+    "data-type" , "=>" , type , newline ,
+    "depth" , "=>" , int , newline ,
+    "read-latency" , "=>" , int , newline ,
+    "write-latency" , "=>" , int , newline ,
+    "read-under-write" , "=>" , read_under_write , newline ,
+    { "reader" , "=>" , id , newline } ,
+    { "writer" , "=>" , id , newline } ,
+    { "readwriter" , "=>" , id , newline } ,
+  dedent ;
 
 read_under_write =  "old" | "new" | "undefined" ;
-
 
 (* Connect-like Statements *)
 connectlike =
@@ -4000,25 +4003,23 @@ connectlike =
   | "define" , static_reference , "=" , expr_probe , [ info ]
   | "propassign" , static_reference , "," , property_expr , [ info ] ;
 
-
 (* Conditional Statements *)
 conditional =
     conditional_when
   | conditional_match ;
 
-conditional_when = "when" , expr , ":" [ info ] , newline ,
+conditional_when =
+  "when" , expr , ":" [ info ] , newline ,
     indent , statement, { statement } , dedent ,
-    [ "else" , ":" , indent , statement, { statement } , dedent ] ;
+  [ "else" , ":" , indent , statement, { statement } , dedent ] ;
 
-conditional_match = "match" , expr , ":" , [ info ] , newline ,
-    [ indent ,
-        { conditional_match_branch } ,
-      dedent ] ;
+conditional_match =
+  "match" , expr , ":" , [ info ] , newline ,
+  [ indent , { conditional_match_branch } , dedent ] ;
 
 conditional_match_branch =
   id , [ "(" , id , ")" ] , ":" , newline ,
-    [ indent , { statement } , dedent ] ;
-
+  [ indent , { statement } , dedent ] ;
 
 (* Command Statements *)
 command =
@@ -4035,18 +4036,15 @@ command =
     , ")" ,
     [ ":" , id ] , [ info ] ;
 
-
 (* Group Statement *)
-group = "group" , id , "of" , id , ":" , [ info ] , newline ,
-    indent ,
-      { port , newline } ,
-      { statement , newline } ,
-    dedent ;
-
+group =
+  "group" , id , "of" , id , ":" , [ info ] , newline , indent ,
+    { port , newline } ,
+    { statement , newline } ,
+  dedent ;
 
 (* Skip Statement *)
 skip = "skip" , [ info ] ;
-
 
 (* References *)
 static_reference =
@@ -4056,7 +4054,6 @@ static_reference =
 
 reference = static_reference
           | reference , "[" , expr , "]" ;
-
 
 (* Expressions *)
 expr =
@@ -4080,7 +4077,6 @@ property_expr = static_reference | property_literal_expr ;
 
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
-
 (* Types *)
 type = ( [ "const" ] , type_hardware ) | type_probe ;
 
@@ -4090,7 +4086,6 @@ type_hardware =
   | type_vec
   | type_enum
   | id ;
-
 
 (* Ground Types *)
 type_ground =  type_ground_nowidth | type_ground_width ;
@@ -4107,31 +4102,25 @@ type_ground_width =
 
 width = "<" , int , ">" ;
 
-
 (* Bundle Types *)
 type_bundle = "{" , type_bundle_field , { type_bundle_field } , "}" ;
 type_bundle_field = [ "flip" ] , id , ":" , type ;
 
-
 (* Vec Types *)
 type_vec = type , "[" , int , "]" ;
-
 
 (* Enum Types *)
 type_enum = "{|" , { type_enum_alt } , "|}" ;
 type_enum_alt = id, [ ":" , type_constable ] ;
 
-
 (* Probe Types *)
 type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
-
 
 (* Primitive Operations *)
 primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr ")" ;
 primop_1expr     = primop_1expr_keyword , "(" , expr , ")" ;
 primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
-
 
 (* In-line Annotations *)
 annotations = "%" , "[" , json_array , "]" ;
@@ -4175,8 +4164,8 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "h" | "i" | "j" | "k" | "l" | "m" | "n"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
-literal_id =
-  "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
+
+literal_id = "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
 id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
 
 (* Fileinfo communicates Chisel source file and line/column info *)
@@ -4199,7 +4188,6 @@ primop_1expr1int_keyword =
     "pad" | "shl" | "shr" | "head" | "tail" ;
 
 primop_1expr2int_keyword = "bits" ;
-
 ```
 
 # Versioning Scheme of this Document

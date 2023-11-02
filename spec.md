@@ -473,18 +473,17 @@ Circuit components are the named parts of a module corresponding to physical har
 There are seven **kinds** of circuit components.
 They are: nodes, wires, registers, output ports, input ports, submodule instances, and memories.
 
-We use connections to wire circuit components together in the hardware (see [@sec:connects]).
+Circuit components can be connected together in the hardware (see [@sec:connects]).
 
 Each circuit component in a module is associated
 with a type called its type ([@sec:types]).
-This is the type of data that flows through the component.
+This is the type of data that travels across the component.
 It is used to determine the legality of connections.
 
 
 ## Nodes
 
 Nodes are named expressions in FIRRTL.
-They represent a small piece of combinational logic.
 
 Example:
 
@@ -492,24 +491,14 @@ Example:
     node mynode = and(in, UInt<4>(1))
 ```
 
-The type of a node is the inferred type of the expression given in the definition.
-
-The value of a node is determined by the expression given in the definition.
-The type of a node (see [@sec:types-of-circuit-components])
-is the inferred type of this expression.
-
-The defining expression may reference circuit components defines
-*above* the declaration of the node itself.
-It may not reference the node being define.
-Similarly, it may not reference circuit components defined after it.
+The type of a node is the type of the expression given in the definition.
 
 
 ## Wires
 
 Wires represent named expressions whose value is determined
 by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
-Also unlike nodes, the type of a wire must be explicitly declared,
-since it cannot be inferred from the value of the definition.
+Also unlike nodes, the type of a wire must be explicitly declared.
 
 Example:
 
@@ -524,7 +513,7 @@ The type of a wire is given after the colon (`:`{.firrtl}).
 
 ## Registers
 
-Registers are small stateful elements of a design.
+Registers are stateful elements of a design.
 
 Registers can be connected (see [@sec:connects]).
 The state of the register is controlled through what is connected to it.

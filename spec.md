@@ -3964,7 +3964,6 @@ statement =
   | group
   | skip ;
 
-
 (* Circuit Components *)
 circuit_component =
     circuit_component_node

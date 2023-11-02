@@ -1216,13 +1216,13 @@ There is no directionality to the data inside a register; the data just *is*.
 A passive type is a which does not make use of `flip`.
 More precisely, a passive type is defined recursively:
 
-* All ground types are passive.
-* All probe types are passive.
-* All property types are passive.
-* A vector type is passive if and only if the element type is passive.
-* A bundle type is passive if and only if it contains no field which is marked `flip`
+- All ground types are passive.
+- All probe types are passive.
+- All property types are passive.
+- A vector type is passive if and only if the element type is passive.
+- A bundle type is passive if and only if it contains no field which is marked `flip`
   and the type of each field is passive.
-* An enum type is passive if and only if the type of each of its variants is passive.
+- An enum type is passive if and only if the type of each of its variants is passive.
 
 Registers and memories may only be parametrized over passive types.
 

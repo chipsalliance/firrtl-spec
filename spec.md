@@ -3907,6 +3907,239 @@ said to have "internal" convention.
 # FIRRTL Language Definition
 
 ``` ebnf
+(* Circuit Definition *)
+circuit =
+  version , newline ,
+  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
+    { top_level_decl } ,
+  dedent ;
+
+(* Top-level Declarations *)
+top_level_decl =
+      module
+    | extmodule
+    | intmodule
+    | declgroup
+    | type_alias_decl ;
+
+module = "module" , id , ":" , [ info ] , newline , indent ,
+           { port , newline } ,
+           { statement , newline } ,
+         dedent ;
+
+extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
+              { port , newline } ,
+              [ "defname" , "=" , id , newline ] ,
+              { "parameter" , id , "=" , type_param , newline } ,
+              { "ref" , static_reference , "is" ,
+                '"' , static_reference , '"' , newline } ,
+            dedent ;
+
+intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
+              { port , newline } ,
+              "intrinsic" , "=" , id , newline ,
+              { "parameter" , "=" , ( int | string_dq ) , newline } ,
+            dedent ;
+
+declgroup =
+  "declgroup" , id , string , ":" , [ info ] , newline , indent ,
+    { declgroup , newline } ,
+  dedent ;
+
+type_alias_decl = "type", id, "=", type ;
+
+port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
+type_param = int | string_dq | string_sq ;
+type_property = "Integer" ;
+
+(* Statements *)
+statement =
+    circuit_component
+  | connectlike
+  | conditional
+  | command
+  | group
+  | skip ;
+
+
+(* Circuit Components *)
+circuit_component =
+    circuit_component_node
+  | circuit_component_wire
+  | circuit_component_reg
+  | circuit_component_inst
+  | circuit_component_mem ;
+
+circuit_component_node = "node" , id , "=" , expr , [ info ] ;
+circuit_component_wire = "wire" , id , ":" , type , [ info ] ;
+circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
+
+conditional_reg =
+    "reg" , id , ":" , type , expr , [ info ]
+  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
+
+circuit_component_mem = "mem" , id , ":" , [ info ] , newline , indent ,
+           "data-type" , "=>" , type , newline ,
+           "depth" , "=>" , int , newline ,
+           "read-latency" , "=>" , int , newline ,
+           "write-latency" , "=>" , int , newline ,
+           "read-under-write" , "=>" , read_under_write , newline ,
+           { "reader" , "=>" , id , newline } ,
+           { "writer" , "=>" , id , newline } ,
+           { "readwriter" , "=>" , id , newline } ,
+         dedent ;
+
+read_under_write =  "old" | "new" | "undefined" ;
+
+
+(* Connect-like Statements *)
+connectlike =
+    "connect" , reference , "," , expr , [ info ]
+  | "invalidate" , reference , [ info ]
+  | "attach" , "(" , reference , { "," ,  reference } , ")" , [ info ]
+  | "define" , static_reference , "=" , expr_probe , [ info ]
+  | "propassign" , static_reference , "," , property_expr , [ info ] ;
+
+
+(* Conditional Statements *)
+conditional =
+    conditional_when
+  | conditional_match ;
+
+conditional_when = "when" , expr , ":" [ info ] , newline ,
+    indent , statement, { statement } , dedent ,
+    [ "else" , ":" , indent , statement, { statement } , dedent ] ;
+
+conditional_match = "match" , expr , ":" , [ info ] , newline ,
+    [ indent ,
+        { conditional_match_branch } ,
+      dedent ] ;
+
+conditional_match_branch =
+  id , [ "(" , id , ")" ] , ":" , newline ,
+    [ indent , { statement } , dedent ] ;
+
+
+(* Command Statements *)
+command =
+    "stop" , "(" , expr , "," , expr , "," , int , ")" , [ info ]
+  | "force" , "(" , expr , "," , expr , "," , expr_probe , "," , expr , ")"
+  | "force_initial" , "(" , expr_probe , "," , expr , ")"
+  | "release" , "(" , expr , "," , expr , "," , expr_probe , ")"
+  | "release_initial" , "(" , expr_probe , ")"
+  | "printf" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+    [ ":" , id ] , [ info ] ;
+
+
+(* Group Statement *)
+group = "group" , id , "of" , id , ":" , [ info ] , newline ,
+    indent ,
+      { port , newline } ,
+      { statement , newline } ,
+    dedent ;
+
+
+(* Skip Statement *)
+skip = "skip" , [ info ] ;
+
+
+(* References *)
+static_reference =
+    id
+  | static_reference , "." , id
+  | static_reference , "[" , int , "]" ;
+
+reference = static_reference
+          | reference , "[" , expr , "]" ;
+
+
+(* Expressions *)
+expr =
+    reference
+  | expr_lit
+  | expr_enum
+  | expr_mux
+  | expr_read
+  | expr_primop ;
+
+expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
+expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
+expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
+expr_read = "read" , "(" , expr_probe , ")" ;
+
+expr_probe = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
+           | static_reference ;
+
+property_literal_expr = "Integer", "(", int, ")" ;
+property_expr = static_reference | property_literal_expr ;
+
+expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
+
+
+(* Types *)
+type = ( [ "const" ] , type_hardware ) | type_probe ;
+
+type_hardware =
+    type_ground
+  | type_bundle
+  | type_vec
+  | type_enum
+  | id ;
+
+
+(* Ground Types *)
+type_ground =  type_ground_nowidth | type_ground_width ;
+
+type_ground_nowidth =
+    "Clock"
+  | "Reset"
+  | "AsyncReset" ;
+
+type_ground_width =
+    "UInt" , [ width ]
+  | "SInt" , [ width ]
+  | "Analog" , [ width ] ;
+
+width = "<" , int , ">" ;
+
+
+(* Bundle Types *)
+type_bundle = "{" , type_bundle_field , { type_bundle_field } , "}" ;
+type_bundle_field = [ "flip" ] , id , ":" , type ;
+
+
+(* Vec Types *)
+type_vec = type , "[" , int , "]" ;
+
+
+(* Enum Types *)
+type_enum = "{|" , { type_enum_alt } , "|}" ;
+type_enum_alt = id, [ ":" , type_constable ] ;
+
+
+(* Probe Types *)
+type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
+
+
+(* Primitive Operations *)
+primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr ")" ;
+primop_1expr     = primop_1expr_keyword , "(" , expr , ")" ;
+primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
+primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
+
+
+(* In-line Annotations *)
+annotations = "%" , "[" , json_array , "]" ;
+
+(* Version definition *)
+sem_ver = int , "."  , int , "." , int ;
+version = "FIRRTL" , "version" , sem_ver ;
+
 (* Whitespace definitions *)
 indent = " " , { " " } ;
 dedent = ? remove one level of indentation ? ;
@@ -3951,240 +4184,22 @@ linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
 lineinfo = string, " ", linecol ;
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 
-(* Type definitions *)
-type = ( [ "const" ] , type_hardware ) | type_probe ;
-
-type_hardware =
-    type_ground
-  | type_bundle
-  | type_vec
-  | type_enum
-  | id ;
-
-(* Ground Types *)
-type_ground =  type_ground_nowidth | type_ground_width ;
-
-type_ground_nowidth =
-    "Clock"
-  | "Reset"
-  | "AsyncReset" ;
-
-type_ground_width =
-    "UInt" , [ width ]
-  | "SInt" , [ width ]
-  | "Analog" , [ width ] ;
-
-width = "<" , int , ">" ;
-
-(* Bundle Types *)
-type_bundle = "{" , type_bundle_field , { type_bundle_field } , "}" ;
-type_bundle_field = [ "flip" ] , id , ":" , type ;
-
-(* Vec Types *)
-type_vec = type , "[" , int , "]" ;
-
-(* Enum Types *)
-type_enum = "{|" , { type_enum_alt } , "|}" ;
-type_enum_alt = id, [ ":" , type_constable ] ;
-
-(* Probe Types *)
-type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
-
-(* Primitive operations *)
-expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
+primop_1expr_keyword =
+    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
+  | "neg"    | "not"
+  | "andr"   | "orr"    | "xorr" ;
 
 primop_2expr_keyword =
     "add"  | "sub" | "mul" | "div" | "mod"
   | "lt"   | "leq" | "gt"  | "geq" | "eq" | "neq"
   | "dshl" | "dshr"
   | "and"  | "or"  | "xor" | "cat" ;
-primop_2expr =
-    primop_2expr_keyword , "(" , expr , "," , expr ")" ;
-primop_1expr_keyword =
-    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
-  | "neg"    | "not"
-  | "andr"   | "orr"    | "xorr" ;
-primop_1expr =
-    primop_1expr_keyword , "(" , expr , ")" ;
+
 primop_1expr1int_keyword =
     "pad" | "shl" | "shr" | "head" | "tail" ;
-primop_1expr1int =
-    primop_1exrp1int_keyword , "(", expr , "," , int , ")" ;
-primop_1expr2int_keyword =
-    "bits" ;
-primop_1expr2int =
-    primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 
-(* Expressions *)
-expr =
-    reference
-  | expr_lit
-  | expr_enum
-  | expr_mux
-  | expr_read
-  | expr_primop ;
+primop_1expr2int_keyword = "bits" ;
 
-expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
-expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
-expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
-expr_read = "read" , "(" , expr_probe , ")" ;
-
-expr_probe = ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
-           | static_reference ;
-
-static_reference =
-    id
-  | static_reference , "." , id
-  | static_reference , "[" , int , "]" ;
-
-reference = static_reference
-          | reference , "[" , expr , "]" ;
-
-property_literal_expr = "Integer", "(", int, ")" ;
-property_expr = static_reference | property_literal_expr ;
-
-(* Statements *)
-statement =
-    circuit_component
-  | connectlike
-  | conditional
-  | command
-  | group
-  | skip ;
-
-(* Circuit Components *)
-circuit_component =
-    circuit_component_node
-  | circuit_component_wire
-  | circuit_component_reg
-  | circuit_component_inst
-  | circuit_component_mem ;
-
-circuit_component_node = "node" , id , "=" , expr , [ info ] ;
-circuit_component_wire = "wire" , id , ":" , type , [ info ] ;
-circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
-
-conditional_reg =
-    "reg" , id , ":" , type , expr , [ info ]
-  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
-
-circuit_component_mem = "mem" , id , ":" , [ info ] , newline , indent ,
-           "data-type" , "=>" , type , newline ,
-           "depth" , "=>" , int , newline ,
-           "read-latency" , "=>" , int , newline ,
-           "write-latency" , "=>" , int , newline ,
-           "read-under-write" , "=>" , read_under_write , newline ,
-           { "reader" , "=>" , id , newline } ,
-           { "writer" , "=>" , id , newline } ,
-           { "readwriter" , "=>" , id , newline } ,
-         dedent ;
-
-read_under_write =  "old" | "new" | "undefined" ;
-
-(* Connect-like Statements *)
-connectlike =
-    "connect" , reference , "," , expr , [ info ]
-  | "invalidate" , reference , [ info ]
-  | "attach" , "(" , reference , { "," ,  reference } , ")" , [ info ]
-  | "define" , static_reference , "=" , expr_probe , [ info ]
-  | "propassign" , static_reference , "," , property_expr , [ info ] ;
-
-(* Conditionals *)
-conditional =
-    conditional_when
-  | conditional_match ;
-
-conditional_when = "when" , expr , ":" [ info ] , newline ,
-    indent , statement, { statement } , dedent ,
-    [ "else" , ":" , indent , statement, { statement } , dedent ] ;
-
-conditional_match = "match" , expr , ":" , [ info ] , newline ,
-    [ indent ,
-        { conditional_match_branch } ,
-      dedent ] ;
-
-conditional_match_branch =
-  id , [ "(" , id , ")" ] , ":" , newline ,
-    [ indent , { statement } , dedent ] ;
-
-(* Commands *)
-command =
-    "stop" , "(" , expr , "," , expr , "," , int , ")" , [ info ]
-  | "force" , "(" , expr , "," , expr , "," , expr_probe , "," , expr , ")"
-  | "force_initial" , "(" , expr_probe , "," , expr , ")"
-  | "release" , "(" , expr , "," , expr , "," , expr_probe , ")"
-  | "release_initial" , "(" , expr_probe , ")"
-  | "printf" , "(" ,
-        expr , "," ,
-        expr , "," ,
-        string_dq ,
-        { "," , expr }
-    , ")" ,
-    [ ":" , id ] , [ info ] ;
-
-(* Groups *)
-group = "group" , id , "of" , id , ":" , [ info ] , newline ,
-    indent ,
-      { port , newline } ,
-      { statement , newline } ,
-    dedent ;
-
-skip = "skip" , [ info ] ;
-
-(* Module definitions *)
-module = "module" , id , ":" , [ info ] , newline , indent ,
-           { port , newline } ,
-           { statement , newline } ,
-         dedent ;
-
-extmodule = "extmodule" , id , ":" , [ info ] , newline , indent ,
-              { port , newline } ,
-              [ "defname" , "=" , id , newline ] ,
-              { "parameter" , id , "=" , type_param , newline } ,
-              { "ref" , static_reference , "is" ,
-                '"' , static_reference , '"' , newline } ,
-            dedent ;
-
-intmodule = "intmodule" , id , ":" , [ info ] , newline , indent ,
-              { port , newline } ,
-              "intrinsic" , "=" , id , newline ,
-              { "parameter" , "=" , ( int | string_dq ) , newline } ,
-            dedent ;
-
-port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
-
-type_param = int | string_dq | string_sq ;
-type_property = "Integer" ;
-
-(* Group definitions *)
-declgroup =
-  "declgroup" , id , string , ":" , [ info ] , newline , indent ,
-    { declgroup , newline } ,
-  dedent ;
-
-(* Type alias declaration *)
-type_alias_decl = "type", id, "=", type ;
-
-(* In-line Annotations *)
-annotations = "%" , "[" , json_array , "]" ;
-
-(* Version definition *)
-sem_ver = int , "."  , int , "." , int ;
-version = "FIRRTL" , "version" , sem_ver ;
-
-(* Circuit definition *)
-top_level_decl =
-      module
-    | extmodule
-    | intmodule
-    | declgroup
-    | type_alias_decl ;
-
-circuit =
-  version , newline ,
-  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
-    { top_level_decl } ,
-  dedent ;
 ```
 
 # Versioning Scheme of this Document

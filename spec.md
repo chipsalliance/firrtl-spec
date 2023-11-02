@@ -476,7 +476,7 @@ They are: nodes, wires, registers, output ports, input ports, submodule instance
 We use connections to wire circuit components together in the hardware (see [@sec:connects]).
 
 Each circuit component in a module is associated
-with a type called its **principal type** ([@sec:types]).
+with a type called its type ([@sec:types]).
 This is the type of data that flows through the component.
 It is used to determine the legality of connections.
 
@@ -492,10 +492,10 @@ Example:
     node mynode = and(in, UInt<4>(1))
 ```
 
-The principal type of a node is the inferred type of the expression given in the definition.
+The type of a node is the inferred type of the expression given in the definition.
 
 The value of a node is determined by the expression given in the definition.
-The principal type of a node (see [@sec:principal-types-of-circuit-components])
+The type of a node (see [@sec:types-of-circuit-components])
 is the inferred type of this expression.
 
 The defining expression may reference circuit components defines
@@ -519,7 +519,7 @@ Example:
     connect mywire, UInt<1>(0)
 ```
 
-The principal type of a wire is given after the colon (`:`{.firrtl}).
+The type of a wire is given after the colon (`:`{.firrtl}).
 
 
 ## Registers
@@ -557,7 +557,7 @@ wire myinit : SInt
 regreset myreg : SInt, myclock, myreset, myinit
 ```
 
-For both variants of register, the principal type is given after the colon (`:`{.firrtl}).
+For both variants of register, the type is given after the colon (`:`{.firrtl}).
 
 Semantically, registers become flip-flops in the design.
 The the next value is latched on the positive edge of the clock.
@@ -578,7 +578,7 @@ Example:
 Ports are declared with the keywords `input` and `output`.
 The two keywords only differ in the rules for how they may be connected (see [@sec:connects]).
 
-For both variants of port, the principal type is given after the colon (`:`{.firrtl}).
+For both variants of port, the type is given after the colon (`:`{.firrtl}).
 
 
 ## Submodule Instances
@@ -597,7 +597,7 @@ This assumes you have a module named `Passthrough` declared elsewhere in your FI
 The keyword `of`{.firrtl} is used instead of the colon (`:`{.firrtl})
 since `Passthrough` is not a type.
 
-The principal type of a submodule instance is bundle type determined by its ports.
+The type of a submodule instance is bundle type determined by its ports.
 Each port creates a field in the bundle of the same name.
 Among these fields, `output` ports are flipped, while `input` fields are unflipped.
 
@@ -610,7 +610,7 @@ module Passthrough :
   connect out, in
 ```
 
-The principal type of the submodule instance `passthrough` above is thus:
+The type of the submodule instance `passthrough` above is thus:
 
 ```firrtl
 { flip in : UInt<8>, out : UInt<8> }
@@ -635,7 +635,7 @@ mem mymem :
   read-under-write => undefined
 ```
 
-The principal type of a memory is a bundle type derived from the declaration (see [@sec:mem]).
+The type of a memory is a bundle type derived from the declaration (see [@sec:mem]).
 
 The type named in `data-type` must be passive.
 It indicates the type of the data being stored inside of the memory.

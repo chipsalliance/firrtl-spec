@@ -3933,8 +3933,8 @@ decl_extmodule =
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
     { "parameter" , id , "=" , type_param , newline } ,
-    { "ref" , static_reference , "is" ,
-      '"' , static_reference , '"' , newline } ,
+    { "ref" , reference_static , "is" ,
+      '"' , reference_static , '"' , newline } ,
   dedent ;
 
 decl_intmodule =
@@ -3999,8 +3999,8 @@ connectlike =
     "connect" , reference , "," , expr , [ info ]
   | "invalidate" , reference , [ info ]
   | "attach" , "(" , reference , { "," ,  reference } , ")" , [ info ]
-  | "define" , static_reference , "=" , expr_probe , [ info ]
-  | "propassign" , static_reference , "," , property_expr , [ info ] ;
+  | "define" , reference_static , "=" , expr_probe , [ info ]
+  | "propassign" , reference_static , "," , property_expr , [ info ] ;
 
 (* Conditional Statements *)
 conditional =
@@ -4047,15 +4047,15 @@ skip = "skip" , [ info ] ;
 
 (* References *)
 reference =
-    static_reference
-  | dynamic_reference
+    reference_static
+  | reference_dynamic
 
-static_reference =
+reference_static =
     id
-  | static_reference , "." , id
-  | static_reference , "[" , int , "]" ;
+  | reference_static , "." , id
+  | reference_static , "[" , int , "]" ;
 
-dynamic_reference =
+reference_dynamic =
     reference , "[" , expr , "]" ;
 
 (* Expressions *)
@@ -4074,11 +4074,11 @@ expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
 expr_read = "read" , "(" , expr_probe , ")" ;
 
 expr_probe =
-    ( "probe" | "rwprobe" ) , "(" , static_reference , ")"
-  | static_reference ;
+    ( "probe" | "rwprobe" ) , "(" , reference_static , ")"
+  | reference_static ;
 
 property_literal_expr = "Integer", "(", int, ")" ;
-property_expr = static_reference | property_literal_expr ;
+property_expr = reference_static | property_literal_expr ;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Types *)

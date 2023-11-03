@@ -214,18 +214,12 @@ I.e., the identifier of a top-level group declared in a circuit must not conflic
 Each optional group declaration must include a string that sets the lowering convention for that group.
 The FIRRTL ABI specification defines supported lowering convention.  One such strategy is `"bind"`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
 
-The `group`{.firrtl} keyword defines optional functionality inside a module.  An
-optional group may only be defined inside a module.  An optional group must
-reference a group declared in the current circuit.  Declarations of identifiers
-and references to existing identifiers following the same lexical scoping rules
-as FIRRTL conditional statements (see: [@sec:conditional-scopes])---identifiers declared in
-the group definition may not be used outside the group while groups may refer to
-identifiers declared outside the group.  __The statements in a group are
-restricted in what identifiers they are allowed to drive.__ A statement in a
-group may drive no sinks declared outside the group _with one exception_: a
-statement in a group may drive reference types declared outside the group if the
-reference types are associated with the group in which the statement is declared
-(see: [@sec:reference-types]).
+The `group`{.firrtl} keyword defines optional functionality inside a module.
+An optional group may only be defined inside a module.
+An optional group must reference a group declared in the current circuit.
+Declarations of identifiers and references to existing identifiers following the same lexical scoping rules as FIRRTL conditional statements (see: [@sec:conditional-scopes])---identifiers declared in the group definition may not be used outside the group while groups may refer to identifiers declared outside the group.
+__The statements in a group are restricted in what identifiers they are allowed to drive.
+__ A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:reference-types]).
 
 The circuit below contains one optional group declaration, `Bar`.
 Module `Foo` contains a group definition that creates a node computed from a port defined in the scope of `Foo`.
@@ -1170,16 +1164,14 @@ module Example:
 
 ### Constant Type
 
-A constant type is a type whose value is guaranteed to be unchanging at circuit
-execution time.  Constant is a constraint on the mutability of the value, it
-does not imply a literal value at a point in the emitted design.  Constant types
-may be used in ports, wire, and nodes.  Operations on constant type are well defined.
-With any exception listed in the definition for such operations as have exceptions,
-an operation whose arguments are constant produces a constant.  An operation
-with some non-constant arguments produce a non-constant.  Constants may be
-used as the target of a connect so long as the source of the connect is itself
-constant.  These rules ensure all constants are derived from constant integer
-expressions or from constant-typed input ports of a public module.
+A constant type is a type whose value is guaranteed to be unchanging at circuit execution time.
+Constant is a constraint on the mutability of the value, it does not imply a literal value at a point in the emitted design.
+Constant types may be used in ports, wire, and nodes.
+Operations on constant type are well defined.
+With any exception listed in the definition for such operations as have exceptions, an operation whose arguments are constant produces a constant.
+An operation with some non-constant arguments produce a non-constant.
+Constants may be used as the target of a connect so long as the source of the connect is itself constant.
+These rules ensure all constants are derived from constant integer expressions or from constant-typed input ports of a public module.
 
 ``` firrtl
 const UInt<3>
@@ -1416,15 +1408,12 @@ reg myreg: SInt, myclock
 
 ### Registers with Reset
 
-A register with a reset is declared using `regreset`{.firrtl}.  A
-`regreset`{.firrtl} adds two expressions after the type and clock arguments: a
-reset signal and a reset value.  The register's value is updated with the reset
-value when the reset is asserted.  The reset signal must be a `Reset`{.firrtl},
-`UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization
-value must be equivalent to the declared type of the register (see
-[@sec:type-equivalence] for details).  If the reset signal is an
-`AsyncReset`{.firrtl}, then the reset value must be a constant type.  The
-behavior of the register depends on the type of the reset signal.
+A register with a reset is declared using `regreset`{.firrtl}.
+A `regreset`{.firrtl} adds two expressions after the type and clock arguments: a reset signal and a reset value.
+The register's value is updated with the reset value when the reset is asserted.
+The reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization value must be equivalent to the declared type of the register (see [@sec:type-equivalence] for details).
+If the reset signal is an `AsyncReset`{.firrtl}, then the reset value must be a constant type.
+The behavior of the register depends on the type of the reset signal.
 `AsyncReset`{.firrtl} will immediately change the value of the register.
 `UInt<1>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-type]).
 `Reset`{.firrtl} is an abstract reset whose behavior depends on reset inference.

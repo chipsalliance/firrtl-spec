@@ -593,7 +593,7 @@ The type of the submodule instance `passthrough`{.firrtl} above is thus:
 
 ## Memories
 
-Memories are large stateful elements of a design.
+Memories are stateful elements of a design.
 
 Example:
 
@@ -1196,7 +1196,7 @@ Registers with bundle types are especially common.
 However, when using bundle types in stateful elements, the notion of `flip` is meaningless.
 There is no directionality to the data inside a register; the data just *is*.
 
-A passive type is a which does not make use of `flip`.
+A passive type is a type which does not make use of `flip`.
 More precisely, a passive type is defined recursively:
 
 - All ground types are passive.
@@ -1241,11 +1241,7 @@ Statements declare the circuit components and describe their connectivity.
 
 ## Connects
 
-The components of a module can be connected together using connect statements.
-
-These connections can be both physical, as if the components were connected together with a wire,
-but also logical, allowing metadata such as probes (see [@sec:probe-types;@sec:probe])
-and properties (see [@sec:property-types]) to flow across it during elaboration.
+The components of a module can be connected together using `connect`{.firrtl} statements.
 
 The following example demonstrates connecting a module's input port to its output port, where port `myinput`{.firrtl} is connected to port `myoutput`{.firrtl}.
 

@@ -492,9 +492,8 @@ Wires represent named expressions whose value is determined by FIRRTL `connect`{
 
 Example:
 
-``` firrtl
+```firrtl
 wire mywire: UInt<1>
-
 connect mywire, UInt<1>(0)
 ```
 
@@ -516,17 +515,17 @@ Optionally, registers may have a reset signal.
 On every cycle, a register will drive its current value
 and then latch the value it will take on for the next cycle.
 
-The `regreset` keyword is used to declare a register with a reset.
-The `reg` keyword is used to declare a register without a reset.
+The `regreset`{.firrtl} keyword is used to declare a register with a reset.
+The `reg`{.firrtl} keyword is used to declare a register without a reset.
 
 Examples:
 
-``` firrtl
+```firrtl
 wire myclock : Clock
 reg myreg : SInt, myclock
 ```
 
-``` firrtl
+```firrtl
 wire myclock : Clock
 reg myreg : SInt, myclock
 ```
@@ -550,7 +549,7 @@ The way a module interacts with the outside world is through its ports.
 
 Example:
 
-``` firrtl
+```firrtl
 input myinput : UInt<1>
 output myinput : SInt<8>
 ```
@@ -569,12 +568,12 @@ Example:
 inst passthrough of Passthrough
 ```
 
-This assumes you have a module named `Passthrough` declared elsewhere in the current circuit.
+This assumes you have a module named `Passthrough`{.firrtl} declared elsewhere in the current circuit.
 The keyword `of`{.firrtl} is used instead of a colon (`:`{.firrtl}).
 
 The type of a submodule instance is bundle type determined by its ports.
 Each port creates a field with the same name in the bundle.
-Among these fields, `output` ports are flipped, while `input` fields are unflipped.
+Among these fields, `output`{.firrtl} ports are flipped, while `input`{.firrtl} fields are unflipped.
 
 For example:
 
@@ -585,7 +584,7 @@ module Passthrough :
   connect out, in
 ```
 
-The type of the submodule instance `passthrough` above is thus:
+The type of the submodule instance `passthrough`{.firrtl} above is thus:
 
 ```firrtl
 { flip in : UInt<8>, out : UInt<8> }
@@ -612,7 +611,7 @@ mem mymem :
 
 The type of a memory is a bundle type derived from the declaration (see [@sec:mem]).
 
-The type named in `data-type` must be passive.
+The type named in `data-type`{.firrtl} must be passive.
 It indicates the type of the data being stored inside of the memory.
 
 See [@sec:mem] for more details.

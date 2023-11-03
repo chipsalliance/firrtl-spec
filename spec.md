@@ -3190,41 +3190,32 @@ FIRRTL allows for two types of identifiers:
 1. Identifiers
 2. Literal Identifiers
 
-Identifiers may only have the following characters: upper and lower case
-letters, digits, and `_`{.firrtl}. Identifiers cannot begin with a digit.
+Identifiers may only have the following characters: upper and lower case letters, digits, and `_`{.firrtl}.
+Identifiers cannot begin with a digit.
 
-Literal identifiers allow for using an expanded set of characters in an
-identifier.  Such an identifier is encoded using leading and trailing backticks,
-`` ` ``{.firrtl}.  A literal identifier has the same restrictions as an
-identifier, _but it is allowed to start with a digit_.  E.g., it is legal to use
-`` `0` ``{.firrtl} as a literal identifier in a Bundle field (or anywhere else
-an identifier may be used).
+Literal identifiers allow for using an expanded set of characters in an identifier.
+Such an identifier is encoded using leading and trailing backticks, `` ` ``{.firrtl}.
+A literal identifier has the same restrictions as an identifier, _but it is allowed to start with a digit_.
+E.g., it is legal to use `` `0` ``{.firrtl} as a literal identifier in a Bundle field (or anywhere else an identifier may be used).
 
-A FIRRTL compiler is allowed to change a literal identifier to a legal
-identifier in the target language (e.g., Verilog) if the literal identifier is
-not directly representable in the target language.
+A FIRRTL compiler is allowed to change a literal identifier to a legal identifier in the target language (e.g., Verilog) if the literal identifier is not directly representable in the target language.
 
-Comments begin with a semicolon and extend until the end of the line.  Commas
-are treated as whitespace, and may be used by the user for clarity if desired.
+Comments begin with a semicolon and extend until the end of the line.
+Commas are treated as whitespace, and may be used by the user for clarity if desired.
 
-In FIRRTL, indentation is significant. Indentation must consist of spaces
-only---tabs are illegal characters. The number of spaces appearing before a
-FIRRTL IR statement is used to establish its *indent level*. Statements with the
-same indent level have the same context. The indent level of the
-`circuit`{.firrtl} declaration must be zero.
+In FIRRTL, indentation is significant.
+Indentation must consist of spaces only---tabs are illegal characters.
+The number of spaces appearing before a FIRRTL IR statement is used to establish its *indent level*.
+Statements with the same indent level have the same context.
+The indent level of the `circuit`{.firrtl} declaration must be zero.
 
-Certain constructs (`circuit`{.firrtl}, `module`{.firrtl}, `when`{.firrtl}, and
-`else`{.firrtl}) create a new sub-context. The indent used on the first line of
-the sub-context establishes the indent level. The indent level of a sub-context
-is one higher than the parent. All statements in the sub-context must be
-indented by the same number of spaces. To end the sub-context, a line must
-return to the indent level of the parent.
+Certain constructs (`circuit`{.firrtl}, `module`{.firrtl}, `when`{.firrtl}, and `else`{.firrtl}) create a new sub-context.
+The indent used on the first line of the sub-context establishes the indent level.
+The indent level of a sub-context is one higher than the parent.
+All statements in the sub-context must be indented by the same number of spaces.
+To end the sub-context, a line must return to the indent level of the parent.
 
-Since conditional statements (`when`{.firrtl} and `else`{.firrtl}) may be
-nested, it is possible to create a hierarchy of indent levels, each with its own
-number of preceding spaces that must be larger than its parent's and consistent
-among all direct child statements (those that are not children of an even deeper
-conditional statement).
+Since conditional statements (`when`{.firrtl} and `else`{.firrtl}) may be nested, it is possible to create a hierarchy of indent levels, each with its own number of preceding spaces that must be larger than its parent's and consistent among all direct child statements (those that are not children of an even deeper conditional statement).
 
 As a concrete guide, a few consequences of these rules are summarized below:
 
@@ -3232,23 +3223,17 @@ As a concrete guide, a few consequences of these rules are summarized below:
 
 - All `module`{.firrtl} keywords must be indented by the same number of spaces.
 
-- In a module, all port declarations and all statements (that are not children
-  of other statements) must be indented by the same number of spaces.
+- In a module, all port declarations and all statements (that are not children of other statements) must be indented by the same number of spaces.
 
-- The number of spaces comprising the indent level of a module is specific to
-  each module.
+- The number of spaces comprising the indent level of a module is specific to each module.
 
-- The statements comprising a conditional statement's branch must be indented by
-  the same number of spaces.
+- The statements comprising a conditional statement's branch must be indented by the same number of spaces.
 
-- The statements of nested conditional statements establish their own, deeper
-  indent level.
+- The statements of nested conditional statements establish their own, deeper indent level.
 
-- Each `when`{.firrtl} and each `else`{.firrtl} context may have a different
-  number of non-zero spaces in its indent level.
+- Each `when`{.firrtl} and each `else`{.firrtl} context may have a different number of non-zero spaces in its indent level.
 
-As an example illustrating some of these points, the following is a legal FIRRTL
-circuit:
+As an example illustrating some of these points, the following is a legal FIRRTL circuit:
 
 ``` firrtl
 circuit :
@@ -3263,11 +3248,8 @@ circuit :
        connect b, not(a)
 ```
 
-All circuits, modules, ports and statements can optionally be followed with the
-info token `@[fileinfo]`{.firrtl} where fileinfo is a string containing the
-source file information from where it was generated. The following characters
-need to be escaped with a leading '`\`': '`\n`' (new line), '`\t`' (tab), '`]`'
-and '`\`' itself.
+All circuits, modules, ports and statements can optionally be followed with the info token `@[fileinfo]`{.firrtl} where fileinfo is a string containing the source file information from where it was generated.
+The following characters need to be escaped with a leading '`\`': '`\n`' (new line), '`\t`' (tab), '`]`' and '`\`' itself.
 
 The following example shows the info tokens included:
 
@@ -3288,21 +3270,17 @@ circuit : @[myfile.txt 14:8]
 
 # FIRRTL Compiler Implementation Details
 
-This section provides auxiliary information necessary for developers of a FIRRTL
-Compiler _implementation_.  A FIRRTL Compiler is a program that converts FIRRTL
-text to another representation, e.g., Verilog, VHDL, a programming language, or
-a binary program.
+This section provides auxiliary information necessary for developers of a FIRRTL Compiler _implementation_.
+A FIRRTL Compiler is a program that converts FIRRTL text to another representation, e.g., Verilog, VHDL, a programming language, or a binary program.
 
 ## Module Conventions
 
-A module's convention describes how its ports are lowered to the output format,
-and serves as a kind of ABI for modules.
+A module's convention describes how its ports are lowered to the output format, and serves as a kind of ABI for modules.
 
 ### The "Scalarized" Convention
 
-The scalarized convention lowers aggregate ports to ground values. The
-scalarized convention should be the default convention for "public" modules,
-such as the top module of a circuit, "device under test", or an extmodule.
+The scalarized convention lowers aggregate ports to ground values.
+The scalarized convention should be the default convention for "public" modules, such as the top module of a circuit, "device under test", or an extmodule.
 
 The lowering algorithm for the scalarized convention operates as follows:
 
@@ -3310,13 +3288,11 @@ The lowering algorithm for the scalarized convention operates as follows:
 
 2. Ground-typed ports' names are unmodified.
 
-3. Vector-typed ports are scalarized to ground-typed ports by appending a
-   suffix, `_<i>`, to the i^th^ element of the vector. Elements are scalarized
-   recursively, depth-first, and left-to-right.
+3. Vector-typed ports are scalarized to ground-typed ports by appending a suffix, `_<i>`, to the i^th^ element of the vector.
+   Elements are scalarized recursively, depth-first, and left-to-right.
 
-4. Bundle-typed ports are scalarized to ground-typed ports by appending a
-   suffix, `_<name>`, to the field called `name`. Fields are scalarized
-   recursively, depth-first, and left-to-right.
+4. Bundle-typed ports are scalarized to ground-typed ports by appending a suffix, `_<name>`, to the field called `name`.
+   Fields are scalarized recursively, depth-first, and left-to-right.
 
 E.g., consider the following port:
 
@@ -3335,14 +3311,11 @@ module Top :
   input a_1_c : UInt<2>  ; a[1].c
 ```
 
-The body of a module definition introduces a new, empty namespace. As new
-port names are added, these names must be unique with respect to this
-namespace. In the case of a collision during renaming, priority will be given
-to values that are converted first.
+The body of a module definition introduces a new, empty namespace.
+As new port names are added, these names must be unique with respect to this namespace.
+In the case of a collision during renaming, priority will be given to values that are converted first.
 
-If a name is already taken, that name will be made unique by appending a suffix
-`_<i>` to the name, where `i` is the lowest nonnegative integer that gives a
-unique name.
+If a name is already taken, that name will be made unique by appending a suffix `_<i>` to the name, where `i` is the lowest nonnegative integer that gives a unique name.
 
 E.g., consider the following ports:
 
@@ -3366,15 +3339,13 @@ module Top :
   input a_b_0_2: UInt<5>  ; a_b_0
 ```
 
-Named components in the body of a module will be renamed as needed to ensure
-port names follow this convention.
+Named components in the body of a module will be renamed as needed to ensure port names follow this convention.
 
 ## The "Internal" Convention
 
-Private modules (i.e. modules that are _not_ the top of a circuit, device under
-test, or an extmodule) have no specified ABI. The compiler is free to transform
-the ports of a private module in any way, or not at all. Private modules are
-said to have "internal" convention.
+Private modules (i.e. modules that are _not_ the top of a circuit, device under test, or an extmodule) have no specified ABI.
+The compiler is free to transform the ports of a private module in any way, or not at all.
+Private modules are said to have "internal" convention.
 
 \clearpage
 
@@ -3678,14 +3649,10 @@ The versioning scheme complies with
 
 Specifically,
 
-The PATCH digit is bumped upon release which only includes non-functional changes,
-such as grammar edits, further examples, and clarifications.
+The PATCH digit is bumped upon release which only includes non-functional changes, such as grammar edits, further examples, and clarifications.
 
 The MINOR digit is bumped for feature additions to the spec.
 
-The MAJOR digit is bumped for backwards-incompatible changes such as features
-being removed from the spec, changing their interpretation, or new required
-features being added to the specification.
+The MAJOR digit is bumped for backwards-incompatible changes such as features being removed from the spec, changing their interpretation, or new required features being added to the specification.
 
-In other words, any `.fir` file that was compliant with `x.y.z` will be compliant
-with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.
+In other words, any `.fir` file that was compliant with `x.y.z` will be compliant with `x.Y.Z`, where `Y >= y`, `z` and `Z` can be any number.

@@ -462,7 +462,7 @@ Any use in place of an integer is disallowed.
 
 # Circuit Components
 
-Circuit components are the named parts of a module corresponding to physical hardware.
+Circuit components are the named parts of a module corresponding to hardware.
 
 There are seven **kinds** of circuit components.
 They are: nodes, wires, registers, output ports, input ports, submodule instances, and memories.

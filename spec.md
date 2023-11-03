@@ -540,7 +540,7 @@ regreset myreg : SInt, myclock, myreset, myinit
 For both variants of register, the type is given after the colon (`:`{.firrtl}).
 
 Semantically, registers become flip-flops in the design.
-The the next value is latched on the positive edge of the clock.
+The next value is latched on the positive edge of the clock.
 For registers without a reset, the initial value is indeterminate (see [@sec:indeterminate-values]).
 
 
@@ -551,21 +551,17 @@ The way a module interacts with the outside world is through its ports.
 Example:
 
 ``` firrtl
-    input myinput : UInt<1>
-    output myinput : SInt<8>
+  input myinput : UInt<1>
+  output myinput : SInt<8>
 ```
-
-Ports are declared with the keywords `input` and `output`.
-The two keywords only differ in the rules for how they may be connected (see [@sec:connects]).
 
 For both variants of port, the type is given after the colon (`:`{.firrtl}).
 
+The two kinds of ports differ in the rules for how they may be connected (see [@sec:connects]).
 
 ## Submodule Instances
 
-A module in FIRRTL is allowed to contain submodules.
-Each submodule instance must be given a name.
-It must also name the FIRRTL module or external module it is instantiating.
+A module in FIRRTL may contain submodules.
 
 Example:
 
@@ -574,10 +570,10 @@ inst passthrough of Passthrough
 ```
 
 This assumes you have a module named `Passthrough` declared elsewhere in your FIRRTL design.
-The keyword `of`{.firrtl} is used instead of the colon (`:`{.firrtl}) since `Passthrough` is not a type.
+The keyword `of`{.firrtl} is used instead of a colon (`:`{.firrtl}).
 
 The type of a submodule instance is bundle type determined by its ports.
-Each port creates a field in the bundle of the same name.
+Each port creates a field with the same name in the bundle.
 Among these fields, `output` ports are flipped, while `input` fields are unflipped.
 
 For example:

@@ -2971,31 +2971,25 @@ module Foo3
 
 # Namespaces
 
-All modules in a circuit exist in the same module namespace, and thus must all
-have a unique name.
+All modules in a circuit exist in the same module namespace, and thus must all have a unique name.
 
-Each module has an identifier namespace containing the names of all port and
-circuit component declarations. Thus, all declarations within a module must have
-unique names.
+Each module has an identifier namespace containing the names of all port and circuit component declarations.
+Thus, all declarations within a module must have unique names.
 
 Within a bundle type declaration, all field names must be unique.
 
 Within a memory declaration, all port names must be unique.
 
-Any modifications to names must preserve the uniqueness of names within a
-namespace.
+Any modifications to names must preserve the uniqueness of names within a namespace.
 
 # Annotations
 
-Annotations encode arbitrary metadata and associate it with zero or more
-targets ([@sec:targets]) in a FIRRTL circuit.
+Annotations encode arbitrary metadata and associate it with zero or more targets ([@sec:targets]) in a FIRRTL circuit.
 
-Annotations are represented as a dictionary, with a required "class" field which
-describes which annotation it is. An annotation has an optional "target" field
-which represents the IR object it is attached to. Annotations may have arbitrary
-additional fields attached. Some annotation classes extend other annotations,
-which effectively means that the subclass annotation implies to effect of the
-parent annotation.
+Annotations are represented as a dictionary, with a required "class" field which describes which annotation it is.
+An annotation has an optional "target" field which represents the IR object it is attached to.
+Annotations may have arbitrary additional fields attached.
+Some annotation classes extend other annotations, which effectively means that the subclass annotation implies to effect of the parent annotation.
 
 Annotations are serializable to JSON.
 
@@ -3018,17 +3012,15 @@ Below is an example of an annotation which does not have a target:
 
 ## Targets
 
-A circuit is described, stored, and optimized in a folded representation. For
-example, there may be multiple instances of a module which will eventually
-become multiple physical copies of that module on the die.
+A circuit is described, stored, and optimized in a folded representation.
+For example, there may be multiple instances of a module which will eventually become multiple physical copies of that module on the die.
 
-Targets are a mechanism to identify specific hardware in specific instances of
-modules in a FIRRTL circuit.  A target consists of a root module, an optional
-instance hierarchy, and an optional reference. A target can only identify
-hardware with a name, e.g., a module, instance, register, wire, or
-node. References may further refer to specific fields or subindices in
-aggregates. A target with no instance hierarchy is local. A target with an
-instance hierarchy is non-local.
+Targets are a mechanism to identify specific hardware in specific instances of modules in a FIRRTL circuit.
+A target consists of a root module, an optional instance hierarchy, and an optional reference.
+A target can only identify hardware with a name, e.g., a module, instance, register, wire, or node.
+References may further refer to specific fields or subindices in aggregates.
+A target with no instance hierarchy is local.
+A target with an instance hierarchy is non-local.
 
 Targets use a shorthand syntax of the form:
 
@@ -3036,19 +3028,16 @@ Targets use a shorthand syntax of the form:
 target = module , [ { “/” (instance) “:” (module) } , [ “>” , ref ] ]
 ```
 
-A reference is a name inside a module and one or more qualifying tokens that
-encode subfields (of a bundle) or subindices (of a vector):
+A reference is a name inside a module and one or more qualifying tokens that encode subfields (of a bundle) or subindices (of a vector):
 
 ```ebnf
 ref = name , { ( "[" , index , "]" ) | ( "." , field ) }
 ```
 
-Targets are specific enough to refer to any specific module in a folded,
-unfolded, or partially folded representation.
+Targets are specific enough to refer to any specific module in a folded, unfolded, or partially folded representation.
 
-To show some examples of what these look like, consider the following example
-circuit. This consists of four instances of module `Baz`{.firrtl}, two instances
-of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
+To show some examples of what these look like, consider the following example circuit.
+This consists of four instances of module `Baz`{.firrtl}, two instances of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
 ```firrtl
 circuit:
@@ -3062,17 +3051,16 @@ circuit:
     skip
 ```
 
-This circuit can be represented in a _folded_, completely _unfolded_, or in some
-_partially folded_ state.  Figure [@fig:foo-folded] shows the folded
-representation.  Figure [@fig:foo-unfolded] shows the completely unfolded
-representation where each instance is broken out into its own module.
+This circuit can be represented in a _folded_, completely _unfolded_, or in some _partially folded_ state.
+Figure [@fig:foo-folded] shows the folded representation.
+Figure [@fig:foo-unfolded] shows the completely unfolded representation where each instance is broken out into its own module.
 
 ![A folded representation of circuit Foo](build/img/firrtl-folded-module.eps){#fig:foo-folded width=15%}
 
 ![A completely unfolded representation of circuit Foo](build/img/firrtl-unfolded-module.eps){#fig:foo-unfolded}
 
-Using targets (or multiple targets), any specific module, instance, or
-combination of instances can be expressed. Some examples include:
+Using targets (or multiple targets), any specific module, instance, or combination of instances can be expressed.
+Some examples include:
 
 Target              Description
 ------------------  -------------
@@ -3082,17 +3070,16 @@ Target              Description
 `Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`{.firrtl}
 `Bar/d:Baz`         refers to two instances of module `Baz`{.firrtl}
 
-If a target does not contain an instance path, it is a _local_ target.  A local
-target points to all instances of a module.  If a target contains an instance
-path, it is a _non-local_ target.  A non-local target _may_ not point to all
-instances of a module.  Additionally, a non-local target may have an equivalent
-local target representation.
+If a target does not contain an instance path, it is a _local_ target.
+A local target points to all instances of a module.
+If a target contains an instance path, it is a _non-local_ target.
+A non-local target _may_ not point to all instances of a module.
+Additionally, a non-local target may have an equivalent local target representation.
 
 ## Annotation Storage
 
-Annotations may be stored in one or more JSON files using an
-array-of-dictionaries format.  The following shows a valid annotation file
-containing two annotations:
+Annotations may be stored in one or more JSON files using an array-of-dictionaries format.
+The following shows a valid annotation file containing two annotations:
 
 ``` json
 [
@@ -3107,9 +3094,8 @@ containing two annotations:
 ]
 ```
 
-Annotations may also be stored in-line along with the FIRRTL circuit by wrapping
-Annotation JSON in `%[ ... ]`{.firrtl}.  The following shows the above
-annotation file stored in-line:
+Annotations may also be stored in-line along with the FIRRTL circuit by wrapping Annotation JSON in `%[ ... ]`{.firrtl}.
+The following shows the above annotation file stored in-line:
 
 ``` firrtl
 circuit: %[[
@@ -3126,33 +3112,24 @@ circuit: %[[
   ; ...
 ```
 
-Any legal JSON is allowed, meaning that the above JSON may be stored "minimized"
-all on one line.
+Any legal JSON is allowed, meaning that the above JSON may be stored "minimized" all on one line.
 
 # Semantics of Values
 
-FIRRTL is defined for 2-state boolean logic.  The behavior of a generated
-circuit in a language, such as Verilog or VHDL, which have multi-state logic, is
-undefined in the presence of values which are not 2-state.  A FIRRTL compiler
-need only respect the 2-state behavior of a circuit.  This is a limitation on
-the scope of what behavior is observable (i.e., a relaxation of the
-["as-if"](https://en.wikipedia.org/wiki/As-if_rule) rule).
+FIRRTL is defined for 2-state boolean logic.
+The behavior of a generated circuit in a language, such as Verilog or VHDL, which have multi-state logic, is undefined in the presence of values which are not 2-state.
+A FIRRTL compiler need only respect the 2-state behavior of a circuit.
+This is a limitation on the scope of what behavior is observable (i.e., a relaxation of the ["as-if"](https://en.wikipedia.org/wiki/As-if_rule) rule).
 
 ## Indeterminate Values
 
 An indeterminate value represents a value which is unknown or unspecified.
-Indeterminate values are generally implementation defined, with constraints
-specified below.  An indeterminate value may be assumed to be any specific
-value (not necessarily literal), at an implementation's discretion, if, in doing
-so, all observable behavior is as if the indeterminate value always took the
-specific value.
+Indeterminate values are generally implementation defined, with constraints specified below.
+An indeterminate value may be assumed to be any specific value (not necessarily literal), at an implementation's discretion, if, in doing so, all observable behavior is as if the indeterminate value always took the specific value.
 
-This allows transformations such as the following, where when `a`{.firrtl} has
-an indeterminate value, the implementation chooses to consistently give it a
-value of `v`{.firrtl}.  An alternate, legal mapping, lets the implementation
-give it the value `42`{.firrtl}.  In both cases, there is no visibility of
-`a`{.firrtl} when it has an indeterminate value which is not mapped to the value
-the implementation chooses.
+This allows transformations such as the following, where when `a`{.firrtl} has an indeterminate value, the implementation chooses to consistently give it a value of `v`{.firrtl}.
+An alternate, legal mapping, lets the implementation give it the value `42`{.firrtl}.
+In both cases, there is no visibility of `a`{.firrtl} when it has an indeterminate value which is not mapped to the value the implementation chooses.
 
 ``` firrtl
 module IValue :
@@ -3190,32 +3167,23 @@ module IValue :
   connect o, a
 ```
 
-The behavior of constructs which cause indeterminate values is implementation
-defined with the following constraints.
+The behavior of constructs which cause indeterminate values is implementation defined with the following constraints.
 
-- Register initialization is done in a consistent way for all registers.  If
-code is generated to randomly initialize some registers (or 0 fill them, etc),
-it should be generated for all registers.
-- All observations of a unique instance of an expression with indeterminate
-value must see the same value at runtime.  Multiple readers of a value will see
-the same runtime value.
+- Register initialization is done in a consistent way for all registers.
+  If code is generated to randomly initialize some registers (or 0 fill them, etc), it should be generated for all registers.
+- All observations of a unique instance of an expression with indeterminate value must see the same value at runtime.
+  Multiple readers of a value will see the same runtime value.
 - Indeterminate values captured in stateful elements are not time-varying.
-Time-aware constructs, such as registers, which hold an indeterminate value will
-return the same runtime value unless something changes the value in a normal
-way.  For example, an uninitialized register will return the same value over
-multiple clock cycles until it is written (or reset).
-- The value produced at runtime for an expression which produced an intermediate
-value shall only be a function of the inputs of the expression.  For example, an
-out-of-bounds vector access shall produce the same value for a
-given out-of-bounds index and vector contents.
-- Two constructs with indeterminate values place no constraint on the identity
-of their values.  For example, two uninitialized registers, which therefore
-contain indeterminate values, do not need to be equal under comparison.
+  Time-aware constructs, such as registers, which hold an indeterminate value will return the same runtime value unless something changes the value in a normal way.
+  For example, an uninitialized register will return the same value over multiple clock cycles until it is written (or reset).
+- The value produced at runtime for an expression which produced an intermediate value shall only be a function of the inputs of the expression.
+  For example, an out-of-bounds vector access shall produce the same value for a given out-of-bounds index and vector contents.
+- Two constructs with indeterminate values place no constraint on the identity of their values.
+  For example, two uninitialized registers, which therefore contain indeterminate values, do not need to be equal under comparison.
 
 # Details about Syntax
 
-FIRRTL's syntax is designed to be human-readable but easily algorithmically
-parsed.
+FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
 
 FIRRTL allows for two types of identifiers:
 

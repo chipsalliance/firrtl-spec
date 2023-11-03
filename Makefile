@@ -4,13 +4,16 @@ VERSION=$(shell git describe --tags --dirty --match 'v*.*.*' | sed 's/^v//')
 IMG_SRCS=$(wildcard include/img_src/*.dot)
 IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/img/%.eps)
 
-.PHONY: all clean images
+.PHONY: all clean format images
 .PRECIOUS: build/ build/img/
 
 all: build/spec.pdf build/abi.pdf
 
 clean:
 	rm -rf build
+
+format:
+	find . -type f -name '*.md'	| xargs -IX pandoc -o X --wrap=preserve X
 
 images: $(IMG_EPSS)
 

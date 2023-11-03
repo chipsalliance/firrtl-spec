@@ -467,10 +467,9 @@ Circuit components are the named parts of a module corresponding to physical har
 There are seven **kinds** of circuit components.
 They are: nodes, wires, registers, output ports, input ports, submodule instances, and memories.
 
-Circuit components can be connected together in the hardware (see [@sec:connects]).
+Circuit components can be connected together (see [@sec:connects]).
 
-Each circuit component in a module is associated with a type called its type ([@sec:types]).
-This is the type of data that travels across the component.
+Each circuit component in a module has a type ([@sec:types]).
 It is used to determine the legality of connections.
 
 
@@ -490,7 +489,6 @@ The type of a node is the type of the expression given in the definition.
 ## Wires
 
 Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
-Also unlike nodes, the type of a wire must be explicitly declared.
 
 Example:
 
@@ -500,6 +498,7 @@ Example:
     connect mywire, UInt<1>(0)
 ```
 
+Unlike nodes, the type of a wire must be explicitly declared.
 The type of a wire is given after the colon (`:`{.firrtl}).
 
 

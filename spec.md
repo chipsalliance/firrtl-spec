@@ -2632,12 +2632,10 @@ See [@sec:probe-types;@sec:probe] for more details on probe references and their
 
 # Primitive Operations {#sec:primitive-operations}
 
-The arguments of all primitive operations must be expressions with ground types,
-while their parameters are integer literals. Each specific operation can place
-additional restrictions on the number and types of their arguments and
-parameters.  Primitive operations may have all their arguments of constant type,
-in which case their return type is of constant type.  If the operation has a
-mixed constant and non-constant arguments, the result is non-constant.
+The arguments of all primitive operations must be expressions with ground types, while their parameters are integer literals.
+Each specific operation can place additional restrictions on the number and types of their arguments and parameters.
+Primitive operations may have all their arguments of constant type, in which case their return type is of constant type.
+If the operation has a mixed constant and non-constant arguments, the result is non-constant.
 
 Notationally, the width of an argument e is represented as w~e~.
 
@@ -2658,8 +2656,7 @@ The add operation result is the sum of e1 and e2 without loss of precision.
 | sub  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
 |      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
 
-The subtract operation result is e2 subtracted from e1, without loss of
-precision.
+The subtract operation result is e2 subtracted from e1, without loss of precision.
 
 ## Multiply Operation
 
@@ -2668,8 +2665,7 @@ precision.
 | mul  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | w~e1~+w~e2~                 |
 |      |           |            | (SInt,SInt)   | SInt        | w~e1~+w~e2~                 |
 
-The multiply operation result is the product of e1 and e2, without loss of
-precision.
+The multiply operation result is the product of e1 and e2, without loss of precision.
 
 ## Divide Operation
 
@@ -2679,9 +2675,9 @@ precision.
 | div  | (num,den) | ()         | (UInt,UInt) | UInt        | w~num~       |
 |      |           |            | (SInt,SInt) | SInt        | w~num~+1     |
 
-The divide operation divides num by den, truncating the fractional portion of
-the result. This is equivalent to rounding the result towards zero. The result
-of a division where den is zero is undefined.
+The divide operation divides num by den, truncating the fractional portion of the result.
+This is equivalent to rounding the result towards zero.
+The result of a division where den is zero is undefined.
 
 ## Modulus Operation
 
@@ -2690,9 +2686,8 @@ of a division where den is zero is undefined.
 | rem  | (num,den) | ()         | (UInt,UInt) | UInt        | min(w~num~,w~den~) |
 |      |           |            | (SInt,SInt) | SInt        | min(w~num~,w~den~) |
 
-The modulus operation yields the remainder from dividing num by den, keeping the
-sign of the numerator. Together with the divide operator, the modulus operator
-satisfies the relationship below:
+The modulus operation yields the remainder from dividing num by den, keeping the sign of the numerator.
+Together with the divide operator, the modulus operator satisfies the relationship below:
 
     num = add(mul(den,div(num,den)),rem(num,den))}
 
@@ -2703,10 +2698,8 @@ satisfies the relationship below:
 | lt,leq |           |            | (UInt,UInt)   | UInt        | 1            |
 | gt,geq | (e1,e2)   | ()         | (SInt,SInt)   | UInt        | 1            |
 
-The comparison operations return an unsigned 1 bit signal with value one if e1
-is less than (lt), less than or equal to (leq), greater than (gt), greater than
-or equal to (geq), equal to (eq), or not equal to (neq) e2.  The operation
-returns a value of zero otherwise.
+The comparison operations return an unsigned 1 bit signal with value one if e1 is less than (lt), less than or equal to (leq), greater than (gt), greater than or equal to (geq), equal to (eq), or not equal to (neq) e2.
+The operation returns a value of zero otherwise.
 
 ## Padding Operations
 
@@ -2716,9 +2709,9 @@ returns a value of zero otherwise.
 |      |           |            | (SInt)    | SInt        | max(w~e~,n)                 |
 
 
-If e's bit width is smaller than n, then the pad operation zero-extends or
-sign-extends e up to the given width n. Otherwise, the result is simply e. n
-must be non-negative.
+If e's bit width is smaller than n, then the pad operation zero-extends or sign-extends e up to the given width n.
+Otherwise, the result is simply e.
+n must be non-negative.
 
 ## Interpret As UInt
 
@@ -2742,8 +2735,7 @@ The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 |        |           |            | (Reset)      | SInt        | 1            |
 |        |           |            | (AsyncReset) | SInt        | 1            |
 
-The interpret as SInt operation reinterprets e's bits as a signed integer
-according to two's complement representation.
+The interpret as SInt operation reinterprets e's bits as a signed integer according to two's complement representation.
 
 ## Interpret as Clock
 
@@ -2755,8 +2747,7 @@ according to two's complement representation.
 |         |           |            | (Reset)      | Clock       | n/a          |
 |         |           |            | (AsyncReset) | Clock       | n/a          |
 
-The result of the interpret as clock operation is the Clock typed signal
-obtained from interpreting a single bit integer as a clock signal.
+The result of the interpret as clock operation is the Clock typed signal obtained from interpreting a single bit integer as a clock signal.
 
 ## Interpret as AsyncReset
 
@@ -2769,8 +2760,7 @@ obtained from interpreting a single bit integer as a clock signal.
 |              |           |            | (Clock)      | AsyncReset  | n/a          |
 |              |           |            | (Reset)      | AsyncReset  | n/a          |
 
-The result of the interpret as asynchronous reset operation is an AsyncReset typed
-signal.
+The result of the interpret as asynchronous reset operation is an AsyncReset typed signal.
 
 ## Shift Left Operation
 
@@ -2779,8 +2769,8 @@ signal.
 | shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n                      |
 |      |           |            | (SInt)    | SInt        | w~e~+n                      |
 
-The shift left operation concatenates n zero bits to the least significant end
-of e. n must be non-negative.
+The shift left operation concatenates n zero bits to the least significant end of e.
+n must be non-negative.
 
 ## Shift Right Operation
 
@@ -2789,9 +2779,9 @@ of e. n must be non-negative.
 | shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 1)              |
 |      |           |            | (SInt)    | SInt        | max(w~e~-n, 1)              |
 
-The shift right operation truncates the least significant n bits from e.  If n
-is greater than or equal to the bit-width of e, the resulting value will be zero
-for unsigned types and the sign bit for signed types. n must be non-negative.
+The shift right operation truncates the least significant n bits from e.
+If n is greater than or equal to the bit-width of e, the resulting value will be zero for unsigned types and the sign bit for signed types.
+n must be non-negative.
 
 ## Dynamic Shift Left Operation
 
@@ -2800,8 +2790,8 @@ for unsigned types and the sign bit for signed types. n must be non-negative.
 | dshl | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~ + 2`^`w~e2~ - 1       |
 |      |           |            | (SInt, UInt)  | SInt        | w~e1~ + 2`^`w~e2~ - 1       |
 
-The dynamic shift left operation shifts the bits in e1 e2 places towards the
-most significant bit. e2 zeroes are shifted in to the least significant bits.
+The dynamic shift left operation shifts the bits in e1 e2 places towards the most significant bit.
+e2 zeroes are shifted in to the least significant bits.
 
 ## Dynamic Shift Right Operation
 
@@ -2810,9 +2800,8 @@ most significant bit. e2 zeroes are shifted in to the least significant bits.
 | dshr | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~                       |
 |      |           |            | (SInt, UInt)  | SInt        | w~e1~                       |
 
-The dynamic shift right operation shifts the bits in e1 e2 places towards the
-least significant bit. e2 signed or zeroed bits are shifted in to the most
-significant bits, and the e2 least significant bits are truncated.
+The dynamic shift right operation shifts the bits in e1 e2 places towards the least significant bit.
+e2 signed or zeroed bits are shifted in to the most significant bits, and the e2 least significant bits are truncated.
 
 ## Arithmetic Convert to Signed Operation
 
@@ -2821,8 +2810,7 @@ significant bits, and the e2 least significant bits are truncated.
 | cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
 |      |           |            | (SInt)    | SInt        | w~e~         |
 
-The result of the arithmetic convert to signed operation is a signed integer
-representing the same numerical value as e.
+The result of the arithmetic convert to signed operation is a signed integer representing the same numerical value as e.
 
 ## Negate Operation
 
@@ -2831,8 +2819,7 @@ representing the same numerical value as e.
 | neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
 |      |           |            | (SInt)    | SInt        | w~e~+1       |
 
-The result of the negate operation is a signed integer representing the negated
-numerical value of e.
+The result of the negate operation is a signed integer representing the negated numerical value of e.
 
 ## Bitwise Complement Operation
 
@@ -2850,10 +2837,8 @@ The bitwise complement operation performs a logical not on each bit in e.
 | and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
 |            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
 
-The above bitwise operations perform a bitwise and, or, or exclusive or on e1
-and e2. The result has the same width as its widest argument, and any narrower
-arguments are automatically zero-extended or sign-extended to match the width of
-the result before performing the operation.
+The above bitwise operations perform a bitwise and, or, or exclusive or on e1 and e2.
+The result has the same width as its widest argument, and any narrower arguments are automatically zero-extended or sign-extended to match the width of the result before performing the operation.
 
 ## Bitwise Reduction Operations
 
@@ -2863,16 +2848,11 @@ the result before performing the operation.
 | andr,orr,xorr | \(e\)     | ()         | (UInt)    | UInt        | 1            |
 |               |           |            | (SInt)    | UInt        | 1            |
 
-The bitwise reduction operations correspond to a bitwise and, or, and exclusive
-or operation, reduced over every bit in e.
+The bitwise reduction operations correspond to a bitwise and, or, and exclusive or operation, reduced over every bit in e.
 
-In all cases, the reduction incorporates as an inductive base case the "identity
-value" associated with each operator. This is defined as the value that
-preserves the value of the other argument: one for and (as $x \wedge 1 = x$),
-zero for or (as $x \vee 0 = x$), and zero for xor (as $x \oplus 0 = x$). Note
-that the logical consequence is that the and-reduction of a zero-width
-expression returns a one, while the or- and xor-reductions of a zero-width
-expression both return zero.
+In all cases, the reduction incorporates as an inductive base case the "identity value" associated with each operator.
+This is defined as the value that preserves the value of the other argument: one for and (as $x \wedge 1 = x$), zero for or (as $x \vee 0 = x$), and zero for xor (as $x \oplus 0 = x$).
+Note that the logical consequence is that the and-reduction of a zero-width expression returns a one, while the or- and xor-reductions of a zero-width expression both return zero.
 
 ## Concatenate Operation
 
@@ -2881,8 +2861,7 @@ expression both return zero.
 | cat  | (e1,e2)   | ()         | (UInt, UInt)   | UInt        | w~e1~+w~e2~  |
 |      |           |            | (SInt, SInt)   | UInt        | w~e1~+w~e2~  |
 
-The result of the concatenate operation is the bits of e1 concatenated to the
-most significant end of the bits of e2.
+The result of the concatenate operation is the bits of e1 concatenated to the most significant end of the bits of e2.
 
 ## Bit Extraction Operation
 
@@ -2891,9 +2870,9 @@ most significant end of the bits of e2.
 | bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1      |
 |      |           |            | (SInt)    | UInt        | hi-lo+1      |
 
-The result of the bit extraction operation are the bits of e between lo
-(inclusive) and hi (inclusive). hi must be greater than or equal to lo.  Both hi
-and lo must be non-negative and strictly less than the bit width of e.
+The result of the bit extraction operation are the bits of e between lo (inclusive) and hi (inclusive).
+hi must be greater than or equal to lo.
+Both hi and lo must be non-negative and strictly less than the bit width of e.
 
 ## Head
 
@@ -2902,8 +2881,8 @@ and lo must be non-negative and strictly less than the bit width of e.
 | head | \(e\)     | \(n\)      | (UInt)    | UInt        | n            |
 |      |           |            | (SInt)    | UInt        | n            |
 
-The result of the head operation are the n most significant bits of e. n must be
-non-negative and less than or equal to the bit width of e.
+The result of the head operation are the n most significant bits of e.
+n must be non-negative and less than or equal to the bit width of e.
 
 ## Tail
 
@@ -2912,8 +2891,8 @@ non-negative and less than or equal to the bit width of e.
 | tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n       |
 |      |           |            | (SInt)    | UInt        | w~e~-n       |
 
-The tail operation truncates the n most significant bits from e. n must be
-non-negative and less than or equal to the bit width of e.
+The tail operation truncates the n most significant bits from e.
+n must be non-negative and less than or equal to the bit width of e.
 
 # Flows
 

@@ -2896,61 +2896,47 @@ n must be non-negative and less than or equal to the bit width of e.
 
 # Flows
 
-An expression's flow partially determines the legality of connecting to and from
-the expression. Every expression is classified as either *source*, *sink*, or
-*duplex*. For details on connection rules refer back to [@sec:connects].
+An expression's flow partially determines the legality of connecting to and from the expression.
+Every expression is classified as either *source*, *sink*, or *duplex*.
+For details on connection rules refer back to [@sec:connects].
 
-The flow of a reference to a declared circuit component depends on the kind of
-circuit component. A reference to an input port, an instance, a memory, and a
-node, is a source. A reference to an output port is a sink. A reference to a
-wire or register is duplex.
+The flow of a reference to a declared circuit component depends on the kind of circuit component.
+A reference to an input port, an instance, a memory, and a node, is a source.
+A reference to an output port is a sink. A reference to a wire or register is duplex.
 
-The flow of a sub-index or sub-access expression is the flow of the vector-typed
-expression it indexes or accesses.
+The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.
 
-The flow of a sub-field expression depends upon the orientation of the field. If
-the field is not flipped, its flow is the same flow as the bundle-typed
-expression it selects its field from. If the field is flipped, then its flow is
-the reverse of the flow of the bundle-typed expression it selects its field
-from. The reverse of source is sink, and vice-versa. The reverse of duplex
-remains duplex.
+The flow of a sub-field expression depends upon the orientation of the field.
+If the field is not flipped, its flow is the same flow as the bundle-typed expression it selects its field from.
+If the field is flipped, then its flow is the reverse of the flow of the bundle-typed expression it selects its field from.
+The reverse of source is sink, and vice-versa.
+The reverse of duplex remains duplex.
 
 The flow of all other expressions are source.
 
 # Width Inference
 
-For all circuit components declared with unspecified widths, the FIRRTL compiler
-will infer the minimum possible width that maintains the legality of all its
-incoming connections. If a component has no incoming connections, and the width
-is unspecified, then an error is thrown to indicate that the width could not be
-inferred.
+For all circuit components declared with unspecified widths, the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
+If a component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
 
-For module input ports with unspecified widths, the inferred width is the
-minimum possible width that maintains the legality of all incoming connections
-to all instantiations of the module.
+For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
 
-The width of a ground-typed multiplexer expression is the maximum of its two
-corresponding input widths. For multiplexing aggregate-typed expressions, the
-resulting widths of each leaf sub-element is the maximum of its corresponding
-two input leaf sub-element widths.
+The width of a ground-typed multiplexer expression is the maximum of its two corresponding input widths.
+For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
 
 The width of each primitive operation is detailed in [@sec:primitive-operations].
 
-The width of constant integer expressions is detailed in their respective
-sections.
+The width of constant integer expressions is detailed in their respective sections.
 
 # Combinational Loops
 
 Combinational logic is a section of logic with no registers between gates.
-A combinational loop exists when the output of some combinational logic
-is fed back into the input of that combinational logic with no intervening
-register. FIRRTL does not support combinational loops even if it is possible
-to show that the loop does not exist under actual mux select values.
-Combinational loops are not allowed and designs should not depend on any FIRRTL
-transformation to remove or break such combinational loops.
+A combinational loop exists when the output of some combinational logic is fed back into the input of that combinational logic with no intervening register.
+FIRRTL does not support combinational loops even if it is possible to show that the loop does not exist under actual mux select values.
+Combinational loops are not allowed and designs should not depend on any FIRRTL transformation to remove or break such combinational loops.
 
-The module `Foo`{.firrtl} has a combinational loop and is not legal, even
-though the loop will be removed by last connect semantics.
+The module `Foo`{.firrtl} has a combinational loop and is not legal, even though the loop will be removed by last connect semantics.
+
 ``` firrtl
 module Foo:
   input a: UInt<1>
@@ -2959,8 +2945,8 @@ module Foo:
   connect b, a
 ```
 
-The following module `Foo2`{.firrtl} has a combinational loop, even if it can
-be proved that `n1`{.firrtl} and `n2`{.firrtl} never overlap.
+The following module `Foo2`{.firrtl} has a combinational loop, even if it can be proved that `n1`{.firrtl} and `n2`{.firrtl} never overlap.
+
 ``` firrtl
 module Foo2 :
   input n1: UInt<2>
@@ -2971,8 +2957,7 @@ module Foo2 :
   connect vec[n2], tmp
 ```
 
-Module `Foo3`{.firrtl} is another example of an illegal combinational loop,
-even if it only exists at the word level and not at the bit-level.
+Module `Foo3`{.firrtl} is another example of an illegal combinational loop, even if it only exists at the word level and not at the bit-level.
 
 ```firrtl
 module Foo3

@@ -1076,12 +1076,9 @@ Statements are used to describe the components within a module and how they inte
 
 ## Connects
 
-The connect statement is used to specify a physically wired connection between
-two circuit components.
+The connect statement is used to specify a physically wired connection between two circuit components.
 
-The following example demonstrates connecting a module's input port to its
-output port, where port `myinput`{.firrtl} is connected to port
-`myoutput`{.firrtl}.
+The following example demonstrates connecting a module's input port to its output port, where port `myinput`{.firrtl} is connected to port `myoutput`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1092,44 +1089,32 @@ module MyModule :
 
 In order for a connection to be legal the following conditions must hold:
 
-1.  The types of the left-hand and right-hand side expressions must be
-    equivalent (see [@sec:type-equivalence] for details).
+1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence] for details).
 
-2.  The flow of the left-hand side expression must be sink or duplex (see
-    [@sec:flows] for an explanation of flow).
+2.  The flow of the left-hand side expression must be sink or duplex (see [@sec:flows] for an explanation of flow).
 
-3.  Either the flow of the right-hand side expression is source or duplex, or
-    the right-hand side expression has a passive type.
+3.  Either the flow of the right-hand side expression is source or duplex, or the right-hand side expression has a passive type.
 
 4.  The left-hand side and right-hand side types are not property types.
 
-Connect statements from a narrower ground type component to a wider ground type
-component will have its value automatically sign-extended or zero-extended to
-the larger bit width. The behavior of connect statements between two
-circuit components with aggregate types is defined by the connection algorithm
-in [@sec:the-connection-algorithm].
+Connect statements from a narrower ground type component to a wider ground type component will have its value automatically sign-extended or zero-extended to the larger bit width.
+The behavior of connect statements between two circuit components with aggregate types is defined by the connection algorithm in [@sec:the-connection-algorithm].
 
 ### The Connection Algorithm
 
 Connect statements between ground types cannot be expanded further.
 
-Connect statements between two vector typed components recursively connects each
-sub-element in the right-hand side expression to the corresponding sub-element
-in the left-hand side expression.
+Connect statements between two vector typed components recursively connects each sub-element in the right-hand side expression to the corresponding sub-element in the left-hand side expression.
 
-Connect statements between two bundle typed components connects the i'th field
-of the right-hand side expression and the i'th field of the left-hand side
-expression. If the i'th field is not flipped, then the right-hand side field is
-connected to the left-hand side field.  Conversely, if the i'th field is
-flipped, then the left-hand side field is connected to the right-hand side
-field.
+Connect statements between two bundle typed components connects the i'th field of the right-hand side expression and the i'th field of the left-hand side expression.
+If the i'th field is not flipped, then the right-hand side field is connected to the left-hand side field.
+Conversely, if the i'th field is flipped, then the left-hand side field is connected to the right-hand side field.
 
 ### Last Connect Semantics
 
-Ordering of connects is significant.  Later connects take precedence over
-earlier ones.  In the following example port `b`{.firrtl} will be connected to
-`myport1`{.firrtl}, and port `a`{.firrtl} will be connected to
-`myport2`{.firrtl}:
+Ordering of connects is significant.
+Later connects take precedence over earlier ones.
+In the following example port `b`{.firrtl} will be connected to `myport1`{.firrtl}, and port `a`{.firrtl} will be connected to `myport2`{.firrtl}:
 
 ``` firrtl
 module MyModule :
@@ -1143,16 +1128,12 @@ module MyModule :
   connect myport2, a
 ```
 
-Conditional statements are affected by last connect semantics.  For details see
-[@sec:conditional-last-connect-semantics].
+Conditional statements are affected by last connect semantics.
+For details see [@sec:conditional-last-connect-semantics].
 
-When a connection to a component with an aggregate type is followed by a
-connection to a sub-element of that same component, only the connection to the
-sub-element is overwritten.  Connections to the other sub-elements remain
-unaffected.  In the following example the `c`{.firrtl} sub-element of port
-`portx`{.firrtl} will be connected to the `c`{.firrtl} sub-element of
-`myport`{.firrtl}, and port `porty`{.firrtl} will be connected to the
-`b`{.firrtl} sub-element of `myport`{.firrtl}.
+When a connection to a component with an aggregate type is followed by a connection to a sub-element of that same component, only the connection to the sub-element is overwritten.
+Connections to the other sub-elements remain unaffected.
+In the following example the `c`{.firrtl} sub-element of port `portx`{.firrtl} will be connected to the `c`{.firrtl} sub-element of `myport`{.firrtl}, and port `porty`{.firrtl} will be connected to the `b`{.firrtl} sub-element of `myport`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1174,9 +1155,7 @@ module MyModule :
   connect myport.c, portx.c
 ```
 
-When a connection to a sub-element of an aggregate component is followed by a
-connection to the entire circuit component, the later connection overwrites the
-earlier sub-element connection.
+When a connection to a sub-element of an aggregate component is followed by a connection to the entire circuit component, the later connection overwrites the earlier sub-element connection.
 
 ``` firrtl
 module MyModule :
@@ -1201,8 +1180,8 @@ See [@sec:sub-fields] for more details about sub-field expressions.
 
 ## Empty
 
-The empty statement does nothing and is used simply as a placeholder where a
-statement is expected. It is specified using the `skip`{.firrtl} keyword.
+The empty statement does nothing and is used simply as a placeholder where a statement is expected.
+It is specified using the `skip`{.firrtl} keyword.
 
 The following example:
 
@@ -1219,18 +1198,14 @@ connect a, b
 connect c, d
 ```
 
-The empty statement is most often used as the `else`{.firrtl} branch in a
-conditional statement, or as a convenient placeholder for removed components
-during transformational passes. See [@sec:conditionals] for details on the
-conditional statement.
+The empty statement is most often used as the `else`{.firrtl} branch in a conditional statement, or as a convenient placeholder for removed components during transformational passes.
+See [@sec:conditionals] for details on the conditional statement.
 
 ## Wires
 
-A wire is a named combinational circuit component that can be connected to and
-from using connect statements.
+A wire is a named combinational circuit component that can be connected to and from using connect statements.
 
-The following example demonstrates instantiating a wire with the given name
-`mywire`{.firrtl} and type `UInt`{.firrtl}.
+The following example demonstrates instantiating a wire with the given name `mywire`{.firrtl} and type `UInt`{.firrtl}.
 
 ``` firrtl
 wire mywire: UInt
@@ -1238,22 +1213,17 @@ wire mywire: UInt
 
 ## Registers
 
-A register is a named stateful circuit component.  Reads from a register return
-the current value of the element, writes are not visible until after a positive
-edges of the register's clock port.
+A register is a named stateful circuit component.
+Reads from a register return the current value of the element, writes are not visible until after a positive edges of the register's clock port.
 
-The clock signal for a register must be of type `Clock`{.firrtl}.  The type of a
-register must be a passive type (see [@sec:passive-types]) and may not be
-`const`{.firrtl}.
+The clock signal for a register must be of type `Clock`{.firrtl}.
+The type of a register must be a passive type (see [@sec:passive-types]) and may not be `const`{.firrtl}.
 
-Registers may be declared without a reset using the `reg`{.firrtl} syntax and
-with a reset using the `regreset`{.firrtl} syntax.
+Registers may be declared without a reset using the `reg`{.firrtl} syntax and with a reset using the `regreset`{.firrtl} syntax.
 
 ### Registers without Reset
 
-The following example demonstrates instantiating a register with the given name
-`myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
-`myclock`{.firrtl}.
+The following example demonstrates instantiating a register with the given name `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal `myclock`{.firrtl}.
 
 ``` firrtl
 wire myclock: Clock
@@ -1263,21 +1233,16 @@ reg myreg: SInt, myclock
 
 ### Registers with Reset
 
-A register with a reset is declared using `regreset`{.firrtl}.  A
-`regreset`{.firrtl} adds two expressions after the type and clock arguments: a
-reset signal and a reset value.  The register's value is updated with the reset
-value when the reset is asserted.  The reset signal must be a `Reset`{.firrtl},
-`UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization
-value must be equivalent to the declared type of the register (see
-[@sec:type-equivalence] for details).  If the reset signal is an
-`AsyncReset`{.firrtl}, then the reset value must be a constant type.  The
-behavior of the register depends on the type of the reset signal.
+A register with a reset is declared using `regreset`{.firrtl}.
+A `regreset`{.firrtl} adds two expressions after the type and clock arguments: a reset signal and a reset value.
+The register's value is updated with the reset value when the reset is asserted.
+The reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization value must be equivalent to the declared type of the register (see [@sec:type-equivalence] for details).
+If the reset signal is an `AsyncReset`{.firrtl}, then the reset value must be a constant type.
+The behavior of the register depends on the type of the reset signal.
 `AsyncReset`{.firrtl} will immediately change the value of the register.
-`UInt<1>`{.firrtl} will not change the value of the register until the next
-positive edge of the clock signal (see [@sec:reset-type]).  `Reset`{.firrtl} is
-an abstract reset whose behavior depends on reset inference.  In the following
-example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the
-signal `myreset`{.firrtl} is high.
+`UInt<1>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-type]).
+`Reset`{.firrtl} is an abstract reset whose behavior depends on reset inference.
+In the following example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.
 
 ``` firrtl
 wire myclock: Clock
@@ -1287,29 +1252,24 @@ regreset myreg: SInt, myclock, myreset, myinit
 ; ...
 ```
 
-A register is initialized with an indeterminate value (see
-[@sec:indeterminate-values]).
+A register is initialized with an indeterminate value (see [@sec:indeterminate-values]).
 
 ## Invalidates
 
-An invalidate statement is used to indicate that a circuit component contains
-indeterminate values (see [@sec:indeterminate-values]). It is specified as
-follows:
+An invalidate statement is used to indicate that a circuit component contains indeterminate values (see [@sec:indeterminate-values]).
+It is specified as follows:
 
 ``` firrtl
 wire w: UInt
 invalidate w
 ```
 
-Invalidate statements can be applied to any circuit component of any
-type. However, if the circuit component cannot be connected to, then the
-statement has no effect on the component. This allows the invalidate statement
-to be applied to any component, to explicitly ignore initialization coverage
-errors.
+Invalidate statements can be applied to any circuit component of any type.
+However, if the circuit component cannot be connected to, then the statement has no effect on the component.
+This allows the invalidate statement to be applied to any component, to explicitly ignore initialization coverage errors.
 
-The following example demonstrates the effect of invalidating a variety of
-circuit components with aggregate types. See [@sec:the-invalidate-algorithm] for
-details on the algorithm for determining what is invalidated.
+The following example demonstrates the effect of invalidating a variety of circuit components with aggregate types.
+See [@sec:the-invalidate-algorithm] for details on the algorithm for determining what is invalidated.
 
 ``` firrtl
 module MyModule :
@@ -1338,25 +1298,19 @@ The handing of invalidated components is covered in [@sec:indeterminate-values].
 
 ### The Invalidate Algorithm
 
-Invalidating a component with a ground type indicates that the component's value
-is undetermined if the component has sink or duplex flow (see [@sec:flows]).
+Invalidating a component with a ground type indicates that the component's value is undetermined if the component has sink or duplex flow (see [@sec:flows]).
 Otherwise, the component is unaffected.
 
-Invalidating a component with a vector type recursively invalidates each
-sub-element in the vector.
+Invalidating a component with a vector type recursively invalidates each sub-element in the vector.
 
-Invalidating a component with a bundle type recursively invalidates each
-sub-element in the bundle.
+Invalidating a component with a bundle type recursively invalidates each sub-element in the bundle.
 
-Components of reference and analog type are ignored, as are any reference or
-analog types within the component (as they cannot be connected to).
+Components of reference and analog type are ignored, as are any reference or analog types within the component (as they cannot be connected to).
 
 ## Attaches
 
-The `attach`{.firrtl} statement is used to attach two or more analog signals,
-defining that their values be the same in a commutative fashion that lacks the
-directionality of a regular connection. It can only be applied to signals with
-analog type, and each analog signal may be attached zero or more times.
+The `attach`{.firrtl} statement is used to attach two or more analog signals, defining that their values be the same in a commutative fashion that lacks the directionality of a regular connection.
+It can only be applied to signals with analog type, and each analog signal may be attached zero or more times.
 
 ``` firrtl
 wire x: Analog<2>
@@ -1368,14 +1322,11 @@ attach(z, y, x)   ; attach all three signals
 
 ## Nodes
 
-A node is simply a named intermediate value in a circuit. The node must be
-initialized to a value with a passive type and cannot be connected to. Nodes are
-often used to split a complicated compound expression into named
-sub-expressions.
+A node is simply a named intermediate value in a circuit.
+The node must be initialized to a value with a passive type and cannot be connected to.
+Nodes are often used to split a complicated compound expression into named sub-expressions.
 
-The following example demonstrates instantiating a node with the given name
-`mynode`{.firrtl} initialized with the output of a multiplexer (see
-[@sec:multiplexers]).
+The following example demonstrates instantiating a node with the given name `mynode`{.firrtl} initialized with the output of a multiplexer (see [@sec:multiplexers]).
 
 ``` firrtl
 wire pred: UInt<1>
@@ -1386,18 +1337,15 @@ node mynode = mux(pred, a, b)
 
 ## Conditionals
 
-Several statements provide branching in the data-flow and conditional control
-of verification constructs.
+Several statements provide branching in the data-flow and conditional control of verification constructs.
 
 ### When Statements
 
-Connections within a when statement that connect to previously declared
-components hold only when the given condition is high. The condition must have a
-1-bit unsigned integer type.
+Connections within a when statement that connect to previously declared components hold only when the given condition is high.
+The condition must have a 1-bit unsigned integer type.
 
-In the following example, the wire `x`{.firrtl} is connected to the input
-`a`{.firrtl} only when the `en`{.firrtl} signal is high. Otherwise, the wire
-`x`{.firrtl} is connected to the input `b`{.firrtl}.
+In the following example, the wire `x`{.firrtl} is connected to the input `a`{.firrtl} only when the `en`{.firrtl} signal is high.
+Otherwise, the wire `x`{.firrtl} is connected to the input `b`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1413,9 +1361,7 @@ module MyModule :
 
 #### Syntactic Shorthands
 
-The `else`{.firrtl} branch of a conditional statement may be omitted, in which
-case a default `else`{.firrtl} branch is supplied consisting of the empty
-statement.
+The `else`{.firrtl} branch of a conditional statement may be omitted, in which case a default `else`{.firrtl} branch is supplied consisting of the empty statement.
 
 Thus the following example:
 
@@ -1443,9 +1389,7 @@ module MyModule :
     skip
 ```
 
-To aid readability of long chains of conditional statements, the colon following
-the `else`{.firrtl} keyword may be omitted if the `else`{.firrtl} branch
-consists of a single conditional statement.
+To aid readability of long chains of conditional statements, the colon following the `else`{.firrtl} keyword may be omitted if the `else`{.firrtl} branch consists of a single conditional statement.
 
 Thus the following example:
 
@@ -1493,10 +1437,8 @@ module MyModule :
     connect x, d
 ```
 
-To additionally aid readability, a conditional statement where the contents of
-the `when`{.firrtl} branch consist of a single line may be combined into a
-single line. If an `else`{.firrtl} branch exists, then the `else`{.firrtl}
-keyword must be included on the same line.
+To additionally aid readability, a conditional statement where the contents of the `when`{.firrtl} branch consist of a single line may be combined into a single line.
+If an `else`{.firrtl} branch exists, then the `else`{.firrtl} keyword must be included on the same line.
 
 The following statement:
 
@@ -1507,8 +1449,7 @@ else :
   connect e, f
 ```
 
-can have the `when`{.firrtl} keyword, the `when`{.firrtl} branch, and the
-`else`{.firrtl} keyword expressed as a single line:
+can have the `when`{.firrtl} keyword, the `when`{.firrtl} branch, and the `else`{.firrtl} keyword expressed as a single line:
 
 ``` firrtl
 when c : connect a, b else :
@@ -1523,10 +1464,9 @@ when c : connect a, b else : connect e, f
 
 ### Match Statements
 
-Match statements are used to discriminate the active variant of an enumeration
-typed expression.  A match statement must exhaustively test every variant of an
-enumeration.  An optional binder may be specified to extract the data of the
-variant.
+Match statements are used to discriminate the active variant of an enumeration typed expression.
+A match statement must exhaustively test every variant of an enumeration.
+An optional binder may be specified to extract the data of the variant.
 
 ``` firrtl
 match x:
@@ -1538,10 +1478,8 @@ match x:
 
 ### Nested Declarations
 
-If a component is declared within a conditional statement, connections to the
-component are unaffected by the condition. In the following example, register
-`myreg1`{.firrtl} is always connected to `a`{.firrtl}, and register
-`myreg2`{.firrtl} is always connected to `b`{.firrtl}.
+If a component is declared within a conditional statement, connections to the component are unaffected by the condition.
+In the following example, register `myreg1`{.firrtl} is always connected to `a`{.firrtl}, and register `myreg2`{.firrtl} is always connected to `b`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1557,18 +1495,14 @@ module MyModule :
     connect myreg2, b
 ```
 
-Intuitively, a line can be drawn between a connection to a component and that
-component's declaration. All conditional statements that are crossed by the line
-apply to that connection.
+Intuitively, a line can be drawn between a connection to a component and that component's declaration.
+All conditional statements that are crossed by the line apply to that connection.
 
 ### Initialization Coverage
 
-Because of the conditional statement, it is possible to syntactically express
-circuits containing wires that have not been connected to under all conditions.
+Because of the conditional statement, it is possible to syntactically express circuits containing wires that have not been connected to under all conditions.
 
-In the following example, the wire `a`{.firrtl} is connected to the wire
-`w`{.firrtl} when `en`{.firrtl} is high, but it is not specified what is
-connected to `w`{.firrtl} when `en`{.firrtl} is low.
+In the following example, the wire `a`{.firrtl} is connected to the wire `w`{.firrtl} when `en`{.firrtl} is high, but it is not specified what is connected to `w`{.firrtl} when `en`{.firrtl} is low.
 
 ``` firrtl
 module MyModule :
@@ -1579,30 +1513,21 @@ module MyModule :
     connect w, a
 ```
 
-This is an illegal FIRRTL circuit and an error will be thrown during
-compilation. All wires, memory ports, instance ports, and module ports that can
-be connected to must be connected to under all conditions.  Registers do not
-need to be connected to under all conditions, as it will keep its previous value
-if unconnected.
+This is an illegal FIRRTL circuit and an error will be thrown during compilation.
+All wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
+Registers do not need to be connected to under all conditions, as it will keep its previous value if unconnected.
 
 ### Scoping
 
-The conditional statement creates a new *scope* within each of its
-`when`{.firrtl} and `else`{.firrtl} branches. It is an error to refer to any
-component declared within a branch after the branch has ended. As mention in
-[@sec:namespaces], circuit component declarations in a module must be unique
-within the module's flat namespace; this means that shadowing a component in an
-enclosing scope with a component of the same name inside a conditional statement
-is not allowed.
+The conditional statement creates a new *scope* within each of its `when`{.firrtl} and `else`{.firrtl} branches.
+It is an error to refer to any component declared within a branch after the branch has ended.
+As mention in [@sec:namespaces], circuit component declarations in a module must be unique within the module's flat namespace; this means that shadowing a component in an enclosing scope with a component of the same name inside a conditional statement is not allowed.
 
 ### Conditional Last Connect Semantics
 
-In the case where a connection to a circuit component is followed by a
-conditional statement containing a connection to the same component, the
-connection is overwritten only when the condition holds. Intuitively, a
-multiplexer is generated such that when the condition is low, the multiplexer
-returns the old value, and otherwise returns the new value.  For details about
-the multiplexer, see [@sec:multiplexers].
+In the case where a connection to a circuit component is followed by a conditional statement containing a connection to the same component, the connection is overwritten only when the condition holds.
+Intuitively, a multiplexer is generated such that when the condition is low, the multiplexer returns the old value, and otherwise returns the new value.
+For details about the multiplexer, see [@sec:multiplexers].
 
 The following example:
 
@@ -1626,10 +1551,8 @@ wire w: UInt
 connect w, mux(c, b, a)
 ```
 
-Because invalid statements assign indeterminate values to components, a FIRRTL
-Compiler is free to choose any specific value for an indeterminate value when
-resolving last connect semantics.  E.g., in the following circuit `w`{.firrtl}
-has an indeterminate value when `c`{.firrtl} is false.
+Because invalid statements assign indeterminate values to components, a FIRRTL Compiler is free to choose any specific value for an indeterminate value when resolving last connect semantics.
+E.g., in the following circuit `w`{.firrtl} has an indeterminate value when `c`{.firrtl} is false.
 
 ``` firrtl
 wire a: UInt
@@ -1640,8 +1563,7 @@ when c :
   connect w, a
 ```
 
-A FIRRTL compiler is free to optimize this to the following circuit by assuming
-that `w`{.firrtl} takes on the value of `a`{.firrtl} when `c`{.firrtl} is false.
+A FIRRTL compiler is free to optimize this to the following circuit by assuming that `w`{.firrtl} takes on the value of `a`{.firrtl} when `c`{.firrtl} is false.
 
 ``` firrtl
 wire a: UInt
@@ -1652,10 +1574,7 @@ connect w, a
 
 See [@sec:indeterminate-values] for more information on indeterminate values.
 
-The behavior of conditional connections to circuit components with aggregate
-types can be modeled by first expanding each connect into individual connect
-statements on its ground elements (see [@sec:the-connection-algorithm] for the
-connection algorithm) and then applying the conditional last connect semantics.
+The behavior of conditional connections to circuit components with aggregate types can be modeled by first expanding each connect into individual connect statements on its ground elements (see [@sec:the-connection-algorithm] for the connection algorithm) and then applying the conditional last connect semantics.
 
 For example, the following snippet:
 
@@ -1680,10 +1599,7 @@ connect w.a, mux(c, y.a, x.a)
 connect w.b, mux(c, y.b, x.b)
 ```
 
-Similar to the behavior of aggregate types under last connect semantics (see
-[@sec:last-connect-semantics]), the conditional connects to a sub-element of an
-aggregate component only generates a multiplexer for the sub-element that is
-overwritten.
+Similar to the behavior of aggregate types under last connect semantics (see [@sec:last-connect-semantics]), the conditional connects to a sub-element of an aggregate component only generates a multiplexer for the sub-element that is overwritten.
 
 For example, the following snippet:
 
@@ -1710,37 +1626,27 @@ connect w.b, x.b
 
 ## Memories
 
-A memory is an abstract representation of a hardware memory. It is characterized
-by the following parameters.
+A memory is an abstract representation of a hardware memory.
+It is characterized by the following parameters.
 
 1.  A passive type representing the type of each element in the memory.
 
-2.  A positive integer literal representing the number of elements in the
-    memory.
+2.  A positive integer literal representing the number of elements in the memory.
 
-3.  A variable number of named ports, each being a read port, a write port, or
-    readwrite port.
+3.  A variable number of named ports, each being a read port, a write port, or readwrite port.
 
-4.  A non-negative integer literal indicating the read latency, which is the
-    number of cycles after setting the port's read address before the
-    corresponding element's value can be read from the port's data field.
+4.  A non-negative integer literal indicating the read latency, which is the number of cycles after setting the port's read address before the corresponding element's value can be read from the port's data field.
 
-5.  A positive integer literal indicating the write latency, which is the number
-    of cycles after setting the port's write address and data before the
-    corresponding element within the memory holds the new value.
+5.  A positive integer literal indicating the write latency, which is the number of cycles after setting the port's write address and data before the corresponding element within the memory holds the new value.
 
-6.  A read-under-write flag indicating the behavior when a memory location is
-    written to while a read to that location is in progress.
+6.  A read-under-write flag indicating the behavior when a memory location is written to while a read to that location is in progress.
 
-Integer literals for the number of elements and the read/write latencies _may
-not be radix-encoded integer literals_.
+Integer literals for the number of elements and the read/write latencies _may not be radix-encoded integer literals_.
 
-The following example demonstrates instantiating a memory containing 256 complex
-numbers, each with 16-bit signed integer fields for its real and imaginary
-components. It has two read ports, `r1`{.firrtl} and `r2`{.firrtl}, and one
-write port, `w`{.firrtl}. It is combinationally read (read latency is zero
-cycles) and has a write latency of one cycle. Finally, its read-under-write
-behavior is undefined.
+The following example demonstrates instantiating a memory containing 256 complex numbers, each with 16-bit signed integer fields for its real and imaginary components.
+It has two read ports, `r1`{.firrtl} and `r2`{.firrtl}, and one write port, `w`{.firrtl}.
+It is combinationally read (read latency is zero cycles) and has a write latency of one cycle.
+Finally, its read-under-write behavior is undefined.
 
 ``` firrtl
 mem mymem :
@@ -1772,46 +1678,35 @@ In the example above, the type of `mymem`{.firrtl} is:
           mask: {real: UInt<1>, imag: UInt<1>}}}
 ```
 
-The following sections describe how a memory's field types are calculated and
-the behavior of each type of memory port.
+The following sections describe how a memory's field types are calculated and the behavior of each type of memory port.
 
 ### Read Ports
 
-If a memory is declared with element type `T`{.firrtl}, has a size less than or
-equal to $2^N$, then its read ports have type:
+If a memory is declared with element type `T`{.firrtl}, has a size less than or equal to $2^N$, then its read ports have type:
 
 ``` firrtl
 {addr: UInt<N>, en: UInt<1>, clk: Clock, flip data: T}
 ```
 
-If the `en`{.firrtl} field is high, then the element value associated with the
-address in the `addr`{.firrtl} field can be retrieved by reading from the
-`data`{.firrtl} field after the appropriate read latency. If the `en`{.firrtl}
-field is low, then the value in the `data`{.firrtl} field, after the appropriate
-read latency, is undefined. The port is driven by the clock signal in the
-`clk`{.firrtl} field.
+If the `en`{.firrtl} field is high, then the element value associated with the address in the `addr`{.firrtl} field can be retrieved by reading from the `data`{.firrtl} field after the appropriate read latency.
+If the `en`{.firrtl} field is low, then the value in the `data`{.firrtl} field, after the appropriate read latency, is undefined.
+The port is driven by the clock signal in the `clk`{.firrtl} field.
 
 ### Write Ports
 
-If a memory is declared with element type `T`{.firrtl}, has a size less than or
-equal to $2^N$, then its write ports have type:
+If a memory is declared with element type `T`{.firrtl}, has a size less than or equal to $2^N$, then its write ports have type:
 
 ``` firrtl
 {addr: UInt<N>, en: UInt<1>, clk: Clock, data: T, mask: M}
 ```
 
-where `M`{.firrtl} is the mask type calculated from the element type
-`T`{.firrtl}.  Intuitively, the mask type mirrors the aggregate structure of the
-element type except with all ground types replaced with a single bit unsigned
-integer type. The *non-masked portion* of the data value is defined as the set
-of data value leaf sub-elements where the corresponding mask leaf sub-element is
-high.
+where `M`{.firrtl} is the mask type calculated from the element type `T`{.firrtl}.
+Intuitively, the mask type mirrors the aggregate structure of the element type except with all ground types replaced with a single bit unsigned integer type.
+The *non-masked portion* of the data value is defined as the set of data value leaf sub-elements where the corresponding mask leaf sub-element is high.
 
-If the `en`{.firrtl} field is high, then the non-masked portion of the
-`data`{.firrtl} field value is written, after the appropriate write latency, to
-the location indicated by the `addr`{.firrtl} field. If the `en`{.firrtl} field
-is low, then no value is written after the appropriate write latency. The port
-is driven by the clock signal in the `clk`{.firrtl} field.
+If the `en`{.firrtl} field is high, then the non-masked portion of the `data`{.firrtl} field value is written, after the appropriate write latency, to the location indicated by the `addr`{.firrtl} field.
+If the `en`{.firrtl} field is low, then no value is written after the appropriate write latency.
+The port is driven by the clock signal in the `clk`{.firrtl} field.
 
 ### Readwrite Ports
 
@@ -1822,72 +1717,45 @@ Finally, the readwrite ports have type:
  wdata: T, wmask: M}
 ```
 
-A readwrite port is a single port that, on a given cycle, can be used either as
-a read or a write port. If the readwrite port is not in write mode (the
-`wmode`{.firrtl} field is low), then the `rdata`{.firrtl}, `addr`{.firrtl},
-`en`{.firrtl}, and `clk`{.firrtl} fields constitute its read port fields, and
-should be used accordingly. If the readwrite port is in write mode (the
-`wmode`{.firrtl} field is high), then the `wdata`{.firrtl}, `wmask`{.firrtl},
-`addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its write
-port fields, and should be used accordingly.
+A readwrite port is a single port that, on a given cycle, can be used either as a read or a write port.
+If the readwrite port is not in write mode (the `wmode`{.firrtl} field is low), then the `rdata`{.firrtl}, `addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its read port fields, and should be used accordingly.
+If the readwrite port is in write mode (the `wmode`{.firrtl} field is high), then the `wdata`{.firrtl}, `wmask`{.firrtl}, `addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its write port fields, and should be used accordingly.
 
 ### Read Under Write Behavior
 
-The read-under-write flag indicates the value held on a read port's
-`data`{.firrtl} field if its memory location is written to while it is reading.
-The flag may take on three settings: `old`{.firrtl}, `new`{.firrtl}, and
-`undefined`{.firrtl}.
+The read-under-write flag indicates the value held on a read port's `data`{.firrtl} field if its memory location is written to while it is reading.
+The flag may take on three settings: `old`{.firrtl}, `new`{.firrtl}, and `undefined`{.firrtl}.
 
-If the read-under-write flag is set to `old`{.firrtl}, then a read port always
-returns the value existing in the memory on the same cycle that the read was
-requested.
+If the read-under-write flag is set to `old`{.firrtl}, then a read port always returns the value existing in the memory on the same cycle that the read was requested.
 
-Assuming that a combinational read always returns the value stored in the memory
-(no write forwarding), then intuitively, this is modeled as a combinational read
-from the memory that is then delayed by the appropriate read latency.
+Assuming that a combinational read always returns the value stored in the memory (no write forwarding), then intuitively, this is modeled as a combinational read from the memory that is then delayed by the appropriate read latency.
 
-If the read-under-write flag is set to `new`{.firrtl}, then a read port always
-returns the value existing in the memory on the same cycle that the read was
-made available. Intuitively, this is modeled as a combinational read from the
-memory after delaying the read address by the appropriate read latency.
+If the read-under-write flag is set to `new`{.firrtl}, then a read port always returns the value existing in the memory on the same cycle that the read was made available.
+Intuitively, this is modeled as a combinational read from the memory after delaying the read address by the appropriate read latency.
 
-If the read-under-write flag is set to `undefined`{.firrtl}, then the value held
-by the read port after the appropriate read latency is undefined.
+If the read-under-write flag is set to `undefined`{.firrtl}, then the value held by the read port after the appropriate read latency is undefined.
 
-For the purpose of defining such collisions, an "active write port" is a write
-port or a readwrite port that is used to initiate a write operation on a given
-clock edge, where `en`{.firrtl} is set and, for a readwriter, `wmode`{.firrtl}
-is set. An "active read port" is a read port or a readwrite port that is used to
-initiate a read operation on a given clock edge, where `en`{.firrtl} is set and,
-for a readwriter, `wmode`{.firrtl} is not set.  Each operation is defined to be
-"active" for the number of cycles set by its corresponding latency, starting
-from the cycle where its inputs were provided to its associated port. Note that
-this excludes combinational reads, which are simply modeled as combinationally
-selecting from stored values
+For the purpose of defining such collisions, an "active write port" is a write port or a readwrite port that is used to initiate a write operation on a given clock edge, where `en`{.firrtl} is set and, for a readwriter, `wmode`{.firrtl} is set.
+An "active read port" is a read port or a readwrite port that is used to initiate a read operation on a given clock edge, where `en`{.firrtl} is set and, for a readwriter, `wmode`{.firrtl} is not set.
+Each operation is defined to be "active" for the number of cycles set by its corresponding latency, starting from the cycle where its inputs were provided to its associated port.
+Note that this excludes combinational reads, which are simply modeled as combinationally selecting from stored values.
 
-For memories with independently clocked ports, a collision between a read
-operation and a write operation with independent clocks is defined to occur when
-the address of an active write port and the address of an active read port are
-the same for overlapping clock periods, or when any portion of a read operation
-overlaps part of a write operation with a matching addresses. In such cases, the
-data that is read out of the read port is undefined.
+For memories with independently clocked ports, a collision between a read operation and a write operation with independent clocks is defined to occur when the address of an active write port and the address of an active read port are the same for overlapping clock periods, or when any portion of a read operation overlaps part of a write operation with a matching addresses.
+In such cases, the data that is read out of the read port is undefined.
 
 ### Write Under Write Behavior
 
-In all cases, if a memory location is written to by more than one port on the
-same cycle, the stored value is undefined.
+In all cases, if a memory location is written to by more than one port on the same cycle, the stored value is undefined.
 
 ### Constant memory type
 
-A memory with a constant data-type represents a ROM and may not have
-write-ports.  It is beyond the scope of this specification how ROMs are
-initialized.
+A memory with a constant data-type represents a ROM and may not have write-ports.
+It is beyond the scope of this specification how ROMs are initialized.
 
 ## Instances
 
-FIRRTL modules are instantiated with the instance statement. The following
-example demonstrates creating an instance named `myinstance`{.firrtl} of the
-`MyModule`{.firrtl} module within the top level module `Top`{.firrtl}.
+FIRRTL modules are instantiated with the instance statement.
+The following example demonstrates creating an instance named `myinstance`{.firrtl} of the `MyModule`{.firrtl} module within the top level module `Top`{.firrtl}.
 
 ``` firrtl
 circuit :
@@ -1899,39 +1767,28 @@ circuit :
     inst myinstance of MyModule
 ```
 
-The resulting instance has a bundle type. Each port of the instantiated module
-is represented by a field in the bundle with the same name and type as the
-port. The fields corresponding to input ports are flipped to indicate their data
-flows in the opposite direction as the output ports.  The `myinstance`{.firrtl}
-instance in the example above has type `{flip a:UInt, b:UInt}`{.firrtl}.
+The resulting instance has a bundle type.
+Each port of the instantiated module is represented by a field in the bundle with the same name and type as the port.
+The fields corresponding to input ports are flipped to indicate their data flows in the opposite direction as the output ports.
+The `myinstance`{.firrtl} instance in the example above has type `{flip a:UInt, b:UInt}`{.firrtl}.
 
-Modules have the property that instances can always be *inlined* into the parent
-module without affecting the semantics of the circuit.
+Modules have the property that instances can always be *inlined* into the parent module without affecting the semantics of the circuit.
 
-To disallow infinitely recursive hardware, modules cannot contain instances of
-itself, either directly, or indirectly through instances of other modules it
-instantiates.
+To disallow infinitely recursive hardware, modules cannot contain instances of itself, either directly, or indirectly through instances of other modules it instantiates.
 
 ## Stops
 
-The stop statement is used to halt simulations of the circuit. Backends are free
-to generate hardware to stop a running circuit for the purpose of debugging, but
-this is not required by the FIRRTL specification.
+The stop statement is used to halt simulations of the circuit.
+Backends are free to generate hardware to stop a running circuit for the purpose of debugging, but this is not required by the FIRRTL specification.
 
-A stop statement requires a clock signal, a halt condition signal that has a
-single bit unsigned integer type, and an integer exit code.
+A stop statement requires a clock signal, a halt condition signal that has a single bit unsigned integer type, and an integer exit code.
 
-For clocked statements that have side effects in the environment (stop, print,
-and verification statements), the order of execution of any such statements that
-are triggered on the same clock edge is determined by their syntactic order in
-the enclosing module. The order of execution of clocked, side-effect-having
-statements in different modules or with different clocks that trigger
-concurrently is undefined.
+For clocked statements that have side effects in the environment (stop, print, and verification statements), the order of execution of any such statements that are triggered on the same clock edge is determined by their syntactic order in the enclosing module.
+The order of execution of clocked, side-effect-having statements in different modules or with different clocks that trigger concurrently is undefined.
 
-The stop statement has an optional name attribute which can be used to attach
-metadata to the statement. The name is part of the module level
-namespace. However it can never be used in a reference since it is not of any
-valid type.
+The stop statement has an optional name attribute which can be used to attach metadata to the statement.
+The name is part of the module level namespace.
+However it can never be used in a reference since it is not of any valid type.
 
 ``` firrtl
 wire clk: Clock
@@ -1941,23 +1798,17 @@ stop(clk, halt, 42) : optional_name
 
 ## Formatted Prints
 
-The formatted print statement is used to print a formatted string during
-simulations of the circuit. Backends are free to generate hardware that relays
-this information to a hardware test harness, but this is not required by the
-FIRRTL specification.
+The formatted print statement is used to print a formatted string during simulations of the circuit.
+Backends are free to generate hardware that relays this information to a hardware test harness, but this is not required by the FIRRTL specification.
 
-A `printf`{.firrtl} statement requires a clock signal, a print condition signal,
-a format string, and a variable list of argument signals. The condition signal
-must be a single bit unsigned integer type, and the argument signals must each
-have a ground type.
+A `printf`{.firrtl} statement requires a clock signal, a print condition signal, a format string, and a variable list of argument signals.
+The condition signal must be a single bit unsigned integer type, and the argument signals must each have a ground type.
 
-For information about execution ordering of clocked statements with observable
-environmental side effects, see [@sec:stops].
+For information about execution ordering of clocked statements with observable environmental side effects, see [@sec:stops].
 
-The `printf`{.firrtl} statement has an optional name attribute which can be used
-to attach metadata to the statement. The name is part of the module level
-namespace. However it can never be used in a reference since it is not of any
-valid type.
+The `printf`{.firrtl} statement has an optional name attribute which can be used to attach metadata to the statement.
+The name is part of the module level namespace.
+However it can never be used in a reference since it is not of any valid type.
 
 ``` firrtl
 wire clk: Clock
@@ -1967,9 +1818,7 @@ wire b: UInt
 printf(clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b) : optional_name
 ```
 
-On each positive clock edge, when the condition signal is high, the
-`printf`{.firrtl} statement prints out the format string where its argument
-placeholders are substituted with the value of the corresponding argument.
+On each positive clock edge, when the condition signal is high, the `printf`{.firrtl} statement prints out the format string where its argument placeholders are substituted with the value of the corresponding argument.
 
 ### Format Strings
 
@@ -1997,36 +1846,28 @@ Format strings support the following escape characters:
 
 ## Verification
 
-To facilitate simulation, model checking and formal methods, there are three
-non-synthesizable verification statements available: assert, assume and
-cover. Each type of verification statement requires a clock signal, a predicate
-signal, an enable signal and a string literal.  The predicate and enable
-signals must have single bit unsigned integer type.  Assert and assume use the
-string as an explanatory message.  For cover statements the string indicates a
-suggested comment.  When an assert or assume is violated the explanatory
-message may be issued as guidance.  The explanatory message may be phrased as
-if prefixed by the words "Verifies that\...".
+To facilitate simulation, model checking and formal methods, there are three non-synthesizable verification statements available: assert, assume and cover.
+Each type of verification statement requires a clock signal, a predicate signal, an enable signal and a string literal.
+The predicate and enable signals must have single bit unsigned integer type.
+Assert and assume use the string as an explanatory message.
+For cover statements the string indicates a suggested comment.
+When an assert or assume is violated the explanatory message may be issued as guidance.
+The explanatory message may be phrased as if prefixed by the words "Verifies that\...".
 
-Backends are free to generate the corresponding model checking constructs in the
-target language, but this is not required by the FIRRTL specification. Backends
-that do not generate such constructs should issue a warning. For example, the
-SystemVerilog emitter produces SystemVerilog assert, assume and cover
-statements, but the Verilog emitter does not and instead warns the user if any
-verification statements are encountered.
+Backends are free to generate the corresponding model checking constructs in the target language, but this is not required by the FIRRTL specification.
+Backends that do not generate such constructs should issue a warning.
+For example, the SystemVerilog emitter produces SystemVerilog assert, assume and cover statements, but the Verilog emitter does not and instead warns the user if any verification statements are encountered.
 
-For information about execution ordering of clocked statements with observable
-environmental side effects, see [@sec:stops].
+For information about execution ordering of clocked statements with observable environmental side effects, see [@sec:stops].
 
-Any verification statement has an optional name attribute which can be used to
-attach metadata to the statement. The name is part of the module level
-namespace. However it can never be used in a reference since it is not of any
-valid type.
+Any verification statement has an optional name attribute which can be used to attach metadata to the statement.
+The name is part of the module level namespace.
+However it can never be used in a reference since it is not of any valid type.
 
 ### Assert
 
-The assert statement verifies that the predicate is true on the rising edge of
-any clock cycle when the enable is true. In other words, it verifies that enable
-implies predicate.
+The assert statement verifies that the predicate is true on the rising edge of any clock cycle when the enable is true.
+In other words, it verifies that enable implies predicate.
 
 ``` firrtl
 wire clk: Clock
@@ -2039,10 +1880,9 @@ assert(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 ### Assume
 
-The assume statement directs the model checker to disregard any states where the
-enable is true and the predicate is not true at the rising edge of the clock
-cycle. In other words, it reduces the states to be checked to only those where
-enable implies predicate is true by definition. In simulation, assume is treated
+The assume statement directs the model checker to disregard any states where the enable is true and the predicate is not true at the rising edge of the clock cycle.
+In other words, it reduces the states to be checked to only those where enable implies predicate is true by definition.
+In simulation, assume is treated
 as an assert.
 
 ``` firrtl
@@ -2056,10 +1896,8 @@ assume(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 ### Cover
 
-The cover statement verifies that the predicate is true on the rising edge of
-some clock cycle when the enable is true. In other words, it directs the model
-checker to find some way to make both enable and predicate true at some time
-step.
+The cover statement verifies that the predicate is true on the rising edge of some clock cycle when the enable is true.
+In other words, it directs the model checker to find some way to make both enable and predicate true at some time step.
 The string argument may be emitted as a comment with the cover.
 
 ``` firrtl
@@ -2073,25 +1911,16 @@ cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 ## Probes
 
-Probe references are created with `probe`{.firrtl} expressions, routed through
-the design using the `define`{.firrtl} statement, read using the
-`read`{.firrtl} expression (see [@sec:reading-probe-references]), and forced
-and released with `force`{.firrtl} and `release`{.firrtl} statements.
+Probe references are created with `probe`{.firrtl} expressions, routed through the design using the `define`{.firrtl} statement, read using the `read`{.firrtl} expression (see [@sec:reading-probe-references]), and forced and released with `force`{.firrtl} and `release`{.firrtl} statements.
 
 These statements are detailed below.
 
 ### Define
 
-Define statements are used to route references through the design, and may be
-used wherever is most convenient in terms of available identifiers -- their
-location is not significant other than scoping, and do not have last-connect
-semantics.  Every sink-flow probe must be the target of exactly one of these
-statements.
+Define statements are used to route references through the design, and may be used wherever is most convenient in terms of available identifiers -- their location is not significant other than scoping, and do not have last-connect semantics.
+Every sink-flow probe must be the target of exactly one of these statements.
 
-The define statement takes a sink-flow static reference target and sets it to
-the specified reference, which must either be a compatible probe expression or
-static reference source.
-
+The define statement takes a sink-flow static reference target and sets it to the specified reference, which must either be a compatible probe expression or static reference source.
 
 Example:
 
@@ -2112,8 +1941,7 @@ module Refs:
   define d = probe(clock)
 ```
 
-The target is not required to be only an identifier, it may be a field within a
-bundle or other statically known sub-element of an aggregate, for example:
+The target is not required to be only an identifier, it may be a field within a bundle or other statically known sub-element of an aggregate, for example:
 
 ```firrtl
 module Foo:
@@ -2130,20 +1958,15 @@ module Foo:
   define z[1] = probe(w)
 ```
 
-`RWProbe`{.firrtl} references to ports are not allowed on public-facing
-modules.
+`RWProbe`{.firrtl} references to ports are not allowed on public-facing modules.
 
-Define statements can set a `Probe`{.firrtl} to either a `Probe`{.firrtl} or
-`RWProbe`{.firrtl}, but a `RWProbe`{.firrtl} cannot be set to a
-`Probe`{.firrtl}.  The inner types of the two references must (recursively) be
-identical or identical with the destination containing uninferred versions of
-the corresponding element in the source type.  See
-[@sec:width-and-reset-inference] for details.
+Define statements can set a `Probe`{.firrtl} to either a `Probe`{.firrtl} or `RWProbe`{.firrtl}, but a `RWProbe`{.firrtl} cannot be set to a `Probe`{.firrtl}.
+The inner types of the two references must (recursively) be identical or identical with the destination containing uninferred versions of the corresponding element in the source type.
+See [@sec:width-and-reset-inference] for details.
 
 #### Probes and Passive Types
 
-While `Probe`{.firrtl} inner types are passive, the type of the probed
-static reference is not required to be:
+While `Probe`{.firrtl} inner types are passive, the type of the probed static reference is not required to be:
 
 ```firrtl
 module Foo :
@@ -2176,8 +1999,7 @@ module RefProducer :
 
 #### Forwarding References Upwards
 
-Define statements can be used to forward a child module's reference further up
-the hierarchy:
+Define statements can be used to forward a child module's reference further up the hierarchy:
 
 ```firrtl
 module Foo :
@@ -2191,8 +2013,7 @@ module Forward :
   define p = f.p
 ```
 
-Define statements may narrow a probe of an aggregate to a sub-element using
-static expression:
+Define statements may narrow a probe of an aggregate to a sub-element using static expression:
 
 ```firrtl
 module Foo :
@@ -2208,10 +2029,7 @@ module Forward :
 
 #### Forwarding References Downwards
 
-Define statements can also be used to forward references down the hierarchy
-using input reference-type ports, which are allowed but should be used
-carefully as they make it possible to express
-invalid reference paths.
+Define statements can also be used to forward references down the hierarchy using input reference-type ports, which are allowed but should be used carefully as they make it possible to express invalid reference paths.
 
 See [@sec:input-probe-references] for more details, a small example is given below:
 
@@ -2228,11 +2046,9 @@ module ForwardDownwards :
 
 ### Force and Release
 
-To override existing drivers for a `RWProbe`{.firrtl}, the `force`{.firrtl}
-statement is used, and released with `release`{.firrtl}.  Force statements are
-simulation-only constructs and may not be supported by all implementations.
-They are similar to the verification statements (e.g., `assert`{.firrtl}) in
-this regard.
+To override existing drivers for a `RWProbe`{.firrtl}, the `force`{.firrtl} statement is used, and released with `release`{.firrtl}.
+Force statements are simulation-only constructs and may not be supported by all implementations.
+They are similar to the verification statements (e.g., `assert`{.firrtl}) in this regard.
 
 These are two variants of each, enumerated below:
 
@@ -2243,11 +2059,9 @@ These are two variants of each, enumerated below:
 | force           | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
 | release         | (clock, condition, ref)      | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})    |
 
-Backends optionally generate corresponding constructs in the target language,
-or issue an warning.
+Backends optionally generate corresponding constructs in the target language, or issue an warning.
 
-The following `AddRefs`{.firrtl} module is used in the examples that follow for
-each construct.
+The following `AddRefs`{.firrtl} module is used in the examples that follow for each construct.
 
 ```firrtl
 module AddRefs:
@@ -2286,9 +2100,8 @@ module ForceAndRelease:
   release_initial(r.c)
 ```
 
-In this example, the output `o`{.firrtl} will be `3`.  Note that globally the
-last force statement overrides the others until another force or release
-including the target.
+In this example, the output `o`{.firrtl} will be `3`.
+Note that globally the last force statement overrides the others until another force or release including the target.
 
 Sample SystemVerilog output for the force and release statements would be:
 
@@ -2302,12 +2115,10 @@ initial begin
 end
 ```
 
-The `force_initial`{.firrtl} and `release_initial`{.firrtl} statements may
-occur under `when`{.firrtl} blocks which becomes a check of the condition
-first.  Note that this condition is only checked once and changes to it
-afterwards are irrelevant, and if executed the force will
-continue to be active.  For more control over their behavior, the other
-variants should be used.  Example:
+The `force_initial`{.firrtl} and `release_initial`{.firrtl} statements may occur under `when`{.firrtl} blocks which becomes a check of the condition first.
+Note that this condition is only checked once and changes to it afterwards are irrelevant, and if executed the force will continue to be active.
+For more control over their behavior, the other variants should be used.
+Example:
 
 ```firrtl
 when c : force_initial(ref, x)
@@ -2321,8 +2132,7 @@ initial if (c) force a.b = x;
 
 #### Force and Release
 
-These more detailed variants allow specifying a clock and condition for when
-activating the force or release behavior continuously:
+These more detailed variants allow specifying a clock and condition for when activating the force or release behavior continuously:
 
 ```firrtl
 module ForceAndRelease:
@@ -2338,9 +2148,8 @@ module ForceAndRelease:
   release(clock, not(cond), r.a)
 ```
 
-Which at the positive edge of `clock`{.firrtl} will either force or release
-`AddRefs.x`{.firrtl}.  Note that once active, these remain active regardless of
-the condition, until another force or release.
+Which at the positive edge of `clock`{.firrtl} will either force or release `AddRefs.x`{.firrtl}.
+Note that once active, these remain active regardless of the condition, until another force or release.
 
 Sample SystemVerilog output:
 
@@ -2354,13 +2163,11 @@ end
 ```
 
 Condition is checked in procedural block before the force, as shown above.
-When placed under `when`{.firrtl} blocks, condition is mixed in as with other
-statements (e.g., `assert`{.firrtl}).
+When placed under `when`{.firrtl} blocks, condition is mixed in as with other statements (e.g., `assert`{.firrtl}).
 
 #### Non-Passive Force Target
 
-Force on a non-passive bundle drives in the direction of each field's
-orientation.
+Force on a non-passive bundle drives in the direction of each field's orientation.
 
 Example:
 
@@ -2394,15 +2201,11 @@ module DUT :
 
 ## Property Assignments
 
-Connections between property typed expressions (see [@sec:property-types]) are
-not supported in the `connect`{.firrtl} statement (see [@sec:connects]).
+Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connects]).
 
-Instead, property typed expressions are assigned with the `propassign`{.firrtl}
-statement.
+Instead, property typed expressions are assigned with the `propassign`{.firrtl} statement.
 
-Property typed expressions have the normal rules for flow (see [@sec:flows]),
-but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In
-order for a property assignment to be legal, the following conditions must hold:
+Property typed expressions have the normal rules for flow (see [@sec:flows]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
 
 1. The left-hand and right-hand side expressions must be of property types.
 
@@ -2412,15 +2215,13 @@ order for a property assignment to be legal, the following conditions must hold:
 
 4. The flow of the right-hand side expression must be source.
 
-5. The left-hand side expression may be used as the left-hand side in at most
-   one property assignment.
+5. The left-hand side expression may be used as the left-hand side in at most one property assignment.
 
 6. The property assignment must not occur within a conditional scope.
 
 Note that property types are not legal for any expressions with duplex flow.
 
-The following example demonstrates a property assignment from a module's input
-property type port to its output property type port.
+The following example demonstrates a property assignment from a module's input property type port to its output property type port.
 
 ``` firrtl
 module Example:
@@ -2429,8 +2230,7 @@ module Example:
   propassign propOut, propIn
 ```
 
-The following example demonstrates a property assignment from a property literal
-expression to a module's output property type port.
+The following example demonstrates a property assignment from a property literal expression to a module's output property type port.
 
 ``` firrtl
 module Example:

@@ -569,7 +569,7 @@ Example:
 inst passthrough of Passthrough
 ```
 
-This assumes you have a module named `Passthrough` declared elsewhere in your FIRRTL design.
+This assumes you have a module named `Passthrough` declared elsewhere in the current circuit.
 The keyword `of`{.firrtl} is used instead of a colon (`:`{.firrtl}).
 
 The type of a submodule instance is bundle type determined by its ports.

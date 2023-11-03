@@ -469,8 +469,7 @@ They are: nodes, wires, registers, output ports, input ports, submodule instance
 
 Circuit components can be connected together in the hardware (see [@sec:connects]).
 
-Each circuit component in a module is associated
-with a type called its type ([@sec:types]).
+Each circuit component in a module is associated with a type called its type ([@sec:types]).
 This is the type of data that travels across the component.
 It is used to determine the legality of connections.
 
@@ -490,8 +489,7 @@ The type of a node is the type of the expression given in the definition.
 
 ## Wires
 
-Wires represent named expressions whose value is determined
-by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
+Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
 Also unlike nodes, the type of a wire must be explicitly declared.
 
 Example:
@@ -577,8 +575,7 @@ inst passthrough of Passthrough
 ```
 
 This assumes you have a module named `Passthrough` declared elsewhere in your FIRRTL design.
-The keyword `of`{.firrtl} is used instead of the colon (`:`{.firrtl})
-since `Passthrough` is not a type.
+The keyword `of`{.firrtl} is used instead of the colon (`:`{.firrtl}) since `Passthrough` is not a type.
 
 The type of a submodule instance is bundle type determined by its ports.
 Each port creates a field in the bundle of the same name.

@@ -2240,19 +2240,14 @@ module Example:
 
 # Expressions
 
-FIRRTL expressions are used for creating constant integers, for creating
-literal property type expressions, for referring to a declared circuit
-component, for statically and dynamically accessing a nested element within a
-component, for creating multiplexers, for performing primitive operations, and
-for reading a remote reference to a probe.
+FIRRTL expressions are used for creating constant integers, for creating literal property type expressions, for referring to a declared circuit component, for statically and dynamically accessing a nested element within a component, for creating multiplexers, for performing primitive operations, and for reading a remote reference to a probe.
 
 ## Constant Integer Expressions
 
-A constant unsigned or signed integer expression can be created from an integer
-literal or radix-specified integer literal.  An optional positive bit width may
-be specified. Constant integer expressions are of constant type.  All of the
-following examples create a 10-bit unsigned constant integer expressions
-representing the number `42`:
+A constant unsigned or signed integer expression can be created from an integer literal or radix-specified integer literal.
+An optional positive bit width may be specified.
+Constant integer expressions are of constant type.
+All of the following examples create a 10-bit unsigned constant integer expressions representing the number `42`:
 
 ``` firrtl
 UInt<10>(42)
@@ -2262,10 +2257,9 @@ UInt<10>(0h2A)
 UInt<10>(0h2a)
 ```
 
-Note that it is an error to supply a bit width that is not large enough to fit
-the given value. If the bit width is omitted, then the minimum number of bits
-necessary to fit the given value will be inferred.  All of the following will
-infer a bit width of five:
+Note that it is an error to supply a bit width that is not large enough to fit the given value.
+If the bit width is omitted, then the minimum number of bits necessary to fit the given value will be inferred.
+All of the following will infer a bit width of five:
 
 ``` firrtl
 UInt(42)
@@ -2275,9 +2269,8 @@ UInt(0h2A)
 UInt(0h2a)
 ```
 
-Signed constant integer expressions may be created from a signed integer literal
-or signed radix-encoded integer literal.  All of the following examples create
-a 10-bit signed hardware integer representing the number `-42`:
+Signed constant integer expressions may be created from a signed integer literal or signed radix-encoded integer literal.
+All of the following examples create a 10-bit signed hardware integer representing the number `-42`:
 
 ``` firrtl
 SInt<10>(-42)
@@ -2287,8 +2280,8 @@ SInt<10>(-0h2A)
 SInt<10>(-0h2a)
 ```
 
-Signed constant integer expressions may also have an inferred width.  All of the
-following examples create and infer a 6-bit signed integer with value `-42`:
+Signed constant integer expressions may also have an inferred width.
+All of the following examples create and infer a 6-bit signed integer with value `-42`:
 
 ``` firrtl
 SInt(-42)
@@ -2301,14 +2294,12 @@ SInt(-0h2a)
 ## Property Literal Expressions
 
 A literal property type expression can be created for a given property type.
-The property type name is followed by an appropriate literal value for the
-property type, enclosed in parentheses.
+The property type name is followed by an appropriate literal value for the property type, enclosed in parentheses.
 
 ### Integer Property Literal Expresssions
 
-A literal `Integer` property type expression can be created from an integer
-literal. The following examples show literal `Integer` property type
-expressions.
+A literal `Integer` property type expression can be created from an integer literal.
+The following examples show literal `Integer` property type expressions.
 
 ``` firrtl
 Integer(42)
@@ -2317,10 +2308,8 @@ Integer(-42)
 
 ## Enum Expressions
 
-An enumeration can be constructed by applying an enumeration type to a variant
-tag and a data value expression. The data value expression may be omitted when
-the data type is `UInt<0>(0)`{.firrtl}, where it is implicitly defined to be
-`UInt<0>(0)`{.firrtl}.
+An enumeration can be constructed by applying an enumeration type to a variant tag and a data value expression.
+The data value expression may be omitted when the data type is `UInt<0>(0)`{.firrtl}, where it is implicitly defined to be `UInt<0>(0)`{.firrtl}.
 
 ``` firrtl
 {|a, b, c|}(a)
@@ -2329,13 +2318,10 @@ the data type is `UInt<0>(0)`{.firrtl}, where it is implicitly defined to be
 
 ## References
 
-A reference is simply a name that refers to a previously declared circuit
-component. It may refer to a module port, node, wire, register, instance, or
-memory.
+A reference is simply a name that refers to a previously declared circuit component.
+It may refer to a module port, node, wire, register, instance, or memory.
 
-The following example connects a reference expression `in`{.firrtl}, referring
-to the previously declared port `in`{.firrtl}, to the reference expression
-`out`{.firrtl}, referring to the previously declared port `out`{.firrtl}.
+The following example connects a reference expression `in`{.firrtl}, referring to the previously declared port `in`{.firrtl}, to the reference expression `out`{.firrtl}, referring to the previously declared port `out`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -2344,30 +2330,22 @@ module MyModule :
   connect out, in
 ```
 
-In the rest of the document, for brevity, the names of components will be used
-to refer to a reference expression to that component. Thus, the above example
-will be rewritten as "the port `in`{.firrtl} is connected to the port
-`out`{.firrtl}".
+In the rest of the document, for brevity, the names of components will be used to refer to a reference expression to that component.
+Thus, the above example will be rewritten as "the port `in`{.firrtl} is connected to the port `out`{.firrtl}".
 
 ### Static Reference Expressions
 
-Static references start with an identifier, optionally followed by sub-fields
-or sub-indices selecting a particular sub-element.  Sub-accesses are not
-allowed.
+Static references start with an identifier, optionally followed by sub-fields or sub-indices selecting a particular sub-element.
+Sub-accesses are not allowed.
 
-Define statements must have static references as their target, and their source
-must be either a static reference or a probe expression whose argument
-is a static reference.
+Define statements must have static references as their target, and their source must be either a static reference or a probe expression whose argument is a static reference.
 
 ## Sub-fields
 
-The sub-field expression refers to a sub-element of an expression with a bundle
-type.  If the expression is of a constant bundle type, the sub-element shall be
-of a constant type (`const`{.firrtl} propagates from the bundle to the element
-on indexing).
+The sub-field expression refers to a sub-element of an expression with a bundle type.
+If the expression is of a constant bundle type, the sub-element shall be of a constant type (`const`{.firrtl} propagates from the bundle to the element on indexing).
 
-The following example connects the `in`{.firrtl} port to the `a`{.firrtl}
-sub-element of the `out`{.firrtl} port.
+The following example connects the `in`{.firrtl} port to the `a`{.firrtl} sub-element of the `out`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
@@ -2385,8 +2363,7 @@ module MyModule :
   connect out.a, in ; out.a is of type const UInt
 ```
 
-The following example is the same as above, but with a bundle with a constant
-field.
+The following example is the same as above, but with a bundle with a constant field.
 
 ``` firrtl
 module MyModule :
@@ -2395,8 +2372,7 @@ module MyModule :
   connect out.a, in ; out.a is of type const UInt
 ```
 
-A sub-field referring to a field whose name is a literal identifier is shown
-below:
+A sub-field referring to a field whose name is a literal identifier is shown below:
 
 ``` firrtl
 module MyModule :
@@ -2407,14 +2383,11 @@ module MyModule :
 
 ## Sub-indices
 
-The sub-index expression statically refers, by index, to a sub-element of an
-expression with a vector type. The index must be a non-negative integer and
-cannot be equal to or exceed the length of the vector it indexes.  If the
-expression is of a constant vector type, the sub-element shall be of a constant
-type.
+The sub-index expression statically refers, by index, to a sub-element of an expression with a vector type.
+The index must be a non-negative integer and cannot be equal to or exceed the length of the vector it indexes.
+If the expression is of a constant vector type, the sub-element shall be of a constant type.
 
-The following example connects the `in`{.firrtl} port to the fifth sub-element
-of the `out`{.firrtl} port.
+The following example connects the `in`{.firrtl} port to the fifth sub-element of the `out`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
@@ -2435,17 +2408,14 @@ module MyModule :
 
 ## Sub-accesses
 
-The sub-access expression dynamically refers to a sub-element of a vector-typed
-expression using a calculated index. The index must be an expression with an
-unsigned integer type.  If the expression is of a constant vector type, the
-sub-element shall be of a constant type.  An access to an out-of-bounds element
-results in an indeterminate value (see [@sec:indeterminate-values]).  Each
-out-of-bounds element is a different indeterminate value.  Sub-access operations
-with constant index may be converted to sub-index operations even though it
-converts indeterminate-value-on-out-of-bounds behavior to a compile-time error.
+The sub-access expression dynamically refers to a sub-element of a vector-typed expression using a calculated index.
+The index must be an expression with an unsigned integer type.
+If the expression is of a constant vector type, the sub-element shall be of a constant type.
+An access to an out-of-bounds element results in an indeterminate value (see [@sec:indeterminate-values]).
+Each out-of-bounds element is a different indeterminate value.
+Sub-access operations with constant index may be converted to sub-index operations even though it converts indeterminate-value-on-out-of-bounds behavior to a compile-time error.
 
-The following example connects the n'th sub-element of the `in`{.firrtl} port to
-the `out`{.firrtl} port.
+The following example connects the n'th sub-element of the `in`{.firrtl} port to the `out`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
@@ -2455,9 +2425,7 @@ module MyModule :
   connect out, in[n]
 ```
 
-A connection from a sub-access expression can be modeled by conditionally
-connecting from every sub-element in the vector, where the condition holds when
-the dynamic index is equal to the sub-element's static index.
+A connection from a sub-access expression can be modeled by conditionally connecting from every sub-element in the vector, where the condition holds when the dynamic index is equal to the sub-element's static index.
 
 ``` firrtl
 module MyModule :
@@ -2474,9 +2442,8 @@ module MyModule :
     invalidate out
 ```
 
-The following example connects the `in`{.firrtl} port to the n'th sub-element of
-the `out`{.firrtl} port. All other sub-elements of the `out`{.firrtl} port are
-connected from the corresponding sub-elements of the `default`{.firrtl} port.
+The following example connects the `in`{.firrtl} port to the n'th sub-element of the `out`{.firrtl} port.
+All other sub-elements of the `out`{.firrtl} port are connected from the corresponding sub-elements of the `default`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
@@ -2488,9 +2455,7 @@ module MyModule :
   connect out[n], in
 ```
 
-A connection to a sub-access expression can be modeled by conditionally
-connecting to every sub-element in the vector, where the condition holds when
-the dynamic index is equal to the sub-element's static index.
+A connection to a sub-access expression can be modeled by conditionally connecting to every sub-element in the vector, where the condition holds when the dynamic index is equal to the sub-element's static index.
 
 ``` firrtl
 module MyModule :
@@ -2507,10 +2472,8 @@ module MyModule :
     connect out[2], in
 ```
 
-The following example connects the `in`{.firrtl} port to the m'th
-`UInt`{.firrtl} sub-element of the n'th vector-typed sub-element of the
-`out`{.firrtl} port. All other sub-elements of the `out`{.firrtl} port are
-connected from the corresponding sub-elements of the `default`{.firrtl} port.
+The following example connects the `in`{.firrtl} port to the m'th `UInt`{.firrtl} sub-element of the n'th vector-typed sub-element of the `out`{.firrtl} port.
+All other sub-elements of the `out`{.firrtl} port are connected from the corresponding sub-elements of the `default`{.firrtl} port.
 
 ``` firrtl
 module MyModule :
@@ -2523,10 +2486,8 @@ module MyModule :
   connect out[n][m], in
 ```
 
-A connection to an expression containing multiple nested sub-access expressions
-can also be modeled by conditionally connecting to every sub-element in the
-expression. However the condition holds only when all dynamic indices are equal
-to all of the sub-element's static indices.
+A connection to an expression containing multiple nested sub-access expressions can also be modeled by conditionally connecting to every sub-element in the expression.
+However the condition holds only when all dynamic indices are equal to all of the sub-element's static indices.
 
 ``` firrtl
 module MyModule :
@@ -2548,12 +2509,10 @@ module MyModule :
 
 ## Multiplexers
 
-A multiplexer outputs one of two input expressions depending on the value of an
-unsigned selection signal.
+A multiplexer outputs one of two input expressions depending on the value of an unsigned selection signal.
 
-The following example connects to the `c`{.firrtl} port the result of selecting
-between the `a`{.firrtl} and `b`{.firrtl} ports. The `a`{.firrtl} port is
-selected when the `sel`{.firrtl} signal is high, otherwise the `b`{.firrtl} port
+The following example connects to the `c`{.firrtl} port the result of selecting between the `a`{.firrtl} and `b`{.firrtl} ports.
+The `a`{.firrtl} port is selected when the `sel`{.firrtl} signal is high, otherwise the `b`{.firrtl} port
 is selected.
 
 ``` firrtl
@@ -2579,14 +2538,12 @@ A multiplexer expression is legal only if the following holds.
 
 1. The types of the two input expressions are equivalent.
 
-1. The types of the two input expressions are passive (see
-   [@sec:passive-types]).
+1. The types of the two input expressions are passive (see [@sec:passive-types]).
 
 ## Primitive Operations
 
-All fundamental operations on ground types are expressed as a FIRRTL primitive
-operation. In general, each operation takes some number of argument expressions,
-along with some number of integer literal parameters.
+All fundamental operations on ground types are expressed as a FIRRTL primitive operation.
+In general, each operation takes some number of argument expressions, along with some number of integer literal parameters.
 
 The general form of a primitive operation is expressed as follows:
 
@@ -2594,21 +2551,17 @@ The general form of a primitive operation is expressed as follows:
 op(arg0, arg1, ..., argn, int0, int1, ..., intm)
 ```
 
-The following examples of primitive operations demonstrate adding two
-expressions, `a`{.firrtl} and `b`{.firrtl}, shifting expression `a`{.firrtl}
-left by 3 bits, selecting the fourth bit through and including the seventh bit
-in the `a`{.firrtl} expression, and interpreting the expression `x`{.firrtl} as
+The following examples of primitive operations demonstrate adding two expressions, `a`{.firrtl} and `b`{.firrtl}, shifting expression `a`{.firrtl} left by 3 bits, selecting the fourth bit through and including the seventh bit in the `a`{.firrtl} expression, and interpreting the expression `x`{.firrtl} as
 a Clock typed signal.
 
-``` firrtl
+```firrtl
 add(a, b)
 shl(a, 3)
 bits(a, 7, 4)
 asClock(x)
 ```
 
-[@sec:primitive-operations] will describe the format and semantics of each
-primitive operation.
+[@sec:primitive-operations] will describe the format and semantics of each primitive operation.
 
 ## Reading Probe References
 
@@ -2628,8 +2581,7 @@ module Bar :
   connect x, read(f.p) ; indirectly access the probed data
 ```
 
-Indexing statically (sub-field, sub-index) into a probed value is allowed as
-part of the read:
+Indexing statically (sub-field, sub-index) into a probed value is allowed as part of the read:
 
 ```firrtl
 module Foo :
@@ -2643,31 +2595,25 @@ module Bar :
   connect x, read(f.p.b) ; indirectly access the probed data
 ```
 
-Read operations can be used anywhere a signal of the same underlying
-type can be used, such as the following:
+Read operations can be used anywhere a signal of the same underlying type can be used, such as the following:
 
 ```firrtl
   connect x, add(read(f.p).a, read(f.p).b)
 ```
 
-The source of the probe must reside at or below the point of the
-`read`{.firrtl} expression in the design hierarchy.  See
-[@sec:invalid-input-reference] for an example of an invalid `read`{.firrtl} of
-an input reference.
+The source of the probe must reside at or below the point of the `read`{.firrtl} expression in the design hierarchy.
+See [@sec:invalid-input-reference] for an example of an invalid `read`{.firrtl} of an input reference.
 
 ## Probe
 
 Probe references are generated with probe expressions.
 
-The probe expression creates a reference to a read-only or force-able view of
-the data underlying the specified reference expression.
+The probe expression creates a reference to a read-only or force-able view of the data underlying the specified reference expression.
 
-The type of the produced probe reference is always passive, but the probed
-expression may not be.  Memories and their ports are not supported as probe
-targets.
+The type of the produced probe reference is always passive, but the probed expression may not be.
+Memories and their ports are not supported as probe targets.
 
-There are two probe varieties: `probe`{.firrtl} and `rwprobe`{.firrtl} for
-producing probes of type `Probe`{.firrtl} and `RWProbe`{.firrtl}, respectively.
+There are two probe varieties: `probe`{.firrtl} and `rwprobe`{.firrtl} for producing probes of type `Probe`{.firrtl} and `RWProbe`{.firrtl}, respectively.
 
 The following example exports a probe reference to a port:
 
@@ -2681,8 +2627,7 @@ module MyModule :
 
 The probed expression must be a static reference.
 
-See [@sec:probe-types;@sec:probe] for more details on probe references and
-their use.
+See [@sec:probe-types;@sec:probe] for more details on probe references and their use.
 
 
 # Primitive Operations {#sec:primitive-operations}

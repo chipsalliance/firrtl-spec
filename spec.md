@@ -541,7 +541,7 @@ For both variants of register, the type is given after the colon (`:`{.firrtl}).
 
 Semantically, registers become flip-flops in the design.
 The next value is latched on the positive edge of the clock.
-For registers without a reset, the initial value is indeterminate (see [@sec:indeterminate-values]).
+The initial value of a register is indeterminate (see [@sec:indeterminate-values]).
 
 
 ## Output Ports and Input Ports

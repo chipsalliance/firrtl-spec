@@ -3107,10 +3107,8 @@ The flow of all other expressions are source.
 # Width Inference
 
 For all circuit components declared with unspecified widths,
-the FIRRTL compiler will infer the minimum possible width that
-maintains the legality of all its incoming connections.
-If a circuit component has no incoming connections, and the width is unspecified,
-then an error is thrown to indicate that the width could not be inferred.
+the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
+If a circuit component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
 
 For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
 

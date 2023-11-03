@@ -480,7 +480,7 @@ Nodes are named expressions in FIRRTL.
 Example:
 
 ```firrtl
-    node mynode = and(in, UInt<4>(1))
+node mynode = and(in, UInt<4>(1))
 ```
 
 The type of a node is the type of the expression given in the definition.
@@ -493,9 +493,9 @@ Wires represent named expressions whose value is determined by FIRRTL `connect`{
 Example:
 
 ``` firrtl
-    wire mywire: UInt<1>
+wire mywire: UInt<1>
 
-    connect mywire, UInt<1>(0)
+connect mywire, UInt<1>(0)
 ```
 
 Unlike nodes, the type of a wire must be explicitly declared.
@@ -551,8 +551,8 @@ The way a module interacts with the outside world is through its ports.
 Example:
 
 ``` firrtl
-  input myinput : UInt<1>
-  output myinput : SInt<8>
+input myinput : UInt<1>
+output myinput : SInt<8>
 ```
 
 For both variants of port, the type is given after the colon (`:`{.firrtl}).

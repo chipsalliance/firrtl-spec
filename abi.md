@@ -1,10 +1,3 @@
----
-author:
-- The FIRRTL Specification Contributors
-title: Specification for the FIRRTL ABI
-revisionHistoryAbi: true
----
-
 # Introduction
 
 FIRRTL defines a language/IR for describing synchronous hardware circuits.  This

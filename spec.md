@@ -1,10 +1,3 @@
----
-author:
-- The FIRRTL Specification Contributors
-title: Specification for the FIRRTL Language
-revisionHistorySpec: true
----
-
 # Introduction
 
 ## Background

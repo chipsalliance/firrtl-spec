@@ -599,7 +599,7 @@ Example:
 
 ```firrtl
 mem mymem :
-  data-type => {real:SInt<16>, imag:SInt<16>}
+  data-type => { real:SInt<16>, imag:SInt<16> }
   depth => 256
   reader => r1
   reader => r2

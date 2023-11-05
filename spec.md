@@ -3379,7 +3379,7 @@ decl_intmodule =
   "intmodule" , id , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     "intrinsic" , "=" , id , newline ,
-    { "parameter" , "=" , ( int | string_dq ) , newline } ,
+    { "parameter" , id , "=" , ( int | string_dq ) , newline } ,
   dedent ;
 
 decl_group =

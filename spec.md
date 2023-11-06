@@ -472,7 +472,6 @@ Circuit components can be connected together (see [@sec:connects]).
 Each circuit component in a module has a type ([@sec:types]).
 It is used to determine the legality of connections.
 
-
 ## Nodes
 
 Nodes are named expressions in FIRRTL.
@@ -484,7 +483,6 @@ node mynode = and(in, UInt<4>(1))
 ```
 
 The type of a node is the type of the expression given in the definition.
-
 
 ## Wires
 
@@ -499,7 +497,6 @@ connect mywire, UInt<1>(0)
 
 Unlike nodes, the type of a wire must be explicitly declared.
 The type of a wire is given after the colon (`:`{.firrtl}).
-
 
 ## Registers
 
@@ -527,6 +524,7 @@ reg myreg : SInt, myclock
 wire myclock : Clock
 reg myreg : SInt, myclock
 ```
+
 ```firrtl
 wire myclock : Clock
 wire myreset : UInt<1>
@@ -539,7 +537,6 @@ For both variants of register, the type is given after the colon (`:`{.firrtl}).
 Semantically, registers become flip-flops in the design.
 The next value is latched on the positive edge of the clock.
 The initial value of a register is indeterminate (see [@sec:indeterminate-values]).
-
 
 ## Output Ports and Input Ports
 
@@ -566,7 +563,7 @@ Example:
 inst passthrough of Passthrough
 ```
 
-This assumes you have a module named `Passthrough`{.firrtl} declared elsewhere in the current circuit.
+This assumes you have a `module`, `extmodule`, or `intmodule` named `Passthrough`{.firrtl} declared elsewhere in the current circuit.
 The keyword `of`{.firrtl} is used instead of a colon (`:`{.firrtl}).
 
 The type of a submodule instance is bundle type determined by its ports.
@@ -587,7 +584,6 @@ The type of the submodule instance `passthrough`{.firrtl} above is thus:
 ```firrtl
 { flip in : UInt<8>, out : UInt<8> }
 ```
-
 
 ## Memories
 
@@ -613,7 +609,6 @@ The type named in `data-type`{.firrtl} must be passive.
 It indicates the type of the data being stored inside of the memory.
 
 See [@sec:mem] for more details.
-
 
 # Types
 
@@ -1191,7 +1186,7 @@ It is, for example, expected that a module with a constant input port be fully c
 
 Stateful elements, such as registers and memories, may contain data of aggregate types.
 Registers with bundle types are especially common.
-However, when using bundle types in stateful elements, the notion of `flip` is meaningless.
+However, when using bundle types in stateful elements, the notion of `flip` does not make sense.
 There is no directionality to the data inside a register; the data just *is*.
 
 A passive type is a type which does not make use of `flip`.
@@ -1371,8 +1366,7 @@ See [@sec:wires].
 ## Registers
 
 A register is a stateful circuit component.
-Reads from a register return the current value of the element,
-writes are not visible until after the next positive edge of the register's clock.
+Reads from a register return the current value of the element, writes are not visible until after the next positive edge of the register's clock.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.
 The type of a register must be a passive type (see [@sec:passive-types]) and may not be `const`{.firrtl}.
@@ -1381,9 +1375,7 @@ Registers may be declared without a reset using the `reg`{.firrtl} syntax and wi
 
 ### Registers without Reset
 
-The following example demonstrates instantiating a register with the given name
-`myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal
-`myclock`{.firrtl}.
+The following example demonstrates instantiating a register with the given name `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal `myclock`{.firrtl}.
 
 ``` firrtl
 wire myclock: Clock
@@ -3793,9 +3785,7 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
 
-(* Fileinfo communicates Chisel source file and line/column info *)
-linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
-lineinfo = string, " ", linecol ;
+(* Tokens: Fileinfo *)
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 lineinfo = string, " ", linecol ;
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;

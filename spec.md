@@ -1162,6 +1162,29 @@ Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}
 
 Two property types are equivalent if they are the same concrete property type.
 
+# Connections
+
+## Flow
+
+An expression's flow partially determines the legality of connecting to and from the expression.
+Every expression is classified as either *source*, *sink*, or *duplex*.
+For details on connection rules refer back to [@sec:connects].
+
+The flow of a reference to a declared circuit component depends on the kind of circuit component.
+A reference to an input port, an instance, a memory, and a node, is a source.
+A reference to an output port is a sink. A reference to a wire or register is duplex.
+
+The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.
+
+The flow of a sub-field expression depends upon the orientation of the field.
+If the field is not flipped, its flow is the same flow as the bundle-typed expression it selects its field from.
+If the field is flipped, then its flow is the reverse of the flow of the bundle-typed expression it selects its field from.
+The reverse of source is sink, and vice-versa.
+The reverse of duplex remains duplex.
+
+The flow of all other expressions are source.
+
+
 # Statements
 
 A module body consists of a sequence of statements.
@@ -2730,26 +2753,6 @@ module MyModule :
 The probed expression must be a static reference.
 
 See [@sec:probe-types;@sec:probe] for more details on probe references and their use.
-
-# Flows
-
-An expression's flow partially determines the legality of connecting to and from the expression.
-Every expression is classified as either *source*, *sink*, or *duplex*.
-For details on connection rules refer back to [@sec:connects].
-
-The flow of a reference to a declared circuit component depends on the kind of circuit component.
-A reference to an input port, an instance, a memory, and a node, is a source.
-A reference to an output port is a sink. A reference to a wire or register is duplex.
-
-The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.
-
-The flow of a sub-field expression depends upon the orientation of the field.
-If the field is not flipped, its flow is the same flow as the bundle-typed expression it selects its field from.
-If the field is flipped, then its flow is the reverse of the flow of the bundle-typed expression it selects its field from.
-The reverse of source is sink, and vice-versa.
-The reverse of duplex remains duplex.
-
-The flow of all other expressions are source.
 
 # Width Inference
 

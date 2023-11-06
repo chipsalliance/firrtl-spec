@@ -2789,271 +2789,6 @@ The probed expression must be a static reference.
 
 See [@sec:probe-types;@sec:probe] for more details on probe references and their use.
 
-
-# Primitive Operations {#sec:primitive-operations}
-
-The arguments of all primitive operations must be expressions with ground types, while their parameters are integer literals.
-Each specific operation can place additional restrictions on the number and types of their arguments and parameters.
-Primitive operations may have all their arguments of constant type, in which case their return type is of constant type.
-If the operation has a mixed constant and non-constant arguments, the result is non-constant.
-
-Notationally, the width of an argument e is represented as w~e~.
-
-## Add Operation
-
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| add  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
-|      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
-
-The add operation result is the sum of e1 and e2 without loss of precision.
-
-## Subtract Operation
-
-
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| sub  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
-|      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
-
-The subtract operation result is e2 subtracted from e1, without loss of precision.
-
-## Multiply Operation
-
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| mul  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | w~e1~+w~e2~                 |
-|      |           |            | (SInt,SInt)   | SInt        | w~e1~+w~e2~                 |
-
-The multiply operation result is the product of e1 and e2, without loss of precision.
-
-## Divide Operation
-
-
-| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
-|------|-----------|------------|-------------|-------------|--------------|
-| div  | (num,den) | ()         | (UInt,UInt) | UInt        | w~num~       |
-|      |           |            | (SInt,SInt) | SInt        | w~num~+1     |
-
-The divide operation divides num by den, truncating the fractional portion of the result.
-This is equivalent to rounding the result towards zero.
-The result of a division where den is zero is undefined.
-
-## Modulus Operation
-
-| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
-|------|-----------|------------|-------------|-------------|--------------------|
-| rem  | (num,den) | ()         | (UInt,UInt) | UInt        | min(w~num~,w~den~) |
-|      |           |            | (SInt,SInt) | SInt        | min(w~num~,w~den~) |
-
-The modulus operation yields the remainder from dividing num by den, keeping the sign of the numerator.
-Together with the divide operator, the modulus operator satisfies the relationship below:
-
-    num = add(mul(den,div(num,den)),rem(num,den))}
-
-## Comparison Operations
-
-| Name   | Arguments | Parameters | Arg Types     | Result Type | Result Width |
-|--------|-----------|------------|---------------|-------------|--------------|
-| lt,leq |           |            | (UInt,UInt)   | UInt        | 1            |
-| gt,geq | (e1,e2)   | ()         | (SInt,SInt)   | UInt        | 1            |
-
-The comparison operations return an unsigned 1 bit signal with value one if e1 is less than (lt), less than or equal to (leq), greater than (gt), greater than or equal to (geq), equal to (eq), or not equal to (neq) e2.
-The operation returns a value of zero otherwise.
-
-## Padding Operations
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
-|------|-----------|------------|-----------|-------------|-----------------------------|
-| pad  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~,n)                 |
-|      |           |            | (SInt)    | SInt        | max(w~e~,n)                 |
-
-
-If e's bit width is smaller than n, then the pad operation zero-extends or sign-extends e up to the given width n.
-Otherwise, the result is simply e.
-n must be non-negative.
-
-## Interpret As UInt
-
-| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|--------|-----------|------------|--------------|-------------|--------------|
-| asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~         |
-|        |           |            | (SInt)       | UInt        | w~e~         |
-|        |           |            | (Clock)      | UInt        | 1            |
-|        |           |            | (Reset)      | UInt        | 1            |
-|        |           |            | (AsyncReset) | UInt        | 1            |
-
-The interpret as UInt operation reinterprets e's bits as an unsigned integer.
-
-## Interpret As SInt
-
-| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|--------|-----------|------------|--------------|-------------|--------------|
-| asSInt | \(e\)     | ()         | (UInt)       | SInt        | w~e~         |
-|        |           |            | (SInt)       | SInt        | w~e~         |
-|        |           |            | (Clock)      | SInt        | 1            |
-|        |           |            | (Reset)      | SInt        | 1            |
-|        |           |            | (AsyncReset) | SInt        | 1            |
-
-The interpret as SInt operation reinterprets e's bits as a signed integer according to two's complement representation.
-
-## Interpret as Clock
-
-| Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|---------|-----------|------------|--------------|-------------|--------------|
-| asClock | \(e\)     | ()         | (UInt)       | Clock       | n/a          |
-|         |           |            | (SInt)       | Clock       | n/a          |
-|         |           |            | (Clock)      | Clock       | n/a          |
-|         |           |            | (Reset)      | Clock       | n/a          |
-|         |           |            | (AsyncReset) | Clock       | n/a          |
-
-The result of the interpret as clock operation is the Clock typed signal obtained from interpreting a single bit integer as a clock signal.
-
-## Interpret as AsyncReset
-
-| Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|--------------|-----------|------------|--------------|-------------|--------------|
-| asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
-|              |           |            | (UInt)       | AsyncReset  | n/a          |
-|              |           |            | (SInt)       | AsyncReset  | n/a          |
-|              |           |            | (Interval)   | AsyncReset  | n/a          |
-|              |           |            | (Clock)      | AsyncReset  | n/a          |
-|              |           |            | (Reset)      | AsyncReset  | n/a          |
-
-The result of the interpret as asynchronous reset operation is an AsyncReset typed signal.
-
-## Shift Left Operation
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
-|------|-----------|------------|-----------|-------------|-----------------------------|
-| shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n                      |
-|      |           |            | (SInt)    | SInt        | w~e~+n                      |
-
-The shift left operation concatenates n zero bits to the least significant end of e.
-n must be non-negative.
-
-## Shift Right Operation
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
-|------|-----------|------------|-----------|-------------|-----------------------------|
-| shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 1)              |
-|      |           |            | (SInt)    | SInt        | max(w~e~-n, 1)              |
-
-The shift right operation truncates the least significant n bits from e.
-If n is greater than or equal to the bit-width of e, the resulting value will be zero for unsigned types and the sign bit for signed types.
-n must be non-negative.
-
-## Dynamic Shift Left Operation
-
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| dshl | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~ + 2`^`w~e2~ - 1       |
-|      |           |            | (SInt, UInt)  | SInt        | w~e1~ + 2`^`w~e2~ - 1       |
-
-The dynamic shift left operation shifts the bits in e1 e2 places towards the most significant bit.
-e2 zeroes are shifted in to the least significant bits.
-
-## Dynamic Shift Right Operation
-
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| dshr | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~                       |
-|      |           |            | (SInt, UInt)  | SInt        | w~e1~                       |
-
-The dynamic shift right operation shifts the bits in e1 e2 places towards the least significant bit.
-e2 signed or zeroed bits are shifted in to the most significant bits, and the e2 least significant bits are truncated.
-
-## Arithmetic Convert to Signed Operation
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
-|      |           |            | (SInt)    | SInt        | w~e~         |
-
-The result of the arithmetic convert to signed operation is a signed integer representing the same numerical value as e.
-
-## Negate Operation
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
-|      |           |            | (SInt)    | SInt        | w~e~+1       |
-
-The result of the negate operation is a signed integer representing the negated numerical value of e.
-
-## Bitwise Complement Operation
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| not  | \(e\)     | ()         | (UInt)    | UInt        | w~e~         |
-|      |           |            | (SInt)    | UInt        | w~e~         |
-
-The bitwise complement operation performs a logical not on each bit in e.
-
-## Binary Bitwise Operations
-
-| Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width     |
-|------------|-----------|------------|-------------|-------------|------------------|
-| and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
-|            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
-
-The above bitwise operations perform a bitwise and, or, or exclusive or on e1 and e2.
-The result has the same width as its widest argument, and any narrower arguments are automatically zero-extended or sign-extended to match the width of the result before performing the operation.
-
-## Bitwise Reduction Operations
-
-
-| Name          | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|---------------|-----------|------------|-----------|-------------|--------------|
-| andr,orr,xorr | \(e\)     | ()         | (UInt)    | UInt        | 1            |
-|               |           |            | (SInt)    | UInt        | 1            |
-
-The bitwise reduction operations correspond to a bitwise and, or, and exclusive or operation, reduced over every bit in e.
-
-In all cases, the reduction incorporates as an inductive base case the "identity value" associated with each operator.
-This is defined as the value that preserves the value of the other argument: one for and (as $x \wedge 1 = x$), zero for or (as $x \vee 0 = x$), and zero for xor (as $x \oplus 0 = x$).
-Note that the logical consequence is that the and-reduction of a zero-width expression returns a one, while the or- and xor-reductions of a zero-width expression both return zero.
-
-## Concatenate Operation
-
-| Name | Arguments | Parameters | Arg Types      | Result Type | Result Width |
-|------|-----------|------------|----------------|-------------|--------------|
-| cat  | (e1,e2)   | ()         | (UInt, UInt)   | UInt        | w~e1~+w~e2~  |
-|      |           |            | (SInt, SInt)   | UInt        | w~e1~+w~e2~  |
-
-The result of the concatenate operation is the bits of e1 concatenated to the most significant end of the bits of e2.
-
-## Bit Extraction Operation
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1      |
-|      |           |            | (SInt)    | UInt        | hi-lo+1      |
-
-The result of the bit extraction operation are the bits of e between lo (inclusive) and hi (inclusive).
-hi must be greater than or equal to lo.
-Both hi and lo must be non-negative and strictly less than the bit width of e.
-
-## Head
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| head | \(e\)     | \(n\)      | (UInt)    | UInt        | n            |
-|      |           |            | (SInt)    | UInt        | n            |
-
-The result of the head operation are the n most significant bits of e.
-n must be non-negative and less than or equal to the bit width of e.
-
-## Tail
-
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n       |
-|      |           |            | (SInt)    | UInt        | w~e~-n       |
-
-The tail operation truncates the n most significant bits from e.
-n must be non-negative and less than or equal to the bit width of e.
-
 # Flows
 
 An expression's flow partially determines the legality of connecting to and from the expression.
@@ -3342,7 +3077,350 @@ The behavior of constructs which cause indeterminate values is implementation de
 - Two constructs with indeterminate values place no constraint on the identity of their values.
   For example, two uninitialized registers, which therefore contain indeterminate values, do not need to be equal under comparison.
 
-# Details about Syntax
+# FIRRTL Compiler Implementation Details
+
+This section provides auxiliary information necessary for developers of a FIRRTL Compiler _implementation_.
+A FIRRTL Compiler is a program that converts FIRRTL text to another representation, e.g., Verilog, VHDL, a programming language, or a binary program.
+
+## Module Conventions
+
+A module's convention describes how its ports are lowered to the output format, and serves as a kind of ABI for modules.
+
+### The "Scalarized" Convention
+
+The scalarized convention lowers aggregate ports to ground values.
+The scalarized convention should be the default convention for "public" modules, such as the top module of a circuit, "device under test", or an extmodule.
+
+The lowering algorithm for the scalarized convention operates as follows:
+
+1. Ports are scalarized in the order they are declared.
+
+2. Ground-typed ports' names are unmodified.
+
+3. Vector-typed ports are scalarized to ground-typed ports by appending a suffix, `_<i>`, to the i^th^ element of the vector.
+   Elements are scalarized recursively, depth-first, and left-to-right.
+
+4. Bundle-typed ports are scalarized to ground-typed ports by appending a suffix, `_<name>`, to the field called `name`.
+   Fields are scalarized recursively, depth-first, and left-to-right.
+
+E.g., consider the following port:
+
+``` firrtl
+module Top :
+  input a : { b: UInt<1>, c: UInt<2> }[2]
+```
+
+Scalarization breaks `a` into the following ports:
+
+``` firrtl
+module Top :
+  input a_0_b : UInt<1>  ; a[0].b
+  input a_0_c : UInt<2>  ; a[0].c
+  input a_1_b : UInt<1>  ; a[1].b
+  input a_1_c : UInt<2>  ; a[1].c
+```
+
+The body of a module definition introduces a new, empty namespace.
+As new port names are added, these names must be unique with respect to this namespace.
+In the case of a collision during renaming, priority will be given to values that are converted first.
+
+If a name is already taken, that name will be made unique by appending a suffix `_<i>` to the name, where `i` is the lowest nonnegative integer that gives a unique name.
+
+E.g., consider the following ports:
+
+``` firrtl
+module Top :
+  input a : { b: UInt<1>[2], b_0: UInt<2>, b_1: UInt<3> }
+  input a_b : UInt<4>[2]
+  input a_b_0 : UInt<5>
+```
+
+Scalarization breaks these ports into the following ports:
+
+``` firrtl
+module Top :
+  input a_b_0: UInt<1>    ; a.b[0]
+  input a_b_1: UInt<1>    ; a.b[1]
+  input a_b_0_0: UInt<2>  ; a.b_0
+  input a_b_1_0: UInt<3>  ; a.b_1
+  input a_b_0_1: UInt<4>  ; a_b[0]
+  input a_b_1_1: UInt<4>  ; a_b[1]
+  input a_b_0_2: UInt<5>  ; a_b_0
+```
+
+Named components in the body of a module will be renamed as needed to ensure port names follow this convention.
+
+## The "Internal" Convention
+
+Private modules (i.e. modules that are _not_ the top of a circuit, device under test, or an extmodule) have no specified ABI.
+The compiler is free to transform the ports of a private module in any way, or not at all.
+Private modules are said to have "internal" convention.
+
+# Primitive Operations {#sec:primitive-operations}
+
+The arguments of all primitive operations must be expressions with ground types, while their parameters are integer literals.
+Each specific operation can place additional restrictions on the number and types of their arguments and parameters.
+Primitive operations may have all their arguments of constant type, in which case their return type is of constant type.
+If the operation has a mixed constant and non-constant arguments, the result is non-constant.
+
+Notationally, the width of an argument e is represented as w~e~.
+
+## Add Operation
+
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
+|------|-----------|------------|---------------|-------------|-----------------------------|
+| add  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
+|      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
+
+The add operation result is the sum of e1 and e2 without loss of precision.
+
+## Subtract Operation
+
+
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
+|------|-----------|------------|---------------|-------------|-----------------------------|
+| sub  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
+|      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
+
+The subtract operation result is e2 subtracted from e1, without loss of precision.
+
+## Multiply Operation
+
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
+|------|-----------|------------|---------------|-------------|-----------------------------|
+| mul  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | w~e1~+w~e2~                 |
+|      |           |            | (SInt,SInt)   | SInt        | w~e1~+w~e2~                 |
+
+The multiply operation result is the product of e1 and e2, without loss of precision.
+
+## Divide Operation
+
+
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|------|-----------|------------|-------------|-------------|--------------|
+| div  | (num,den) | ()         | (UInt,UInt) | UInt        | w~num~       |
+|      |           |            | (SInt,SInt) | SInt        | w~num~+1     |
+
+The divide operation divides num by den, truncating the fractional portion of the result.
+This is equivalent to rounding the result towards zero.
+The result of a division where den is zero is undefined.
+
+## Modulus Operation
+
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
+|------|-----------|------------|-------------|-------------|--------------------|
+| rem  | (num,den) | ()         | (UInt,UInt) | UInt        | min(w~num~,w~den~) |
+|      |           |            | (SInt,SInt) | SInt        | min(w~num~,w~den~) |
+
+The modulus operation yields the remainder from dividing num by den, keeping the sign of the numerator.
+Together with the divide operator, the modulus operator satisfies the relationship below:
+
+    num = add(mul(den,div(num,den)),rem(num,den))}
+
+## Comparison Operations
+
+| Name   | Arguments | Parameters | Arg Types     | Result Type | Result Width |
+|--------|-----------|------------|---------------|-------------|--------------|
+| lt,leq |           |            | (UInt,UInt)   | UInt        | 1            |
+| gt,geq | (e1,e2)   | ()         | (SInt,SInt)   | UInt        | 1            |
+
+The comparison operations return an unsigned 1 bit signal with value one if e1 is less than (lt), less than or equal to (leq), greater than (gt), greater than or equal to (geq), equal to (eq), or not equal to (neq) e2.
+The operation returns a value of zero otherwise.
+
+## Padding Operations
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
+|------|-----------|------------|-----------|-------------|-----------------------------|
+| pad  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~,n)                 |
+|      |           |            | (SInt)    | SInt        | max(w~e~,n)                 |
+
+
+If e's bit width is smaller than n, then the pad operation zero-extends or sign-extends e up to the given width n.
+Otherwise, the result is simply e.
+n must be non-negative.
+
+## Interpret As UInt
+
+| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~         |
+|        |           |            | (SInt)       | UInt        | w~e~         |
+|        |           |            | (Clock)      | UInt        | 1            |
+|        |           |            | (Reset)      | UInt        | 1            |
+|        |           |            | (AsyncReset) | UInt        | 1            |
+
+The interpret as UInt operation reinterprets e's bits as an unsigned integer.
+
+## Interpret As SInt
+
+| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asSInt | \(e\)     | ()         | (UInt)       | SInt        | w~e~         |
+|        |           |            | (SInt)       | SInt        | w~e~         |
+|        |           |            | (Clock)      | SInt        | 1            |
+|        |           |            | (Reset)      | SInt        | 1            |
+|        |           |            | (AsyncReset) | SInt        | 1            |
+
+The interpret as SInt operation reinterprets e's bits as a signed integer according to two's complement representation.
+
+## Interpret as Clock
+
+| Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|---------|-----------|------------|--------------|-------------|--------------|
+| asClock | \(e\)     | ()         | (UInt)       | Clock       | n/a          |
+|         |           |            | (SInt)       | Clock       | n/a          |
+|         |           |            | (Clock)      | Clock       | n/a          |
+|         |           |            | (Reset)      | Clock       | n/a          |
+|         |           |            | (AsyncReset) | Clock       | n/a          |
+
+The result of the interpret as clock operation is the Clock typed signal obtained from interpreting a single bit integer as a clock signal.
+
+## Interpret as AsyncReset
+
+| Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------------|-----------|------------|--------------|-------------|--------------|
+| asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
+|              |           |            | (UInt)       | AsyncReset  | n/a          |
+|              |           |            | (SInt)       | AsyncReset  | n/a          |
+|              |           |            | (Interval)   | AsyncReset  | n/a          |
+|              |           |            | (Clock)      | AsyncReset  | n/a          |
+|              |           |            | (Reset)      | AsyncReset  | n/a          |
+
+The result of the interpret as asynchronous reset operation is an AsyncReset typed signal.
+
+## Shift Left Operation
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
+|------|-----------|------------|-----------|-------------|-----------------------------|
+| shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n                      |
+|      |           |            | (SInt)    | SInt        | w~e~+n                      |
+
+The shift left operation concatenates n zero bits to the least significant end of e.
+n must be non-negative.
+
+## Shift Right Operation
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
+|------|-----------|------------|-----------|-------------|-----------------------------|
+| shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 1)              |
+|      |           |            | (SInt)    | SInt        | max(w~e~-n, 1)              |
+
+The shift right operation truncates the least significant n bits from e.
+If n is greater than or equal to the bit-width of e, the resulting value will be zero for unsigned types and the sign bit for signed types.
+n must be non-negative.
+
+## Dynamic Shift Left Operation
+
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
+|------|-----------|------------|---------------|-------------|-----------------------------|
+| dshl | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~ + 2`^`w~e2~ - 1       |
+|      |           |            | (SInt, UInt)  | SInt        | w~e1~ + 2`^`w~e2~ - 1       |
+
+The dynamic shift left operation shifts the bits in e1 e2 places towards the most significant bit.
+e2 zeroes are shifted in to the least significant bits.
+
+## Dynamic Shift Right Operation
+
+| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
+|------|-----------|------------|---------------|-------------|-----------------------------|
+| dshr | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~                       |
+|      |           |            | (SInt, UInt)  | SInt        | w~e1~                       |
+
+The dynamic shift right operation shifts the bits in e1 e2 places towards the least significant bit.
+e2 signed or zeroed bits are shifted in to the most significant bits, and the e2 least significant bits are truncated.
+
+## Arithmetic Convert to Signed Operation
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
+|      |           |            | (SInt)    | SInt        | w~e~         |
+
+The result of the arithmetic convert to signed operation is a signed integer representing the same numerical value as e.
+
+## Negate Operation
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
+|      |           |            | (SInt)    | SInt        | w~e~+1       |
+
+The result of the negate operation is a signed integer representing the negated numerical value of e.
+
+## Bitwise Complement Operation
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| not  | \(e\)     | ()         | (UInt)    | UInt        | w~e~         |
+|      |           |            | (SInt)    | UInt        | w~e~         |
+
+The bitwise complement operation performs a logical not on each bit in e.
+
+## Binary Bitwise Operations
+
+| Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width     |
+|------------|-----------|------------|-------------|-------------|------------------|
+| and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
+|            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
+
+The above bitwise operations perform a bitwise and, or, or exclusive or on e1 and e2.
+The result has the same width as its widest argument, and any narrower arguments are automatically zero-extended or sign-extended to match the width of the result before performing the operation.
+
+## Bitwise Reduction Operations
+
+
+| Name          | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|---------------|-----------|------------|-----------|-------------|--------------|
+| andr,orr,xorr | \(e\)     | ()         | (UInt)    | UInt        | 1            |
+|               |           |            | (SInt)    | UInt        | 1            |
+
+The bitwise reduction operations correspond to a bitwise and, or, and exclusive or operation, reduced over every bit in e.
+
+In all cases, the reduction incorporates as an inductive base case the "identity value" associated with each operator.
+This is defined as the value that preserves the value of the other argument: one for and (as $x \wedge 1 = x$), zero for or (as $x \vee 0 = x$), and zero for xor (as $x \oplus 0 = x$).
+Note that the logical consequence is that the and-reduction of a zero-width expression returns a one, while the or- and xor-reductions of a zero-width expression both return zero.
+
+## Concatenate Operation
+
+| Name | Arguments | Parameters | Arg Types      | Result Type | Result Width |
+|------|-----------|------------|----------------|-------------|--------------|
+| cat  | (e1,e2)   | ()         | (UInt, UInt)   | UInt        | w~e1~+w~e2~  |
+|      |           |            | (SInt, SInt)   | UInt        | w~e1~+w~e2~  |
+
+The result of the concatenate operation is the bits of e1 concatenated to the most significant end of the bits of e2.
+
+## Bit Extraction Operation
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1      |
+|      |           |            | (SInt)    | UInt        | hi-lo+1      |
+
+The result of the bit extraction operation are the bits of e between lo (inclusive) and hi (inclusive).
+hi must be greater than or equal to lo.
+Both hi and lo must be non-negative and strictly less than the bit width of e.
+
+## Head
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| head | \(e\)     | \(n\)      | (UInt)    | UInt        | n            |
+|      |           |            | (SInt)    | UInt        | n            |
+
+The result of the head operation are the n most significant bits of e.
+n must be non-negative and less than or equal to the bit width of e.
+
+## Tail
+
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n       |
+|      |           |            | (SInt)    | UInt        | w~e~-n       |
+
+The tail operation truncates the n most significant bits from e.
+n must be non-negative and less than or equal to the bit width of e.
+
+# Notes on Syntax
 
 FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
 
@@ -3429,88 +3507,10 @@ circuit : @[myfile.txt 14:8]
     connect out, add(a,a) @[myfile.txt 34:4]
 ```
 
-# FIRRTL Compiler Implementation Details
-
-This section provides auxiliary information necessary for developers of a FIRRTL Compiler _implementation_.
-A FIRRTL Compiler is a program that converts FIRRTL text to another representation, e.g., Verilog, VHDL, a programming language, or a binary program.
-
-## Module Conventions
-
-A module's convention describes how its ports are lowered to the output format, and serves as a kind of ABI for modules.
-
-### The "Scalarized" Convention
-
-The scalarized convention lowers aggregate ports to ground values.
-The scalarized convention should be the default convention for "public" modules, such as the top module of a circuit, "device under test", or an extmodule.
-
-The lowering algorithm for the scalarized convention operates as follows:
-
-1. Ports are scalarized in the order they are declared.
-
-2. Ground-typed ports' names are unmodified.
-
-3. Vector-typed ports are scalarized to ground-typed ports by appending a suffix, `_<i>`, to the i^th^ element of the vector.
-   Elements are scalarized recursively, depth-first, and left-to-right.
-
-4. Bundle-typed ports are scalarized to ground-typed ports by appending a suffix, `_<name>`, to the field called `name`.
-   Fields are scalarized recursively, depth-first, and left-to-right.
-
-E.g., consider the following port:
-
-``` firrtl
-module Top :
-  input a : { b: UInt<1>, c: UInt<2> }[2]
-```
-
-Scalarization breaks `a` into the following ports:
-
-``` firrtl
-module Top :
-  input a_0_b : UInt<1>  ; a[0].b
-  input a_0_c : UInt<2>  ; a[0].c
-  input a_1_b : UInt<1>  ; a[1].b
-  input a_1_c : UInt<2>  ; a[1].c
-```
-
-The body of a module definition introduces a new, empty namespace.
-As new port names are added, these names must be unique with respect to this namespace.
-In the case of a collision during renaming, priority will be given to values that are converted first.
-
-If a name is already taken, that name will be made unique by appending a suffix `_<i>` to the name, where `i` is the lowest nonnegative integer that gives a unique name.
-
-E.g., consider the following ports:
-
-``` firrtl
-module Top :
-  input a : { b: UInt<1>[2], b_0: UInt<2>, b_1: UInt<3> }
-  input a_b : UInt<4>[2]
-  input a_b_0 : UInt<5>
-```
-
-Scalarization breaks these ports into the following ports:
-
-``` firrtl
-module Top :
-  input a_b_0: UInt<1>    ; a.b[0]
-  input a_b_1: UInt<1>    ; a.b[1]
-  input a_b_0_0: UInt<2>  ; a.b_0
-  input a_b_1_0: UInt<3>  ; a.b_1
-  input a_b_0_1: UInt<4>  ; a_b[0]
-  input a_b_1_1: UInt<4>  ; a_b[1]
-  input a_b_0_2: UInt<5>  ; a_b_0
-```
-
-Named components in the body of a module will be renamed as needed to ensure port names follow this convention.
-
-## The "Internal" Convention
-
-Private modules (i.e. modules that are _not_ the top of a circuit, device under test, or an extmodule) have no specified ABI.
-The compiler is free to transform the ports of a private module in any way, or not at all.
-Private modules are said to have "internal" convention.
 
 \clearpage
 
-# FIRRTL Language Definition
+# Grammar
 
 ``` ebnf
 (* Circuit Definition *)

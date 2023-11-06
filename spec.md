@@ -2916,7 +2916,7 @@ n must be non-negative and less than or equal to the bit width of e.
 An expression can either be used as either a source expression or a sink expression; if an expression is on the left-hand-side of a connect, it is a sink expression.
 All other expressions are source expressions.
 
-All hardware components can be referenced with a source expression.
+All expressions may be used as source expressions.
 
 With the following exceptions, all other hardware components/subcomponents can be referenced with a sink expression:
   - input ports (or subcomponents which are input ports)

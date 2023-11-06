@@ -493,7 +493,7 @@ Wires represent named expressions whose value is determined by FIRRTL `connect`{
 Example:
 
 ```firrtl
-wire mywire: UInt<1>
+wire mywire : UInt<1>
 connect mywire, UInt<1>(0)
 ```
 
@@ -505,10 +505,8 @@ The type of a wire is given after the colon (`:`{.firrtl}).
 
 Registers are stateful elements of a design.
 
-Registers can be connected (see [@sec:connects]).
-The state of the register is controlled through what is connected to it.
-
-The state of a register may be any non-`const`{.firrtl} passive type (see [@sec:passive-types]).
+The state of a register is controlled through what is connected to it (see [@sec:connects]).
+The state may be any non-`const`{.firrtl} passive type (see [@sec:passive-types]).
 Registers are always associated with a clock.
 Optionally, registers may have a reset signal.
 
@@ -545,7 +543,7 @@ The initial value of a register is indeterminate (see [@sec:indeterminate-values
 
 ## Output Ports and Input Ports
 
-The way a module interacts with the outside world is through its ports.
+The way a module interacts with the outside world is through its output and input ports.
 
 Example:
 

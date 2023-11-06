@@ -661,17 +661,20 @@ wire p: { alignedChild: UInt<32>, flip flippedChild: UInt<32> }
 ```
 
 First, every subcomponent/component is always aligned with themselves:
- * `p` is aligned w.r.t `p`
- * `p.alignedChild` is aligned w.r.t `p.alignedChild`
- * `p.flippedChild` is aligned w.r.t `p.flippedChild`
+
+- `p` is aligned w.r.t `p`
+- `p.alignedChild` is aligned w.r.t `p.alignedChild`
+- `p.flippedChild` is aligned w.r.t `p.flippedChild`
 
 Next, all parent/child relationships:
 Because the `flippedChild` field is `Flipped`, it changes its aligment relative to its parent.
- * `p` is aligned w.r.t `p.alignedChild`
- * `p` is flipped w.r.t `p.flippedChild`
+
+- `p` is aligned w.r.t `p.alignedChild`
+- `p` is flipped w.r.t `p.flippedChild`
 
 Finally, all sibling relationships:
- * `p.alignedChild` is flipped w.r.t `p.flippedChild`
+
+- `p.alignedChild` is flipped w.r.t `p.flippedChild`
 
 The next example has a nested bundle:
 
@@ -684,17 +687,19 @@ wire g: {
 
 Consider the following alignments between grandparent and grandchildren.
 An odd number of flips indicate a flipped relationship; even numbers of flips indicate an aligned relationship.
- * `g` is aligned w.r.t `g.flippedParent.flippedChild`
- * `g` is aligned w.r.t `g.alignedParent.alignedChild`
- * `g` is flipped w.r.t `g.flippedParent.alignedChild`
- * `g` is flipped w.r.t `g.alignedParent.flippedChild`
+
+- `g` is aligned w.r.t `g.flippedParent.flippedChild`
+- `g` is aligned w.r.t `g.alignedParent.alignedChild`
+- `g` is flipped w.r.t `g.flippedParent.alignedChild`
+- `g` is flipped w.r.t `g.alignedParent.flippedChild`
 
 Consider the following alignment relationships starting from `g.alignedParent` and `g.flippedParent`.
 *Note that whether `g.alignedParent` is aligned/flipped relative to `g` has no effect on the aligned/flipped relationship between `g.alignedParent` and `g.alignedParent.alignedChild` because alignment is only relative to the two members in question!*:
- * `g.alignedParent` is aligned w.r.t. `g.alignedParent.alignedChild`
- * `g.flippedParent` is aligned w.r.t. `g.flippedParent.alignedChild`
- * `g.alignedParent` is flipped w.r.t. `g.alignedParent.flippedChild`
- * `g.flippedParent` is flipped w.r.t. `g.flippedParent.flippedChild`
+
+- `g.alignedParent` is aligned w.r.t. `g.alignedParent.alignedChild`
+- `g.flippedParent` is aligned w.r.t. `g.flippedParent.alignedChild`
+- `g.alignedParent` is flipped w.r.t. `g.alignedParent.flippedChild`
+- `g.flippedParent` is flipped w.r.t. `g.flippedParent.flippedChild`
 
 A subcomponent's relative alignment to a parent is computed by counting the number of flips between the subcomponent and parent in the type hierarchy; relative to that parent, a flipped subcomponent will have an odd count of flips, while an aligned subcomponent will have an even number of flips.
 
@@ -2919,9 +2924,10 @@ All other expressions are source expressions.
 All expressions may be used as source expressions.
 
 With the following exceptions, all other hardware components/subcomponents can be referenced with a sink expression:
-  - input ports (or subcomponents which are input ports)
-  - data field of memory read ports
-  - rdata field of memory read-write ports
+
+- input ports (or subcomponents which are input ports)
+- data field of memory read ports
+- rdata field of memory read-write ports
 
 # Width Inference
 

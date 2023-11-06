@@ -648,34 +648,62 @@ Additionally, a field may optionally be declared with a *flipped* orientation.
 {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}
 ```
 
-In a connection between circuit components with bundle types, the data carried by the flipped fields flow in the opposite direction as the data carried by the non-flipped fields.
 
-As an example, consider a module output port declared with the following type:
+#### Alignment: Flipped vs Aligned
 
-``` firrtl
-output a: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}
-```
+A subcomponent's alignment is a relative property: a subcomponent is aligned/flipped relative to another subcomponent of the same component or type.
+Hence, a subcomponent is flipped/aligned *with respect to (w.r.t)* another subcomponent of that type (parent, sibling, child etc.).
 
-In a connection to the `a`{.firrtl} port, the data carried by the `word`{.firrtl} and `valid`{.firrtl} sub-fields will flow out of the module, while data carried by the `ready`{.firrtl} sub-field will flow into the module.
-More details about how the bundle field orientation affects connections are explained in [@sec:connects].
-
-As in the case of vector types, a bundle field may be declared with any type, including other aggregate types.
-
-``` firrtl
-{real: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>},
- imag: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}}
+The following example of a non-nested bundle `Parent` is used to list all of the alignment relationships between members of `p`.
 
 ```
-
-When calculating the final direction of data flow, the orientation of a field is applied recursively to all nested types in the field.
-As an example, consider the following module port declared with a bundle type containing a nested bundle type.
-
-``` firrtl
-output myport: {a: UInt, flip b: {c: UInt, flip d: UInt}}
+wire p: { alignedChild: UInt<32>, flip flippedChild: UInt<32> }
 ```
 
-In a connection to `myport`{.firrtl}, the `a`{.firrtl} sub-field flows out of the module.
-The `c`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field flows into the module, and the `d`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field flows out of the module.
+First, every subcomponent/component is always aligned with themselves:
+ * `p` is aligned w.r.t `p`
+ * `p.alignedChild` is aligned w.r.t `p.alignedChild`
+ * `p.flippedChild` is aligned w.r.t `p.flippedChild`
+
+Next, all parent/child relationships:
+Because the `flippedChild` field is `Flipped`, it changes its aligment relative to its parent.
+ * `p` is aligned w.r.t `p.alignedChild`
+ * `p` is flipped w.r.t `p.flippedChild`
+
+Finally, all sibling relationships:
+ * `p.alignedChild` is flipped w.r.t `p.flippedChild`
+
+The next example has a nested bundle:
+
+```
+wire g: {
+  alignedParent: { alignedChild: UInt<32>, flip flippedChild: UInt<32> },
+  flip flippedParent: { alignedChild: UInt<32>, flip flippedChild: UInt<32> }
+}
+```
+
+Consider the following alignments between grandparent and grandchildren.
+An odd number of flips indicate a flipped relationship; even numbers of flips indicate an aligned relationship.
+ * `g` is aligned w.r.t `g.flippedParent.flippedChild`
+ * `g` is aligned w.r.t `g.alignedParent.alignedChild`
+ * `g` is flipped w.r.t `g.flippedParent.alignedChild`
+ * `g` is flipped w.r.t `g.alignedParent.flippedChild`
+
+Consider the following alignment relationships starting from `g.alignedParent` and `g.flippedParent`.
+*Note that whether `g.alignedParent` is aligned/flipped relative to `g` has no effect on the aligned/flipped relationship between `g.alignedParent` and `g.alignedParent.alignedChild` because alignment is only relative to the two members in question!*:
+ * `g.alignedParent` is aligned w.r.t. `g.alignedParent.alignedChild`
+ * `g.flippedParent` is aligned w.r.t. `g.flippedParent.alignedChild`
+ * `g.alignedParent` is flipped w.r.t. `g.alignedParent.flippedChild`
+ * `g.flippedParent` is flipped w.r.t. `g.flippedParent.flippedChild`
+
+A subcomponent's relative alignment to a parent is computed by counting the number of flips between the subcomponent and parent in the type hierarchy; relative to that parent, a flipped subcomponent will have an odd count of flips, while an aligned subcomponent will have an even number of flips.
+
+In summary, a subcomponent is aligned or flipped w.r.t. another subcomponent of the same hardware component.
+
+#### Port direction of subcomponents
+
+Module input ports can have output subcomponent ports if that subcomponent is flipped relative to the declared input port.
+Conversely, output ports can have a subcomponent input port if that subcomponent is flipped relative to the declared output port.
 
 ### Enumeration Types
 
@@ -997,7 +1025,7 @@ Constant types may be used in ports, wire, nodes, and generally anywhere a non-c
 Operations on constant type are well defined.
 As a general rule (with any exception listed in the definition for such operations as have exceptions), an operation whose arguments are constant produces a constant.
 An operation with some non-constant arguments produce a non-constant.
-Constants can be used in any context with a source flow which allows a non-constant.
+Constants can be used in any context as a source expression which allows a non-constant.
 Constants may be used as the target of a connect so long as the source of the connect is itself constant.
 These rules ensure all constants are derived from constant integer expressions or from constant-typed input ports of a public module.
 
@@ -1084,11 +1112,9 @@ In order for a connection to be legal the following conditions must hold:
 
 1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence] for details).
 
-2.  The flow of the left-hand side expression must be sink or duplex (see [@sec:flows] for an explanation of flow).
+2.  The left-hand side expression must be legal to use as a sink expression ([@sec:source-and-sink-expressions] for an explanation of sources and sinks).
 
-3.  Either the flow of the right-hand side expression is source or duplex, or the right-hand side expression has a passive type.
-
-4.  The left-hand side and right-hand side types are not property types.
+3.  The left-hand side and right-hand side types are not property types.
 
 Connect statements from a narrower ground type component to a wider ground type component will have its value automatically sign-extended or zero-extended to the larger bit width.
 The behavior of connect statements between two circuit components with aggregate types is defined by the connection algorithm in [@sec:the-connection-algorithm].
@@ -1291,7 +1317,7 @@ The handing of invalidated components is covered in [@sec:indeterminate-values].
 
 ### The Invalidate Algorithm
 
-Invalidating a component with a ground type indicates that the component's value is undetermined if the component has sink or duplex flow (see [@sec:flows]).
+Invalidating a component with a ground type indicates that the component's value is undetermined only if the expression is legal to use as a sink (see [@sec:source-and-sink-expressions]).
 Otherwise, the component is unaffected.
 
 Invalidating a component with a vector type recursively invalidates each sub-element in the vector.
@@ -1911,7 +1937,9 @@ These statements are detailed below.
 ### Define
 
 Define statements are used to route references through the design, and may be used wherever is most convenient in terms of available identifiers -- their location is not significant other than scoping, and do not have last-connect semantics.
-Every sink-flow probe must be the target of exactly one of these statements.
+Every sink probe expression must be the target of exactly one of these statements.
+
+The define statement takes a sink static reference target and sets it to the specified reference, which must either be a compatible probe expression or static reference source.
 
 The define statement takes a sink-flow static reference target and sets it to the specified reference, which must either be a compatible probe expression or static reference source.
 
@@ -2198,21 +2226,17 @@ Connections between property typed expressions (see [@sec:property-types]) are n
 
 Instead, property typed expressions are assigned with the `propassign`{.firrtl} statement.
 
-Property typed expressions have the normal rules for flow (see [@sec:flows]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
+Property typed expressions have the normal rules for sources and sinks (see [@sec:source-and-sink-expressions]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
 
 1. The left-hand and right-hand side expressions must be of property types.
 
 2. The types of the left-hand and right-hand side expressions must be the same.
 
-3. The flow of the left-hand side expression must be sink.
+3. The left-hand side expression must be usable in a sink expression.
 
-4. The flow of the right-hand side expression must be source.
+4. The left-hand side expression may be used as the left-hand side in at most one property assignment.
 
-5. The left-hand side expression may be used as the left-hand side in at most one property assignment.
-
-6. The property assignment must not occur within a conditional scope.
-
-Note that property types are not legal for any expressions with duplex flow.
+5. The property assignment must not occur within a conditional scope.
 
 The following example demonstrates a property assignment from a module's input property type port to its output property type port.
 
@@ -2560,7 +2584,7 @@ asClock(x)
 
 Probes are read using the `read`{.firrtl} operation.
 
-Read expressions have source flow and can be connected to other components:
+Read expressions are source expressions and can be connected to other components:
 
 ```firrtl
 module Foo :
@@ -2887,25 +2911,17 @@ n must be non-negative and less than or equal to the bit width of e.
 The tail operation truncates the n most significant bits from e.
 n must be non-negative and less than or equal to the bit width of e.
 
-# Flows
+# Source and Sink Expressions
 
-An expression's flow partially determines the legality of connecting to and from the expression.
-Every expression is classified as either *source*, *sink*, or *duplex*.
-For details on connection rules refer back to [@sec:connects].
+An expression can either be used as either a source expression or a sink expression; if an expression is on the left-hand-side of a connect, it is a sink expression.
+All other expressions are source expressions.
 
-The flow of a reference to a declared circuit component depends on the kind of circuit component.
-A reference to an input port, an instance, a memory, and a node, is a source.
-A reference to an output port is a sink. A reference to a wire or register is duplex.
+All hardware components can be referenced with a source expression.
 
-The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.
-
-The flow of a sub-field expression depends upon the orientation of the field.
-If the field is not flipped, its flow is the same flow as the bundle-typed expression it selects its field from.
-If the field is flipped, then its flow is the reverse of the flow of the bundle-typed expression it selects its field from.
-The reverse of source is sink, and vice-versa.
-The reverse of duplex remains duplex.
-
-The flow of all other expressions are source.
+With the following exceptions, all other hardware components/subcomponents can be referenced with a sink expression:
+  - input ports (or subcomponents which are input ports)
+  - data field of memory read ports
+  - rdata field of memory read-write ports
 
 # Width Inference
 

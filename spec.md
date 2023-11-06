@@ -210,8 +210,8 @@ The FIRRTL ABI specification defines supported lowering convention.  One such st
 The `group`{.firrtl} keyword defines optional functionality inside a module.
 An optional group may only be defined inside a module.
 An optional group must reference a group declared in the current circuit.
-Declarations of identifiers and references to existing identifiers following the same lexical scoping rules as FIRRTL conditional statements (see: [@sec:scoping])---identifiers declared in the group definition may not be used outside the group while groups may refer to identifiers declared outside the group.
-__The statements in a group are restricted in what identifiers they are allowed to drive.__
+Declarations of identifiers and references to existing identifiers following the same lexical scoping rules as FIRRTL conditional statements (see: [@sec:conditional-scopes])---identifiers declared in the group definition may not be used outside the group while groups may refer to identifiers declared outside the group.
+The statements in a group are restricted in what identifiers they are allowed to drive.
 A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:reference-types]).
 
 The circuit below contains one optional group declaration, `Bar`.
@@ -452,6 +452,156 @@ The following string-encoded integer literals all have the value `-42`:
 
 Radix-specified integer literals are only usable when constructing hardware integer literals.
 Any use in place of an integer is disallowed.
+
+# Circuit Components
+
+Circuit components are the named parts of a module corresponding to hardware.
+
+There are seven **kinds** of circuit components.
+They are: nodes, wires, registers, output ports, input ports, submodule instances, and memories.
+
+Circuit components can be connected together (see [@sec:connects]).
+
+Each circuit component in a module has a type ([@sec:types]).
+It is used to determine the legality of connections.
+
+## Nodes
+
+Nodes are named expressions in FIRRTL.
+
+Example:
+
+```firrtl
+node mynode = and(in, UInt<4>(1))
+```
+
+The type of a node is the type of the expression given in the definition.
+
+## Wires
+
+Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
+
+Example:
+
+```firrtl
+wire mywire : UInt<1>
+connect mywire, UInt<1>(0)
+```
+
+Unlike nodes, the type of a wire must be explicitly declared.
+The type of a wire is given after the colon (`:`{.firrtl}).
+
+## Registers
+
+Registers are stateful elements of a design.
+
+The state of a register is controlled through what is connected to it (see [@sec:connects]).
+The state may be any non-`const`{.firrtl} passive type (see [@sec:passive-types]).
+Registers are always associated with a clock.
+Optionally, registers may have a reset signal.
+
+On every cycle, a register will drive its current value
+and then latch the value it will take on for the next cycle.
+
+The `regreset`{.firrtl} keyword is used to declare a register with a reset.
+The `reg`{.firrtl} keyword is used to declare a register without a reset.
+
+Examples:
+
+```firrtl
+wire myclock : Clock
+reg myreg : SInt, myclock
+```
+
+```firrtl
+wire myclock : Clock
+reg myreg : SInt, myclock
+```
+
+```firrtl
+wire myclock : Clock
+wire myreset : UInt<1>
+wire myinit : SInt
+regreset myreg : SInt, myclock, myreset, myinit
+```
+
+For both variants of register, the type is given after the colon (`:`{.firrtl}).
+
+Semantically, registers become flip-flops in the design.
+The next value is latched on the positive edge of the clock.
+The initial value of a register is indeterminate (see [@sec:indeterminate-values]).
+
+## Output Ports and Input Ports
+
+The way a module interacts with the outside world is through its output and input ports.
+
+Example:
+
+```firrtl
+input myinput : UInt<1>
+output myinput : SInt<8>
+```
+
+For both variants of port, the type is given after the colon (`:`{.firrtl}).
+
+The two kinds of ports differ in the rules for how they may be connected (see [@sec:connects]).
+
+## Submodule Instances
+
+A module in FIRRTL may contain submodules.
+
+Example:
+
+```firrtl
+inst passthrough of Passthrough
+```
+
+This assumes you have a `module`, `extmodule`, or `intmodule` named `Passthrough`{.firrtl} declared elsewhere in the current circuit.
+The keyword `of`{.firrtl} is used instead of a colon (`:`{.firrtl}).
+
+The type of a submodule instance is bundle type determined by its ports.
+Each port creates a field with the same name in the bundle.
+Among these fields, `output`{.firrtl} ports are flipped, while `input`{.firrtl} fields are unflipped.
+
+For example:
+
+```firrtl
+module Passthrough :
+  input in : UInt<8>
+  output out : UInt<8>
+  connect out, in
+```
+
+The type of the submodule instance `passthrough`{.firrtl} above is thus:
+
+```firrtl
+{ flip in : UInt<8>, out : UInt<8> }
+```
+
+## Memories
+
+Memories are stateful elements of a design.
+
+Example:
+
+```firrtl
+mem mymem :
+  data-type => { real:SInt<16>, imag:SInt<16> }
+  depth => 256
+  reader => r1
+  reader => r2
+  writer => w
+  read-latency => 0
+  write-latency => 1
+  read-under-write => undefined
+```
+
+The type of a memory is a bundle type derived from the declaration (see [@sec:mem]).
+
+The type named in `data-type`{.firrtl} must be passive.
+It indicates the type of the data being stored inside of the memory.
+
+See [@sec:mem] for more details.
 
 # Types
 
@@ -993,11 +1143,10 @@ module Example:
 
 A constant type is a type whose value is guaranteed to be unchanging at circuit execution time.
 Constant is a constraint on the mutability of the value, it does not imply a literal value at a point in the emitted design.
-Constant types may be used in ports, wire, nodes, and generally anywhere a non-constant type is usable.
+Constant types may be used in ports, wire, and nodes.
 Operations on constant type are well defined.
-As a general rule (with any exception listed in the definition for such operations as have exceptions), an operation whose arguments are constant produces a constant.
+With any exception listed in the definition for such operations as have exceptions, an operation whose arguments are constant produces a constant.
 An operation with some non-constant arguments produce a non-constant.
-Constants can be used in any context with a source flow which allows a non-constant.
 Constants may be used as the target of a connect so long as the source of the connect is itself constant.
 These rules ensure all constants are derived from constant integer expressions or from constant-typed input ports of a public module.
 
@@ -1028,16 +1177,24 @@ It is, for example, expected that a module with a constant input port be fully c
 
 ## Passive Types
 
-It is inappropriate for some circuit components to be declared with a type that allows for data to flow in both directions.
-For example, all sub-elements in a memory should flow in the same direction.
-These components are restricted to only have a passive type.
+Stateful elements, such as registers and memories, may contain data of aggregate types.
+Registers with bundle types are especially common.
+However, when using bundle types in stateful elements, the notion of `flip` does not make sense.
+There is no directionality to the data inside a register; the data just *is*.
 
-Intuitively, a passive type is a type where all data flows in the same direction, and is defined to be a type that recursively contains no fields with flipped orientations.
-Thus all ground types are passive types.
-Vector types are passive if their element type is passive.
-And bundle types are passive if no fields are flipped and if all field types are passive.
+A passive type is a type which does not make use of `flip`.
+More precisely, a passive type is defined recursively:
 
-All property types are passive.
+- All ground types are passive.
+- All probe types are passive.
+- All property types are passive.
+- A vector type is passive if and only if the element type is passive.
+- A bundle type is passive if and only if it contains no field which is marked `flip`
+  and the type of each field is passive.
+- An enum type is passive if and only if the type of each of its variants is passive.
+
+Registers and memories may only be parametrized over passive types.
+
 
 ## Type Equivalence
 
@@ -1065,11 +1222,12 @@ Two property types are equivalent if they are the same concrete property type.
 
 # Statements
 
-Statements are used to describe the components within a module and how they interact.
+A module body consists of a sequence of statements.
+Statements declare the circuit components and describe their connectivity.
 
 ## Connects
 
-The connect statement is used to specify a physically wired connection between two circuit components.
+The components of a module can be connected together using `connect`{.firrtl} statements.
 
 The following example demonstrates connecting a module's input port to its output port, where port `myinput`{.firrtl} is connected to port `myoutput`{.firrtl}.
 
@@ -1194,20 +1352,14 @@ connect c, d
 The empty statement is most often used as the `else`{.firrtl} branch in a conditional statement, or as a convenient placeholder for removed components during transformational passes.
 See [@sec:conditionals] for details on the conditional statement.
 
-## Wires
+## Wire
 
-A wire is a named combinational circuit component that can be connected to and from using connect statements.
-
-The following example demonstrates instantiating a wire with the given name `mywire`{.firrtl} and type `UInt`{.firrtl}.
-
-``` firrtl
-wire mywire: UInt
-```
+See [@sec:wires].
 
 ## Registers
 
-A register is a named stateful circuit component.
-Reads from a register return the current value of the element, writes are not visible until after a positive edges of the register's clock port.
+A register is a stateful circuit component.
+Reads from a register return the current value of the element, writes are not visible until after the next positive edge of the register's clock.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.
 The type of a register must be a passive type (see [@sec:passive-types]) and may not be `const`{.firrtl}.
@@ -1249,20 +1401,19 @@ A register is initialized with an indeterminate value (see [@sec:indeterminate-v
 
 ## Invalidates
 
-An invalidate statement is used to indicate that a circuit component contains indeterminate values (see [@sec:indeterminate-values]).
+The `invalidate`{.firrtl} statement allows a circuit component to be left uninitialized
+or only partially initialized.
+The uninitialized part is left with an indeterminate value (see [@sec:indeterminate-values]).
+
 It is specified as follows:
 
 ``` firrtl
 wire w: UInt
 invalidate w
 ```
-
-Invalidate statements can be applied to any circuit component of any type.
-However, if the circuit component cannot be connected to, then the statement has no effect on the component.
-This allows the invalidate statement to be applied to any component, to explicitly ignore initialization coverage errors.
-
-The following example demonstrates the effect of invalidating a variety of circuit components with aggregate types.
-See [@sec:the-invalidate-algorithm] for details on the algorithm for determining what is invalidated.
+The following example demonstrates the effect of invalidating a variety of
+circuit components with aggregate types. See [@sec:the-invalidate-algorithm] for
+details on the algorithm for determining what is invalidated.
 
 ``` firrtl
 module MyModule :
@@ -1471,8 +1622,10 @@ match x:
 
 ### Nested Declarations
 
-If a component is declared within a conditional statement, connections to the component are unaffected by the condition.
-In the following example, register `myreg1`{.firrtl} is always connected to `a`{.firrtl}, and register `myreg2`{.firrtl} is always connected to `b`{.firrtl}.
+If a circuit component is declared within a conditional statement,
+connections to it are unaffected by the condition.
+In the following example, register `myreg1`{.firrtl} is always connected to `a`{.firrtl},
+and register `myreg2`{.firrtl} is always connected to `b`{.firrtl}.
 
 ``` firrtl
 module MyModule :
@@ -1510,11 +1663,20 @@ This is an illegal FIRRTL circuit and an error will be thrown during compilation
 All wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
 Registers do not need to be connected to under all conditions, as it will keep its previous value if unconnected.
 
-### Scoping
+### Conditional Scopes
 
-The conditional statement creates a new *scope* within each of its `when`{.firrtl} and `else`{.firrtl} branches.
-It is an error to refer to any component declared within a branch after the branch has ended.
-As mention in [@sec:namespaces], circuit component declarations in a module must be unique within the module's flat namespace; this means that shadowing a component in an enclosing scope with a component of the same name inside a conditional statement is not allowed.
+Conditional statements create a new *conditional scope* within each
+of its `when`{.firrtl} and `else`{.firrtl} branches.
+
+Circuit components may be declared locally within a conditional scope.
+The name given to a circuit component declared this way must still be unique
+across all circuit components declared the module (see [@sec:namespaces]).
+This differs from the behavior in most programming languages,
+where variables in a local scope can shadow variables declared outside that scope.
+
+A circuit components declared locally within a conditional scope
+may only be connected to within that scope.
+
 
 ### Conditional Last Connect Semantics
 
@@ -1617,7 +1779,7 @@ connect w.a, mux(c, y, x.a)
 connect w.b, x.b
 ```
 
-## Memories
+## Mem
 
 A memory is an abstract representation of a hardware memory.
 It is characterized by the following parameters.
@@ -2233,7 +2395,13 @@ module Example:
 
 # Expressions
 
-FIRRTL expressions are used for creating constant integers, for creating literal property type expressions, for referring to a declared circuit component, for statically and dynamically accessing a nested element within a component, for creating multiplexers, for performing primitive operations, and for reading a remote reference to a probe.
+FIRRTL expressions are used for creating constant integers,
+for creating literal property type expressions,
+for referencing a circuit component,
+for statically and dynamically accessing a nested element within a component,
+for creating multiplexers,
+for performing primitive operations, and
+for reading a remote reference to a probe.
 
 ## Constant Integer Expressions
 
@@ -2312,7 +2480,6 @@ The data value expression may be omitted when the data type is `UInt<0>(0)`{.fir
 ## References
 
 A reference is simply a name that refers to a previously declared circuit component.
-It may refer to a module port, node, wire, register, instance, or memory.
 
 The following example connects a reference expression `in`{.firrtl}, referring to the previously declared port `in`{.firrtl}, to the reference expression `out`{.firrtl}, referring to the previously declared port `out`{.firrtl}.
 
@@ -2909,8 +3076,9 @@ The flow of all other expressions are source.
 
 # Width Inference
 
-For all circuit components declared with unspecified widths, the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
-If a component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
+For all circuit components declared with unspecified widths,
+the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
+If a circuit component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
 
 For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
 
@@ -3610,7 +3778,7 @@ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "o" | "p" | "q" | "r" | "s" | "t" | "u"
        | "v" | "w" | "x" | "y" | "z" ;
 
-(* Tokens: Info *)
+(* Tokens: Fileinfo *)
 info = "@" , "[" , lineinfo, { ",", lineinfo }, "]" ;
 lineinfo = string, " ", linecol ;
 linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;

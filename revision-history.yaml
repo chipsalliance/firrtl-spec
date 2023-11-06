@@ -5,12 +5,14 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
-      - Add public modules.  Change circuits to support any number of public
-        modules which may have disjoint instance hierarchies.
+      - Add public modules.
+        Change circuits to support any number of public modules which may have disjoint instance hierarchies.
+      - Rename a "FIRRTL Language Definition" to "Grammar".
+      - Rename "Details about Syntax" to "Notes on Syntax".
     abi:
       - Add ABI for public modules and filelist output.
-      - Changed ABI for group and ref generated files.  These now use the public
-        module and not the circuit.
+      - Changed ABI for group and ref generated files.
+        These now use the public module and not the circuit.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 3.2.0

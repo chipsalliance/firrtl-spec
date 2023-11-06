@@ -395,64 +395,6 @@ intmodule MyIntrinsicModule_xhello_y64 :
 
 The types of intrinsic module parameters may only be literal integers or string literals.
 
-# Literals
-
-FIRRTL has both integer, string, and raw string literals.
-
-An integer literal is a signed or unsigned decimal integer.
-The following are examples of integer literals:
-
-``` firrtl
-42
--9000
-```
-
-A string literal is a sequence of characters with a leading `"`{.firrtl} and a trailing `"`{.firrtl}.
-The following is an example of a string literal:
-
-``` firrtl
-"hello"
-```
-
-A raw string literal is a sequence of characters with a leading `'`{.firrtl} and a trailing `'`{.firrtl}.
-The following is an example of a raw string literal:
-
-``` firrtl
-'world'
-```
-
-## Radix-specified Integer Literal
-
-A radix-specified integer literal is a special integer literal with one of the following leading characters to indicate the numerical encoding:
-
-- `0b`{.firrtl} -- for representing binary numbers
-- `0o`{.firrtl} -- for representing octal numbers
-- `0d`{.firrtl} -- for representing decimal numbers
-- `0h`{.firrtl} -- for representing hexadecimal numbers
-
-Signed radix-specified integer literals have their sign before the leading encoding character.
-
-The following string-encoded integer literals all have the value `42`:
-
-``` firrtl
-0b101010
-0o52
-0d42
-0h2a
-```
-
-The following string-encoded integer literals all have the value `-42`:
-
-``` firrtl
--0b101010
--0o52
--0d42
--0h2a
-```
-
-Radix-specified integer literals are only usable when constructing hardware integer literals.
-Any use in place of an integer is disallowed.
-
 # Circuit Components
 
 Circuit components are the named parts of a module corresponding to hardware.
@@ -3507,6 +3449,60 @@ circuit : @[myfile.txt 14:8]
     connect out, add(a,a) @[myfile.txt 34:4]
 ```
 
+## Literals
+
+FIRRTL has both integer, string, and raw string literals.
+
+An integer literal is a signed or unsigned decimal integer.
+The following are examples of integer literals:
+
+``` firrtl
+42
+-9000
+```
+
+A string literal is a sequence of characters with a leading `"`{.firrtl} and a trailing `"`{.firrtl}.
+The following is an example of a string literal:
+
+``` firrtl
+"hello"
+```
+
+A raw string literal is a sequence of characters with a leading `'`{.firrtl} and a trailing `'`{.firrtl}.
+The following is an example of a raw string literal:
+
+``` firrtl
+'world'
+```
+A radix-specified integer literal is a special integer literal with one of the following leading characters to indicate the numerical encoding:
+
+- `0b`{.firrtl} -- for representing binary numbers
+- `0o`{.firrtl} -- for representing octal numbers
+- `0d`{.firrtl} -- for representing decimal numbers
+- `0h`{.firrtl} -- for representing hexadecimal numbers
+
+Signed radix-specified integer literals have their sign before the leading encoding character.
+
+The following string-encoded integer literals all have the value `42`:
+
+``` firrtl
+0b101010
+0o52
+0d42
+0h2a
+```
+
+The following string-encoded integer literals all have the value `-42`:
+
+``` firrtl
+-0b101010
+-0o52
+-0d42
+-0h2a
+```
+
+Radix-specified integer literals are only usable when constructing hardware integer literals.
+Any use in place of an integer is disallowed.
 
 \clearpage
 

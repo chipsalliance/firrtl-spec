@@ -1193,12 +1193,7 @@ Ports are always considered from the perspective of "inside the module".
 Moreover, input ports may only appear "on the left side" of a connect, while output ports may only appear "on the right side" of a connect.
 Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule below, allowing connections to their input ports
 
-# Statements
-
-A module body consists of a sequence of statements.
-Statements declare the circuit components and describe their connectivity.
-
-## Connects
+## The Connect Statement
 
 The components of a module can be connected together using `connect`{.firrtl} statements.
 
@@ -1301,6 +1296,11 @@ module MyModule :
 ```
 
 See [@sec:sub-fields] for more details about sub-field expressions.
+
+# Statements
+
+A module body consists of a sequence of statements.
+Statements declare the circuit components and describe their connectivity.
 
 ## Empty
 

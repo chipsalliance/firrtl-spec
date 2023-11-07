@@ -1296,6 +1296,58 @@ module MyModule :
 
 See [@sec:sub-fields] for more details about sub-field expressions.
 
+## Invalidates
+
+The `invalidate`{.firrtl} statement allows a circuit component to be left uninitialized
+or only partially initialized.
+The uninitialized part is left with an indeterminate value (see [@sec:indeterminate-values]).
+
+It is specified as follows:
+
+``` firrtl
+wire w: UInt
+invalidate w
+```
+The following example demonstrates the effect of invalidating a variety of
+circuit components with aggregate types. See [@sec:the-invalidate-algorithm] for
+details on the algorithm for determining what is invalidated.
+
+``` firrtl
+module MyModule :
+  input in: {flip a: UInt, b: UInt}
+  output out: {flip a: UInt, b: UInt}
+  wire w: {flip a: UInt, b: UInt}
+  invalidate in
+  invalidate out
+  invalidate w
+```
+
+is equivalent to the following:
+
+``` firrtl
+module MyModule :
+  input in: {flip a: UInt, b: UInt}
+  output out: {flip a: UInt, b: UInt}
+  wire w: {flip a: UInt, b: UInt}
+  invalidate in.a
+  invalidate out.b
+  invalidate w.a
+  invalidate w.b
+```
+
+The handing of invalidated components is covered in [@sec:indeterminate-values].
+
+### The Invalidate Algorithm
+
+Invalidating a component with a ground type indicates that the component's value is undetermined if the component has sink or duplex flow (see [@sec:flows]).
+Otherwise, the component is unaffected.
+
+Invalidating a component with a vector type recursively invalidates each sub-element in the vector.
+
+Invalidating a component with a bundle type recursively invalidates each sub-element in the bundle.
+
+Components of reference and analog type are ignored, as are any reference or analog types within the component (as they cannot be connected to).
+
 # Empty
 
 The empty statement does nothing and is used simply as a placeholder where a statement is expected.
@@ -1361,58 +1413,6 @@ regreset myreg: SInt, myclock, myreset, myinit
 ```
 
 A register is initialized with an indeterminate value (see [@sec:indeterminate-values]).
-
-# Invalidates
-
-The `invalidate`{.firrtl} statement allows a circuit component to be left uninitialized
-or only partially initialized.
-The uninitialized part is left with an indeterminate value (see [@sec:indeterminate-values]).
-
-It is specified as follows:
-
-``` firrtl
-wire w: UInt
-invalidate w
-```
-The following example demonstrates the effect of invalidating a variety of
-circuit components with aggregate types. See [@sec:the-invalidate-algorithm] for
-details on the algorithm for determining what is invalidated.
-
-``` firrtl
-module MyModule :
-  input in: {flip a: UInt, b: UInt}
-  output out: {flip a: UInt, b: UInt}
-  wire w: {flip a: UInt, b: UInt}
-  invalidate in
-  invalidate out
-  invalidate w
-```
-
-is equivalent to the following:
-
-``` firrtl
-module MyModule :
-  input in: {flip a: UInt, b: UInt}
-  output out: {flip a: UInt, b: UInt}
-  wire w: {flip a: UInt, b: UInt}
-  invalidate in.a
-  invalidate out.b
-  invalidate w.a
-  invalidate w.b
-```
-
-The handing of invalidated components is covered in [@sec:indeterminate-values].
-
-## The Invalidate Algorithm
-
-Invalidating a component with a ground type indicates that the component's value is undetermined if the component has sink or duplex flow (see [@sec:flows]).
-Otherwise, the component is unaffected.
-
-Invalidating a component with a vector type recursively invalidates each sub-element in the vector.
-
-Invalidating a component with a bundle type recursively invalidates each sub-element in the bundle.
-
-Components of reference and analog type are ignored, as are any reference or analog types within the component (as they cannot be connected to).
 
 # Attaches
 

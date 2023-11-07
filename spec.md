@@ -1348,6 +1348,59 @@ Invalidating a component with a bundle type recursively invalidates each sub-ele
 
 Components of reference and analog type are ignored, as are any reference or analog types within the component (as they cannot be connected to).
 
+# Attaches
+
+The `attach`{.firrtl} statement is used to attach two or more analog signals, defining that their values be the same in a commutative fashion that lacks the directionality of a regular connection.
+It can only be applied to signals with analog type, and each analog signal may be attached zero or more times.
+
+``` firrtl
+wire x: Analog<2>
+wire y: Analog<2>
+wire z: Analog<2>
+attach(x, y)      ; binary attach
+attach(z, y, x)   ; attach all three signals
+```
+
+# Property Assignments
+
+Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connects]).
+
+Instead, property typed expressions are assigned with the `propassign`{.firrtl} statement.
+
+Property typed expressions have the normal rules for flow (see [@sec:flows]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
+
+1. The left-hand and right-hand side expressions must be of property types.
+
+2. The types of the left-hand and right-hand side expressions must be the same.
+
+3. The flow of the left-hand side expression must be sink.
+
+4. The flow of the right-hand side expression must be source.
+
+5. The left-hand side expression may be used as the left-hand side in at most one property assignment.
+
+6. The property assignment must not occur within a conditional scope.
+
+Note that property types are not legal for any expressions with duplex flow.
+
+The following example demonstrates a property assignment from a module's input property type port to its output property type port.
+
+``` firrtl
+module Example:
+  input propIn : Integer
+  output propOut : Integer
+  propassign propOut, propIn
+```
+
+The following example demonstrates a property assignment from a property literal expression to a module's output property type port.
+
+``` firrtl
+module Example:
+  output propOut : Integer
+  propassign propOut, Integer(42)
+```
+
+
 # Empty
 
 The empty statement does nothing and is used simply as a placeholder where a statement is expected.
@@ -1413,19 +1466,6 @@ regreset myreg: SInt, myclock, myreset, myinit
 ```
 
 A register is initialized with an indeterminate value (see [@sec:indeterminate-values]).
-
-# Attaches
-
-The `attach`{.firrtl} statement is used to attach two or more analog signals, defining that their values be the same in a commutative fashion that lacks the directionality of a regular connection.
-It can only be applied to signals with analog type, and each analog signal may be attached zero or more times.
-
-``` firrtl
-wire x: Analog<2>
-wire y: Analog<2>
-wire z: Analog<2>
-attach(x, y)      ; binary attach
-attach(z, y, x)   ; attach all three signals
-```
 
 # Conditionals
 
@@ -2302,45 +2342,6 @@ module DUT :
   define xp = rwprobe(p)
   connect p, x
   connect y, p
-```
-
-# Property Assignments
-
-Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connects]).
-
-Instead, property typed expressions are assigned with the `propassign`{.firrtl} statement.
-
-Property typed expressions have the normal rules for flow (see [@sec:flows]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
-
-1. The left-hand and right-hand side expressions must be of property types.
-
-2. The types of the left-hand and right-hand side expressions must be the same.
-
-3. The flow of the left-hand side expression must be sink.
-
-4. The flow of the right-hand side expression must be source.
-
-5. The left-hand side expression may be used as the left-hand side in at most one property assignment.
-
-6. The property assignment must not occur within a conditional scope.
-
-Note that property types are not legal for any expressions with duplex flow.
-
-The following example demonstrates a property assignment from a module's input property type port to its output property type port.
-
-``` firrtl
-module Example:
-  input propIn : Integer
-  output propOut : Integer
-  propassign propOut, propIn
-```
-
-The following example demonstrates a property assignment from a property literal expression to a module's output property type port.
-
-``` firrtl
-module Example:
-  output propOut : Integer
-  propassign propOut, Integer(42)
 ```
 
 # Expressions

@@ -1401,7 +1401,7 @@ module Example:
 ```
 
 
-# Empty
+# Empty Statement
 
 The empty statement does nothing and is used simply as a placeholder where a statement is expected.
 It is specified using the `skip`{.firrtl} keyword.

@@ -670,28 +670,6 @@ connect z, asUInt(y)
 
 See [@sec:primitive-operations] for more details on casting.
 
-### Analog Type
-
-The analog type specifies that a wire or port can be attached to multiple drivers.
-`Analog`{.firrtl} cannot be used as part of the type of a node or register, nor can it be used as part of the datatype of a memory.
-In this respect, it is similar to how `inout`{.firrtl} ports are used in Verilog, and FIRRTL analog signals are often used to interface with external Verilog or VHDL IP.
-
-In contrast with all other ground types, analog signals cannot appear on either side of a connection statement.
-Instead, analog signals are attached to each other with the commutative `attach`{.firrtl} statement.
-An analog signal may appear in any number of attach statements, and a legal circuit may also contain analog signals that are never attached.
-The only primitive operations that may be applied to analog signals are casts to other signal types.
-
-When an analog signal appears as a field of an aggregate type, the aggregate cannot appear in a standard connection statement.
-
-As with integer types, an analog type can represent a multi-bit signal.
-When analog signals are not given a concrete width, their widths are inferred according to a highly restrictive width inference rule, which requires that the widths of all arguments to a given attach operation be identical.
-
-``` firrtl
-Analog<1>  ; 1-bit analog type
-Analog<32> ; 32-bit analog type
-Analog     ; analog type with inferred width
-```
-
 ## Aggregate Types
 
 FIRRTL supports three aggregate types: vectors, bundles, and enumeration.
@@ -787,6 +765,28 @@ In the following example, all variants have the type `UInt<0>`{.firrtl}.
 
 ``` firrtl
 {|a, b, c|}
+```
+
+## Analog Type
+
+The analog type specifies that a wire or port can be attached to multiple drivers.
+`Analog`{.firrtl} cannot be used as part of the type of a node or register, nor can it be used as part of the datatype of a memory.
+In this respect, it is similar to how `inout`{.firrtl} ports are used in Verilog, and FIRRTL analog signals are often used to interface with external Verilog or VHDL IP.
+
+In contrast with all other ground types, analog signals cannot appear on either side of a connection statement.
+Instead, analog signals are attached to each other with the commutative `attach`{.firrtl} statement.
+An analog signal may appear in any number of attach statements, and a legal circuit may also contain analog signals that are never attached.
+The only primitive operations that may be applied to analog signals are casts to other signal types.
+
+When an analog signal appears as a field of an aggregate type, the aggregate cannot appear in a standard connection statement.
+
+As with integer types, an analog type can represent a multi-bit signal.
+When analog signals are not given a concrete width, their widths are inferred according to a highly restrictive width inference rule, which requires that the widths of all arguments to a given attach operation be identical.
+
+``` firrtl
+Analog<1>  ; 1-bit analog type
+Analog<32> ; 32-bit analog type
+Analog     ; analog type with inferred width
 ```
 
 ## Reference Types

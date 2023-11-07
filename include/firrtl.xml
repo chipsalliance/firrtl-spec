@@ -10,6 +10,7 @@
     </list>
     <list name="keywords">
       <item>input</item>
+      <item>type</item>
       <item>output</item>
       <item>defname</item>
       <item>parameter</item>

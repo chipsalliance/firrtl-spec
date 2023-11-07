@@ -1055,9 +1055,7 @@ module Example:
   input intProp : Integer ; an input port of Integer property type
 ```
 
-## Type Modifiers
-
-### Constant Type
+## Constant Type
 
 A constant type is a type whose value is guaranteed to be unchanging at circuit execution time.
 Constant is a constraint on the mutability of the value, it does not imply a literal value at a point in the emitted design.
@@ -1082,7 +1080,7 @@ In such case, the value of the port is not known, but that it is non-mutating at
 
 The indexing of a constant aggregate produces a constant of the appropriate type for the element.
 
-#### A note on implementation
+### A note on implementation
 
 Constant types are a restriction on FIRRTL types.
 Therefore, FIRRTL structures which would be expected to produce certain Verilog structures will produce the same structure if instantiated with a constant type.

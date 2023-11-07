@@ -1,8 +1,8 @@
 # Compute a version to use for the specification based on the latest tag.
 VERSION=$(shell git describe --tags --dirty --match 'v*.*.*' | sed 's/^v//')
 
-IMG_SRCS=$(wildcard include/img_src/*.dot)
-IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/img/%.eps)
+IMG_SRCS=$(shell find include/img_src/ -type f -name '*.dot')
+IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/%.eps)
 
 .PHONY: all clean format images
 .PRECIOUS: build/ build/img/
@@ -28,8 +28,8 @@ PANDOC_FLAGS=\
 build/%.pdf: %.md %.yaml revision-history.yaml include/common.yaml include/spec-template.tex include/firrtl.xml include/ebnf.xml $(IMG_EPSS) | build/
 	pandoc $< --metadata-file $*.yaml --metadata-file=revision-history.yaml --metadata-file=include/common.yaml $(PANDOC_FLAGS) -o $@
 
-build/img/%.eps: include/img_src/%.dot | build/img/
+build/%.eps: include/img_src/%.dot | build/
 	dot -Teps $< -o $@
 
-build/ build/img/:
+build/:
 	mkdir -p $@

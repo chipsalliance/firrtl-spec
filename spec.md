@@ -1168,13 +1168,12 @@ Two property types are equivalent if they are the same concrete property type.
 
 The direction that signals travel across wires is determined by multiple factors: the kind of circuit component (e.g., `input` vs `output`), the side of a connect statement it appears on, and the presence of `flip`s if the signal is a bundle type.
 
-To ensure connections are meaningful when taking directionality into account, every expression in FIRRTL has a flow, in addition to its type.
+To ensure connections are meaningful when taking directionality into account, every expression in FIRRTL has a **flow**.
+The flow of an expression can be one of **source**, **sink**, or **duplex**.
 
-The flow of an expression can be one of *source*, *sink*, or *duplex*.
-
-A source expression supplies a signal, and can be used to drive a circuit component.
+A source expression supplies a signal and can be used to drive a circuit component.
 A sink expression can be driven by another expression.
-A duplex expression is simply an expression that is both a source and sink.
+A duplex expression is an expression that is both a source and sink.
 
 The rules for the flow of an expression are as follows:
 

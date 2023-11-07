@@ -1296,12 +1296,7 @@ module MyModule :
 
 See [@sec:sub-fields] for more details about sub-field expressions.
 
-# Statements
-
-A module body consists of a sequence of statements.
-Statements declare the circuit components and describe their connectivity.
-
-## Empty
+# Empty
 
 The empty statement does nothing and is used simply as a placeholder where a statement is expected.
 It is specified using the `skip`{.firrtl} keyword.
@@ -1324,11 +1319,11 @@ connect c, d
 The empty statement is most often used as the `else`{.firrtl} branch in a conditional statement, or as a convenient placeholder for removed components during transformational passes.
 See [@sec:conditionals] for details on the conditional statement.
 
-## Wire
+# Wire
 
 See [@sec:wires].
 
-## Registers
+# Registers
 
 A register is a stateful circuit component.
 Reads from a register return the current value of the element, writes are not visible until after the next positive edge of the register's clock.
@@ -1338,7 +1333,7 @@ The type of a register must be a passive type (see [@sec:passive-types]) and may
 
 Registers may be declared without a reset using the `reg`{.firrtl} syntax and with a reset using the `regreset`{.firrtl} syntax.
 
-### Registers without Reset
+## Registers without Reset
 
 The following example demonstrates instantiating a register with the given name `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal `myclock`{.firrtl}.
 
@@ -1348,7 +1343,7 @@ reg myreg: SInt, myclock
 ; ...
 ```
 
-### Registers with Reset
+## Registers with Reset
 
 A register with a reset is declared using `regreset`{.firrtl}.
 A `regreset`{.firrtl} adds two expressions after the type and clock arguments: a reset signal and a reset value.
@@ -1371,7 +1366,7 @@ regreset myreg: SInt, myclock, myreset, myinit
 
 A register is initialized with an indeterminate value (see [@sec:indeterminate-values]).
 
-## Invalidates
+# Invalidates
 
 The `invalidate`{.firrtl} statement allows a circuit component to be left uninitialized
 or only partially initialized.
@@ -1412,7 +1407,7 @@ module MyModule :
 
 The handing of invalidated components is covered in [@sec:indeterminate-values].
 
-### The Invalidate Algorithm
+## The Invalidate Algorithm
 
 Invalidating a component with a ground type indicates that the component's value is undetermined if the component has sink or duplex flow (see [@sec:flows]).
 Otherwise, the component is unaffected.
@@ -1423,7 +1418,7 @@ Invalidating a component with a bundle type recursively invalidates each sub-ele
 
 Components of reference and analog type are ignored, as are any reference or analog types within the component (as they cannot be connected to).
 
-## Attaches
+# Attaches
 
 The `attach`{.firrtl} statement is used to attach two or more analog signals, defining that their values be the same in a commutative fashion that lacks the directionality of a regular connection.
 It can only be applied to signals with analog type, and each analog signal may be attached zero or more times.
@@ -1436,7 +1431,7 @@ attach(x, y)      ; binary attach
 attach(z, y, x)   ; attach all three signals
 ```
 
-## Nodes
+# Nodes
 
 A node is simply a named intermediate value in a circuit.
 The node must be initialized to a value with a passive type and cannot be connected to.
@@ -1451,11 +1446,11 @@ wire b: SInt
 node mynode = mux(pred, a, b)
 ```
 
-## Conditionals
+# Conditionals
 
 Several statements provide branching in the data-flow and conditional control of verification constructs.
 
-### When Statements
+## When Statements
 
 Connections within a when statement that connect to previously declared components hold only when the given condition is high.
 The condition must have a 1-bit unsigned integer type.
@@ -1475,7 +1470,7 @@ module MyModule :
     connect x, b
 ```
 
-#### Syntactic Shorthands
+### Syntactic Shorthands
 
 The `else`{.firrtl} branch of a conditional statement may be omitted, in which case a default `else`{.firrtl} branch is supplied consisting of the empty statement.
 
@@ -1578,7 +1573,7 @@ The `else`{.firrtl} branch may also be added to the single line:
 when c : connect a, b else : connect e, f
 ```
 
-### Match Statements
+## Match Statements
 
 Match statements are used to discriminate the active variant of an enumeration typed expression.
 A match statement must exhaustively test every variant of an enumeration.
@@ -1592,7 +1587,7 @@ match x:
     connect e, f
 ```
 
-### Nested Declarations
+## Nested Declarations
 
 If a circuit component is declared within a conditional statement,
 connections to it are unaffected by the condition.
@@ -1616,7 +1611,7 @@ module MyModule :
 Intuitively, a line can be drawn between a connection to a component and that component's declaration.
 All conditional statements that are crossed by the line apply to that connection.
 
-### Initialization Coverage
+## Initialization Coverage
 
 Because of the conditional statement, it is possible to syntactically express circuits containing wires that have not been connected to under all conditions.
 
@@ -1635,7 +1630,7 @@ This is an illegal FIRRTL circuit and an error will be thrown during compilation
 All wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
 Registers do not need to be connected to under all conditions, as it will keep its previous value if unconnected.
 
-### Conditional Scopes
+## Conditional Scopes
 
 Conditional statements create a new *conditional scope* within each
 of its `when`{.firrtl} and `else`{.firrtl} branches.
@@ -1650,7 +1645,7 @@ A circuit components declared locally within a conditional scope
 may only be connected to within that scope.
 
 
-### Conditional Last Connect Semantics
+## Conditional Last Connect Semantics
 
 In the case where a connection to a circuit component is followed by a conditional statement containing a connection to the same component, the connection is overwritten only when the condition holds.
 Intuitively, a multiplexer is generated such that when the condition is low, the multiplexer returns the old value, and otherwise returns the new value.
@@ -1751,7 +1746,7 @@ connect w.a, mux(c, y, x.a)
 connect w.b, x.b
 ```
 
-## Mem
+# Mem
 
 A memory is an abstract representation of a hardware memory.
 It is characterized by the following parameters.
@@ -1807,7 +1802,7 @@ In the example above, the type of `mymem`{.firrtl} is:
 
 The following sections describe how a memory's field types are calculated and the behavior of each type of memory port.
 
-### Read Ports
+## Read Ports
 
 If a memory is declared with element type `T`{.firrtl}, has a size less than or equal to $2^N$, then its read ports have type:
 
@@ -1819,7 +1814,7 @@ If the `en`{.firrtl} field is high, then the element value associated with the a
 If the `en`{.firrtl} field is low, then the value in the `data`{.firrtl} field, after the appropriate read latency, is undefined.
 The port is driven by the clock signal in the `clk`{.firrtl} field.
 
-### Write Ports
+## Write Ports
 
 If a memory is declared with element type `T`{.firrtl}, has a size less than or equal to $2^N$, then its write ports have type:
 
@@ -1835,7 +1830,7 @@ If the `en`{.firrtl} field is high, then the non-masked portion of the `data`{.f
 If the `en`{.firrtl} field is low, then no value is written after the appropriate write latency.
 The port is driven by the clock signal in the `clk`{.firrtl} field.
 
-### Readwrite Ports
+## Readwrite Ports
 
 Finally, the readwrite ports have type:
 
@@ -1848,7 +1843,7 @@ A readwrite port is a single port that, on a given cycle, can be used either as 
 If the readwrite port is not in write mode (the `wmode`{.firrtl} field is low), then the `rdata`{.firrtl}, `addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its read port fields, and should be used accordingly.
 If the readwrite port is in write mode (the `wmode`{.firrtl} field is high), then the `wdata`{.firrtl}, `wmask`{.firrtl}, `addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its write port fields, and should be used accordingly.
 
-### Read Under Write Behavior
+## Read Under Write Behavior
 
 The read-under-write flag indicates the value held on a read port's `data`{.firrtl} field if its memory location is written to while it is reading.
 The flag may take on three settings: `old`{.firrtl}, `new`{.firrtl}, and `undefined`{.firrtl}.
@@ -1870,16 +1865,16 @@ Note that this excludes combinational reads, which are simply modeled as combina
 For memories with independently clocked ports, a collision between a read operation and a write operation with independent clocks is defined to occur when the address of an active write port and the address of an active read port are the same for overlapping clock periods, or when any portion of a read operation overlaps part of a write operation with a matching addresses.
 In such cases, the data that is read out of the read port is undefined.
 
-### Write Under Write Behavior
+## Write Under Write Behavior
 
 In all cases, if a memory location is written to by more than one port on the same cycle, the stored value is undefined.
 
-### Constant memory type
+## Constant memory type
 
 A memory with a constant data-type represents a ROM and may not have write-ports.
 It is beyond the scope of this specification how ROMs are initialized.
 
-## Instances
+# Instances
 
 FIRRTL modules are instantiated with the instance statement.
 The following example demonstrates creating an instance named `myinstance`{.firrtl} of the `MyModule`{.firrtl} module within the top level module `Top`{.firrtl}.
@@ -1903,7 +1898,7 @@ Modules have the property that instances can always be *inlined* into the parent
 
 To disallow infinitely recursive hardware, modules cannot contain instances of itself, either directly, or indirectly through instances of other modules it instantiates.
 
-## Stops
+# Stops
 
 The stop statement is used to halt simulations of the circuit.
 Backends are free to generate hardware to stop a running circuit for the purpose of debugging, but this is not required by the FIRRTL specification.
@@ -1923,7 +1918,7 @@ wire halt: UInt<1>
 stop(clk, halt, 42) : optional_name
 ```
 
-## Formatted Prints
+# Formatted Prints
 
 The formatted print statement is used to print a formatted string during simulations of the circuit.
 Backends are free to generate hardware that relays this information to a hardware test harness, but this is not required by the FIRRTL specification.
@@ -1947,7 +1942,7 @@ printf(clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b) : optional_name
 
 On each positive clock edge, when the condition signal is high, the `printf`{.firrtl} statement prints out the format string where its argument placeholders are substituted with the value of the corresponding argument.
 
-### Format Strings
+## Format Strings
 
 Format strings support the following argument placeholders:
 
@@ -1971,7 +1966,7 @@ Format strings support the following escape characters:
 
 - `\'` : Single quote
 
-## Verification
+# Verification
 
 To facilitate simulation, model checking and formal methods, there are three non-synthesizable verification statements available: assert, assume and cover.
 Each type of verification statement requires a clock signal, a predicate signal, an enable signal and a string literal.
@@ -1991,7 +1986,7 @@ Any verification statement has an optional name attribute which can be used to a
 The name is part of the module level namespace.
 However it can never be used in a reference since it is not of any valid type.
 
-### Assert
+## Assert
 
 The assert statement verifies that the predicate is true on the rising edge of any clock cycle when the enable is true.
 In other words, it verifies that enable implies predicate.
@@ -2005,7 +2000,7 @@ connect en, Z_valid
 assert(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
-### Assume
+## Assume
 
 The assume statement directs the model checker to disregard any states where the enable is true and the predicate is not true at the rising edge of the clock cycle.
 In other words, it reduces the states to be checked to only those where enable implies predicate is true by definition.
@@ -2021,7 +2016,7 @@ connect en, Z_valid
 assume(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
-### Cover
+## Cover
 
 The cover statement verifies that the predicate is true on the rising edge of some clock cycle when the enable is true.
 In other words, it directs the model checker to find some way to make both enable and predicate true at some time step.
@@ -2036,13 +2031,13 @@ connect en, Z_valid
 cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
-## Probes
+# Probes
 
 Probe references are created with `probe`{.firrtl} expressions, routed through the design using the `define`{.firrtl} statement, read using the `read`{.firrtl} expression (see [@sec:reading-probe-references]), and forced and released with `force`{.firrtl} and `release`{.firrtl} statements.
 
 These statements are detailed below.
 
-### Define
+## Define
 
 Define statements are used to route references through the design, and may be used wherever is most convenient in terms of available identifiers -- their location is not significant other than scoping, and do not have last-connect semantics.
 Every sink-flow probe must be the target of exactly one of these statements.
@@ -2091,7 +2086,7 @@ Define statements can set a `Probe`{.firrtl} to either a `Probe`{.firrtl} or `RW
 The inner types of the two references must (recursively) be identical or identical with the destination containing uninferred versions of the corresponding element in the source type.
 See [@sec:width-and-reset-inference] for details.
 
-#### Probes and Passive Types
+### Probes and Passive Types
 
 While `Probe`{.firrtl} inner types are passive, the type of the probed static reference is not required to be:
 
@@ -2107,7 +2102,7 @@ module Foo :
   connect y, p
 ```
 
-#### Exporting References to Nested Declarations
+### Exporting References to Nested Declarations
 
 Nested declarations (see [@sec:nested-declarations]) may be exported:
 
@@ -2124,7 +2119,7 @@ module RefProducer :
     define thereg = probe(myreg)
 ```
 
-#### Forwarding References Upwards
+### Forwarding References Upwards
 
 Define statements can be used to forward a child module's reference further up the hierarchy:
 
@@ -2154,7 +2149,7 @@ module Forward :
   define p = f.p[0][1]
 ```
 
-#### Forwarding References Downwards
+### Forwarding References Downwards
 
 Define statements can also be used to forward references down the hierarchy using input reference-type ports, which are allowed but should be used carefully as they make it possible to express invalid reference paths.
 
@@ -2171,7 +2166,7 @@ module ForwardDownwards :
   define u.r = probe(in)
 ```
 
-### Force and Release
+## Force and Release
 
 To override existing drivers for a `RWProbe`{.firrtl}, the `force`{.firrtl} statement is used, and released with `release`{.firrtl}.
 Force statements are simulation-only constructs and may not be supported by all implementations.
@@ -2207,7 +2202,7 @@ module AddRefs:
   define c = rwprobe(z)
 ```
 
-#### Initial Force and Initial Release
+### Initial Force and Initial Release
 
 These variants force and release continuously:
 
@@ -2257,7 +2252,7 @@ would become:
 initial if (c) force a.b = x;
 ```
 
-#### Force and Release
+### Force and Release
 
 These more detailed variants allow specifying a clock and condition for when activating the force or release behavior continuously:
 
@@ -2292,7 +2287,7 @@ end
 Condition is checked in procedural block before the force, as shown above.
 When placed under `when`{.firrtl} blocks, condition is mixed in as with other statements (e.g., `assert`{.firrtl}).
 
-#### Non-Passive Force Target
+### Non-Passive Force Target
 
 Force on a non-passive bundle drives in the direction of each field's orientation.
 
@@ -2326,7 +2321,7 @@ module DUT :
   connect y, p
 ```
 
-## Property Assignments
+# Property Assignments
 
 Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connects]).
 

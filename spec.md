@@ -1879,7 +1879,9 @@ Modules have the property that instances can always be *inlined* into the parent
 
 To disallow infinitely recursive hardware, modules cannot contain instances of itself, either directly, or indirectly through instances of other modules it instantiates.
 
-# Stops
+# Commands
+
+## Stops
 
 The stop statement is used to halt simulations of the circuit.
 Backends are free to generate hardware to stop a running circuit for the purpose of debugging, but this is not required by the FIRRTL specification.
@@ -1899,7 +1901,7 @@ wire halt: UInt<1>
 stop(clk, halt, 42) : optional_name
 ```
 
-# Formatted Prints
+## Formatted Prints
 
 The formatted print statement is used to print a formatted string during simulations of the circuit.
 Backends are free to generate hardware that relays this information to a hardware test harness, but this is not required by the FIRRTL specification.
@@ -1923,7 +1925,7 @@ printf(clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b) : optional_name
 
 On each positive clock edge, when the condition signal is high, the `printf`{.firrtl} statement prints out the format string where its argument placeholders are substituted with the value of the corresponding argument.
 
-## Format Strings
+### Format Strings
 
 Format strings support the following argument placeholders:
 
@@ -1947,7 +1949,7 @@ Format strings support the following escape characters:
 
 - `\'` : Single quote
 
-# Verification
+## Verification
 
 To facilitate simulation, model checking and formal methods, there are three non-synthesizable verification statements available: assert, assume and cover.
 Each type of verification statement requires a clock signal, a predicate signal, an enable signal and a string literal.
@@ -1967,7 +1969,7 @@ Any verification statement has an optional name attribute which can be used to a
 The name is part of the module level namespace.
 However it can never be used in a reference since it is not of any valid type.
 
-## Assert
+### Assert
 
 The assert statement verifies that the predicate is true on the rising edge of any clock cycle when the enable is true.
 In other words, it verifies that enable implies predicate.
@@ -1981,7 +1983,7 @@ connect en, Z_valid
 assert(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
-## Assume
+### Assume
 
 The assume statement directs the model checker to disregard any states where the enable is true and the predicate is not true at the rising edge of the clock cycle.
 In other words, it reduces the states to be checked to only those where enable implies predicate is true by definition.
@@ -1997,7 +1999,7 @@ connect en, Z_valid
 assume(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
-## Cover
+### Cover
 
 The cover statement verifies that the predicate is true on the rising edge of some clock cycle when the enable is true.
 In other words, it directs the model checker to find some way to make both enable and predicate true at some time step.

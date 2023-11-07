@@ -670,28 +670,6 @@ connect z, asUInt(y)
 
 See [@sec:primitive-operations] for more details on casting.
 
-### Analog Type
-
-The analog type specifies that a wire or port can be attached to multiple drivers.
-`Analog`{.firrtl} cannot be used as part of the type of a node or register, nor can it be used as part of the datatype of a memory.
-In this respect, it is similar to how `inout`{.firrtl} ports are used in Verilog, and FIRRTL analog signals are often used to interface with external Verilog or VHDL IP.
-
-In contrast with all other ground types, analog signals cannot appear on either side of a connection statement.
-Instead, analog signals are attached to each other with the commutative `attach`{.firrtl} statement.
-An analog signal may appear in any number of attach statements, and a legal circuit may also contain analog signals that are never attached.
-The only primitive operations that may be applied to analog signals are casts to other signal types.
-
-When an analog signal appears as a field of an aggregate type, the aggregate cannot appear in a standard connection statement.
-
-As with integer types, an analog type can represent a multi-bit signal.
-When analog signals are not given a concrete width, their widths are inferred according to a highly restrictive width inference rule, which requires that the widths of all arguments to a given attach operation be identical.
-
-``` firrtl
-Analog<1>  ; 1-bit analog type
-Analog<32> ; 32-bit analog type
-Analog     ; analog type with inferred width
-```
-
 ## Aggregate Types
 
 FIRRTL supports three aggregate types: vectors, bundles, and enumeration.
@@ -787,6 +765,28 @@ In the following example, all variants have the type `UInt<0>`{.firrtl}.
 
 ``` firrtl
 {|a, b, c|}
+```
+
+## Analog Type
+
+The analog type specifies that a wire or port can be attached to multiple drivers.
+`Analog`{.firrtl} cannot be used as part of the type of a node or register, nor can it be used as part of the datatype of a memory.
+In this respect, it is similar to how `inout`{.firrtl} ports are used in Verilog, and FIRRTL analog signals are often used to interface with external Verilog or VHDL IP.
+
+In contrast with all other ground types, analog signals cannot appear on either side of a connection statement.
+Instead, analog signals are attached to each other with the commutative `attach`{.firrtl} statement.
+An analog signal may appear in any number of attach statements, and a legal circuit may also contain analog signals that are never attached.
+The only primitive operations that may be applied to analog signals are casts to other signal types.
+
+When an analog signal appears as a field of an aggregate type, the aggregate cannot appear in a standard connection statement.
+
+As with integer types, an analog type can represent a multi-bit signal.
+When analog signals are not given a concrete width, their widths are inferred according to a highly restrictive width inference rule, which requires that the widths of all arguments to a given attach operation be identical.
+
+``` firrtl
+Analog<1>  ; 1-bit analog type
+Analog<32> ; 32-bit analog type
+Analog     ; analog type with inferred width
 ```
 
 ## Reference Types
@@ -895,164 +895,6 @@ circuit :
     connect out2, in
 ```
 
-### Input Probe References
-
-Probe references are generally forwarded up the design hierarchy, being used to reach down into design internals from a higher point.
-As a result probe-type references are most often output ports, but may also be used on input ports internally, as described in this section.
-
-Input probe references are allowed on internal modules, but they should be used with care because they make it possible to express invalid or multiple reference paths.
-When probe references are used to access the underlying data (e.g., with a `read`{.firrtl} or `force`{.firrtl}), they must target a statically known element at or below the point of that use, in all contexts.
-Support for other scenarios are allowed as determined by the implementation.
-
-Input probe references are not allowed on public-facing modules: e.g., the top module and external modules.
-
-Examples of input probe references follow.
-
-#### U-Turn Example
-
-```firrtl
-module UTurn:
-  input in : Probe<UInt>
-  output out : Probe<UInt>
-  define out = in
-
-module RefBouncing:
-  input x: UInt
-  output y: UInt
-
-  inst u1 of UTurn
-  inst u2 of UTurn
-
-  node n = x
-  define u1.in = probe(n)
-  define u2.in = u1.out
-
-  connect y, read(u2.out) ; = x
-```
-
-In the above example, the probe of node `n`{.firrtl} is routed through two modules before its resolution.
-
-#### Invalid Input Reference
-
-When using a probe reference, the target must reside at or below the point of use in the design hierarchy.
-Input references make it possible to create designs where this is not the case, and such upwards references are not supported:
-
-```firrtl
-module Foo:
-  input in : Probe<UInt>
-  output out : UInt
-
-  connect out, read(in)
-```
-
-Even when the target resolves at or below, the path must be the same in all contexts so a single description of the module may be generated.
-
-The following example demonstrates such an invalid use of probe references:
-
-```firrtl
-circuit:
-  public module Top:
-    input in : UInt<4>
-    output out : UInt
-
-    inst ud1 of UpDown
-    connect ud1.in, in
-    define ud1.in_ref = ud1.r1
-
-    inst ud2 of UpDown
-    connect ud2.in, in
-    define ud2.in_ref = ud2.r2
-
-    connect out, add(ud1.out, ud2.out)
-
-  module UpDown:
-    input in : UInt<4>
-    input in_ref : Probe<UInt<4>>
-    output r1 : Probe<UInt<4>>
-    output r2 : Probe<UInt<4>>
-    output out : UInt
-
-    ; In ud1, this is UpDown.n1, in ud2 this is UpDown.n2 .
-    ; However, this is not supported as it cannot be both at once.
-    connect out, read(in_ref)
-    node n1 = and(in, UInt<4>(1))
-    node n2 = and(in, UInt<4>(3))
-    define r1 = probe(n1)
-    define r2 = probe(n2)
-```
-
-#### IO with references to endpoint data
-
-A primary motivation for input probe references is that in some situations they make it easier to generate the FIRRTL code.
-While output references necessarily capture this design equivalently, this can be harder to generate and so is useful to support.
-
-The following demonstrates an example of this, where it's convenient to use the same bundle type as both output to one module and input to another, with references populated by both modules targeting signals of interest at each end.
-For this to be the same bundle type -- input on one and output on another -- the `Probe` references for each end should be output-oriented and accordingly are input-oriented at the other end.
-It would be inconvenient to generate this design so that each has output probe references only.
-
-The `Connect` module instantiates a `Producer` and `Consumer` module, connects them using a bundle with references in both orientations, and forwards those references for inspection up the hierarchy.
-The probe targets are not significant, here they are the same data being sent between the two, as stored in each module.
-
-```firrtl
-module Consumer:
-  input in : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
-  ; ...
-  node n = in.a
-  define in.cref = probe(n)
-
-module Producer:
-  output out : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
-  wire x : UInt
-  define out.pref = probe(x)
-  ; ...
-  connect out.a, x
-
-module Connect:
-  output out : {pref: Probe<UInt>, cref: Probe<UInt>}
-
-  inst a of Consumer
-  inst b of Producer
-
-  ; Producer => Consumer
-  connect a.in.a, b.out.a
-  define a.in.pref = b.out.pref
-  define b.out.cref = a.in.cref
-
-  ; Send references out
-  define out.pref = b.out.pref
-  define out.cref = a.in.cref
-
-module Top:
-  inst c of Connect
-
-  node producer_debug = read(c.out.pref); ; Producer-side signal
-  node consumer_debug = read(c.out.cref); ; Consumer-side signal
-```
-
-## Type Alias
-
-A type alias is a mechanism to assign names to existing FIRRTL types.
-Type aliases enables their reuse across multiple declarations.
-
-```firrtl
-type WordType = UInt<32>
-type ValidType = UInt<1>
-type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
-type AnotherWordType = UInt<32>
-
-module TypeAliasMod:
-  input in: Data
-  output out: Data
-  wire w: AnotherWordType
-  connect w, in.w
-  ...
-```
-
-The `type` declaration is globally defined and all named types exist in the same namespace and thus must all have a unique name.
-Type aliases do not share the same namespace as modules; hence it is allowed for type aliases to conflict with module names.
-Note that when we compare two types, the equivalence is determined solely by their structures.
-For instance types of `w`{.firrtl} and `in.w`{.firrtl} are equivalent in the example above even though they are different type alias.
-
 ## Property Types
 
 FIRRTL property types represent information about the circuit that is not hardware.
@@ -1079,9 +921,7 @@ module Example:
   input intProp : Integer ; an input port of Integer property type
 ```
 
-## Type Modifiers
-
-### Constant Type
+## Constant Type
 
 A constant type is a type whose value is guaranteed to be unchanging at circuit execution time.
 Constant is a constraint on the mutability of the value, it does not imply a literal value at a point in the emitted design.
@@ -1106,7 +946,7 @@ In such case, the value of the port is not known, but that it is non-mutating at
 
 The indexing of a constant aggregate produces a constant of the appropriate type for the element.
 
-#### A note on implementation
+### A note on implementation
 
 Constant types are a restriction on FIRRTL types.
 Therefore, FIRRTL structures which would be expected to produce certain Verilog structures will produce the same structure if instantiated with a constant type.
@@ -1137,6 +977,29 @@ More precisely, a passive type is defined recursively:
 
 Registers and memories may only be parametrized over passive types.
 
+## Type Alias
+
+A type alias is a mechanism to assign names to existing FIRRTL types.
+Type aliases enables their reuse across multiple declarations.
+
+```firrtl
+type WordType = UInt<32>
+type ValidType = UInt<1>
+type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
+type AnotherWordType = UInt<32>
+
+module TypeAliasMod:
+  input in: Data
+  output out: Data
+  wire w: AnotherWordType
+  connect w, in.w
+  ...
+```
+
+The `type` declaration is globally defined and all named types exist in the same namespace and thus must all have a unique name.
+Type aliases do not share the same namespace as modules; hence it is allowed for type aliases to conflict with module names.
+Note that when we compare two types, the equivalence is determined solely by their structures.
+For instance types of `w`{.firrtl} and `in.w`{.firrtl} are equivalent in the example above even though they are different type alias.
 
 ## Type Equivalence
 
@@ -1161,6 +1024,22 @@ Two bundle types are equivalent if they have the same number of fields, and both
 Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent to `{flip a: {b: UInt}}`{.firrtl}.
 
 Two property types are equivalent if they are the same concrete property type.
+
+## Width Inference
+
+For all circuit components declared with unspecified widths,
+the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
+If a circuit component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
+
+For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
+
+The width of a ground-typed multiplexer expression is the maximum of its two corresponding input widths.
+For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
+
+The width of each primitive operation is detailed in [@sec:primitive-operations].
+
+The width of constant integer expressions is detailed in their respective sections.
+
 
 # Connections
 
@@ -2386,6 +2265,140 @@ module DUT :
   connect y, p
 ```
 
+## Input Probe References
+
+Probe references are generally forwarded up the design hierarchy, being used to reach down into design internals from a higher point.
+As a result probe-type references are most often output ports, but may also be used on input ports internally, as described in this section.
+
+Input probe references are allowed on internal modules, but they should be used with care because they make it possible to express invalid or multiple reference paths.
+When probe references are used to access the underlying data (e.g., with a `read`{.firrtl} or `force`{.firrtl}), they must target a statically known element at or below the point of that use, in all contexts.
+Support for other scenarios are allowed as determined by the implementation.
+
+Input probe references are not allowed on public-facing modules: e.g., the top module and external modules.
+
+Examples of input probe references follow.
+
+### U-Turn Example
+
+```firrtl
+module UTurn:
+  input in : Probe<UInt>
+  output out : Probe<UInt>
+  define out = in
+
+module RefBouncing:
+  input x: UInt
+  output y: UInt
+
+  inst u1 of UTurn
+  inst u2 of UTurn
+
+  node n = x
+  define u1.in = probe(n)
+  define u2.in = u1.out
+
+  connect y, read(u2.out) ; = x
+```
+
+In the above example, the probe of node `n`{.firrtl} is routed through two modules before its resolution.
+
+### Invalid Input Reference
+
+When using a probe reference, the target must reside at or below the point of use in the design hierarchy.
+Input references make it possible to create designs where this is not the case, and such upwards references are not supported:
+
+```firrtl
+module Foo:
+  input in : Probe<UInt>
+  output out : UInt
+
+  connect out, read(in)
+```
+
+Even when the target resolves at or below, the path must be the same in all contexts so a single description of the module may be generated.
+
+The following example demonstrates such an invalid use of probe references:
+
+```firrtl
+circuit:
+  public module Top:
+    input in : UInt<4>
+    output out : UInt
+
+    inst ud1 of UpDown
+    connect ud1.in, in
+    define ud1.in_ref = ud1.r1
+
+    inst ud2 of UpDown
+    connect ud2.in, in
+    define ud2.in_ref = ud2.r2
+
+    connect out, add(ud1.out, ud2.out)
+
+  module UpDown:
+    input in : UInt<4>
+    input in_ref : Probe<UInt<4>>
+    output r1 : Probe<UInt<4>>
+    output r2 : Probe<UInt<4>>
+    output out : UInt
+
+    ; In ud1, this is UpDown.n1, in ud2 this is UpDown.n2 .
+    ; However, this is not supported as it cannot be both at once.
+    connect out, read(in_ref)
+    node n1 = and(in, UInt<4>(1))
+    node n2 = and(in, UInt<4>(3))
+    define r1 = probe(n1)
+    define r2 = probe(n2)
+```
+
+### IO with references to endpoint data
+
+A primary motivation for input probe references is that in some situations they make it easier to generate the FIRRTL code.
+While output references necessarily capture this design equivalently, this can be harder to generate and so is useful to support.
+
+The following demonstrates an example of this, where it's convenient to use the same bundle type as both output to one module and input to another, with references populated by both modules targeting signals of interest at each end.
+For this to be the same bundle type -- input on one and output on another -- the `Probe` references for each end should be output-oriented and accordingly are input-oriented at the other end.
+It would be inconvenient to generate this design so that each has output probe references only.
+
+The `Connect` module instantiates a `Producer` and `Consumer` module, connects them using a bundle with references in both orientations, and forwards those references for inspection up the hierarchy.
+The probe targets are not significant, here they are the same data being sent between the two, as stored in each module.
+
+```firrtl
+module Consumer:
+  input in : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
+  ; ...
+  node n = in.a
+  define in.cref = probe(n)
+
+module Producer:
+  output out : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
+  wire x : UInt
+  define out.pref = probe(x)
+  ; ...
+  connect out.a, x
+
+module Connect:
+  output out : {pref: Probe<UInt>, cref: Probe<UInt>}
+
+  inst a of Consumer
+  inst b of Producer
+
+  ; Producer => Consumer
+  connect a.in.a, b.out.a
+  define a.in.pref = b.out.pref
+  define b.out.cref = a.in.cref
+
+  ; Send references out
+  define out.pref = b.out.pref
+  define out.cref = a.in.cref
+
+module Top:
+  inst c of Connect
+
+  node producer_debug = read(c.out.pref); ; Producer-side signal
+  node consumer_debug = read(c.out.cref); ; Consumer-side signal
+```
+
 # Expressions
 
 FIRRTL expressions are used for creating constant integers,
@@ -2781,21 +2794,6 @@ module MyModule :
 The probed expression must be a static reference.
 
 See [@sec:probe-types;@sec:probe] for more details on probe references and their use.
-
-# Width Inference
-
-For all circuit components declared with unspecified widths,
-the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
-If a circuit component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
-
-For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
-
-The width of a ground-typed multiplexer expression is the maximum of its two corresponding input widths.
-For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
-
-The width of each primitive operation is detailed in [@sec:primitive-operations].
-
-The width of constant integer expressions is detailed in their respective sections.
 
 # Namespaces
 

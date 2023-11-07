@@ -895,140 +895,6 @@ circuit :
     connect out2, in
 ```
 
-### Input Probe References
-
-Probe references are generally forwarded up the design hierarchy, being used to reach down into design internals from a higher point.
-As a result probe-type references are most often output ports, but may also be used on input ports internally, as described in this section.
-
-Input probe references are allowed on internal modules, but they should be used with care because they make it possible to express invalid or multiple reference paths.
-When probe references are used to access the underlying data (e.g., with a `read`{.firrtl} or `force`{.firrtl}), they must target a statically known element at or below the point of that use, in all contexts.
-Support for other scenarios are allowed as determined by the implementation.
-
-Input probe references are not allowed on public-facing modules: e.g., the top module and external modules.
-
-Examples of input probe references follow.
-
-#### U-Turn Example
-
-```firrtl
-module UTurn:
-  input in : Probe<UInt>
-  output out : Probe<UInt>
-  define out = in
-
-module RefBouncing:
-  input x: UInt
-  output y: UInt
-
-  inst u1 of UTurn
-  inst u2 of UTurn
-
-  node n = x
-  define u1.in = probe(n)
-  define u2.in = u1.out
-
-  connect y, read(u2.out) ; = x
-```
-
-In the above example, the probe of node `n`{.firrtl} is routed through two modules before its resolution.
-
-#### Invalid Input Reference
-
-When using a probe reference, the target must reside at or below the point of use in the design hierarchy.
-Input references make it possible to create designs where this is not the case, and such upwards references are not supported:
-
-```firrtl
-module Foo:
-  input in : Probe<UInt>
-  output out : UInt
-
-  connect out, read(in)
-```
-
-Even when the target resolves at or below, the path must be the same in all contexts so a single description of the module may be generated.
-
-The following example demonstrates such an invalid use of probe references:
-
-```firrtl
-circuit:
-  public module Top:
-    input in : UInt<4>
-    output out : UInt
-
-    inst ud1 of UpDown
-    connect ud1.in, in
-    define ud1.in_ref = ud1.r1
-
-    inst ud2 of UpDown
-    connect ud2.in, in
-    define ud2.in_ref = ud2.r2
-
-    connect out, add(ud1.out, ud2.out)
-
-  module UpDown:
-    input in : UInt<4>
-    input in_ref : Probe<UInt<4>>
-    output r1 : Probe<UInt<4>>
-    output r2 : Probe<UInt<4>>
-    output out : UInt
-
-    ; In ud1, this is UpDown.n1, in ud2 this is UpDown.n2 .
-    ; However, this is not supported as it cannot be both at once.
-    connect out, read(in_ref)
-    node n1 = and(in, UInt<4>(1))
-    node n2 = and(in, UInt<4>(3))
-    define r1 = probe(n1)
-    define r2 = probe(n2)
-```
-
-#### IO with references to endpoint data
-
-A primary motivation for input probe references is that in some situations they make it easier to generate the FIRRTL code.
-While output references necessarily capture this design equivalently, this can be harder to generate and so is useful to support.
-
-The following demonstrates an example of this, where it's convenient to use the same bundle type as both output to one module and input to another, with references populated by both modules targeting signals of interest at each end.
-For this to be the same bundle type -- input on one and output on another -- the `Probe` references for each end should be output-oriented and accordingly are input-oriented at the other end.
-It would be inconvenient to generate this design so that each has output probe references only.
-
-The `Connect` module instantiates a `Producer` and `Consumer` module, connects them using a bundle with references in both orientations, and forwards those references for inspection up the hierarchy.
-The probe targets are not significant, here they are the same data being sent between the two, as stored in each module.
-
-```firrtl
-module Consumer:
-  input in : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
-  ; ...
-  node n = in.a
-  define in.cref = probe(n)
-
-module Producer:
-  output out : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
-  wire x : UInt
-  define out.pref = probe(x)
-  ; ...
-  connect out.a, x
-
-module Connect:
-  output out : {pref: Probe<UInt>, cref: Probe<UInt>}
-
-  inst a of Consumer
-  inst b of Producer
-
-  ; Producer => Consumer
-  connect a.in.a, b.out.a
-  define a.in.pref = b.out.pref
-  define b.out.cref = a.in.cref
-
-  ; Send references out
-  define out.pref = b.out.pref
-  define out.cref = a.in.cref
-
-module Top:
-  inst c of Connect
-
-  node producer_debug = read(c.out.pref); ; Producer-side signal
-  node consumer_debug = read(c.out.cref); ; Consumer-side signal
-```
-
 ## Property Types
 
 FIRRTL property types represent information about the circuit that is not hardware.
@@ -2381,6 +2247,140 @@ module DUT :
   define xp = rwprobe(p)
   connect p, x
   connect y, p
+```
+
+## Input Probe References
+
+Probe references are generally forwarded up the design hierarchy, being used to reach down into design internals from a higher point.
+As a result probe-type references are most often output ports, but may also be used on input ports internally, as described in this section.
+
+Input probe references are allowed on internal modules, but they should be used with care because they make it possible to express invalid or multiple reference paths.
+When probe references are used to access the underlying data (e.g., with a `read`{.firrtl} or `force`{.firrtl}), they must target a statically known element at or below the point of that use, in all contexts.
+Support for other scenarios are allowed as determined by the implementation.
+
+Input probe references are not allowed on public-facing modules: e.g., the top module and external modules.
+
+Examples of input probe references follow.
+
+### U-Turn Example
+
+```firrtl
+module UTurn:
+  input in : Probe<UInt>
+  output out : Probe<UInt>
+  define out = in
+
+module RefBouncing:
+  input x: UInt
+  output y: UInt
+
+  inst u1 of UTurn
+  inst u2 of UTurn
+
+  node n = x
+  define u1.in = probe(n)
+  define u2.in = u1.out
+
+  connect y, read(u2.out) ; = x
+```
+
+In the above example, the probe of node `n`{.firrtl} is routed through two modules before its resolution.
+
+### Invalid Input Reference
+
+When using a probe reference, the target must reside at or below the point of use in the design hierarchy.
+Input references make it possible to create designs where this is not the case, and such upwards references are not supported:
+
+```firrtl
+module Foo:
+  input in : Probe<UInt>
+  output out : UInt
+
+  connect out, read(in)
+```
+
+Even when the target resolves at or below, the path must be the same in all contexts so a single description of the module may be generated.
+
+The following example demonstrates such an invalid use of probe references:
+
+```firrtl
+circuit:
+  public module Top:
+    input in : UInt<4>
+    output out : UInt
+
+    inst ud1 of UpDown
+    connect ud1.in, in
+    define ud1.in_ref = ud1.r1
+
+    inst ud2 of UpDown
+    connect ud2.in, in
+    define ud2.in_ref = ud2.r2
+
+    connect out, add(ud1.out, ud2.out)
+
+  module UpDown:
+    input in : UInt<4>
+    input in_ref : Probe<UInt<4>>
+    output r1 : Probe<UInt<4>>
+    output r2 : Probe<UInt<4>>
+    output out : UInt
+
+    ; In ud1, this is UpDown.n1, in ud2 this is UpDown.n2 .
+    ; However, this is not supported as it cannot be both at once.
+    connect out, read(in_ref)
+    node n1 = and(in, UInt<4>(1))
+    node n2 = and(in, UInt<4>(3))
+    define r1 = probe(n1)
+    define r2 = probe(n2)
+```
+
+### IO with references to endpoint data
+
+A primary motivation for input probe references is that in some situations they make it easier to generate the FIRRTL code.
+While output references necessarily capture this design equivalently, this can be harder to generate and so is useful to support.
+
+The following demonstrates an example of this, where it's convenient to use the same bundle type as both output to one module and input to another, with references populated by both modules targeting signals of interest at each end.
+For this to be the same bundle type -- input on one and output on another -- the `Probe` references for each end should be output-oriented and accordingly are input-oriented at the other end.
+It would be inconvenient to generate this design so that each has output probe references only.
+
+The `Connect` module instantiates a `Producer` and `Consumer` module, connects them using a bundle with references in both orientations, and forwards those references for inspection up the hierarchy.
+The probe targets are not significant, here they are the same data being sent between the two, as stored in each module.
+
+```firrtl
+module Consumer:
+  input in : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
+  ; ...
+  node n = in.a
+  define in.cref = probe(n)
+
+module Producer:
+  output out : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
+  wire x : UInt
+  define out.pref = probe(x)
+  ; ...
+  connect out.a, x
+
+module Connect:
+  output out : {pref: Probe<UInt>, cref: Probe<UInt>}
+
+  inst a of Consumer
+  inst b of Producer
+
+  ; Producer => Consumer
+  connect a.in.a, b.out.a
+  define a.in.pref = b.out.pref
+  define b.out.cref = a.in.cref
+
+  ; Send references out
+  define out.pref = b.out.pref
+  define out.cref = a.in.cref
+
+module Top:
+  inst c of Connect
+
+  node producer_debug = read(c.out.pref); ; Producer-side signal
+  node consumer_debug = read(c.out.cref); ; Consumer-side signal
 ```
 
 # Expressions

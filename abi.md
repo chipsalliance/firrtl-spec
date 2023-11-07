@@ -46,7 +46,7 @@ filename = module , ".sv" ;
 ```
 
 Each public module in a circuit shall produce a filelist that contains the filename of the file containing the public module and any necessary files that define all public or private module files instantiated under it.
-Files that define external modules are not included.  This filelist shall have a name as follows where `module` is the name of the public module:
+Files that define external modules are not included. This filelist shall have a name as follows where `module` is the name of the public module:
 
 ``` ebnf
 filelist_filename = "filelist_" , module , ".f" ;
@@ -80,7 +80,7 @@ Ports are generally lowered to netlist types, except where Verilog's type system
 Ports of integer types shall be lowered to netlist ports (`wire`{.verilog}) as a packed vector of equivalent size.
 For example, consider the following FIRRTL:
 
-```FIRRTL
+``` firrtl
 circuit :
   public module Top :
     output out: UInt<16>
@@ -89,7 +89,7 @@ circuit :
 
 This is lowered to the following Verilog:
 
-```verilog
+``` verilog
 module Top(
     output wire [15:0] out,
     input wire [31:0] in
@@ -98,7 +98,7 @@ module Top(
 
 Ports of aggregate type shall be scalarized according to the "Aggregate Type Lowering" description in the FIRRTL spec.
 
-Ports of ref type on public modules shall, for each public module, be lowered to a Verilog macro of the form `` `define ref_<module name>_<portname> <internal path from module>`` in a file with name `ref_<module name>.sv`.
+Ports of ref type on public modules shall, for each public module, be lowered to a Verilog macro of the form `` `define ref_<module name>_<portname> <internal path from module> `` in a file with name `ref_<module name>.sv`.
 References to aggregates will be lowered to a series of references to ground types.
 This ABI does not specify whether the original aggregate referent is scalarized or not.
 
@@ -156,14 +156,12 @@ circuit:
 
 When compiled to Verilog, this will produce six bind files:
 
-```
-groups_Bar_Group1.sv
-groups_Bar_Group1_Group2.sv
-groups_Bar_Group1_Group2_Group3_.sv
-groups_Baz_Group1.sv
-groups_Baz_Group1_Group2.sv
-groups_Baz_Group1_Group2_Group3_.sv
-```
+    groups_Bar_Group1.sv
+    groups_Bar_Group1_Group2.sv
+    groups_Bar_Group1_Group2_Group3_.sv
+    groups_Baz_Group1.sv
+    groups_Baz_Group1_Group2.sv
+    groups_Baz_Group1_Group2_Group3_.sv
 
 The contents of each binding files must have the effect of including all code defined in a group or its parent groups.
 

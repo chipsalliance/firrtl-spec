@@ -10,6 +10,7 @@ revisionHistory:
       - Rename a "FIRRTL Language Definition" to "Grammar".
       - Rename "Details about Syntax" to "Notes on Syntax".
       - Add section "Circuit Components".
+      - Reorganized statements section.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

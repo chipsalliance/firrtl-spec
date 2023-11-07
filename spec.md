@@ -731,47 +731,28 @@ Analog<32> ; 32-bit analog type
 Analog     ; analog type with inferred width
 ```
 
-## Reference Types
+## Probe Types
 
-References can be exported from a module for indirect access elsewhere, and are captured using values of reference type.
+Probe types expose and provide access to circuit components contained inside a module.
 
-For use in cross-module references (hierarchical references in Verilog), a reference to a probe of the circuit component is used.
-See [@sec:probes] for details.
+Probe types are useful for testing and verification, since they allow a design to read to and write from circuit components without knowing the hierarchical path to that component in the design.
 
-Using probe-type ports, modules may expose internals for reading and forcing without routing wires out of the design.
+Probe types are not synthesizable.
 
-This is often useful for testing and verification, where probe types allow reads of the entities to be explicitly exported without hard-coding their place in the design.
-Instead, by using probe-type references, a testbench module may express accesses to the internals which will resolve to the appropriate target language construct by the compiler (e.g., hierarchical reference).
+There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
+In both cases, `T`{.firrtl} must be a passive type (see [@sec:passive-types]).
 
-Reference ports are not expected to be synthesizable or representable in the target language and are omitted in the compiled design; they only exist at the FIRRTL level.
+Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read` expression.
+`RWProbe`{.firrtl} may also be forced using the `force` and `force_initial` commands.
+However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
 
-Reference-type ports are statically routed through the design using the `define`{.firrtl} statement.
-
-There are two reference types, `Probe`{.firrtl} and `RWProbe`{.firrtl}, described below.
-These are used for indirect access to probes of the data underlying circuit constructs they originate from, captured using `probe`{.firrtl} expressions (see [@sec:probes]).
-
-`Probe`{.firrtl} types are read-only, and `RWProbe`{.firrtl} may be used with `force`{.firrtl} and related statements.
-Prefer the former as much as possible, as read-only probes impose fewer limitations and are more amenable to optimization.
+They are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions (see [@sec:probes]).
 
 Probe references must always be able to be statically traced to their target, or to an external module's output reference.
-This means no conditional connections via sub-accesses, multiplexers, or other means.
+Reference-type ports are statically routed through the design using the `define`{.firrtl} statement.
 
-Reference types compose with optional groups (see [@sec:optional-groups].
-A reference type may be associated with an optional group.
+A reference type may be associated with an optional group (see [@sec:optional-groups]).
 When associated with an optional group, the reference type may only be driven from that optional group.
-
-### Probe Types
-
-Probe types are reference types used to access circuit elements' data remotely.
-
-There are two probe types: `Probe`{.firrtl} and `RWProbe`{.firrtl}.
-`RWProbe`{.firrtl} is a `Probe`{.firrtl} type, but not the other way around.
-
-Probe types are parametric over the type of data that they refer to, which is always passive (as defined in [@sec:passive-types]) even when the probed target is not (see [@sec:probes-and-passive-types]).
-Probe types cannot contain reference types.
-
-Conceptually probe types are single-direction views of the probed data-flow point.
-They are references to the data accessed with the probe expression generating the reference.
 
 Examples:
 
@@ -783,12 +764,11 @@ Probe<UInt, A.B> ; readable reference associated with group A.B
 
 For details of how to read and write through probe types, see [@sec:reading-probe-references;@sec:force-and-release].
 
-All ports of probe type must be initialized with exactly one `define`{.firrtl} statement.
-
-Probe types are only allowed as part of module ports and may not appear anywhere else.
-
 Sub-accesses are not allowed with types where the result is or has probe types within.
 This is because sub-accesses are essentially conditional connections (see [@sec:sub-accesses] for details), which are not allowed with probe types.
+
+TODO: What does this mean?
+
 The following example demonstrates some legal and illegal expressions:
 
 ```firrtl
@@ -807,35 +787,9 @@ module NoSubAccessesWithProbes :
 
 Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
 
-Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrtl} with a constant signal to produce a `RWProbe<const T>`{.firrtl}, as constant values should never be mutated at runtime.
+Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrtl} with a constant signal to produce a `RWProbe<const T>`{.firrtl}.
 
-#### Width and Reset Inference
-
-Probe types do participate in global width and reset inference, but only in the direction of the reference itself (no inference in the other direction, even with force statements).
-Both inner types of the references used in a `define`{.firrtl} statement must be identical or the same type with the destination uninferred (this is checked recursively).
-Additionally, any contained reset type is similarly only inferred in the direction of the reference, even if it eventually reaches a known reset type.
-
-In the following example, the FIRRTL compiler will produce an error constrasted with inferring the input port as `AsyncReset`{.firrtl} if a direct connection was used:
-
-```firrtl
-circuit :
-  public module ResetInferBad :
-    input in : Reset
-    output out : AsyncReset
-    connect out, read(probe(in))
-```
-
-The following circuit has all resets inferred to `AsyncReset`{.firrtl}, however:
-
-```firrtl
-circuit :
-  public module ResetInferGood :
-    input in : Reset
-    output out : Reset
-    output out2 : AsyncReset
-    connect out, read(probe(in))
-    connect out2, in
-```
+TODO: What's a signal?
 
 ## Property Types
 
@@ -863,7 +817,28 @@ module Example:
   input intProp : Integer ; an input port of Integer property type
 ```
 
-## Constant Type
+## Passive Types
+
+Stateful elements, such as registers and memories, may contain data of aggregate types.
+Registers with bundle types are especially common.
+However, when using bundle types in stateful elements, the notion of `flip` does not make sense.
+There is no directionality to the data inside a register; the data just *is*.
+
+A **passive type** is a type which does not make use of `flip`.
+
+More precisely, a passive type is defined recursively:
+
+- All ground types are passive.
+- All probe types are passive.
+- All property types are passive.
+- A vector type is passive if and only if the element type is passive.
+- A bundle type is passive if and only if it contains no field which is marked `flip`
+  and the type of each field is passive.
+- An enum type is passive if and only if the type of each of its variants is passive.
+
+Registers and memories may only be parametrized over passive types.
+
+## Constant Types
 
 A constant type is a type whose value is guaranteed to be unchanging at circuit execution time.
 Constant is a constraint on the mutability of the value, it does not imply a literal value at a point in the emitted design.
@@ -874,10 +849,10 @@ An operation with some non-constant arguments produce a non-constant.
 Constants may be used as the target of a connect so long as the source of the connect is itself constant.
 These rules ensure all constants are derived from constant integer expressions or from constant-typed input ports of a public module.
 
-``` firrtl
+```firrtl
 const UInt<3>
 const SInt
-const {real: UInt<32>, imag : UInt<32>, other : const SInt}
+const { real: UInt<32>, imag : UInt<32>, other : const SInt }
 ```
 
 Last-connect semantics of constant typed values are well defined, so long as any control flow is conditioned on an expression which has a constant type.
@@ -898,27 +873,6 @@ It is not intended that constants are a replacement for parameterization.
 Constant typed values have no particular meta-programming capability.
 It is, for example, expected that a module with a constant input port be fully compilable to non-parameterized Verilog.
 
-
-## Passive Types
-
-Stateful elements, such as registers and memories, may contain data of aggregate types.
-Registers with bundle types are especially common.
-However, when using bundle types in stateful elements, the notion of `flip` does not make sense.
-There is no directionality to the data inside a register; the data just *is*.
-
-A passive type is a type which does not make use of `flip`.
-More precisely, a passive type is defined recursively:
-
-- All ground types are passive.
-- All probe types are passive.
-- All property types are passive.
-- A vector type is passive if and only if the element type is passive.
-- A bundle type is passive if and only if it contains no field which is marked `flip`
-  and the type of each field is passive.
-- An enum type is passive if and only if the type of each of its variants is passive.
-
-Registers and memories may only be parametrized over passive types.
-
 ## Type Alias
 
 A type alias is a mechanism to assign names to existing FIRRTL types.
@@ -927,7 +881,7 @@ Type aliases enables their reuse across multiple declarations.
 ```firrtl
 type WordType = UInt<32>
 type ValidType = UInt<1>
-type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
+type Data = { w: WordType, valid: ValidType, flip ready: UInt<1> }
 type AnotherWordType = UInt<32>
 
 module TypeAliasMod:
@@ -968,6 +922,11 @@ Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}
 Two property types are equivalent if they are the same concrete property type.
 
 ## Type Inference
+
+FIRRTL has support for limited type inference.
+This comes in two flavors:
+Width inference allows an integer type's bitwidth to be left unspecified.
+Additionally, reset inference allows the use of `Reset` which will resolve to either a synchronous or asynchronous reset.
 
 ### Width Inference
 TODO: Uninferred widths
@@ -1033,6 +992,35 @@ connect z, asUInt(y)
 ```
 
 See [@sec:primitive-operations] for more details on casting.
+
+### Probes and Type Inference
+
+Probe types do participate in global width and reset inference, but only in the direction of the reference itself (no inference in the other direction, even with force statements).
+Both inner types of the references used in a `define`{.firrtl} statement must be identical or the same type with the destination uninferred (this is checked recursively).
+Additionally, any contained reset type is similarly only inferred in the direction of the reference, even if it eventually reaches a known reset type.
+
+In the following example, the FIRRTL compiler will produce an error constrasted with inferring the input port as `AsyncReset`{.firrtl} if a direct connection was used:
+
+```firrtl
+circuit :
+  public module ResetInferBad :
+    input in : Reset
+    output out : AsyncReset
+    connect out, read(probe(in))
+```
+
+The following circuit has all resets inferred to `AsyncReset`{.firrtl}, however:
+
+```firrtl
+circuit :
+  public module ResetInferGood :
+    input in : Reset
+    output out : Reset
+    output out2 : AsyncReset
+    connect out, read(probe(in))
+    connect out2, in
+```
+
 
 # Connections
 

@@ -1969,7 +1969,7 @@ Any verification statement has an optional name attribute which can be used to a
 The name is part of the module level namespace.
 However it can never be used in a reference since it is not of any valid type.
 
-### Assert
+## Assert
 
 The assert statement verifies that the predicate is true on the rising edge of any clock cycle when the enable is true.
 In other words, it verifies that enable implies predicate.
@@ -1983,7 +1983,7 @@ connect en, Z_valid
 assert(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
-### Assume
+## Assume
 
 The assume statement directs the model checker to disregard any states where the enable is true and the predicate is not true at the rising edge of the clock cycle.
 In other words, it reduces the states to be checked to only those where enable implies predicate is true by definition.
@@ -1999,7 +1999,7 @@ connect en, Z_valid
 assume(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
 
-### Cover
+## Cover
 
 The cover statement verifies that the predicate is true on the rising edge of some clock cycle when the enable is true.
 In other words, it directs the model checker to find some way to make both enable and predicate true at some time step.

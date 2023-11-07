@@ -1348,6 +1348,48 @@ Invalidating a component with a bundle type recursively invalidates each sub-ele
 
 Components of reference and analog type are ignored, as are any reference or analog types within the component (as they cannot be connected to).
 
+## Combinational Loops
+
+Combinational logic is a section of logic with no registers between gates.
+A combinational loop exists when the output of some combinational logic is fed back into the input of that combinational logic with no intervening register.
+FIRRTL does not support combinational loops even if it is possible to show that the loop does not exist under actual mux select values.
+Combinational loops are not allowed and designs should not depend on any FIRRTL transformation to remove or break such combinational loops.
+
+The module `Foo`{.firrtl} has a combinational loop and is not legal, even though the loop will be removed by last connect semantics.
+
+``` firrtl
+module Foo:
+  input a: UInt<1>
+  output b: UInt<1>
+  connect b, b
+  connect b, a
+```
+
+The following module `Foo2`{.firrtl} has a combinational loop, even if it can be proved that `n1`{.firrtl} and `n2`{.firrtl} never overlap.
+
+``` firrtl
+module Foo2 :
+  input n1: UInt<2>
+  input n2: UInt<2>
+  wire tmp: UInt<1>
+  wire vec: UInt<1>[3]
+  connect tmp, vec[n1]
+  connect vec[n2], tmp
+```
+
+Module `Foo3`{.firrtl} is another example of an illegal combinational loop, even if it only exists at the word level and not at the bit-level.
+
+```firrtl
+module Foo3
+  wire a : UInt<2>
+  wire b : UInt<1>
+
+  connect a, cat(b, c)
+  connect b, bits(a, 0, 0)
+```
+
+
+
 # Attaches
 
 The `attach`{.firrtl} statement is used to attach two or more analog signals, defining that their values be the same in a commutative fashion that lacks the directionality of a regular connection.
@@ -2754,47 +2796,6 @@ For multiplexing aggregate-typed expressions, the resulting widths of each leaf 
 The width of each primitive operation is detailed in [@sec:primitive-operations].
 
 The width of constant integer expressions is detailed in their respective sections.
-
-# Combinational Loops
-
-Combinational logic is a section of logic with no registers between gates.
-A combinational loop exists when the output of some combinational logic is fed back into the input of that combinational logic with no intervening register.
-FIRRTL does not support combinational loops even if it is possible to show that the loop does not exist under actual mux select values.
-Combinational loops are not allowed and designs should not depend on any FIRRTL transformation to remove or break such combinational loops.
-
-The module `Foo`{.firrtl} has a combinational loop and is not legal, even though the loop will be removed by last connect semantics.
-
-``` firrtl
-module Foo:
-  input a: UInt<1>
-  output b: UInt<1>
-  connect b, b
-  connect b, a
-```
-
-The following module `Foo2`{.firrtl} has a combinational loop, even if it can be proved that `n1`{.firrtl} and `n2`{.firrtl} never overlap.
-
-``` firrtl
-module Foo2 :
-  input n1: UInt<2>
-  input n2: UInt<2>
-  wire tmp: UInt<1>
-  wire vec: UInt<1>[3]
-  connect tmp, vec[n1]
-  connect vec[n2], tmp
-```
-
-Module `Foo3`{.firrtl} is another example of an illegal combinational loop, even if it only exists at the word level and not at the bit-level.
-
-```firrtl
-module Foo3
-  wire a : UInt<2>
-  wire b : UInt<1>
-
-  connect a, cat(b, c)
-  connect b, bits(a, 0, 0)
-```
-
 
 # Namespaces
 

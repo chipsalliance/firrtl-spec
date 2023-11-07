@@ -572,212 +572,129 @@ See [@sec:memories] for more details.
 
 # Types
 
-FIRRTL has four classes of types: _ground_ types, _aggregate_ types, _reference_ types, and _property_ types.
-Ground types are fundamental and are not composed of other types.
-Aggregate types and reference types are composed of one or more aggregate or ground types.
-Reference types may not contain other reference types.
-Property types represent information about the circuit that is not hardware.
+FIRRTL has four classes of types: **ground** types, **aggregate** types, **probe** types, and **property** types.
 
 ## Ground Types
 
-There are five classes of ground types in FIRRTL: unsigned integer types, signed integer types, a clock type, reset types, and analog types.
+Ground types are the most fundamental types.
+They include integer types, clocks, and resets.
 
 ### Integer Types
 
-Both unsigned and signed integer types may optionally be given a known non-negative integer bit width.
+FIRRTL supports both signed and unsigned integer types.
 
-``` firrtl
-UInt ; unsigned int type with inferred width
-SInt ; signed int type with inferred width
-UInt<10> ; unsigned int type with 10 bits
-SInt<32> ; signed int type with 32 bits
+`UInt<n>` is an `n`-bit wide unsigned integer.
+`SInt<n>` is an `n`-bit wide signed integer.
+
+```
+UInt<10> ; a 10-bit unsigned integer
+SInt<32> ; 32-bit signed integer
 ```
 
-Alternatively, if the bit width is omitted, it will be automatically inferred by FIRRTL's width inferencer, as detailed in [@sec:width-inference].
+Both `UInt<0>`{.firrtl} and `SInt<0>`{.firrtl} are valid types.
+They are considered to have only a single value representing zero (written as either `UInt<0>(0)`{.firrtl} or `SInt<0>(0)`{.firrtl}).
+They are always zero extended, and thus, behave like zero when they are extended to a positive width.
 
-#### Zero Bit Width Integers
+TODO: Talk about how zero-bit integers are lowered. And how they can be stripped out.
+TODO: There was an example here:
 
-Integers of width zero are permissible.
-They are always zero extended.
-Thus, when used in an operation that extends to a positive bit width, they behave like a zero.
-While zero bit width integers carry no information, we allow 0-bit integer constant zeros for convenience: `UInt<0>(0)`{.firrtl} and `SInt<0>(0)`{.firrtl}.
-
-``` firrtl
-wire zero_u : UInt<0>
-invalidate zero_u
-wire zero_s : SInt<0>
-invalidate zero_s
-
-wire one_u : UInt<1>
-connect one_u, zero_u
-wire one_s : SInt<1>
-connect one_s, zero_s
-```
-
-Is equivalent to:
-
-``` firrtl
-wire one_u : UInt<1>
-connect one_u, UInt<1>(0)
-wire one_s : SInt<1>
-connect one_s, SInt<1>(0)
-```
+Integer types also have the uninferred forms: `UInt`{.firrtl} and `SInt`{.firrtl} (see [@sec:width-inference]).
 
 ### Clock Type
 
-The clock type is used to describe wires and ports meant for carrying clock signals.
-The usage of components with clock types are restricted.
-Clock signals cannot be used in most primitive operations, and clock signals can only be connected to components that have been declared with the clock type.
+Clocks require special physical considerations in hardware.
+FIRRTL defines the `Clock` type to track clocks throughout a design.
+All registers are linked to a clock (see [@sec:conditionals]).
 
-The clock type is specified as follows:
+TODO: Commentary on clock-crossing or multi-clock designs?
 
-``` firrtl
-Clock
-```
+### Reset Types
 
-### Reset Type
+Once a circuit is powered on, it may require an explicit reset in order to put it into a known state.
+For this, we use a reset type.
+In FIRRTL, we have the option of using both synchronous or asynchronous resets.
 
-The uninferred `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl} (synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) during compilation.
+The synchronous reset type is simply a 1-bit unsigned integer: `UInt<1>`{.firrtl}.
+The asynchronous reset type is `AsyncReset`{.firrtl}.
 
-``` firrtl
-Reset ; inferred type
-AsyncReset
-```
-
-Synchronous resets used in registers will be mapped to a hardware description language representation for synchronous resets.
-
-The following example shows an uninferred reset that will get inferred to a synchronous reset.
-
-``` firrtl
-input a : UInt<1>
-wire reset : Reset
-connect reset, a
-```
-
-After reset inference, `reset`{.firrtl} is inferred to the synchronous `UInt<1>`{.firrtl} type:
-
-``` firrtl
-input a : UInt<1>
-wire reset : UInt<1>
-connect reset, a
-```
-
-Asynchronous resets used in registers will be mapped to a hardware description language representation for asynchronous resets.
-
-The following example demonstrates usage of an asynchronous reset.
-
-``` firrtl
-input clock : Clock
-input reset : AsyncReset
-input x : UInt<8>
-regreset y : UInt<8>, clock, reset, UInt(123)
-; ...
-```
-
-Inference rules are as follows:
-
-1. An uninferred reset driven by and/or driving only asynchronous resets will be inferred as asynchronous reset.
-1. An uninferred reset driven by and/or driving both asynchronous and synchronous resets is an error.
-1. Otherwise, the reset is inferred as synchronous (i.e. the uninferred reset is only invalidated or is driven by or drives only synchronous resets).
-
-`Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other types.
-Casting between reset types is also legal:
-
-``` firrtl
-input a : UInt<1>
-output y : AsyncReset
-output z : Reset
-wire r : Reset
-connect r, a
-connect y, asAsyncReset(r)
-connect z, asUInt(y)
-```
-
-See [@sec:primitive-operations] for more details on casting.
+The reset types also have the uninferred form: `Reset`{.firrtl} (see [@sec:reset-inference]).
 
 ## Aggregate Types
 
-FIRRTL supports three aggregate types: vectors, bundles, and enumeration.
-Aggregate types are composed of ground types or other aggregate types.
+FIRRTL supports three aggregate types: vectors, bundles, and enumerations.
 
 ### Vector Types
 
 A vector type is used to express an ordered sequence of elements of a given type.
-The length of the sequence must be non-negative and known.
 
-The following example specifies a ten element vector of 16-bit unsigned integers.
+The following example specifies a 10-element vector of 16-bit unsigned integers.
 
 ``` firrtl
 UInt<16>[10]
 ```
 
-The next example specifies a ten element vector of unsigned integers of omitted but identical bit widths.
+Note that the element type of a vector can be any type, including another aggregate types.
+The following example specifies a 20-element vector, each of which is a 10-element vector of 16-bit unsigned integers.
 
-``` firrtl
-UInt[10]
-```
+TODO: *Any* type? What about probes and properties?
 
-Note that any type, including other aggregate types, may be used as the element type of the vector.
-The following example specifies a twenty element vector, each of which is a ten element vector of 16-bit unsigned integers.
-
-``` firrtl
+```firrtl
 UInt<16>[10][20]
 ```
 
+TODO: In analogy to 0-width integers, write a section on 0-length vecs.
+
 ### Bundle Types
 
-A bundle type is used to express a collection of nested and named types.
-All fields in a bundle type must have a given name, and type.
-All names must be legal identifiers.
+A bundle type is used to represent a collection of values.
+They can also be used to facilitate bidirectional connections between circuit components.
+
+A bundle type consists of a set of fields.
+Each field has a name and a type.
+Fields may also be flipped.
 
 The following is an example of a possible type for representing a complex number.
 It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed integers.
 
-``` firrtl
-{real: SInt<10>, imag: SInt<10>}
+```firrtl
+{ real: SInt<10>, imag: SInt<10> }
 ```
 
-Additionally, a field may optionally be declared with a *flipped* orientation.
+Here is an example of a bundle with a flipped field.
+Because the `ready` field is marked with the keyword `flip`, it will indicate the flow will be opposite of the `word` and `valid` fields.
 
-``` firrtl
-{word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}
+```firrtl
+{ word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> }
 ```
 
-In a connection between circuit components with bundle types, the data carried by the flipped fields flow in the opposite direction as the data carried by the non-flipped fields.
+As an example of how `flip` works in context, consider a module declared like this:
 
-As an example, consider a module output port declared with the following type:
-
-``` firrtl
-output a: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}
+```firrtl
+module Processor :
+  input enq: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> }
+  ; ...
 ```
 
-In a connection to the `a`{.firrtl} port, the data carried by the `word`{.firrtl} and `valid`{.firrtl} sub-fields will flow out of the module, while data carried by the `ready`{.firrtl} sub-field will flow into the module.
-More details about how the bundle field orientation affects connections are explained in [@sec:connections].
+This defines a module `Processor` with a single input port `enq` which enqueues data using a ready-valid interface.
+Because `enq` is a single port, we can connect to it with a single `connect` statement (see [@sec:connects]).
+In the final hardware, however, while the `word` and `valid` fields point *into* the module, this port has a flipped field `ready` which points *out of* the module instead.
 
-As in the case of vector types, a bundle field may be declared with any type, including other aggregate types.
+The types of each field may be any type, including other aggregate types.
 
-``` firrtl
-{real: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>},
- imag: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}}
+```firrtl
+{ real: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> },
+  imag: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> } }
 
 ```
-
-When calculating the final direction of data flow, the orientation of a field is applied recursively to all nested types in the field.
-As an example, consider the following module port declared with a bundle type containing a nested bundle type.
-
-``` firrtl
-output myport: {a: UInt, flip b: {c: UInt, flip d: UInt}}
-```
-
-In a connection to `myport`{.firrtl}, the `a`{.firrtl} sub-field flows out of the module.
-The `c`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field flows into the module, and the `d`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field flows out of the module.
 
 ### Enumeration Types
 
-Enumerations are structural disjoint union types.
-An enumeration has a number of variants, each with a type.
-The different variants are specified with tags.
-The variant types of an enumeration must all be passive and cannot contain analog or probe types.
+Enumerations are disjoint union types.
+
+Each enumeration consists of a set of variants.
+Each variant is named with a tag and each has a passive type (see [@sec:passive-types]).
+
+TODO: "cannot contain analog or probe types."
 
 In the following example, the first variant has the tag `a`{.firrtl} with type `UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type `UInt<16>`{.firrtl}.
 
@@ -1050,7 +967,10 @@ Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}
 
 Two property types are equivalent if they are the same concrete property type.
 
-## Width Inference
+## Type Inference
+
+### Width Inference
+TODO: Uninferred widths
 
 For all circuit components declared with unspecified widths,
 the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
@@ -1065,6 +985,54 @@ The width of each primitive operation is detailed in [@sec:primitive-operations]
 
 The width of constant integer expressions is detailed in their respective sections.
 
+### Reset Inference
+
+The following example shows an uninferred reset that will get inferred to a synchronous reset.
+
+``` firrtl
+input a : UInt<1>
+wire reset : Reset
+connect reset, a
+```
+
+After reset inference, `reset`{.firrtl} is inferred to the synchronous `UInt<1>`{.firrtl} type:
+
+``` firrtl
+input a : UInt<1>
+wire reset : UInt<1>
+connect reset, a
+```
+
+The following example demonstrates usage of an asynchronous reset.
+
+``` firrtl
+input clock : Clock
+input reset : AsyncReset
+input x : UInt<8>
+regreset y : UInt<8>, clock, reset, UInt(123)
+; ...
+```
+
+Inference rules are as follows:
+
+1. An uninferred reset driven by and/or driving only asynchronous resets will be inferred as asynchronous reset.
+1. An uninferred reset driven by and/or driving both asynchronous and synchronous resets is an error.
+1. Otherwise, the reset is inferred as synchronous (i.e. the uninferred reset is only invalidated or is driven by or drives only synchronous resets).
+
+`Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other types.
+Casting between reset types is also legal:
+
+``` firrtl
+input a : UInt<1>
+output y : AsyncReset
+output z : Reset
+wire r : Reset
+connect r, a
+connect y, asAsyncReset(r)
+connect z, asUInt(y)
+```
+
+See [@sec:primitive-operations] for more details on casting.
 
 # Connections
 

@@ -1727,7 +1727,7 @@ connect w.a, mux(c, y, x.a)
 connect w.b, x.b
 ```
 
-# Mem
+# Memory Instances
 
 A memory is an abstract representation of a hardware memory.
 It is characterized by the following parameters.
@@ -1855,7 +1855,7 @@ In all cases, if a memory location is written to by more than one port on the sa
 A memory with a constant data-type represents a ROM and may not have write-ports.
 It is beyond the scope of this specification how ROMs are initialized.
 
-# Instances
+# Submodule Instances
 
 FIRRTL modules are instantiated with the instance statement.
 The following example demonstrates creating an instance named `myinstance`{.firrtl} of the `MyModule`{.firrtl} module within the top level module `Top`{.firrtl}.

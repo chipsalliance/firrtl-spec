@@ -1025,6 +1025,22 @@ Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}
 
 Two property types are equivalent if they are the same concrete property type.
 
+## Width Inference
+
+For all circuit components declared with unspecified widths,
+the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
+If a circuit component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
+
+For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
+
+The width of a ground-typed multiplexer expression is the maximum of its two corresponding input widths.
+For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
+
+The width of each primitive operation is detailed in [@sec:primitive-operations].
+
+The width of constant integer expressions is detailed in their respective sections.
+
+
 # Connections
 
 ## Flow
@@ -2778,21 +2794,6 @@ module MyModule :
 The probed expression must be a static reference.
 
 See [@sec:probe-types;@sec:probe] for more details on probe references and their use.
-
-# Width Inference
-
-For all circuit components declared with unspecified widths,
-the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
-If a circuit component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
-
-For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
-
-The width of a ground-typed multiplexer expression is the maximum of its two corresponding input widths.
-For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
-
-The width of each primitive operation is detailed in [@sec:primitive-operations].
-
-The width of constant integer expressions is detailed in their respective sections.
 
 # Namespaces
 

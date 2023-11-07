@@ -1319,10 +1319,6 @@ connect c, d
 The empty statement is most often used as the `else`{.firrtl} branch in a conditional statement, or as a convenient placeholder for removed components during transformational passes.
 See [@sec:conditionals] for details on the conditional statement.
 
-# Wire
-
-See [@sec:wires].
-
 # Registers
 
 A register is a stateful circuit component.
@@ -1429,21 +1425,6 @@ wire y: Analog<2>
 wire z: Analog<2>
 attach(x, y)      ; binary attach
 attach(z, y, x)   ; attach all three signals
-```
-
-# Nodes
-
-A node is simply a named intermediate value in a circuit.
-The node must be initialized to a value with a passive type and cannot be connected to.
-Nodes are often used to split a complicated compound expression into named sub-expressions.
-
-The following example demonstrates instantiating a node with the given name `mynode`{.firrtl} initialized with the output of a multiplexer (see [@sec:multiplexers]).
-
-``` firrtl
-wire pred: UInt<1>
-wire a: SInt
-wire b: SInt
-node mynode = mux(pred, a, b)
 ```
 
 # Conditionals

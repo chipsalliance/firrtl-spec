@@ -52,6 +52,7 @@ To better reflect the work of contributors after the original tech report, the F
 A list of these contributors is below:
 
 <!-- This can be generated using ./scripts/get-authors.sh -->
+- [`@SpriteOvO`](https://github.com/SpriteOvO)
 - [`@albert-magyar`](https://github.com/albert-magyar)
 - [`@azidar`](https://github.com/azidar)
 - [`@ben-marshall`](https://github.com/ben-marshall)
@@ -70,6 +71,9 @@ A list of these contributors is below:
 - [`@jackkoenig`](https://github.com/jackkoenig)
 - [`@jared-barocsi`](https://github.com/jared-barocsi)
 - [`@keszocze`](https://github.com/keszocze)
+- [`@mbty`](https://github.com/mbty)
+- [`@mikeurbach`](https://github.com/mikeurbach)
+- [`@mmaloney-sf`](https://github.com/mmaloney-sf)
 - [`@mwachs5`](https://github.com/mwachs5)
 - [`@prithayan`](https://github.com/prithayan)
 - [`@richardxia`](https://github.com/richardxia)
@@ -77,6 +81,7 @@ A list of these contributors is below:
 - [`@seldridge`](https://github.com/seldridge)
 - [`@sequencer`](https://github.com/sequencer)
 - [`@shunshou`](https://github.com/shunshou)
+- [`@smarter`](https://github.com/smarter)
 - [`@tdb-alcorn`](https://github.com/tdb-alcorn)
 - [`@tymcauley`](https://github.com/tymcauley)
 - [`@uenoku`](https://github.com/uenoku)

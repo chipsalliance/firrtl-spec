@@ -22,6 +22,17 @@ jobs:
           echo "$(pwd)/usr/bin" >> $GITHUB_PATH
           sudo apt-get update
           sudo apt-get install graphviz texlive-latex-extra texlive-latex-recommended texlive-font-utils
+      - name: "Check Formatting"
+        shell: bash
+        run: |
+          make format
+          if ! git diff --quiet; then
+            echo 'Please run `make format` on your change to apply the following formatting fixes:' >> $GITHUB_STEP_SUMMARY
+            echo '```diff' >> $GITHUB_STEP_SUMMARY
+            git diff >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
       - name: "Markdown -> [pandox] -> [TeXLive] -> PDF"
         run: make
       - name: "Upload build directory"

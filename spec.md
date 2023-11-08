@@ -593,7 +593,7 @@ SInt<32> ; 32-bit signed integer
 
 Both `UInt<0>`{.firrtl} and `SInt<0>`{.firrtl} are valid types.
 They are considered to have only a single value representing zero (written as either `UInt<0>(0)`{.firrtl} or `SInt<0>(0)`{.firrtl}).
-They are always zero extended, and thus, behave like zero when they are extended to a positive width.
+They behave like zero when they are extended to a positive width integer type.
 
 TODO: Talk about how zero-bit integers are lowered. And how they can be stripped out.
 TODO: There was an example here:
@@ -616,6 +616,8 @@ In FIRRTL, we have the option of using both synchronous or asynchronous resets.
 
 The synchronous reset type is simply a 1-bit unsigned integer: `UInt<1>`{.firrtl}.
 The asynchronous reset type is `AsyncReset`{.firrtl}.
+
+TODO: mention `regreset`.
 
 The reset types also have the uninferred form: `Reset`{.firrtl} (see [@sec:reset-inference]).
 
@@ -676,7 +678,7 @@ module Processor :
 ```
 
 This defines a module `Processor` with a single input port `enq` which enqueues data using a ready-valid interface.
-Because `enq` is a single port, we can connect to it with a single `connect` statement (see [@sec:connects]).
+Because `enq` is a single port, we can connect to it with a single `connect` statement (see [@sec:connections]).
 In the final hardware, however, while the `word` and `valid` fields point *into* the module, this port has a flipped field `ready` which points *out of* the module instead.
 
 The types of each field may be any type, including other aggregate types.
@@ -728,7 +730,6 @@ When analog signals are not given a concrete width, their widths are inferred ac
 ``` firrtl
 Analog<1>  ; 1-bit analog type
 Analog<32> ; 32-bit analog type
-Analog     ; analog type with inferred width
 ```
 
 ## Probe Types
@@ -742,11 +743,11 @@ Probe types are not synthesizable.
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
 In both cases, `T`{.firrtl} must be a passive type (see [@sec:passive-types]).
 
-Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read` expression.
-`RWProbe`{.firrtl} may also be forced using the `force` and `force_initial` commands.
-However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
-
 They are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions (see [@sec:probes]).
+
+Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression (see [@sec:reading-probe-references]).
+`RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
+However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
 
 Probe references must always be able to be statically traced to their target, or to an external module's output reference.
 Reference-type ports are statically routed through the design using the `define`{.firrtl} statement.
@@ -757,9 +758,9 @@ When associated with an optional group, the reference type may only be driven fr
 Examples:
 
 ```firrtl
-Probe<UInt> ; readable reference to unsigned integer with inferred width
-RWProbe<{x: {y: UInt}}> ; readable and forceable reference to bundle
-Probe<UInt, A.B> ; readable reference associated with group A.B
+Probe<UInt<8>>                         ; readable probe to an 8-bit unsigned integer
+RWProbe<{ x : UInt<1>, y : UInt<1> }>  ; read-writable probe to bundle
+Probe<UInt, A.B>                       ; readable probe associated with group A.B
 ```
 
 For details of how to read and write through probe types, see [@sec:reading-probe-references;@sec:force-and-release].
@@ -773,7 +774,7 @@ The following example demonstrates some legal and illegal expressions:
 
 ```firrtl
 module NoSubAccessesWithProbes :
-  input x : {a : Probe<UInt[2]>, b : UInt}[3]
+  input x : { a : Probe<UInt[2]>, b : UInt }[3]
   input i : UInt
   input c : const UInt
   output p : Probe<UInt>
@@ -943,6 +944,12 @@ For multiplexing aggregate-typed expressions, the resulting widths of each leaf 
 The width of each primitive operation is detailed in [@sec:primitive-operations].
 
 The width of constant integer expressions is detailed in their respective sections.
+
+```firrtl
+UInt
+SInt
+Analog
+```
 
 ### Reset Inference
 

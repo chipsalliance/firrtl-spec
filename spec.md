@@ -576,17 +576,17 @@ FIRRTL has four classes of types: **ground** types, **aggregate** types, **probe
 
 ## Ground Types
 
-Ground types are the most fundamental types.
-They include integer types, clocks, and resets.
+Ground types are types which are not composed of other types.
+They are the integer types, clocks, and resets.
 
 ### Integer Types
 
 FIRRTL supports both signed and unsigned integer types.
 
-`UInt<n>` is an `n`-bit wide unsigned integer.
-`SInt<n>` is an `n`-bit wide signed integer.
+`UInt<n>`{.firrtl} is an `n`-bit wide unsigned integer.
+`SInt<n>`{.firrtl} is an `n`-bit wide signed integer.
 
-```
+```firrtl
 UInt<10> ; a 10-bit unsigned integer
 SInt<32> ; 32-bit signed integer
 ```
@@ -604,7 +604,7 @@ Integer types also have the uninferred forms: `UInt`{.firrtl} and `SInt`{.firrtl
 
 Clocks require special physical considerations in hardware.
 FIRRTL defines the `Clock` type to track clocks throughout a design.
-All registers are linked to a clock (see [@sec:conditionals]).
+All registers are linked to a clock (see [@sec:registers]).
 
 TODO: Commentary on clock-crossing or multi-clock designs?
 
@@ -635,7 +635,7 @@ The following example specifies a 10-element vector of 16-bit unsigned integers.
 UInt<16>[10]
 ```
 
-Note that the element type of a vector can be any type, including another aggregate types.
+Note that the element type of a vector can be any type, including another aggregate type.
 The following example specifies a 20-element vector, each of which is a 10-element vector of 16-bit unsigned integers.
 
 TODO: *Any* type? What about probes and properties?
@@ -651,15 +651,25 @@ TODO: In analogy to 0-width integers, write a section on 0-length vecs.
 A bundle type is used to represent a collection of values.
 They can also be used to facilitate bidirectional connections between circuit components.
 
-A bundle type consists of a set of fields.
+A bundle type consists of one or more fields.
 Each field has a name and a type.
 Fields may also be flipped.
+
+TODO: Is it one or more fields? Or zero or more?
 
 The following is an example of a possible type for representing a complex number.
 It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed integers.
 
 ```firrtl
 { real: SInt<10>, imag: SInt<10> }
+```
+
+The types of each field may be any type, including other aggregate types.
+
+```firrtl
+{ real: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> },
+  imag: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> } }
+
 ```
 
 Here is an example of a bundle with a flipped field.
@@ -681,20 +691,13 @@ This defines a module `Processor` with a single input port `enq` which enqueues 
 Because `enq` is a single port, we can connect to it with a single `connect` statement (see [@sec:connections]).
 In the final hardware, however, while the `word` and `valid` fields point *into* the module, this port has a flipped field `ready` which points *out of* the module instead.
 
-The types of each field may be any type, including other aggregate types.
-
-```firrtl
-{ real: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> },
-  imag: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> } }
-
-```
-
 ### Enumeration Types
 
 Enumerations are disjoint union types.
 
 Each enumeration consists of a set of variants.
-Each variant is named with a tag and each has a passive type (see [@sec:passive-types]).
+Each variant is named with a tag.
+Each variant also has a passive type associated with it (see [@sec:passive-types]).
 
 TODO: "cannot contain analog or probe types."
 
@@ -743,7 +746,7 @@ Probe types are not synthesizable.
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
 In both cases, `T`{.firrtl} must be a passive type (see [@sec:passive-types]).
 
-They are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions (see [@sec:probes]).
+`Probe`{.firrtl} and `RWProbe`{.firrtl} are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions, respectively (see [@sec:probes]).
 
 Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression (see [@sec:reading-probe-references]).
 `RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).

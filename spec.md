@@ -897,27 +897,41 @@ TODO: Word this more precisely.
 
 ## Type Alias
 
-A type alias is a mechanism to assign names to existing FIRRTL types.
-Type aliases enables their reuse across multiple declarations.
+Type aliases allow us to give names to types.
+This is useful for bundle types, especially when they have many fields.
+It is also useful for hinting at what the value represents.
+
+Examples:
 
 ```firrtl
 type WordType = UInt<32>
 type ValidType = UInt<1>
-type Data = { w: WordType, valid: ValidType, flip ready: UInt<1> }
+type Data = { w : WordType, valid : ValidType, flip ready : UInt<1> }
 type AnotherWordType = UInt<32>
 
 module TypeAliasMod:
-  input in: Data
-  output out: Data
-  wire w: AnotherWordType
+  input in : Data
+  output out : Data
+  wire w : AnotherWordType
   connect w, in.w
-  ...
+  ; ...
 ```
 
-The `type` declaration is globally defined and all named types exist in the same namespace and thus must all have a unique name.
+Type aliases have structural identity.
+In other words, when we compare two types, we expand all type aliases recursively until we are left with type expressions that have no aliases.
+For instance, in the above example, we can connect `in.w`{.firrtl} to `w`{.firrtl} since their types, `WordType` and `AnotherWordType` respectively, both expand to `UInt<32>`{.firrtl}.
+
+TODO: Type equivalence should mention this.
+TODO: Can type aliases be recursive? Are they in scope of each other?
+
+TODO: Mention that `type` is a top-level decl.
+TODO: How global? Global to the `circuit`?
+
+The `type`{.firrtl} declaration is globally defined and all named types exist in the same namespace and thus must all have a unique name.
 Type aliases do not share the same namespace as modules; hence it is allowed for type aliases to conflict with module names.
-Note that when we compare two types, the equivalence is determined solely by their structures.
-For instance types of `w`{.firrtl} and `in.w`{.firrtl} are equivalent in the example above even though they are different type alias.
+
+TODO: Is there a rationale for this design choice?
+TODO: Namespaces
 
 ## Type Equivalence
 

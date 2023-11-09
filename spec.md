@@ -892,16 +892,6 @@ input c : const { real : SInt<8>, imag : SInt<8> }
 
 TODO: Word this more precisely.
 
-### A note on implementation
-
-Constant types are a restriction on FIRRTL types.
-Therefore, FIRRTL structures which would be expected to produce certain Verilog structures will produce the same structure if instantiated with a constant type.
-For example, an input port of type `const UInt`{.firrtl} will result in a port in the Verilog, if under the same conditions an input port of type `UInt`{.firrtl} would have.
-
-It is not intended that constants are a replacement for parameterization.
-Constant typed values have no particular meta-programming capability.
-It is, for example, expected that a module with a constant input port be fully compilable to non-parameterized Verilog.
-
 ## Type Alias
 
 A type alias is a mechanism to assign names to existing FIRRTL types.

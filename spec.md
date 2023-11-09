@@ -876,8 +876,8 @@ TODO: be more precise about this?
 Expressions with `const`{.firrtl} may be used as the target of a connect statement as long as the following hold:
 
 - the source of the connect is `const`{.firrtl}
-- the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`
-- the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const` type
+- the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`{.firrtl}
+- the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const`{.firrtl} type
 
 TODO: How do match statements interact?
 

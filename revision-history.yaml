@@ -11,6 +11,7 @@ revisionHistory:
       - Rename "Details about Syntax" to "Notes on Syntax".
       - Add section "Circuit Components".
       - Reorganized statements section.
+      - Rewrite of the Types section.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

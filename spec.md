@@ -863,7 +863,7 @@ All integer literals are `const`{.firrtl}.
 For example, `UInt<8>(42)`{.firrtl} has type `const UInt<8>`{.firrtl}.
 
 Ports can have a `const`{.firrtl} type, and thus, a module may receive constant values from its parent module.
-This may even happen in `public` modules, and so the value of a `const`{.firrtl} type need not be known statically (see TODO).
+This may even happen in `public`{.firrtl} modules, and so the value of a `const`{.firrtl} type need not be known statically (see TODO).
 
 Typically, primitive operations will result in a `const`{.firrtl} type whenever each of its inputs are `const`{.firrtl} (see prim ops TODO).
 TODO: Example?

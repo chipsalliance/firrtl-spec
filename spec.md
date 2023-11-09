@@ -672,11 +672,9 @@ TODO: In analogy to 0-width integers, write a section on 0-length vecs.
 A bundle type is used to represent a collection of values.
 They can also be used to facilitate bidirectional connections between circuit components.
 
-A bundle type consists of one or more fields.
+A bundle type consists of zero or more fields.
 Each field has a name and a type.
 Fields may also be flipped.
-
-TODO: Is it one or more fields? Or zero or more?
 
 The following is an example of a possible type for representing a complex number.
 It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed integers.
@@ -741,10 +739,10 @@ Probe types expose and provide access to circuit components contained inside a m
 
 Probe types are useful for testing and verification, since they allow a design to read to and write from circuit components without knowing the hierarchical path to that component in the design.
 
-Probe types are not synthesizable.
-
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
-In both cases, `T`{.firrtl} must be a passive type (see [@sec:passive-types]).
+In both cases, `T`{.firrtl} must be a ground type (see [@sec:ground-types]).
+
+TODO: Verify this restriction on `T`.
 
 `Probe`{.firrtl} and `RWProbe`{.firrtl} are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions, respectively (see [@sec:probes]).
 
@@ -794,6 +792,10 @@ Probe types may be specified as part of an external module (see [@sec:externally
 Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrtl} with a constant signal to produce a `RWProbe<const T>`{.firrtl}.
 
 TODO: What's a signal?
+
+Probe types are not synthesizable.
+
+TODO: What does this mean technically?
 
 ## Property Types
 

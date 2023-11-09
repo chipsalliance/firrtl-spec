@@ -873,14 +873,17 @@ An expression of type `const T`{.firrtl} is implicitly upcast to type `T`{.firrt
 
 TODO: be more precise about this?
 
-Constants may be used as the target of a connect so long as the source of the connect is itself constant.
-These rules ensure all constants are derived from constant integer expressions or from constant-typed input ports of a public module.
+Expressions with `const`{.firrtl} may be used as the target of a connect statement as long as the following hold:
+
+- the source of the connect is `const`{.firrtl}
+- the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`
+- the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const` type
+
+TODO: How do match statements interact?
 
 Constant types may be used in ports, wire, and nodes.
 
-
-Last-connect semantics of constant typed values are well defined, so long as any control flow is conditioned on an expression which has a constant type.
-This means if a constant is being assigned to in a `when`{.firrtl} block, the `when`{.firrtl}'s condition must be a constant.
+TODO: What are disallowed in?
 
 References to a subcomponent of a circuit component with a `const`{.firrtl} vector or bundle type results in a `const`{.firrtl} of the inner type.
 For example:

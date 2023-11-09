@@ -934,30 +934,6 @@ Type aliases do not share the same namespace as modules; hence it is allowed for
 TODO: Is there a rationale for this design choice?
 TODO: Namespaces
 
-## Type Equivalence
-
-The type equivalence relation is used to determine whether a connection between two components is legal.
-See [@sec:connections] for further details about connect statements.
-
-An unsigned integer type is always equivalent to another unsigned integer type regardless of bit width, and is not equivalent to any other type.
-Similarly, a signed integer type is always equivalent to another signed integer type regardless of bit width, and is not equivalent to any other type.
-
-Clock types are equivalent to clock types, and are not equivalent to any other type.
-
-An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl}, `UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}.
-It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
-
-The `AsyncReset`{.firrtl} type can be connected to another `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
-
-Two enumeration types are equivalent if both have the same number of variants, and both the enumerations' i'th variants have matching names and equivalent types.
-
-Two vector types are equivalent if they have the same length, and if their element types are equivalent.
-
-Two bundle types are equivalent if they have the same number of fields, and both the bundles' i'th fields have matching names and orientations, as well as equivalent types.
-Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent to `{flip a: {b: UInt}}`{.firrtl}.
-
-Two property types are equivalent if they are the same concrete property type.
-
 ## Type Inference
 
 FIRRTL has support for limited type inference.
@@ -1094,6 +1070,32 @@ Wires and registers may appear "on either side of a connect statement".
 Ports are always considered from the perspective of "inside the module".
 Moreover, input ports may only appear "on the left side" of a connect, while output ports may only appear "on the right side" of a connect.
 Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule below, allowing connections to their input ports
+
+## Type Equivalence
+
+TODO: Replace this with a relation like "S 'coerces to' T".
+
+The type equivalence relation determines whether one values of one type can be coerced into values of another.
+
+An unsigned integer type is always equivalent to another unsigned integer type regardless of bit width, and is not equivalent to any other type.
+Similarly, a signed integer type is always equivalent to another signed integer type regardless of bit width, and is not equivalent to any other type.
+
+Clock types are equivalent to clock types, and are not equivalent to any other type.
+
+An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl}, `UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}.
+It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
+
+The `AsyncReset`{.firrtl} type can be connected to another `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
+
+Two enumeration types are equivalent if both have the same number of variants, and both the enumerations' i'th variants have matching names and equivalent types.
+
+Two vector types are equivalent if they have the same length, and if their element types are equivalent.
+
+Two bundle types are equivalent if they have the same number of fields, and both the bundles' i'th fields have matching names and orientations, as well as equivalent types.
+Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent to `{flip a: {b: UInt}}`{.firrtl}.
+
+Two property types are equivalent if they are the same concrete property type.
+
 
 ## The Connect Statement
 

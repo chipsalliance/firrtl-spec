@@ -846,28 +846,51 @@ Registers and memories may only be parametrized over passive types.
 
 ## Constant Types
 
-A constant type is a type whose value is guaranteed to be unchanging at circuit execution time.
-Constant is a constraint on the mutability of the value, it does not imply a literal value at a point in the emitted design.
-Constant types may be used in ports, wire, and nodes.
-Operations on constant type are well defined.
-With any exception listed in the definition for such operations as have exceptions, an operation whose arguments are constant produces a constant.
-An operation with some non-constant arguments produce a non-constant.
-Constants may be used as the target of a connect so long as the source of the connect is itself constant.
-These rules ensure all constants are derived from constant integer expressions or from constant-typed input ports of a public module.
+For certain situations, it is useful to guarantee that a signal holds a value that doesn't change during simulation.
+For example, when a register has a reset, the reset value is required to be held constant (see [@sec:registers-with-reset]).
+
+Ground types and aggregate types maybe marked as constant using the `const`{.firrtl} modifier.
+
+For example:
 
 ```firrtl
 const UInt<3>
-const SInt
-const { real: UInt<32>, imag : UInt<32>, other : const SInt }
+const SInt<8>[4]
+const { real: UInt<32>, imag : UInt<32> }
 ```
+
+All integer literals are `const`{.firrtl}.
+For example, `UInt<8>(42)`{.firrtl} has type `const UInt<8>`{.firrtl}.
+
+Ports can have a `const`{.firrtl} type, and thus, a module may receive constant values from its parent module.
+This may even happen in `public` modules, and so the value of a `const`{.firrtl} type need not be known statically (see TODO).
+
+Typically, primitive operations will result in a `const`{.firrtl} type whenever each of its inputs are `const`{.firrtl} (see prim ops TODO).
+TODO: Example?
+The resulting type of a mux expression, `mux(s, a, b)`{.firrtl}, will be `const`{.firrtl} if all of `s`{.firrtl}, `a`{.firrtl}, and `b`{.firrtl} are `const`{.firrtl} (see TODO).
+
+An expression of type `const T`{.firrtl} is implicitly upcast to type `T`{.firrtl} whenever it would be required to make a primitive operation, mux expression, or connect statement typecheck.
+
+TODO: be more precise about this?
+
+Constants may be used as the target of a connect so long as the source of the connect is itself constant.
+These rules ensure all constants are derived from constant integer expressions or from constant-typed input ports of a public module.
+
+Constant types may be used in ports, wire, and nodes.
+
 
 Last-connect semantics of constant typed values are well defined, so long as any control flow is conditioned on an expression which has a constant type.
 This means if a constant is being assigned to in a `when`{.firrtl} block, the `when`{.firrtl}'s condition must be a constant.
 
-Output ports of external modules and input ports to a public module may be constant.
-In such case, the value of the port is not known, but that it is non-mutating at runtime is known.
+References to a subcomponent of a circuit component with a `const`{.firrtl} vector or bundle type results in a `const`{.firrtl} of the inner type.
+For example:
 
-The indexing of a constant aggregate produces a constant of the appropriate type for the element.
+```firrtl
+input c : const { real : SInt<8>, imag : SInt<8> }
+; c.real has type const SInt<8>
+```
+
+TODO: Word this more precisely.
 
 ### A note on implementation
 

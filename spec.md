@@ -588,22 +588,19 @@ FIRRTL supports both signed and unsigned integer types.
 
 ```firrtl
 UInt<10> ; a 10-bit unsigned integer
-SInt<32> ; 32-bit signed integer
+SInt<32> ; a 32-bit signed integer
 ```
 
 Both `UInt<0>`{.firrtl} and `SInt<0>`{.firrtl} are valid types.
 They are considered to have only a single value representing zero (written as either `UInt<0>(0)`{.firrtl} or `SInt<0>(0)`{.firrtl}).
 They behave like zero when they are extended to a positive width integer type.
 
-TODO: Talk about how zero-bit integers are lowered. And how they can be stripped out.
-TODO: There was an example here:
-
-Integer types also have the uninferred forms: `UInt`{.firrtl} and `SInt`{.firrtl} (see [@sec:width-inference]).
+Integer types also have the inferred forms: `UInt`{.firrtl} and `SInt`{.firrtl} (see [@sec:width-inference]).
 
 ### Clock Type
 
 Clocks require special physical considerations in hardware.
-FIRRTL defines the `Clock` type to track clocks throughout a design.
+FIRRTL defines the `Clock`{.firrtl} type to track clocks throughout a design.
 All registers are linked to a clock (see [@sec:registers]).
 
 TODO: Commentary on clock-crossing or multi-clock designs?
@@ -642,6 +639,8 @@ Analog<1>  ; 1-bit analog type
 Analog<32> ; 32-bit analog type
 ```
 
+TODO: There is an inferred form see TODO.
+
 ## Aggregate Types
 
 FIRRTL supports three aggregate types: vectors, bundles, and enumerations.
@@ -658,8 +657,6 @@ UInt<16>[10]
 
 Note that the element type of a vector can be any type, including another aggregate type.
 The following example specifies a 20-element vector, each of which is a 10-element vector of 16-bit unsigned integers.
-
-TODO: *Any* type? What about probes and properties?
 
 ```firrtl
 UInt<16>[10][20]
@@ -680,14 +677,14 @@ The following is an example of a possible type for representing a complex number
 It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed integers.
 
 ```firrtl
-{ real: SInt<10>, imag: SInt<10> }
+{ real : SInt<10>, imag : SInt<10> }
 ```
 
 The types of each field may be any type, including other aggregate types.
 
 ```firrtl
-{ real: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> },
-  imag: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> } }
+{ real : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> },
+  imag : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> } }
 
 ```
 
@@ -695,14 +692,14 @@ Here is an example of a bundle with a flipped field.
 Because the `ready` field is marked with the keyword `flip`, it will indicate the flow will be opposite of the `word` and `valid` fields.
 
 ```firrtl
-{ word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> }
+{ word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> }
 ```
 
-As an example of how `flip` works in context, consider a module declared like this:
+As an example of how `flip`{.firrtl} works in context, consider a module declared like this:
 
 ```firrtl
 module Processor :
-  input enq: { word: UInt<32>, valid: UInt<1>, flip ready: UInt<1> }
+  input enq : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> }
   ; ...
 ```
 
@@ -744,25 +741,25 @@ In both cases, `T`{.firrtl} must be a ground type (see [@sec:ground-types]).
 
 TODO: Verify this restriction on `T`.
 
+Examples:
+
+```firrtl
+Probe<UInt<8>>                         ; readable probe to an 8-bit unsigned integer
+RWProbe<{ x : UInt<1>, y : UInt<1> }>  ; read-writable probe to bundle
+```
+
 `Probe`{.firrtl} and `RWProbe`{.firrtl} are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions, respectively (see [@sec:probes]).
 
 Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression (see [@sec:reading-probe-references]).
 `RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
 However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
 
-Probe references must always be able to be statically traced to their target, or to an external module's output reference.
+TODO: Probe references must always be able to be statically traced to their target or to an external module's output reference.
 Reference-type ports are statically routed through the design using the `define`{.firrtl} statement.
-
-A reference type may be associated with an optional group (see [@sec:optional-groups]).
+TODO: A reference type may be associated with an optional group (see [@sec:optional-groups]).
 When associated with an optional group, the reference type may only be driven from that optional group.
 
-Examples:
-
-```firrtl
-Probe<UInt<8>>                         ; readable probe to an 8-bit unsigned integer
-RWProbe<{ x : UInt<1>, y : UInt<1> }>  ; read-writable probe to bundle
-Probe<UInt, A.B>                       ; readable probe associated with group A.B
-```
+TODO: exaplain groups `Probe<UInt, A.B>`{.firrtl}
 
 For details of how to read and write through probe types, see [@sec:reading-probe-references;@sec:force-and-release].
 

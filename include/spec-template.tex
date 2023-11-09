@@ -478,6 +478,22 @@ $if(csquotes)$
 \usepackage{csquotes}
 $endif$
 
+%% Pandoc will generate block quotes like the following:
+%%
+%%     > Hello world!
+%%
+%% Using the following LaTeX:
+%%
+%%     \begin{quote}
+%%     Hello world!
+%%     \end{quote}
+%%
+%% The default LaTeX formatting for this is to simply indent the text.
+%% Override the "quote" environment to provide something more distinctive.
+\renewenvironment{quote}
+  {\list{}{\leftmargin=2em\rightmargin=2em}\item[]\rule{\linewidth}{1pt}\it}
+  {\endlist}
+
 \begin{document}
 $if(has-frontmatter)$
 \frontmatter

@@ -814,9 +814,10 @@ Property types are legal in the following constructs:
 
 * Port declarations on modules and external modules
 
-### Integer Property Types
+### Integer Type
 
-Integer property types represent arbitrary precision signed integer values.
+The `Integer` type represents an numeric property.
+It can represent arbitrary-precision signed integer values.
 
 ``` firrtl
 module Example:

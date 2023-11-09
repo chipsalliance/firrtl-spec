@@ -938,30 +938,32 @@ TODO: Namespaces
 
 FIRRTL has support for limited type inference.
 This comes in two flavors:
-Width inference allows an integer type's bitwidth to be left unspecified.
-Additionally, reset inference allows the use of `Reset` which will resolve to either a synchronous or asynchronous reset.
+Width inference and reset inference.
 
 ### Width Inference
-TODO: Uninferred widths
 
-For all circuit components declared with unspecified widths,
-the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
-If a circuit component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
+Normally, the three integer ground types are written with explicit bit widths.
+The bit widths are given in angel brackets, such as the 8 in `UInt<8>`{.firrtl}.
+This is called the **uninferred** variant of the type.
 
-For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
-
-The width of a ground-typed multiplexer expression is the maximum of its two corresponding input widths.
-For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
-
-The width of each primitive operation is detailed in [@sec:primitive-operations].
-
-The width of constant integer expressions is detailed in their respective sections.
+FIRRTL also supports an **inferred** variant of these types.
+They are written as follows:
 
 ```firrtl
 UInt
 SInt
 Analog
 ```
+
+When an inferred variant of an integer ground type is used, FIRRTL will calculate the minimum width needed for it.
+It is an error if the minimum size cannot be calculated.
+
+The width of a mux expression is the maximum of its two corresponding input widths.
+For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
+TODO: Are these anywhere near complete enough to bother mentioning them? It seems better to just remove this paragraph until we have the exact rules.
+
+The width of each primitive operation is detailed in [@sec:primitive-operations].
+TODO: What "width"? The minimum widths?
 
 ### Reset Inference
 

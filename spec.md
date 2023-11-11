@@ -233,6 +233,26 @@ circuit:
       node notA = not(a)
 ```
 
+Multiple optional group definitions may reference the same group declaration.
+Each optional group definition is a new lexical scope even if they reference the same declaration.
+The circuit below shows module `Foo` having two group definitions both referencing group declaration `Bar`.
+The first group definition may not reference node `c`.
+The second group definition may not reference node `b`.
+
+``` firrtl
+circuit:
+  declgroup Bar, bind:
+
+  module Foo:
+    input a: UInt<1>
+
+    group Bar: ; First group definition
+      node b = a
+
+    group Bar: ; Second group definition
+      node c = a
+```
+
 Optional group declarations may be nested.
 Optional group declarations are declared with the `declgroup`{.firrtl} keyword indented under an existing `declgroup`{.firrtl} keyword.
 The circuit below contains four optional group declarations, three of which are nested.

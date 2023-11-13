@@ -712,9 +712,7 @@ Enumerations are disjoint union types.
 
 Each enumeration consists of a set of variants.
 Each variant is named with a tag.
-Each variant also has a passive type associated with it (see [@sec:passive-types]).
-
-TODO: "cannot contain analog or probe types."
+Each variant also has a type associated with it which must be connectable (see [@sec:connectable-types]) and passive (see [@sec:passive-types]).
 
 In the following example, the first variant has the tag `a`{.firrtl} with type `UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type `UInt<16>`{.firrtl}.
 
@@ -795,6 +793,18 @@ module Example:
   input intProp : Integer ; an input port of Integer property type
 ```
 
+## Connectable Types
+
+A **connectable type** is one which may be the type of expressions which may participate in the `connect`{.firrtl} statement.
+
+A connectable type is defined recursively:
+
+- unsigned integers,
+- signed integers,
+- a vector type where the element type is a connectable type,
+- bundles where each field type is a connectable type, or
+- an enumeration type
+
 ## Passive Types
 
 Stateful elements, such as registers and memories, may contain data of aggregate types.
@@ -812,7 +822,7 @@ More precisely, a passive type is defined recursively:
 - A vector type is passive if and only if the element type is passive.
 - A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl}
   and the type of each field is passive.
-- An enum type is passive if and only if the type of each of its variants is passive.
+- All enumeration types are passive.
 
 Registers and memories may only be parametrized over passive types.
 

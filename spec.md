@@ -215,7 +215,7 @@ The FIRRTL ABI specification defines supported lowering convention.  One such st
 The `group`{.firrtl} keyword defines optional functionality inside a module.
 An optional group may only be defined inside a module.
 An optional group must reference a group declared in the current circuit.
-Declarations of identifiers and references to existing identifiers following the same lexical scoping rules as FIRRTL conditional statements (see: [@sec:conditional-scopes])---identifiers declared in the group definition may not be used outside the group while groups may refer to identifiers declared outside the group.
+An optional group forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---a group may use identifiers declared outside the group, but identifiers declared in the group may not be used in parent lexical scopes.
 The statements in a group are restricted in what identifiers they are allowed to drive.
 A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:reference-types]).
 

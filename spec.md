@@ -837,12 +837,12 @@ All integer literals are `const`{.firrtl}.
 For example, `UInt<8>(42)`{.firrtl} has type `const UInt<8>`{.firrtl}.
 
 Ports can have a `const`{.firrtl} type, and thus, a module may receive constant values from its parent module.
-This may even happen in `public`{.firrtl} modules, and so the value of a `const`{.firrtl} type need not be known statically (see TODO).
+This may even happen in `public`{.firrtl} modules, and so the value of a `const`{.firrtl} type need not be known statically (see [@sec:public-modules]).
 
-Typically, primitive operations will result in a `const`{.firrtl} type whenever each of its inputs are `const`{.firrtl} (see prim ops TODO).
+Typically, primitive operations will result in a `const`{.firrtl} type whenever each of its inputs are `const`{.firrtl} (see [@sec:primitive-operations]).
 For example, `add(x, y)`{.firrtl} will be `const`{.firrtl} if both `x`{.firrtl} and `y`{.firrtl} are `const`{.firrtl}.
 
-The resulting type of a multiplexer expression, `mux(s, a, b)`{.firrtl}, will be `const`{.firrtl} if all of `s`{.firrtl}, `a`{.firrtl}, and `b`{.firrtl} are `const`{.firrtl} (see TODO).
+The resulting type of a multiplexer expression, `mux(s, a, b)`{.firrtl}, will be `const`{.firrtl} if all of `s`{.firrtl}, `a`{.firrtl}, and `b`{.firrtl} are `const`{.firrtl} (see [@sec:multiplexers]).
 
 An expression of type `const T`{.firrtl} is implicitly upcast to type `T`{.firrtl} whenever it would be required to make a primitive operation, mux expression, or connect statement typecheck.
 
@@ -890,17 +890,8 @@ Type aliases have structural identity.
 In other words, when we compare two types, we expand all type aliases recursively until we are left with type expressions that have no aliases.
 For instance, in the above example, we can connect `in.w`{.firrtl} to `w`{.firrtl} since their types, `WordType` and `AnotherWordType` respectively, both expand to `UInt<32>`{.firrtl}.
 
-TODO: Type equivalence should mention this.
-TODO: Can type aliases be recursive? Are they in scope of each other?
-
-TODO: Mention that `type` is a top-level decl.
-TODO: How global? Global to the `circuit`?
-
 The `type`{.firrtl} declaration is globally defined and all named types exist in the same namespace and thus must all have a unique name.
 Type aliases do not share the same namespace as modules; hence it is allowed for type aliases to conflict with module names.
-
-TODO: Is there a rationale for this design choice?
-TODO: Namespaces
 
 ## Type Inference
 
@@ -911,7 +902,7 @@ Width inference and reset inference.
 ### Width Inference
 
 Normally, the three integer ground types are written with explicit bit widths.
-The bit widths are given in angel brackets, such as the 8 in `UInt<8>`{.firrtl}.
+The bit widths are given in angel brackets, such as the `8`{.firrtl} in `UInt<8>`{.firrtl}.
 This is called the **uninferred** variant of the type.
 
 FIRRTL also supports an **inferred** variant of these types.
@@ -926,16 +917,15 @@ Analog
 When an inferred variant of an integer ground type is used, FIRRTL will calculate the minimum width needed for it.
 It is an error if the minimum size cannot be calculated.
 
-The width of a mux expression is the maximum of its two corresponding input widths.
-For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
-TODO: Are these anywhere near complete enough to bother mentioning them? It seems better to just remove this paragraph until we have the exact rules.
+For example, the width of a multiplexer expression is the maximum of its two corresponding input widths.
 
 The width of each primitive operation is detailed in [@sec:primitive-operations].
-TODO: What "width"? The minimum widths?
 
 ### Reset Inference
 
-The following example shows an uninferred reset that will get inferred to a synchronous reset.
+The uninferred `Reset`{.firrtl} type will be inferred to either a synchronous reset `UInt<1>`{.firrtl} or to an asynchronous reset `AsyncReset`{.firrtl}.
+
+The following example shows an inferred reset that will get inferred to a synchronous reset.
 
 ``` firrtl
 input a : UInt<1>

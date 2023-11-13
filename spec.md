@@ -980,40 +980,11 @@ connect z, asUInt(y)
 
 See [@sec:primitive-operations] for more details on casting.
 
-### Probes and Type Inference
-
-Probe types do participate in global width and reset inference, but only in the direction of the reference itself (no inference in the other direction, even with force statements).
-Both inner types of the references used in a `define`{.firrtl} statement must be identical or the same type with the destination uninferred (this is checked recursively).
-Additionally, any contained reset type is similarly only inferred in the direction of the reference, even if it eventually reaches a known reset type.
-
-In the following example, the FIRRTL compiler will produce an error constrasted with inferring the input port as `AsyncReset`{.firrtl} if a direct connection was used:
-
-```firrtl
-circuit :
-  public module ResetInferBad :
-    input in : Reset
-    output out : AsyncReset
-    connect out, read(probe(in))
-```
-
-The following circuit has all resets inferred to `AsyncReset`{.firrtl}, however:
-
-```firrtl
-circuit :
-  public module ResetInferGood :
-    input in : Reset
-    output out : Reset
-    output out2 : AsyncReset
-    connect out, read(probe(in))
-    connect out2, in
-```
-
-
 # Connections
 
 ## Flow
 
-The direction that signals travel across wires is determined by multiple factors: the kind of circuit component (e.g., `input` vs `output`), the side of a connect statement it appears on, and the presence of `flip`s if the signal is a bundle type.
+The direction that signals travel across wires is determined by multiple factors: the kind of circuit component (e.g., `input`{.firrtl} vs `output`{.firrtl}), the side of a connect statement it appears on, and the presence of `flip`{.firrtl}s if the signal is a bundle type.
 
 To ensure connections are meaningful when taking directionality into account, every expression in FIRRTL has a **flow**.
 The flow of an expression can be one of **source**, **sink**, or **duplex**.

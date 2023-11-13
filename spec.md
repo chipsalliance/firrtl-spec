@@ -603,8 +603,6 @@ Clocks require special physical considerations in hardware.
 FIRRTL defines the `Clock`{.firrtl} type to track clocks throughout a design.
 All registers are linked to a clock (see [@sec:registers]).
 
-TODO: Commentary on clock-crossing or multi-clock designs?
-
 ### Reset Types
 
 Once a circuit is powered on, it may require an explicit reset in order to put it into a known state.
@@ -614,9 +612,9 @@ In FIRRTL, we have the option of using both synchronous or asynchronous resets.
 The synchronous reset type is simply a 1-bit unsigned integer: `UInt<1>`{.firrtl}.
 The asynchronous reset type is `AsyncReset`{.firrtl}.
 
-TODO: mention `regreset`.
+Registers may be declared linked to a reset (see [@sec:registers-with-reset]).
 
-The reset types also have the uninferred form: `Reset`{.firrtl} (see [@sec:reset-inference]).
+The reset types also have the inferred form: `Reset`{.firrtl} (see [@sec:reset-inference]).
 
 ### Analog Type
 
@@ -639,7 +637,7 @@ Analog<1>  ; 1-bit analog type
 Analog<32> ; 32-bit analog type
 ```
 
-TODO: There is an inferred form see TODO.
+The analog type also has the inferred form: `Analog`{.firrtl} (see [@sec:width-inference]).
 
 ## Aggregate Types
 
@@ -744,8 +742,8 @@ TODO: Verify this restriction on `T`.
 Examples:
 
 ```firrtl
-Probe<UInt<8>>                         ; readable probe to an 8-bit unsigned integer
-RWProbe<{ x : UInt<1>, y : UInt<1> }>  ; read-writable probe to bundle
+Probe<UInt<8>>
+RWProbe<UInt<8>>
 ```
 
 `Probe`{.firrtl} and `RWProbe`{.firrtl} are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions, respectively (see [@sec:probes]).
@@ -763,36 +761,11 @@ TODO: exaplain groups `Probe<UInt, A.B>`{.firrtl}
 
 For details of how to read and write through probe types, see [@sec:reading-probe-references;@sec:force-and-release].
 
-Sub-accesses are not allowed with types where the result is or has probe types within.
-This is because sub-accesses are essentially conditional connections (see [@sec:sub-accesses] for details), which are not allowed with probe types.
-
-TODO: What does this mean?
-
-The following example demonstrates some legal and illegal expressions:
-
-```firrtl
-module NoSubAccessesWithProbes :
-  input x : { a : Probe<UInt[2]>, b : UInt }[3]
-  input i : UInt
-  input c : const UInt
-  output p : Probe<UInt>
-
-  ; Illegal: x[i], x[c]
-  ; Illegal: x[0].a[i], x[0].a[c]
-
-  ; Legal:
-  define p = x[0].a[1]
-```
-
 Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
 
 Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrtl} with a constant signal to produce a `RWProbe<const T>`{.firrtl}.
 
 TODO: What's a signal?
-
-Probe types are not synthesizable.
-
-TODO: What does this mean technically?
 
 ## Property Types
 

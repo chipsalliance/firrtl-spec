@@ -660,7 +660,8 @@ The following example specifies a 20-element vector, each of which is a 10-eleme
 UInt<16>[10][20]
 ```
 
-TODO: In analogy to 0-width integers, write a section on 0-length vecs.
+Vectors with length 0 are permitted.
+For details on how 0-length vectors are lowered, see the FIRRTL ABI Specification.
 
 ### Bundle Types
 
@@ -718,7 +719,7 @@ TODO: "cannot contain analog or probe types."
 In the following example, the first variant has the tag `a`{.firrtl} with type `UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type `UInt<16>`{.firrtl}.
 
 ``` firrtl
-{|a: UInt<8>, b: UInt<16>|}
+{|a : UInt<8>, b : UInt<16>|}
 ```
 
 A variant may optionally omit the type, in which case it is implicitly defined to be `UInt<0>`{.firrtl}.
@@ -737,8 +738,6 @@ Probe types are useful for testing and verification, since they allow a design t
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
 In both cases, `T`{.firrtl} must be a ground type (see [@sec:ground-types]).
 
-TODO: Verify this restriction on `T`.
-
 Examples:
 
 ```firrtl
@@ -752,20 +751,24 @@ Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.
 `RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
 However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
 
-TODO: Probe references must always be able to be statically traced to their target or to an external module's output reference.
-Reference-type ports are statically routed through the design using the `define`{.firrtl} statement.
-TODO: A reference type may be associated with an optional group (see [@sec:optional-groups]).
-When associated with an optional group, the reference type may only be driven from that optional group.
-
-TODO: exaplain groups `Probe<UInt, A.B>`{.firrtl}
+Probes can be passed through ports using the `define`{.firrtl} statement (see [@sec:define]).
 
 For details of how to read and write through probe types, see [@sec:reading-probe-references;@sec:force-and-release].
 
 Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
 
-Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrtl} with a constant signal to produce a `RWProbe<const T>`{.firrtl}.
+`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with an optional group (see [@sec:optional-groups]).
+When associated with an optional group, the reference type may only be driven from that optional group.
 
-TODO: What's a signal?
+For example:
+
+```firrtl
+Probe<UInt<8>, A.B>     ; A.B is an optional group
+RWProbe<UInt<8>, A.B>
+```
+
+Probes are generally lowered to hierarchical expressions in Verilog.
+For details, see the FIRRTL ABI Specification.
 
 ## Property Types
 
@@ -837,12 +840,11 @@ Ports can have a `const`{.firrtl} type, and thus, a module may receive constant 
 This may even happen in `public`{.firrtl} modules, and so the value of a `const`{.firrtl} type need not be known statically (see TODO).
 
 Typically, primitive operations will result in a `const`{.firrtl} type whenever each of its inputs are `const`{.firrtl} (see prim ops TODO).
-TODO: Example?
-The resulting type of a mux expression, `mux(s, a, b)`{.firrtl}, will be `const`{.firrtl} if all of `s`{.firrtl}, `a`{.firrtl}, and `b`{.firrtl} are `const`{.firrtl} (see TODO).
+For example, `add(x, y)`{.firrtl} will be `const`{.firrtl} if both `x`{.firrtl} and `y`{.firrtl} are `const`{.firrtl}.
+
+The resulting type of a multiplexer expression, `mux(s, a, b)`{.firrtl}, will be `const`{.firrtl} if all of `s`{.firrtl}, `a`{.firrtl}, and `b`{.firrtl} are `const`{.firrtl} (see TODO).
 
 An expression of type `const T`{.firrtl} is implicitly upcast to type `T`{.firrtl} whenever it would be required to make a primitive operation, mux expression, or connect statement typecheck.
-
-TODO: be more precise about this?
 
 Expressions with `const`{.firrtl} may be used as the target of a connect statement as long as the following hold:
 
@@ -850,21 +852,17 @@ Expressions with `const`{.firrtl} may be used as the target of a connect stateme
 - the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`{.firrtl}
 - the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const`{.firrtl} type
 
-TODO: How do match statements interact?
-
-Constant types may be used in ports, wire, and nodes.
-
-TODO: What are disallowed in?
+Constant types may not be the type of a stateful circuit components.
+Thus, registers are memories may not be declared with a `const`{.firrtl} type.
 
 References to a subcomponent of a circuit component with a `const`{.firrtl} vector or bundle type results in a `const`{.firrtl} of the inner type.
+
 For example:
 
 ```firrtl
 input c : const { real : SInt<8>, imag : SInt<8> }
 ; c.real has type const SInt<8>
 ```
-
-TODO: Word this more precisely.
 
 ## Type Alias
 
@@ -2043,6 +2041,10 @@ module Foo :
   connect p, x
   connect y, p
 ```
+
+### Probes and Const Types
+
+Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrtl} with a constant signal to produce a `RWProbe<const T>`{.firrtl}.
 
 ### Exporting References to Nested Declarations
 

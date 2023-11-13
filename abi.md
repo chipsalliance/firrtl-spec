@@ -302,6 +302,11 @@ The padding for each payload is set to ensure all padded payloads have the same 
 
 Property types have no defined ABI, and may not affect any other guarantees of the ABI.
 
+TODO: 0-width vectors?
+
+Property types have no defined ABI, and may not affect any other guarantees of
+the ABI.
+
 ### Constant Types
 
 Constant types are a restriction on FIRRTL types.

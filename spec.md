@@ -703,7 +703,7 @@ module Processor :
 ```
 
 This defines a module `Processor` with a single input port `enq` which enqueues data using a ready-valid interface.
-Because `enq` is a single port, we can connect to it with a single `connect` statement (see [@sec:connections]).
+Because `enq` is a single port, we can connect to it with a single `connect`{.firrtl} statement (see [@sec:connections]).
 In the final hardware, however, while the `word` and `valid` fields point *into* the module, this port has a flipped field `ready` which points *out of* the module instead.
 
 ### Enumeration Types
@@ -753,8 +753,6 @@ However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive
 
 Probes can be passed through ports using the `define`{.firrtl} statement (see [@sec:define]).
 
-For details of how to read and write through probe types, see [@sec:reading-probe-references;@sec:force-and-release].
-
 Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
 
 `Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with an optional group (see [@sec:optional-groups]).
@@ -801,10 +799,10 @@ module Example:
 
 Stateful elements, such as registers and memories, may contain data of aggregate types.
 Registers with bundle types are especially common.
-However, when using bundle types in stateful elements, the notion of `flip` does not make sense.
+However, when using bundle types in stateful elements, the notion of `flip`{.firrtl} does not make sense.
 There is no directionality to the data inside a register; the data just *is*.
 
-A **passive type** is a type which does not make use of `flip`.
+A **passive type** is a type which does not make use of `flip`{.firrtl}.
 
 More precisely, a passive type is defined recursively:
 
@@ -812,7 +810,7 @@ More precisely, a passive type is defined recursively:
 - All probe types are passive.
 - All property types are passive.
 - A vector type is passive if and only if the element type is passive.
-- A bundle type is passive if and only if it contains no field which is marked `flip`
+- A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl}
   and the type of each field is passive.
 - An enum type is passive if and only if the type of each of its variants is passive.
 
@@ -1032,8 +1030,6 @@ Moreover, input ports may only appear "on the left side" of a connect, while out
 Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule below, allowing connections to their input ports
 
 ## Type Equivalence
-
-TODO: Replace this with a relation like "S 'coerces to' T".
 
 The type equivalence relation determines whether one values of one type can be coerced into values of another.
 

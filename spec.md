@@ -400,7 +400,9 @@ Circuit components can be connected together (see [@sec:connections]).
 Each circuit component in a module has a type ([@sec:types]).
 It is used to determine the legality of connections.
 
-## Nodes
+## Kinds
+
+### Nodes
 
 Nodes are named expressions in FIRRTL.
 
@@ -412,7 +414,7 @@ node mynode = and(in, UInt<4>(1))
 
 The type of a node is the type of the expression given in the definition.
 
-## Wires
+### Wires
 
 Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connections]).
 
@@ -426,7 +428,7 @@ connect mywire, UInt<1>(0)
 Unlike nodes, the type of a wire must be explicitly declared.
 The type of a wire is given after the colon (`:`{.firrtl}).
 
-## Registers
+### Registers
 
 Registers are stateful elements of a design.
 
@@ -466,7 +468,7 @@ Semantically, registers become flip-flops in the design.
 The next value is latched on the positive edge of the clock.
 The initial value of a register is indeterminate (see [@sec:indeterminate-values]).
 
-## Output Ports and Input Ports
+### Output Ports and Input Ports
 
 The way a module interacts with the outside world is through its output and input ports.
 
@@ -481,7 +483,7 @@ For both variants of port, the type is given after the colon (`:`{.firrtl}).
 
 The two kinds of ports differ in the rules for how they may be connected (see [@sec:connections]).
 
-## Submodule Instances
+### Submodule Instances
 
 A module in FIRRTL may contain submodules.
 
@@ -513,7 +515,7 @@ The type of the submodule instance `passthrough`{.firrtl} above is thus:
 { flip in : UInt<8>, out : UInt<8> }
 ```
 
-## Memories
+### Memories
 
 Memories are stateful elements of a design.
 
@@ -537,6 +539,58 @@ The type named in `data-type`{.firrtl} must be passive.
 It indicates the type of the data being stored inside of the memory.
 
 See [@sec:memories] for more details.
+
+## Subcomponents
+
+Each circuit component factors into a tree of subcomponents.
+The subcomponents of a circuit component depends on its type and kind.
+
+Subcomponents are themselves circuit components.
+Thus, they have both a kind and a type.
+
+TODO: When we refer to the "circuit components" of a module definition, context will make it clear whether we mean the circuit component declarations (the root circuit components), the leaf circuit components, or the total of all circuit components.
+
+Subcomponents may be named by references (see TODO) and may appear as the target of a connect statement.
+
+We define the tree of circuit components by defining a **direct subcomponent** of a circuit component.
+These are the immediate children of the circuit subcomponent tree.
+
+A **root component** is a circuit component that is not the direct subcomponent of any other component.
+Equivalently, these are the circuit components which are declared in a module.
+
+A **leaf component** is a circuit component has no direct subcomponents.
+Leaf components are useful for checking initialization.
+
+One circuit component is a **subcomponent** of another if there is way to get from the first component to the second through the direct subcomponent relation.
+A circuit component is trivially considered to be a subcomponent of itself.
+If we need to speak of the subcomponents excluding the component itself, we call these the **proper subcomponents**.
+
+When a circuit component has a ground type, an enumeration time, a probe type, or property type (see TODO), has no direct subcomponents.
+
+For example, `wire w : UInt<8>`{.firrtl} has no direct subcomponents.
+
+When a circuit component has a vector type (see TODO), it has as direct subcomponents as its length.
+Each subcomponent will have the same kind as its parent.
+Each will have the element type.
+
+For example, a wire `wire v : UInt<8>[3]`{.firrtl} will have three proper subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
+All three are wires and all three have type `UInt<8>`{.firrtl}.
+
+When a circuit component has a bundle type (see TODO), it will end up with one direct subcomponent for each field.
+The type of each subcomponent will correspond to the type of the corresponding.
+However, the kind of the subcomponent depends on the type of the parent:
+
+- For wires with bundle types, the subcomponents are all wires.
+- For nodes, the subcomponents are all nodes.
+- For registers, the subcomponents are all registers.
+- For output and input ports, the kind of each subcomponent depends on whether or not the field is flipped.
+  When the field is not flipped, the kind remains the same as the parent.
+  When the field is flipped, it will change from either output to input or vice versa.
+- For submodule instances and memories, the kind depends on whether or not the field is flipped.
+  When the field is not flipped, the kind is an input.
+  When the field is flipped, the kind is an output.
+
+The intuition for submodule instances and memories is that circuit components with kind output are sinks, while circuit components with kind input are sources.
 
 # Types
 

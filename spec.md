@@ -763,7 +763,7 @@ Probe<UInt<8>, A.B>     ; A.B is an optional group
 RWProbe<UInt<8>, A.B>
 ```
 
-Probes are generally lowered to hierarchical expressions in Verilog.
+Probes are generally lowered to hierarchical names in Verilog.
 For details, see the FIRRTL ABI Specification.
 
 ## Property Types
@@ -910,7 +910,7 @@ Width inference and reset inference.
 ### Width Inference
 
 Normally, the three integer ground types are written with explicit bit widths.
-The bit widths are given in angel brackets, such as the `8`{.firrtl} in `UInt<8>`{.firrtl}.
+The bit widths are given in angle brackets, such as the `8`{.firrtl} in `UInt<8>`{.firrtl}.
 This is called the **uninferred** variant of the type.
 
 FIRRTL also supports an **inferred** variant of these types.
@@ -1019,7 +1019,7 @@ Similarly, a signed integer type is always equivalent to another signed integer 
 
 Clock types are equivalent to clock types, and are not equivalent to any other type.
 
-An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl}, `UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}.
+An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl}, `UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl} (see [@sec:reset-inference]).
 It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
 
 The `AsyncReset`{.firrtl} type can be connected to another `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.

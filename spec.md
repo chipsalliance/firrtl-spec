@@ -729,9 +729,10 @@ In the following example, all variants have the type `UInt<0>`{.firrtl}.
 
 ## Probe Types
 
-Probe types expose and provide access to circuit components contained inside a module.
-
-Probe types are useful for testing and verification, since they allow a design to read to and write from circuit components without knowing the hierarchical path to that component in the design.
+Probe types expose and provide access to circuit components contained inside a module for use
+They are intended for verification.
+Ports with a probe type do not necessarily result in physical hardware.
+Special verification constructs enable the value of a probe to be read or forced remotely.
 
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
 

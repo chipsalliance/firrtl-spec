@@ -312,7 +312,6 @@ It is not intended that constants are a replacement for parameterization.
 Constant typed values have no particular meta-programming capability.
 It is, for example, expected that a module with a constant input port be fully compilable to non-parameterized Verilog.
 
-
 # Versioning Scheme of this Document
 
 This is the versioning scheme that applies to version 1.0.0 and later.

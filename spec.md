@@ -217,7 +217,7 @@ An optional group may only be defined inside a module.
 An optional group must reference a group declared in the current circuit.
 An optional group forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---a group may use identifiers declared outside the group, but identifiers declared in the group may not be used in parent lexical scopes.
 The statements in a group are restricted in what identifiers they are allowed to drive.
-A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:reference-types]).
+A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:probe-types]).
 
 The circuit below contains one optional group declaration, `Bar`.
 Module `Foo` contains a group definition that creates a node computed from a port defined in the scope of `Foo`.
@@ -572,81 +572,368 @@ See [@sec:memories] for more details.
 
 # Types
 
-FIRRTL has four classes of types: _ground_ types, _aggregate_ types, _reference_ types, and _property_ types.
-Ground types are fundamental and are not composed of other types.
-Aggregate types and reference types are composed of one or more aggregate or ground types.
-Reference types may not contain other reference types.
-Property types represent information about the circuit that is not hardware.
+FIRRTL has four classes of types: **ground** types, **aggregate** types, **probe** types, and **property** types.
 
 ## Ground Types
 
-There are five classes of ground types in FIRRTL: unsigned integer types, signed integer types, a clock type, reset types, and analog types.
+Ground types are types which are not composed of other types.
+They are the integer types, clocks, and resets.
 
 ### Integer Types
 
-Both unsigned and signed integer types may optionally be given a known non-negative integer bit width.
+FIRRTL supports both signed and unsigned integer types.
 
-``` firrtl
-UInt ; unsigned int type with inferred width
-SInt ; signed int type with inferred width
-UInt<10> ; unsigned int type with 10 bits
-SInt<32> ; signed int type with 32 bits
+`UInt<n>`{.firrtl} is an `n`-bit wide unsigned integer.
+`SInt<n>`{.firrtl} is an `n`-bit wide signed integer.
+
+```firrtl
+UInt<10> ; a 10-bit unsigned integer
+SInt<32> ; a 32-bit signed integer
 ```
 
-Alternatively, if the bit width is omitted, it will be automatically inferred by FIRRTL's width inferencer, as detailed in [@sec:width-inference].
+Both `UInt<0>`{.firrtl} and `SInt<0>`{.firrtl} are valid types.
+They are considered to have only a single value representing zero (written as either `UInt<0>(0)`{.firrtl} or `SInt<0>(0)`{.firrtl}).
+They behave like zero when they are extended to a positive width integer type.
 
-#### Zero Bit Width Integers
-
-Integers of width zero are permissible.
-They are always zero extended.
-Thus, when used in an operation that extends to a positive bit width, they behave like a zero.
-While zero bit width integers carry no information, we allow 0-bit integer constant zeros for convenience: `UInt<0>(0)`{.firrtl} and `SInt<0>(0)`{.firrtl}.
-
-``` firrtl
-wire zero_u : UInt<0>
-invalidate zero_u
-wire zero_s : SInt<0>
-invalidate zero_s
-
-wire one_u : UInt<1>
-connect one_u, zero_u
-wire one_s : SInt<1>
-connect one_s, zero_s
-```
-
-Is equivalent to:
-
-``` firrtl
-wire one_u : UInt<1>
-connect one_u, UInt<1>(0)
-wire one_s : SInt<1>
-connect one_s, SInt<1>(0)
-```
+Integer types also have the inferred forms: `UInt`{.firrtl} and `SInt`{.firrtl} (see [@sec:width-inference]).
 
 ### Clock Type
 
-The clock type is used to describe wires and ports meant for carrying clock signals.
-The usage of components with clock types are restricted.
-Clock signals cannot be used in most primitive operations, and clock signals can only be connected to components that have been declared with the clock type.
+Clocks require special physical considerations in hardware.
+FIRRTL defines the `Clock`{.firrtl} type to track clocks throughout a design.
+All registers are linked to a clock (see [@sec:registers]).
 
-The clock type is specified as follows:
+### Reset Types
+
+Once a circuit is powered on, it may require an explicit reset in order to put it into a known state.
+For this, we use a reset type.
+In FIRRTL, we have the option of using both synchronous or asynchronous resets.
+
+The synchronous reset type is simply a 1-bit unsigned integer: `UInt<1>`{.firrtl}.
+The asynchronous reset type is `AsyncReset`{.firrtl}.
+
+Registers may be declared linked to a reset (see [@sec:registers-with-reset]).
+
+The reset types also have the inferred form: `Reset`{.firrtl} (see [@sec:reset-inference]).
+
+### Analog Type
+
+The analog type specifies that a wire or port can be attached to multiple drivers.
+`Analog`{.firrtl} cannot be used as part of the type of a node or register, nor can it be used as part of the datatype of a memory.
+In this respect, it is similar to how `inout`{.firrtl} ports are used in Verilog, and FIRRTL analog signals are often used to interface with external Verilog or VHDL IP.
+
+In contrast with all other ground types, analog signals cannot appear on either side of a connection statement.
+Instead, analog signals are attached to each other with the commutative `attach`{.firrtl} statement.
+An analog signal may appear in any number of attach statements, and a legal circuit may also contain analog signals that are never attached.
+The only primitive operations that may be applied to analog signals are casts to other signal types.
+
+When an analog signal appears as a field of an aggregate type, the aggregate cannot appear in a standard connection statement.
+
+As with integer types, an analog type can represent a multi-bit signal.
+When analog signals are not given a concrete width, their widths are inferred according to a highly restrictive width inference rule, which requires that the widths of all arguments to a given attach operation be identical.
 
 ``` firrtl
-Clock
+Analog<1>  ; 1-bit analog type
+Analog<32> ; 32-bit analog type
 ```
 
-### Reset Type
+The analog type also has the inferred form: `Analog`{.firrtl} (see [@sec:width-inference]).
 
-The uninferred `Reset`{.firrtl} type is either inferred to `UInt<1>`{.firrtl} (synchronous reset) or `AsyncReset`{.firrtl} (asynchronous reset) during compilation.
+## Aggregate Types
+
+FIRRTL supports three aggregate types: vectors, bundles, and enumerations.
+
+### Vector Types
+
+A vector type is used to express an ordered sequence of elements of a given type.
+
+The following example specifies a 10-element vector of 16-bit unsigned integers.
 
 ``` firrtl
-Reset ; inferred type
-AsyncReset
+UInt<16>[10]
 ```
 
-Synchronous resets used in registers will be mapped to a hardware description language representation for synchronous resets.
+Note that the element type of a vector can be any type, including another aggregate type.
+The following example specifies a 20-element vector, each of which is a 10-element vector of 16-bit unsigned integers.
 
-The following example shows an uninferred reset that will get inferred to a synchronous reset.
+```firrtl
+UInt<16>[10][20]
+```
+
+Vectors with length 0 are permitted.
+For details on how 0-length vectors are lowered, see the FIRRTL ABI Specification.
+
+### Bundle Types
+
+A bundle type is used to represent a collection of values.
+They can also be used to facilitate bidirectional connections between circuit components.
+
+A bundle type consists of zero or more fields.
+Each field has a name and a type.
+Fields may also be flipped.
+
+The following is an example of a possible type for representing a complex number.
+It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed integers.
+
+```firrtl
+{ real : SInt<10>, imag : SInt<10> }
+```
+
+The types of each field may be any type, including other aggregate types.
+
+```firrtl
+{ real : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> },
+  imag : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> } }
+
+```
+
+Here is an example of a bundle with a flipped field.
+Because the `ready` field is marked with the keyword `flip`, it will indicate the flow will be opposite of the `word` and `valid` fields.
+
+```firrtl
+{ word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> }
+```
+
+As an example of how `flip`{.firrtl} works in context, consider a module declared like this:
+
+```firrtl
+module Processor :
+  input enq : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> }
+  ; ...
+```
+
+This defines a module `Processor` with a single input port `enq` which enqueues data using a ready-valid interface.
+Because `enq` is a single port, we can connect to it with a single `connect`{.firrtl} statement (see [@sec:connections]).
+In the final hardware, however, while the `word` and `valid` fields point *into* the module, this port has a flipped field `ready` which points *out of* the module instead.
+
+### Enumeration Types
+
+Enumerations are disjoint union types.
+
+Each enumeration consists of a set of variants.
+Each variant is named with a tag.
+Each variant also has a type associated with it which must be connectable (see [@sec:connectable-types]) and passive (see [@sec:passive-types]).
+
+In the following example, the first variant has the tag `a`{.firrtl} with type `UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type `UInt<16>`{.firrtl}.
+
+``` firrtl
+{|a : UInt<8>, b : UInt<16>|}
+```
+
+A variant may optionally omit the type, in which case it is implicitly defined to be `UInt<0>`{.firrtl}.
+In the following example, all variants have the type `UInt<0>`{.firrtl}.
+
+``` firrtl
+{|a, b, c|}
+```
+
+## Probe Types
+
+Probe types expose and provide access to circuit components contained inside a module for use
+They are intended for verification.
+Ports with a probe type do not necessarily result in physical hardware.
+Special verification constructs enable the value of a probe to be read or forced remotely.
+
+There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
+
+Examples:
+
+```firrtl
+Probe<UInt<8>>
+RWProbe<UInt<8>>
+```
+
+`Probe`{.firrtl} and `RWProbe`{.firrtl} are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions, respectively (see [@sec:probes]).
+
+Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression (see [@sec:reading-probe-references]).
+`RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
+However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
+
+Probes can be passed through ports using the `define`{.firrtl} statement (see [@sec:define]).
+
+Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
+
+`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with an optional group (see [@sec:optional-groups]).
+When associated with an optional group, the reference type may only be driven from that optional group.
+
+For example:
+
+```firrtl
+Probe<UInt<8>, A.B>     ; A.B is an optional group
+RWProbe<UInt<8>, A.B>
+```
+
+Probes are generally lowered to hierarchical names in Verilog.
+For details, see the FIRRTL ABI Specification.
+
+## Property Types
+
+FIRRTL property types represent information about the circuit that is not hardware.
+This is useful to capture domain-specific knowledge and design intent alongside the hardware description within the same FIRRTL.
+
+Property types cannot affect hardware functionality or the hardware ABI.
+They cannot be used in any hardware types, including aggregates and references.
+They only exist to augment the hardware description with extra information.
+
+Handling of property types is completely implementation-defined.
+A valid FIRRTL compiler implementation may do anything with property types as long as the existence of property types does not affect hardware functionality or the hardware ABI.
+For example, it is valid to drop property types from the IR completely.
+
+Property types are legal in the following constructs:
+
+* Port declarations on modules and external modules
+
+### Integer Type
+
+The `Integer` type represents an numeric property.
+It can represent arbitrary-precision signed integer values.
+
+``` firrtl
+module Example:
+  input intProp : Integer ; an input port of Integer property type
+```
+
+## Connectable Types
+
+A **connectable type** is one which may be the type of expressions which may participate in the `connect`{.firrtl} statement.
+
+A connectable type is defined recursively:
+
+- unsigned integers,
+- signed integers,
+- a vector type where the element type is a connectable type,
+- bundles where each field type is a connectable type, or
+- an enumeration type
+
+## Passive Types
+
+Stateful elements, such as registers and memories, may contain data of aggregate types.
+Registers with bundle types are especially common.
+However, when using bundle types in stateful elements, the notion of `flip`{.firrtl} does not make sense.
+There is no directionality to the data inside a register; the data just *is*.
+
+A **passive type** is a type which does not make use of `flip`{.firrtl}.
+
+More precisely, a passive type is defined recursively:
+
+- All ground types are passive.
+- All probe types are passive.
+- All property types are passive.
+- A vector type is passive if and only if the element type is passive.
+- A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl}
+  and the type of each field is passive.
+- All enumeration types are passive.
+
+Registers and memories may only be parametrized over passive types.
+
+## Constant Types
+
+For certain situations, it is useful to guarantee that a signal holds a value that doesn't change during simulation.
+For example, when a register has a reset, the reset value is required to be held constant (see [@sec:registers-with-reset]).
+
+Ground types and aggregate types maybe marked as constant using the `const`{.firrtl} modifier.
+
+For example:
+
+```firrtl
+const UInt<3>
+const SInt<8>[4]
+const { real: UInt<32>, imag : UInt<32> }
+```
+
+All integer literals are `const`{.firrtl}.
+For example, `UInt<8>(42)`{.firrtl} has type `const UInt<8>`{.firrtl}.
+
+Ports can have a `const`{.firrtl} type, and thus, a module may receive constant values from its parent module.
+This may even happen in `public`{.firrtl} modules, and so the value of a `const`{.firrtl} type need not be known statically (see [@sec:public-modules]).
+
+Typically, primitive operations will result in a `const`{.firrtl} type whenever each of its inputs are `const`{.firrtl} (see [@sec:primitive-operations]).
+For example, `add(x, y)`{.firrtl} will be `const`{.firrtl} if both `x`{.firrtl} and `y`{.firrtl} are `const`{.firrtl}.
+
+The resulting type of a multiplexer expression, `mux(s, a, b)`{.firrtl}, will be `const`{.firrtl} if all of `s`{.firrtl}, `a`{.firrtl}, and `b`{.firrtl} are `const`{.firrtl} (see [@sec:multiplexers]).
+
+An expression of type `const T`{.firrtl} is implicitly upcast to type `T`{.firrtl} whenever it would be required to make a primitive operation, mux expression, or connect statement typecheck.
+
+Expressions with `const`{.firrtl} may be used as the target of a connect statement as long as the following hold:
+
+- the source of the connect is `const`{.firrtl}
+- the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`{.firrtl}
+- the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const`{.firrtl} type
+
+Constant types may not be the type of a stateful circuit components.
+Thus, registers are memories may not be declared with a `const`{.firrtl} type.
+
+References to a subcomponent of a circuit component with a `const`{.firrtl} vector or bundle type results in a `const`{.firrtl} of the inner type.
+
+For example:
+
+```firrtl
+input c : const { real : SInt<8>, imag : SInt<8> }
+; c.real has type const SInt<8>
+```
+
+## Type Alias
+
+Type aliases allow us to give names to types.
+This is useful for bundle types, especially when they have many fields.
+It is also useful for hinting at what the value represents.
+
+Examples:
+
+```firrtl
+type WordType = UInt<32>
+type ValidType = UInt<1>
+type Data = { w : WordType, valid : ValidType, flip ready : UInt<1> }
+type AnotherWordType = UInt<32>
+
+module TypeAliasMod:
+  input in : Data
+  output out : Data
+  wire w : AnotherWordType
+  connect w, in.w
+  ; ...
+```
+
+Type aliases have structural identity.
+In other words, when we compare two types, we expand all type aliases recursively until we are left with type expressions that have no aliases.
+For instance, in the above example, we can connect `in.w`{.firrtl} to `w`{.firrtl} since their types, `WordType` and `AnotherWordType` respectively, both expand to `UInt<32>`{.firrtl}.
+
+The `type`{.firrtl} declaration is globally defined and all named types exist in the same namespace and thus must all have a unique name.
+Type aliases do not share the same namespace as modules; hence it is allowed for type aliases to conflict with module names.
+
+## Type Inference
+
+FIRRTL has support for limited type inference.
+This comes in two flavors:
+Width inference and reset inference.
+
+### Width Inference
+
+Normally, the three integer ground types are written with explicit bit widths.
+The bit widths are given in angle brackets, such as the `8`{.firrtl} in `UInt<8>`{.firrtl}.
+This is called the **uninferred** variant of the type.
+
+FIRRTL also supports an **inferred** variant of these types.
+They are written as follows:
+
+```firrtl
+UInt
+SInt
+Analog
+```
+
+When an inferred variant of an integer ground type is used, FIRRTL will calculate the minimum width needed for it.
+It is an error if the minimum size cannot be calculated.
+
+For example, the width of a multiplexer expression is the maximum of its two corresponding input widths.
+
+The width of each primitive operation is detailed in [@sec:primitive-operations].
+
+### Reset Inference
+
+The uninferred `Reset`{.firrtl} type will be inferred to either a synchronous reset `UInt<1>`{.firrtl} or to an asynchronous reset `AsyncReset`{.firrtl}.
+
+The following example shows an inferred reset that will get inferred to a synchronous reset.
 
 ``` firrtl
 input a : UInt<1>
@@ -661,8 +948,6 @@ input a : UInt<1>
 wire reset : UInt<1>
 connect reset, a
 ```
-
-Asynchronous resets used in registers will be mapped to a hardware description language representation for asynchronous resets.
 
 The following example demonstrates usage of an asynchronous reset.
 
@@ -695,382 +980,25 @@ connect z, asUInt(y)
 
 See [@sec:primitive-operations] for more details on casting.
 
-## Aggregate Types
+### Probes and Type Inference
 
-FIRRTL supports three aggregate types: vectors, bundles, and enumeration.
-Aggregate types are composed of ground types or other aggregate types.
+Given a `Probe<T>`{.firrtl} or `RWProbe<T>`{.firrtl}, the inner type `T`{.firrtl} may be an inferred type (see [@sec:probe-types]).
+The inner type `T`{.firrtl} will be inferred, however, they must do so in a way which does not affect the hardware.
 
-### Vector Types
+A module with a probe with an inferred inner type must resolve all other inferred types to the same uninferred types as it would if the probe were to be removed.
 
-A vector type is used to express an ordered sequence of elements of a given type.
-The length of the sequence must be non-negative and known.
+Additionally, inference constraints may only flow in few restricted ways:
 
-The following example specifies a ten element vector of 16-bit unsigned integers.
-
-``` firrtl
-UInt<16>[10]
-```
-
-The next example specifies a ten element vector of unsigned integers of omitted but identical bit widths.
-
-``` firrtl
-UInt[10]
-```
-
-Note that any type, including other aggregate types, may be used as the element type of the vector.
-The following example specifies a twenty element vector, each of which is a ten element vector of 16-bit unsigned integers.
-
-``` firrtl
-UInt<16>[10][20]
-```
-
-### Bundle Types
-
-A bundle type is used to express a collection of nested and named types.
-All fields in a bundle type must have a given name, and type.
-All names must be legal identifiers.
-
-The following is an example of a possible type for representing a complex number.
-It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed integers.
-
-``` firrtl
-{real: SInt<10>, imag: SInt<10>}
-```
-
-Additionally, a field may optionally be declared with a *flipped* orientation.
-
-``` firrtl
-{word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}
-```
-
-In a connection between circuit components with bundle types, the data carried by the flipped fields flow in the opposite direction as the data carried by the non-flipped fields.
-
-As an example, consider a module output port declared with the following type:
-
-``` firrtl
-output a: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}
-```
-
-In a connection to the `a`{.firrtl} port, the data carried by the `word`{.firrtl} and `valid`{.firrtl} sub-fields will flow out of the module, while data carried by the `ready`{.firrtl} sub-field will flow into the module.
-More details about how the bundle field orientation affects connections are explained in [@sec:connections].
-
-As in the case of vector types, a bundle field may be declared with any type, including other aggregate types.
-
-``` firrtl
-{real: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>},
- imag: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}}
-
-```
-
-When calculating the final direction of data flow, the orientation of a field is applied recursively to all nested types in the field.
-As an example, consider the following module port declared with a bundle type containing a nested bundle type.
-
-``` firrtl
-output myport: {a: UInt, flip b: {c: UInt, flip d: UInt}}
-```
-
-In a connection to `myport`{.firrtl}, the `a`{.firrtl} sub-field flows out of the module.
-The `c`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field flows into the module, and the `d`{.firrtl} sub-field contained in the `b`{.firrtl} sub-field flows out of the module.
-
-### Enumeration Types
-
-Enumerations are structural disjoint union types.
-An enumeration has a number of variants, each with a type.
-The different variants are specified with tags.
-The variant types of an enumeration must all be passive and cannot contain analog or probe types.
-
-In the following example, the first variant has the tag `a`{.firrtl} with type `UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type `UInt<16>`{.firrtl}.
-
-``` firrtl
-{|a: UInt<8>, b: UInt<16>|}
-```
-
-A variant may optionally omit the type, in which case it is implicitly defined to be `UInt<0>`{.firrtl}.
-In the following example, all variants have the type `UInt<0>`{.firrtl}.
-
-``` firrtl
-{|a, b, c|}
-```
-
-## Analog Type
-
-The analog type specifies that a wire or port can be attached to multiple drivers.
-`Analog`{.firrtl} cannot be used as part of the type of a node or register, nor can it be used as part of the datatype of a memory.
-In this respect, it is similar to how `inout`{.firrtl} ports are used in Verilog, and FIRRTL analog signals are often used to interface with external Verilog or VHDL IP.
-
-In contrast with all other ground types, analog signals cannot appear on either side of a connection statement.
-Instead, analog signals are attached to each other with the commutative `attach`{.firrtl} statement.
-An analog signal may appear in any number of attach statements, and a legal circuit may also contain analog signals that are never attached.
-The only primitive operations that may be applied to analog signals are casts to other signal types.
-
-When an analog signal appears as a field of an aggregate type, the aggregate cannot appear in a standard connection statement.
-
-As with integer types, an analog type can represent a multi-bit signal.
-When analog signals are not given a concrete width, their widths are inferred according to a highly restrictive width inference rule, which requires that the widths of all arguments to a given attach operation be identical.
-
-``` firrtl
-Analog<1>  ; 1-bit analog type
-Analog<32> ; 32-bit analog type
-Analog     ; analog type with inferred width
-```
-
-## Reference Types
-
-References can be exported from a module for indirect access elsewhere, and are captured using values of reference type.
-
-For use in cross-module references (hierarchical references in Verilog), a reference to a probe of the circuit component is used.
-See [@sec:probes] for details.
-
-Using probe-type ports, modules may expose internals for reading and forcing without routing wires out of the design.
-
-This is often useful for testing and verification, where probe types allow reads of the entities to be explicitly exported without hard-coding their place in the design.
-Instead, by using probe-type references, a testbench module may express accesses to the internals which will resolve to the appropriate target language construct by the compiler (e.g., hierarchical reference).
-
-Reference ports are not expected to be synthesizable or representable in the target language and are omitted in the compiled design; they only exist at the FIRRTL level.
-
-Reference-type ports are statically routed through the design using the `define`{.firrtl} statement.
-
-There are two reference types, `Probe`{.firrtl} and `RWProbe`{.firrtl}, described below.
-These are used for indirect access to probes of the data underlying circuit constructs they originate from, captured using `probe`{.firrtl} expressions (see [@sec:probes]).
-
-`Probe`{.firrtl} types are read-only, and `RWProbe`{.firrtl} may be used with `force`{.firrtl} and related statements.
-Prefer the former as much as possible, as read-only probes impose fewer limitations and are more amenable to optimization.
-
-Probe references must always be able to be statically traced to their target, or to an external module's output reference.
-This means no conditional connections via sub-accesses, multiplexers, or other means.
-
-Reference types compose with optional groups (see [@sec:optional-groups].
-A reference type may be associated with an optional group.
-When associated with an optional group, the reference type may only be driven from that optional group.
-
-### Probe Types
-
-Probe types are reference types used to access circuit elements' data remotely.
-
-There are two probe types: `Probe`{.firrtl} and `RWProbe`{.firrtl}.
-`RWProbe`{.firrtl} is a `Probe`{.firrtl} type, but not the other way around.
-
-Probe types are parametric over the type of data that they refer to, which is always passive (as defined in [@sec:passive-types]) even when the probed target is not (see [@sec:probes-and-passive-types]).
-Probe types cannot contain reference types.
-
-Conceptually probe types are single-direction views of the probed data-flow point.
-They are references to the data accessed with the probe expression generating the reference.
-
-Examples:
-
-```firrtl
-Probe<UInt> ; readable reference to unsigned integer with inferred width
-RWProbe<{x: {y: UInt}}> ; readable and forceable reference to bundle
-Probe<UInt, A.B> ; readable reference associated with group A.B
-```
-
-For details of how to read and write through probe types, see [@sec:reading-probe-references;@sec:force-and-release].
-
-All ports of probe type must be initialized with exactly one `define`{.firrtl} statement.
-
-Probe types are only allowed as part of module ports and may not appear anywhere else.
-
-Sub-accesses are not allowed with types where the result is or has probe types within.
-This is because sub-accesses are essentially conditional connections (see [@sec:sub-accesses] for details), which are not allowed with probe types.
-The following example demonstrates some legal and illegal expressions:
-
-```firrtl
-module NoSubAccessesWithProbes :
-  input x : {a : Probe<UInt[2]>, b : UInt}[3]
-  input i : UInt
-  input c : const UInt
-  output p : Probe<UInt>
-
-  ; Illegal: x[i], x[c]
-  ; Illegal: x[0].a[i], x[0].a[c]
-
-  ; Legal:
-  define p = x[0].a[1]
-```
-
-Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
-
-Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrtl} with a constant signal to produce a `RWProbe<const T>`{.firrtl}, as constant values should never be mutated at runtime.
-
-#### Width and Reset Inference
-
-Probe types do participate in global width and reset inference, but only in the direction of the reference itself (no inference in the other direction, even with force statements).
-Both inner types of the references used in a `define`{.firrtl} statement must be identical or the same type with the destination uninferred (this is checked recursively).
-Additionally, any contained reset type is similarly only inferred in the direction of the reference, even if it eventually reaches a known reset type.
-
-In the following example, the FIRRTL compiler will produce an error constrasted with inferring the input port as `AsyncReset`{.firrtl} if a direct connection was used:
-
-```firrtl
-circuit :
-  public module ResetInferBad :
-    input in : Reset
-    output out : AsyncReset
-    connect out, read(probe(in))
-```
-
-The following circuit has all resets inferred to `AsyncReset`{.firrtl}, however:
-
-```firrtl
-circuit :
-  public module ResetInferGood :
-    input in : Reset
-    output out : Reset
-    output out2 : AsyncReset
-    connect out, read(probe(in))
-    connect out2, in
-```
-
-## Property Types
-
-FIRRTL property types represent information about the circuit that is not hardware.
-This is useful to capture domain-specific knowledge and design intent alongside the hardware description within the same FIRRTL.
-
-Property types cannot affect hardware functionality or the hardware ABI.
-They cannot be used in any hardware types, including aggregates and references.
-They only exist to augment the hardware description with extra information.
-
-Handling of property types is completely implementation-defined.
-A valid FIRRTL compiler implementation may do anything with property types as long as the existence of property types does not affect hardware functionality or the hardware ABI.
-For example, it is valid to drop property types from the IR completely.
-
-Property types are legal in the following constructs:
-
-* Port declarations on modules and external modules
-
-### Integer Property Types
-
-Integer property types represent arbitrary precision signed integer values.
-
-``` firrtl
-module Example:
-  input intProp : Integer ; an input port of Integer property type
-```
-
-## Constant Type
-
-A constant type is a type whose value is guaranteed to be unchanging at circuit execution time.
-Constant is a constraint on the mutability of the value, it does not imply a literal value at a point in the emitted design.
-Constant types may be used in ports, wire, and nodes.
-Operations on constant type are well defined.
-With any exception listed in the definition for such operations as have exceptions, an operation whose arguments are constant produces a constant.
-An operation with some non-constant arguments produce a non-constant.
-Constants may be used as the target of a connect so long as the source of the connect is itself constant.
-These rules ensure all constants are derived from constant integer expressions or from constant-typed input ports of a public module.
-
-``` firrtl
-const UInt<3>
-const SInt
-const {real: UInt<32>, imag : UInt<32>, other : const SInt}
-```
-
-Last-connect semantics of constant typed values are well defined, so long as any control flow is conditioned on an expression which has a constant type.
-This means if a constant is being assigned to in a `when`{.firrtl} block, the `when`{.firrtl}'s condition must be a constant.
-
-Output ports of external modules and input ports to a public module may be constant.
-In such case, the value of the port is not known, but that it is non-mutating at runtime is known.
-
-The indexing of a constant aggregate produces a constant of the appropriate type for the element.
-
-### A note on implementation
-
-Constant types are a restriction on FIRRTL types.
-Therefore, FIRRTL structures which would be expected to produce certain Verilog structures will produce the same structure if instantiated with a constant type.
-For example, an input port of type `const UInt`{.firrtl} will result in a port in the Verilog, if under the same conditions an input port of type `UInt`{.firrtl} would have.
-
-It is not intended that constants are a replacement for parameterization.
-Constant typed values have no particular meta-programming capability.
-It is, for example, expected that a module with a constant input port be fully compilable to non-parameterized Verilog.
-
-
-## Passive Types
-
-Stateful elements, such as registers and memories, may contain data of aggregate types.
-Registers with bundle types are especially common.
-However, when using bundle types in stateful elements, the notion of `flip` does not make sense.
-There is no directionality to the data inside a register; the data just *is*.
-
-A passive type is a type which does not make use of `flip`.
-More precisely, a passive type is defined recursively:
-
-- All ground types are passive.
-- All probe types are passive.
-- All property types are passive.
-- A vector type is passive if and only if the element type is passive.
-- A bundle type is passive if and only if it contains no field which is marked `flip`
-  and the type of each field is passive.
-- An enum type is passive if and only if the type of each of its variants is passive.
-
-Registers and memories may only be parametrized over passive types.
-
-## Type Alias
-
-A type alias is a mechanism to assign names to existing FIRRTL types.
-Type aliases enables their reuse across multiple declarations.
-
-```firrtl
-type WordType = UInt<32>
-type ValidType = UInt<1>
-type Data = {w: WordType, valid: ValidType, flip ready: UInt<1>}
-type AnotherWordType = UInt<32>
-
-module TypeAliasMod:
-  input in: Data
-  output out: Data
-  wire w: AnotherWordType
-  connect w, in.w
-  ...
-```
-
-The `type` declaration is globally defined and all named types exist in the same namespace and thus must all have a unique name.
-Type aliases do not share the same namespace as modules; hence it is allowed for type aliases to conflict with module names.
-Note that when we compare two types, the equivalence is determined solely by their structures.
-For instance types of `w`{.firrtl} and `in.w`{.firrtl} are equivalent in the example above even though they are different type alias.
-
-## Type Equivalence
-
-The type equivalence relation is used to determine whether a connection between two components is legal.
-See [@sec:connections] for further details about connect statements.
-
-An unsigned integer type is always equivalent to another unsigned integer type regardless of bit width, and is not equivalent to any other type.
-Similarly, a signed integer type is always equivalent to another signed integer type regardless of bit width, and is not equivalent to any other type.
-
-Clock types are equivalent to clock types, and are not equivalent to any other type.
-
-An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl}, `UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}.
-It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
-
-The `AsyncReset`{.firrtl} type can be connected to another `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
-
-Two enumeration types are equivalent if both have the same number of variants, and both the enumerations' i'th variants have matching names and equivalent types.
-
-Two vector types are equivalent if they have the same length, and if their element types are equivalent.
-
-Two bundle types are equivalent if they have the same number of fields, and both the bundles' i'th fields have matching names and orientations, as well as equivalent types.
-Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent to `{flip a: {b: UInt}}`{.firrtl}.
-
-Two property types are equivalent if they are the same concrete property type.
-
-## Width Inference
-
-For all circuit components declared with unspecified widths,
-the FIRRTL compiler will infer the minimum possible width that maintains the legality of all its incoming connections.
-If a circuit component has no incoming connections, and the width is unspecified, then an error is thrown to indicate that the width could not be inferred.
-
-For module input ports with unspecified widths, the inferred width is the minimum possible width that maintains the legality of all incoming connections to all instantiations of the module.
-
-The width of a ground-typed multiplexer expression is the maximum of its two corresponding input widths.
-For multiplexing aggregate-typed expressions, the resulting widths of each leaf sub-element is the maximum of its corresponding two input leaf sub-element widths.
-
-The width of each primitive operation is detailed in [@sec:primitive-operations].
-
-The width of constant integer expressions is detailed in their respective sections.
-
+- Inference constraints may flow from child to parent through its `output`{.firrtl} ports.
+- Inference constraints may flow from parent to child through its `input`{.firrtl} ports.
+- In a `define`{.firrtl} expression, only the right-hand side may impose inference constraints on the left-hand side.
+- Neither `read`{.firrtl} expressions nor `force`{.firrtl} statements may impose inference constraints.
 
 # Connections
 
 ## Flow
 
-The direction that signals travel across wires is determined by multiple factors: the kind of circuit component (e.g., `input` vs `output`), the side of a connect statement it appears on, and the presence of `flip`s if the signal is a bundle type.
+The direction that signals travel across wires is determined by multiple factors: the kind of circuit component (e.g., `input`{.firrtl} vs `output`{.firrtl}), the side of a connect statement it appears on, and the presence of `flip`{.firrtl}s if the signal is a bundle type.
 
 To ensure connections are meaningful when taking directionality into account, every expression in FIRRTL has a **flow**.
 The flow of an expression can be one of **source**, **sink**, or **duplex**.
@@ -1094,7 +1022,31 @@ Nodes may only appear "on the left side" of a connect.
 Wires and registers may appear "on either side of a connect statement".
 Ports are always considered from the perspective of "inside the module".
 Moreover, input ports may only appear "on the left side" of a connect, while output ports may only appear "on the right side" of a connect.
-Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule below, allowing connections to their input ports
+Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule in such a way that their input ports are sinks.
+
+## Type Equivalence
+
+The type equivalence relation is used to determine whether a connection between two components is legal.
+
+An unsigned integer type is always equivalent to another unsigned integer type regardless of bit width, and is not equivalent to any other type.
+Similarly, a signed integer type is always equivalent to another signed integer type regardless of bit width, and is not equivalent to any other type.
+
+Clock types are equivalent to clock types, and are not equivalent to any other type.
+
+An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl}, `UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl} (see [@sec:reset-inference]).
+It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
+
+The `AsyncReset`{.firrtl} type can be connected to another `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
+
+Two enumeration types are equivalent if both have the same number of variants, and both the enumerations' i'th variants have matching names and equivalent types.
+
+Two vector types are equivalent if they have the same length, and if their element types are equivalent.
+
+Two bundle types are equivalent if they have the same number of fields, and both the bundles' i'th fields have matching names and orientations, as well as equivalent types.
+Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent to `{flip a: {b: UInt}}`{.firrtl}.
+
+Two property types are equivalent if they are the same concrete property type.
+
 
 ## The Connect Statement
 
@@ -1399,7 +1351,7 @@ The reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`
 If the reset signal is an `AsyncReset`{.firrtl}, then the reset value must be a constant type.
 The behavior of the register depends on the type of the reset signal.
 `AsyncReset`{.firrtl} will immediately change the value of the register.
-`UInt<1>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-type]).
+`UInt<1>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-types]).
 `Reset`{.firrtl} is an abstract reset whose behavior depends on reset inference.
 In the following example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.
 
@@ -2053,7 +2005,7 @@ module Foo:
 
 Define statements can set a `Probe`{.firrtl} to either a `Probe`{.firrtl} or `RWProbe`{.firrtl}, but a `RWProbe`{.firrtl} cannot be set to a `Probe`{.firrtl}.
 The inner types of the two references must (recursively) be identical or identical with the destination containing uninferred versions of the corresponding element in the source type.
-See [@sec:width-and-reset-inference] for details.
+See [@sec:type-inference] for details.
 
 ### Probes and Passive Types
 
@@ -2070,6 +2022,10 @@ module Foo :
   connect p, x
   connect y, p
 ```
+
+### Probes and Const Types
+
+Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrtl} with a constant signal to produce a `RWProbe<const T>`{.firrtl}.
 
 ### Exporting References to Nested Declarations
 

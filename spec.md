@@ -734,7 +734,6 @@ Probe types expose and provide access to circuit components contained inside a m
 Probe types are useful for testing and verification, since they allow a design to read to and write from circuit components without knowing the hierarchical path to that component in the design.
 
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
-In both cases, `T`{.firrtl} must be a ground type (see [@sec:ground-types]).
 
 Examples:
 

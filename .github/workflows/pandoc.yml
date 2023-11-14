@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install graphviz texlive-latex-extra texlive-latex-recommended texlive-font-utils
+          sudo apt-get install graphviz latexmk texlive-latex-extra texlive-latex-recommended texlive-font-utils
       - name: "Markdown -> [pandox] -> [TeXLive] -> PDF"
         run: make
       - name: "Upload build directory"

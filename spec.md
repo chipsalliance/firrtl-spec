@@ -552,8 +552,7 @@ TODO: When we refer to the "circuit components" of a module definition, context 
 
 Subcomponents may be named by references (see TODO) and may appear as the target of a connect statement.
 
-We define the tree of circuit components by defining a **direct subcomponent** of a circuit component.
-These are the immediate children of the circuit subcomponent tree.
+An immediate child of a circuit component is called a **direct subcomponent**.
 
 A **root component** is a circuit component that is not the direct subcomponent of any other component.
 Equivalently, these are the circuit components which are declared in a module.
@@ -565,20 +564,20 @@ One circuit component is a **subcomponent** of another if there is way to get fr
 A circuit component is trivially considered to be a subcomponent of itself.
 If we need to speak of the subcomponents excluding the component itself, we call these the **proper subcomponents**.
 
-When a circuit component has a ground type, an enumeration time, a probe type, or property type (see TODO), has no direct subcomponents.
+When a circuit component has a ground type, an enumeration type, a probe type, or property type (see TODO), has no direct subcomponents.
 
 For example, `wire w : UInt<8>`{.firrtl} has no direct subcomponents.
 
-When a circuit component has a vector type (see TODO), it has as direct subcomponents as its length.
+When a circuit component has a vector type (see TODO), it has as many direct subcomponents as its length.
 Each subcomponent will have the same kind as its parent.
 Each will have the element type.
 
-For example, a wire `wire v : UInt<8>[3]`{.firrtl} will have three proper subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
+For example, if we declare `wire v : UInt<8>[3]`{.firrtl}, it will have three proper subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
 All three are wires and all three have type `UInt<8>`{.firrtl}.
 
 When a circuit component has a bundle type (see TODO), it will end up with one direct subcomponent for each field.
-The type of each subcomponent will correspond to the type of the corresponding.
-However, the kind of the subcomponent depends on the type of the parent:
+The type of each subcomponent will correspond to the type of the corresponding field.
+However, the kind of the subcomponent depends on both the kind and the type of the parent:
 
 - For wires with bundle types, the subcomponents are all wires.
 - For nodes, the subcomponents are all nodes.

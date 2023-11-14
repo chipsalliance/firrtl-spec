@@ -217,7 +217,7 @@ An optional group may only be defined inside a module.
 An optional group must reference a group declared in the current circuit.
 An optional group forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---a group may use identifiers declared outside the group, but identifiers declared in the group may not be used in parent lexical scopes.
 The statements in a group are restricted in what identifiers they are allowed to drive.
-A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:reference-types]).
+A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:probe-types]).
 
 The circuit below contains one optional group declaration, `Bar`.
 Module `Foo` contains a group definition that creates a node computed from a port defined in the scope of `Foo`.
@@ -1351,7 +1351,7 @@ The reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`
 If the reset signal is an `AsyncReset`{.firrtl}, then the reset value must be a constant type.
 The behavior of the register depends on the type of the reset signal.
 `AsyncReset`{.firrtl} will immediately change the value of the register.
-`UInt<1>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-type]).
+`UInt<1>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-types]).
 `Reset`{.firrtl} is an abstract reset whose behavior depends on reset inference.
 In the following example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.
 
@@ -2005,7 +2005,7 @@ module Foo:
 
 Define statements can set a `Probe`{.firrtl} to either a `Probe`{.firrtl} or `RWProbe`{.firrtl}, but a `RWProbe`{.firrtl} cannot be set to a `Probe`{.firrtl}.
 The inner types of the two references must (recursively) be identical or identical with the destination containing uninferred versions of the corresponding element in the source type.
-See [@sec:width-and-reset-inference] for details.
+See [@sec:type-inference] for details.
 
 ### Probes and Passive Types
 

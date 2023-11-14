@@ -48,44 +48,46 @@ The FIRRTL specification was originally published as a UC Berkeley Tech Report (
 The vision for FIRRTL was then expanded in an [ICCAD paper](https://ieeexplore.ieee.org/abstract/document/8203780) and in [Adam's thesis](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2019/EECS-2019-168.html).
 
 During that time and since, there have been a number of contributions and improvements to the specification.
-To better reflect the work of contributors after the original tech report, the FIRRTL specification was changed to be authored by _The FIRRTL Specification Contributors_.
+To better reflect the work of contributors after the original tech report, the FIRRTL specification was changed to be authored by *The FIRRTL Specification Contributors*.
 A list of these contributors is below:
 
+```{=html}
 <!-- This can be generated using ./scripts/get-authors.sh -->
-- [`@SpriteOvO`](https://github.com/SpriteOvO)
-- [`@albert-magyar`](https://github.com/albert-magyar)
-- [`@azidar`](https://github.com/azidar)
-- [`@ben-marshall`](https://github.com/ben-marshall)
-- [`@boqwxp`](https://github.com/boqwxp)
-- [`@chick`](https://github.com/chick)
-- [`@dansvo`](https://github.com/dansvo)
-- [`@darthscsi`](https://github.com/darthscsi)
-- [`@debs-sifive`](https://github.com/debs-sifive)
-- [`@donggyukim`](https://github.com/donggyukim)
-- [`@dtzSiFive`](https://github.com/dtzSiFive)
-- [`@eigenform`](https://github.com/eigenform)
-- [`@ekiwi`](https://github.com/ekiwi)
-- [`@ekiwi-sifive`](https://github.com/ekiwi-sifive)
-- [`@felixonmars`](https://github.com/felixonmars)
-- [`@grebe`](https://github.com/grebe)
-- [`@jackkoenig`](https://github.com/jackkoenig)
-- [`@jared-barocsi`](https://github.com/jared-barocsi)
-- [`@keszocze`](https://github.com/keszocze)
-- [`@mbty`](https://github.com/mbty)
-- [`@mikeurbach`](https://github.com/mikeurbach)
-- [`@mmaloney-sf`](https://github.com/mmaloney-sf)
-- [`@mwachs5`](https://github.com/mwachs5)
-- [`@prithayan`](https://github.com/prithayan)
-- [`@richardxia`](https://github.com/richardxia)
-- [`@rwy7`](https://github.com/rwy7)
-- [`@seldridge`](https://github.com/seldridge)
-- [`@sequencer`](https://github.com/sequencer)
-- [`@shunshou`](https://github.com/shunshou)
-- [`@smarter`](https://github.com/smarter)
-- [`@tdb-alcorn`](https://github.com/tdb-alcorn)
-- [`@tymcauley`](https://github.com/tymcauley)
-- [`@uenoku`](https://github.com/uenoku)
-- [`@youngar`](https://github.com/youngar)
+```
+-   [`@SpriteOvO`](https://github.com/SpriteOvO)
+-   [`@albert-magyar`](https://github.com/albert-magyar)
+-   [`@azidar`](https://github.com/azidar)
+-   [`@ben-marshall`](https://github.com/ben-marshall)
+-   [`@boqwxp`](https://github.com/boqwxp)
+-   [`@chick`](https://github.com/chick)
+-   [`@dansvo`](https://github.com/dansvo)
+-   [`@darthscsi`](https://github.com/darthscsi)
+-   [`@debs-sifive`](https://github.com/debs-sifive)
+-   [`@donggyukim`](https://github.com/donggyukim)
+-   [`@dtzSiFive`](https://github.com/dtzSiFive)
+-   [`@eigenform`](https://github.com/eigenform)
+-   [`@ekiwi`](https://github.com/ekiwi)
+-   [`@ekiwi-sifive`](https://github.com/ekiwi-sifive)
+-   [`@felixonmars`](https://github.com/felixonmars)
+-   [`@grebe`](https://github.com/grebe)
+-   [`@jackkoenig`](https://github.com/jackkoenig)
+-   [`@jared-barocsi`](https://github.com/jared-barocsi)
+-   [`@keszocze`](https://github.com/keszocze)
+-   [`@mbty`](https://github.com/mbty)
+-   [`@mikeurbach`](https://github.com/mikeurbach)
+-   [`@mmaloney-sf`](https://github.com/mmaloney-sf)
+-   [`@mwachs5`](https://github.com/mwachs5)
+-   [`@prithayan`](https://github.com/prithayan)
+-   [`@richardxia`](https://github.com/richardxia)
+-   [`@rwy7`](https://github.com/rwy7)
+-   [`@seldridge`](https://github.com/seldridge)
+-   [`@sequencer`](https://github.com/sequencer)
+-   [`@shunshou`](https://github.com/shunshou)
+-   [`@smarter`](https://github.com/smarter)
+-   [`@tdb-alcorn`](https://github.com/tdb-alcorn)
+-   [`@tymcauley`](https://github.com/tymcauley)
+-   [`@uenoku`](https://github.com/uenoku)
+-   [`@youngar`](https://github.com/youngar)
 
 # File Preamble
 
@@ -108,7 +110,7 @@ A public module may be instantiated outside the current circuit.
 Public modules are the exported identifiers of a circuit.
 Any non-public module may not be instantiated outside the current circuit.
 
-Consider the following circuit.  This contains two modules, `Bar` and `Baz`.
+Consider the following circuit. This contains two modules, `Bar` and `Baz`.
 Module `Baz` is marked public.
 
 ``` firrtl
@@ -184,11 +186,11 @@ public module Foo:
 
 A public module has a number of restrictions:
 
-1. A public module may have no ports of uninferred width.
-1. A public module may have no ports of abstract reset type.
-1. A public module may have no ports of input probe type.
-1. A `RWProbe`{.firrtl} may not be used to access a public module's ports.
-1. A public module may be instantiated by other modules within a circuit, but the behavior of the module must not be affected by these instantiations.
+1.  A public module may have no ports of uninferred width.
+2.  A public module may have no ports of abstract reset type.
+3.  A public module may have no ports of input probe type.
+4.  A `RWProbe`{.firrtl} may not be used to access a public module's ports.
+5.  A public module may be instantiated by other modules within a circuit, but the behavior of the module must not be affected by these instantiations.
 
 For more information on the lowering of public modules, see the FIRRTL ABI Specification.
 
@@ -210,14 +212,14 @@ An optional group's identifier must be unique within the current namespace.
 I.e., the identifier of a top-level group declared in a circuit must not conflict with the identifier of a module, external module, or implementation defined module.
 
 Each optional group declaration must include a string that sets the lowering convention for that group.
-The FIRRTL ABI specification defines supported lowering convention.  One such strategy is `"bind"`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
+The FIRRTL ABI specification defines supported lowering convention. One such strategy is `"bind"`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
 
 The `group`{.firrtl} keyword defines optional functionality inside a module.
 An optional group may only be defined inside a module.
 An optional group must reference a group declared in the current circuit.
 An optional group forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---a group may use identifiers declared outside the group, but identifiers declared in the group may not be used in parent lexical scopes.
 The statements in a group are restricted in what identifiers they are allowed to drive.
-A statement in a group may drive no sinks declared outside the group _with one exception_: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:probe-types]).
+A statement in a group may drive no sinks declared outside the group *with one exception*: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:probe-types]).
 
 The circuit below contains one optional group declaration, `Bar`.
 Module `Foo` contains a group definition that creates a node computed from a port defined in the scope of `Foo`.
@@ -291,7 +293,7 @@ In the example below, module `Baz` defines a group `Bar`.
 Module `Baz` has an output port, `_a`, that is associated with the group, `Bar`.
 This port can then be driven from inside the group.
 In module `Foo`, the port may be read from inside the group.
-_Stated differently, module `Baz` has an additional port `_a` that is only accessible inside a defined group `Bar`_.
+*Stated differently, module `Baz` has an additional port `_a` that is only accessible inside a defined group `Bar`*.
 
 ``` firrtl
 circuit:
@@ -333,7 +335,7 @@ For full details of the way optional groups are compiled, see the FIRRTL ABI spe
 
 Externally defined modules are modules whose implementation is not provided in the current circuit.
 Only the ports and name of the externally defined module are specified in the circuit.
-An externally defined module may include, in order, an optional _defname_ which sets the name of the external module in the resulting Verilog, zero or more name--value _parameter_ statements, and zero or more _ref_ statements indicating the resolved paths of the module's exported references.
+An externally defined module may include, in order, an optional *defname* which sets the name of the external module in the resulting Verilog, zero or more name--value *parameter* statements, and zero or more *ref* statements indicating the resolved paths of the module's exported references.
 Each name--value parameter statement will result in a value being passed to the named parameter in the resulting Verilog.
 Every port or port sub-element of reference type must have exactly one `ref`{.firrtl} statement.
 
@@ -356,7 +358,7 @@ extmodule MyExternalModule :
 
 An example of an externally defined module with references is:
 
-```firrtl
+``` firrtl
 extmodule MyExternalModuleWithRefs :
   input foo : UInt<2>
   output mysignal : Probe<UInt<1>>
@@ -364,6 +366,7 @@ extmodule MyExternalModuleWithRefs :
   ref mysignal is "a.b"
   ref myreg is "x.y"
 ```
+
 These resolved reference paths capture important information for use in the current FIRRTL design.
 While they are part of the FIRRTL-level interface to the external module, they are not expected to correspond to a particular Verilog construct.
 They exist to carry information about the implementation of the extmodule necessary for code generation of the current circuit.
@@ -371,9 +374,9 @@ They exist to carry information about the implementation of the extmodule necess
 The types of parameters may be any of the following literal types.
 See [@sec:literals] for more information:
 
-1. Integer literal, e.g. `42`{.firrtl}
-1. String literal, e.g., `"hello"`{.firrtl}
-1. Raw String Literal, e.g., `'world'`{.firrtl}
+1.  Integer literal, e.g. `42`{.firrtl}
+2.  String literal, e.g., `"hello"`{.firrtl}
+3.  Raw String Literal, e.g., `'world'`{.firrtl}
 
 An integer literal is lowered to a Verilog literal.
 A string literal is lowered to a Verilog string.
@@ -403,7 +406,7 @@ Foo #(
 Intrinsic modules are modules which represent implementation-defined, compiler-provided functionality.
 Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
 What intrinsics are supported by an implementation is defined by the implementation.
-The particular intrinsic represented by an intrinsic module is encoded in _intrinsic_.
+The particular intrinsic represented by an intrinsic module is encoded in *intrinsic*.
 The name of the intmodule is only used to identify a specific instance.
 An implementation shall type-check all ports and parameters.
 Ports may be uninferred (either width or reset) if specified by the implementation (which is useful for inspecting and interacting with those inference features).
@@ -438,7 +441,7 @@ Nodes are named expressions in FIRRTL.
 
 Example:
 
-```firrtl
+``` firrtl
 node mynode = and(in, UInt<4>(1))
 ```
 
@@ -450,7 +453,7 @@ Wires represent named expressions whose value is determined by FIRRTL `connect`{
 
 Example:
 
-```firrtl
+``` firrtl
 wire mywire : UInt<1>
 connect mywire, UInt<1>(0)
 ```
@@ -475,17 +478,17 @@ The `reg`{.firrtl} keyword is used to declare a register without a reset.
 
 Examples:
 
-```firrtl
+``` firrtl
 wire myclock : Clock
 reg myreg : SInt, myclock
 ```
 
-```firrtl
+``` firrtl
 wire myclock : Clock
 reg myreg : SInt, myclock
 ```
 
-```firrtl
+``` firrtl
 wire myclock : Clock
 wire myreset : UInt<1>
 wire myinit : SInt
@@ -504,7 +507,7 @@ The way a module interacts with the outside world is through its output and inpu
 
 Example:
 
-```firrtl
+``` firrtl
 input myinput : UInt<1>
 output myinput : SInt<8>
 ```
@@ -519,7 +522,7 @@ A module in FIRRTL may contain submodules.
 
 Example:
 
-```firrtl
+``` firrtl
 inst passthrough of Passthrough
 ```
 
@@ -532,7 +535,7 @@ Among these fields, `output`{.firrtl} ports are flipped, while `input`{.firrtl} 
 
 For example:
 
-```firrtl
+``` firrtl
 module Passthrough :
   input in : UInt<8>
   output out : UInt<8>
@@ -541,7 +544,7 @@ module Passthrough :
 
 The type of the submodule instance `passthrough`{.firrtl} above is thus:
 
-```firrtl
+``` firrtl
 { flip in : UInt<8>, out : UInt<8> }
 ```
 
@@ -551,7 +554,7 @@ Memories are stateful elements of a design.
 
 Example:
 
-```firrtl
+``` firrtl
 mem mymem :
   data-type => { real:SInt<16>, imag:SInt<16> }
   depth => 256
@@ -586,7 +589,7 @@ FIRRTL supports both signed and unsigned integer types.
 `UInt<n>`{.firrtl} is an `n`-bit wide unsigned integer.
 `SInt<n>`{.firrtl} is an `n`-bit wide signed integer.
 
-```firrtl
+``` firrtl
 UInt<10> ; a 10-bit unsigned integer
 SInt<32> ; a 32-bit signed integer
 ```
@@ -656,7 +659,7 @@ UInt<16>[10]
 Note that the element type of a vector can be any type, including another aggregate type.
 The following example specifies a 20-element vector, each of which is a 10-element vector of 16-bit unsigned integers.
 
-```firrtl
+``` firrtl
 UInt<16>[10][20]
 ```
 
@@ -675,28 +678,27 @@ Fields may also be flipped.
 The following is an example of a possible type for representing a complex number.
 It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed integers.
 
-```firrtl
+``` firrtl
 { real : SInt<10>, imag : SInt<10> }
 ```
 
 The types of each field may be any type, including other aggregate types.
 
-```firrtl
+``` firrtl
 { real : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> },
   imag : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> } }
-
 ```
 
 Here is an example of a bundle with a flipped field.
 Because the `ready` field is marked with the keyword `flip`, it will indicate the flow will be opposite of the `word` and `valid` fields.
 
-```firrtl
+``` firrtl
 { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> }
 ```
 
 As an example of how `flip`{.firrtl} works in context, consider a module declared like this:
 
-```firrtl
+``` firrtl
 module Processor :
   input enq : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> }
   ; ...
@@ -738,7 +740,7 @@ There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWPro
 
 Examples:
 
-```firrtl
+``` firrtl
 Probe<UInt<8>>
 RWProbe<UInt<8>>
 ```
@@ -758,7 +760,7 @@ When associated with an optional group, the reference type may only be driven fr
 
 For example:
 
-```firrtl
+``` firrtl
 Probe<UInt<8>, A.B>     ; A.B is an optional group
 RWProbe<UInt<8>, A.B>
 ```
@@ -781,7 +783,7 @@ For example, it is valid to drop property types from the IR completely.
 
 Property types are legal in the following constructs:
 
-* Port declarations on modules and external modules
+-   Port declarations on modules and external modules
 
 ### Integer Type
 
@@ -799,11 +801,11 @@ A **connectable type** is one which may be the type of expressions which may par
 
 A connectable type is defined recursively:
 
-- unsigned integers,
-- signed integers,
-- a vector type where the element type is a connectable type,
-- bundles where each field type is a connectable type, or
-- an enumeration type
+-   unsigned integers,
+-   signed integers,
+-   a vector type where the element type is a connectable type,
+-   bundles where each field type is a connectable type, or
+-   an enumeration type
 
 ## Passive Types
 
@@ -816,13 +818,13 @@ A **passive type** is a type which does not make use of `flip`{.firrtl}.
 
 More precisely, a passive type is defined recursively:
 
-- All ground types are passive.
-- All probe types are passive.
-- All property types are passive.
-- A vector type is passive if and only if the element type is passive.
-- A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl}
-  and the type of each field is passive.
-- All enumeration types are passive.
+-   All ground types are passive.
+-   All probe types are passive.
+-   All property types are passive.
+-   A vector type is passive if and only if the element type is passive.
+-   A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl}
+    and the type of each field is passive.
+-   All enumeration types are passive.
 
 Registers and memories may only be parametrized over passive types.
 
@@ -835,7 +837,7 @@ Ground types and aggregate types maybe marked as constant using the `const`{.fir
 
 For example:
 
-```firrtl
+``` firrtl
 const UInt<3>
 const SInt<8>[4]
 const { real: UInt<32>, imag : UInt<32> }
@@ -856,9 +858,9 @@ An expression of type `const T`{.firrtl} is implicitly upcast to type `T`{.firrt
 
 Expressions with `const`{.firrtl} may be used as the target of a connect statement as long as the following hold:
 
-- the source of the connect is `const`{.firrtl}
-- the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`{.firrtl}
-- the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const`{.firrtl} type
+-   the source of the connect is `const`{.firrtl}
+-   the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`{.firrtl}
+-   the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const`{.firrtl} type
 
 Constant types may not be the type of a stateful circuit components.
 Thus, registers are memories may not be declared with a `const`{.firrtl} type.
@@ -867,7 +869,7 @@ References to a subcomponent of a circuit component with a `const`{.firrtl} vect
 
 For example:
 
-```firrtl
+``` firrtl
 input c : const { real : SInt<8>, imag : SInt<8> }
 ; c.real has type const SInt<8>
 ```
@@ -880,7 +882,7 @@ It is also useful for hinting at what the value represents.
 
 Examples:
 
-```firrtl
+``` firrtl
 type WordType = UInt<32>
 type ValidType = UInt<1>
 type Data = { w : WordType, valid : ValidType, flip ready : UInt<1> }
@@ -916,7 +918,7 @@ This is called the **uninferred** variant of the type.
 FIRRTL also supports an **inferred** variant of these types.
 They are written as follows:
 
-```firrtl
+``` firrtl
 UInt
 SInt
 Analog
@@ -961,9 +963,9 @@ regreset y : UInt<8>, clock, reset, UInt(123)
 
 Inference rules are as follows:
 
-1. An uninferred reset driven by and/or driving only asynchronous resets will be inferred as asynchronous reset.
-1. An uninferred reset driven by and/or driving both asynchronous and synchronous resets is an error.
-1. Otherwise, the reset is inferred as synchronous (i.e. the uninferred reset is only invalidated or is driven by or drives only synchronous resets).
+1.  An uninferred reset driven by and/or driving only asynchronous resets will be inferred as asynchronous reset.
+2.  An uninferred reset driven by and/or driving both asynchronous and synchronous resets is an error.
+3.  Otherwise, the reset is inferred as synchronous (i.e. the uninferred reset is only invalidated or is driven by or drives only synchronous resets).
 
 `Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other types.
 Casting between reset types is also legal:
@@ -989,10 +991,10 @@ A module with a probe with an inferred inner type must resolve all other inferre
 
 Additionally, inference constraints may only flow in few restricted ways:
 
-- Inference constraints may flow from child to parent through its `output`{.firrtl} ports.
-- Inference constraints may flow from parent to child through its `input`{.firrtl} ports.
-- In a `define`{.firrtl} expression, only the right-hand side may impose inference constraints on the left-hand side.
-- Neither `read`{.firrtl} expressions nor `force`{.firrtl} statements may impose inference constraints.
+-   Inference constraints may flow from child to parent through its `output`{.firrtl} ports.
+-   Inference constraints may flow from parent to child through its `input`{.firrtl} ports.
+-   In a `define`{.firrtl} expression, only the right-hand side may impose inference constraints on the left-hand side.
+-   Neither `read`{.firrtl} expressions nor `force`{.firrtl} statements may impose inference constraints.
 
 # Connections
 
@@ -1011,11 +1013,11 @@ The rules for the flow of an expression are as follows:
 
 If the expression is a reference, we look at the kind of the circuit component:
 
-- Nodes are sources.
-- Wires and registers are duplex.
-- For ports, `input` ports are sources and `output` ports are sinks.
-- Submodule instances are sources.
-- Memories are sources.
+-   Nodes are sources.
+-   Wires and registers are duplex.
+-   For ports, `input` ports are sources and `output` ports are sinks.
+-   Submodule instances are sources.
+-   Memories are sources.
 
 Here are a few comments to help with intuition:
 Nodes may only appear "on the left side" of a connect.
@@ -1046,7 +1048,6 @@ Two bundle types are equivalent if they have the same number of fields, and both
 Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent to `{flip a: {b: UInt}}`{.firrtl}.
 
 Two property types are equivalent if they are the same concrete property type.
-
 
 ## The Connect Statement
 
@@ -1164,6 +1165,7 @@ It is specified as follows:
 wire w: UInt
 invalidate w
 ```
+
 The following example demonstrates the effect of invalidating a variety of
 circuit components with aggregate types. See [@sec:the-invalidate-algorithm] for
 details on the algorithm for determining what is invalidated.
@@ -1235,7 +1237,7 @@ module Foo2 :
 
 Module `Foo3`{.firrtl} is another example of an illegal combinational loop, even if it only exists at the word level and not at the bit-level.
 
-```firrtl
+``` firrtl
 module Foo3
   wire a : UInt<2>
   wire b : UInt<1>
@@ -1243,8 +1245,6 @@ module Foo3
   connect a, cat(b, c)
   connect b, bits(a, 0, 0)
 ```
-
-
 
 # Attaches
 
@@ -1267,17 +1267,17 @@ Instead, property typed expressions are assigned with the `propassign`{.firrtl} 
 
 Property typed expressions have the normal rules for flow (see [@sec:flow]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
 
-1. The left-hand and right-hand side expressions must be of property types.
+1.  The left-hand and right-hand side expressions must be of property types.
 
-2. The types of the left-hand and right-hand side expressions must be the same.
+2.  The types of the left-hand and right-hand side expressions must be the same.
 
-3. The flow of the left-hand side expression must be sink.
+3.  The flow of the left-hand side expression must be sink.
 
-4. The flow of the right-hand side expression must be source.
+4.  The flow of the right-hand side expression must be source.
 
-5. The left-hand side expression may be used as the left-hand side in at most one property assignment.
+5.  The left-hand side expression may be used as the left-hand side in at most one property assignment.
 
-6. The property assignment must not occur within a conditional scope.
+6.  The property assignment must not occur within a conditional scope.
 
 Note that property types are not legal for any expressions with duplex flow.
 
@@ -1297,7 +1297,6 @@ module Example:
   output propOut : Integer
   propassign propOut, Integer(42)
 ```
-
 
 # Empty Statement
 
@@ -1563,7 +1562,6 @@ where variables in a local scope can shadow variables declared outside that scop
 A circuit components declared locally within a conditional scope
 may only be connected to within that scope.
 
-
 ## Conditional Last Connect Semantics
 
 In the case where a connection to a circuit component is followed by a conditional statement containing a connection to the same component, the connection is overwritten only when the condition holds.
@@ -1682,7 +1680,7 @@ It is characterized by the following parameters.
 
 6.  A read-under-write flag indicating the behavior when a memory location is written to while a read to that location is in progress.
 
-Integer literals for the number of elements and the read/write latencies _may not be radix-encoded integer literals_.
+Integer literals for the number of elements and the read/write latencies *may not be radix-encoded integer literals*.
 
 The following example demonstrates instantiating a memory containing 256 complex numbers, each with 16-bit signed integer fields for its real and imaginary components.
 It has two read ports, `r1`{.firrtl} and `r2`{.firrtl}, and one write port, `w`{.firrtl}.
@@ -1867,25 +1865,25 @@ On each positive clock edge, when the condition signal is high, the `printf`{.fi
 
 Format strings support the following argument placeholders:
 
-- `%b` : Prints the argument in binary
+-   `%b` : Prints the argument in binary
 
-- `%d` : Prints the argument in decimal
+-   `%d` : Prints the argument in decimal
 
-- `%x` : Prints the argument in hexadecimal
+-   `%x` : Prints the argument in hexadecimal
 
-- `%%` : Prints a single `%` character
+-   `%%` : Prints a single `%` character
 
 Format strings support the following escape characters:
 
-- `\n` : New line
+-   `\n` : New line
 
-- `\t` : Tab
+-   `\t` : Tab
 
-- `\\` : Back slash
+-   `\\` : Back slash
 
-- `\"` : Double quote
+-   `\"` : Double quote
 
-- `\'` : Single quote
+-   `\'` : Single quote
 
 ## Verification
 
@@ -1967,7 +1965,7 @@ The define statement takes a sink-flow static reference target and sets it to th
 
 Example:
 
-```firrtl
+``` firrtl
 module Refs:
   input clock:  Clock
   output a : Probe<{x: UInt, y: UInt}> ; read-only ref. to wire 'p'
@@ -1986,7 +1984,7 @@ module Refs:
 
 The target is not required to be only an identifier, it may be a field within a bundle or other statically known sub-element of an aggregate, for example:
 
-```firrtl
+``` firrtl
 module Foo:
   input x : UInt
   output y : {x: UInt, p: Probe<UInt>}
@@ -2011,7 +2009,7 @@ See [@sec:type-inference] for details.
 
 While `Probe`{.firrtl} inner types are passive, the type of the probed static reference is not required to be:
 
-```firrtl
+``` firrtl
 module Foo :
   input x : {a: UInt, flip b: UInt}
   output y : {a: UInt, flip b: UInt}
@@ -2031,7 +2029,7 @@ Probe types may target `const`{.firrtl} signals, but cannot use `rwprobe`{.firrt
 
 Nested declarations (see [@sec:nested-declarations]) may be exported:
 
-```firrtl
+``` firrtl
 module RefProducer :
   input a : UInt<4>
   input en : UInt<1>
@@ -2048,7 +2046,7 @@ module RefProducer :
 
 Define statements can be used to forward a child module's reference further up the hierarchy:
 
-```firrtl
+``` firrtl
 module Foo :
   output p : Probe<UInt>
   ; ...
@@ -2062,7 +2060,7 @@ module Forward :
 
 Define statements may narrow a probe of an aggregate to a sub-element using static expression:
 
-```firrtl
+``` firrtl
 module Foo :
   output p : Probe<UInt[2]>[2]
   ; ...
@@ -2080,7 +2078,7 @@ Define statements can also be used to forward references down the hierarchy usin
 
 See [@sec:input-probe-references] for more details, a small example is given below:
 
-```firrtl
+``` firrtl
 module UnusedInputRef :
   input r : Probe<UInt<1>>
 
@@ -2099,18 +2097,23 @@ They are similar to the verification statements (e.g., `assert`{.firrtl}) in thi
 
 These are two variants of each, enumerated below:
 
-| Name            | Arguments                    | Argument Types                                                   |
-|-----------------|------------------------------|----------------------------------------                          |
-| force_initial   | (ref, val)                   | (`RWProbe<T>`{.firrtl}, T)                                       |
-| release_initial | (ref)                        | (`RWProbe<T>`{.firrtl})                                          |
-| force           | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
-| release         | (clock, condition, ref)      | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})    |
+  -------------------------------------------------------------------------------------------------------------------
+  Name              Arguments                      Argument Types
+  ----------------- ------------------------------ ------------------------------------------------------------------
+  force_initial     (ref, val)                     (`RWProbe<T>`{.firrtl}, T)
+
+  release_initial   (ref)                          (`RWProbe<T>`{.firrtl})
+
+  force             (clock, condition, ref, val)   (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T)
+
+  release           (clock, condition, ref)        (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})
+  -------------------------------------------------------------------------------------------------------------------
 
 Backends optionally generate corresponding constructs in the target language, or issue an warning.
 
 The following `AddRefs`{.firrtl} module is used in the examples that follow for each construct.
 
-```firrtl
+``` firrtl
 module AddRefs:
   output a : RWProbe<UInt<2>>
   output b : RWProbe<UInt<2>>
@@ -2133,7 +2136,7 @@ These variants force and release continuously:
 
 Example:
 
-```firrtl
+``` firrtl
 module ForceAndRelease:
   output o : UInt<3>
 
@@ -2152,7 +2155,7 @@ Note that globally the last force statement overrides the others until another f
 
 Sample SystemVerilog output for the force and release statements would be:
 
-```SystemVerilog
+``` systemverilog
 initial begin
   force ForceAndRelease.AddRefs.x = 0;
   force ForceAndRelease.AddRefs.x = 1;
@@ -2167,13 +2170,13 @@ Note that this condition is only checked once and changes to it afterwards are i
 For more control over their behavior, the other variants should be used.
 Example:
 
-```firrtl
+``` firrtl
 when c : force_initial(ref, x)
 ```
 
 would become:
 
-```systemverilog
+``` systemverilog
 initial if (c) force a.b = x;
 ```
 
@@ -2181,7 +2184,7 @@ initial if (c) force a.b = x;
 
 These more detailed variants allow specifying a clock and condition for when activating the force or release behavior continuously:
 
-```firrtl
+``` firrtl
 module ForceAndRelease:
   input a: UInt<2>
   input clock : Clock
@@ -2200,7 +2203,7 @@ Note that once active, these remain active regardless of the condition, until an
 
 Sample SystemVerilog output:
 
-```SystemVerilog
+``` systemverilog
 always @(posedge clock) begin
   if (cond)
     force ForceAndRelease.AddRefs.x = a;
@@ -2218,7 +2221,7 @@ Force on a non-passive bundle drives in the direction of each field's orientatio
 
 Example:
 
-```firrtl
+``` firrtl
 module Top:
   input x : {a: UInt<2>, flip b: UInt<2>}
   output y : {a: UInt<2>, flip b: UInt<2>}
@@ -2261,7 +2264,7 @@ Examples of input probe references follow.
 
 ### U-Turn Example
 
-```firrtl
+``` firrtl
 module UTurn:
   input in : Probe<UInt>
   output out : Probe<UInt>
@@ -2288,7 +2291,7 @@ In the above example, the probe of node `n`{.firrtl} is routed through two modul
 When using a probe reference, the target must reside at or below the point of use in the design hierarchy.
 Input references make it possible to create designs where this is not the case, and such upwards references are not supported:
 
-```firrtl
+``` firrtl
 module Foo:
   input in : Probe<UInt>
   output out : UInt
@@ -2300,7 +2303,7 @@ Even when the target resolves at or below, the path must be the same in all cont
 
 The following example demonstrates such an invalid use of probe references:
 
-```firrtl
+``` firrtl
 circuit:
   public module Top:
     input in : UInt<4>
@@ -2344,7 +2347,7 @@ It would be inconvenient to generate this design so that each has output probe r
 The `Connect` module instantiates a `Producer` and `Consumer` module, connects them using a bundle with references in both orientations, and forwards those references for inspection up the hierarchy.
 The probe targets are not significant, here they are the same data being sent between the two, as stored in each module.
 
-```firrtl
+``` firrtl
 module Consumer:
   input in : {a: UInt, pref: Probe<UInt>, flip cref: Probe<UInt>}
   ; ...
@@ -2552,7 +2555,6 @@ module MyModule :
   connect out[4], in ; out[4] has a type of const UInt
 ```
 
-
 ## Sub-accesses
 
 The sub-access expression dynamically refers to a sub-element of a vector-typed expression using a calculated index.
@@ -2673,19 +2675,19 @@ module MyModule :
 
 A multiplexer expression is legal only if the following holds.
 
-1. The type of the selection signal is an unsigned integer.
+1.  The type of the selection signal is an unsigned integer.
 
-1. The width of the selection signal is any of:
+2.  The width of the selection signal is any of:
 
-    1. Zero-bit
+    1.  Zero-bit
 
-    1. One-bit
+    2.  One-bit
 
-    1. Unspecified, but is illegal if infers to wider than one-bit
+    3.  Unspecified, but is illegal if infers to wider than one-bit
 
-1. The types of the two input expressions are equivalent.
+3.  The types of the two input expressions are equivalent.
 
-1. The types of the two input expressions are passive (see [@sec:passive-types]).
+4.  The types of the two input expressions are passive (see [@sec:passive-types]).
 
 ## Primitive Operations {#sec:expressions:primitive-operations}
 
@@ -2701,7 +2703,7 @@ op(arg0, arg1, ..., argn, int0, int1, ..., intm)
 The following examples of primitive operations demonstrate adding two expressions, `a`{.firrtl} and `b`{.firrtl}, shifting expression `a`{.firrtl} left by 3 bits, selecting the fourth bit through and including the seventh bit in the `a`{.firrtl} expression, and interpreting the expression `x`{.firrtl} as
 a Clock typed signal.
 
-```firrtl
+``` firrtl
 add(a, b)
 shl(a, 3)
 bits(a, 7, 4)
@@ -2716,7 +2718,7 @@ Probes are read using the `read`{.firrtl} operation.
 
 Read expressions have source flow and can be connected to other components:
 
-```firrtl
+``` firrtl
 module Foo :
   output p : Probe<UInt>
   ; ...
@@ -2730,7 +2732,7 @@ module Bar :
 
 Indexing statically (sub-field, sub-index) into a probed value is allowed as part of the read:
 
-```firrtl
+``` firrtl
 module Foo :
   output p : Probe<{a: UInt, b: UInt}>
   ; ...
@@ -2744,7 +2746,7 @@ module Bar :
 
 Read operations can be used anywhere a signal of the same underlying type can be used, such as the following:
 
-```firrtl
+``` firrtl
   connect x, add(read(f.p).a, read(f.p).b)
 ```
 
@@ -2764,7 +2766,7 @@ There are two probe varieties: `probe`{.firrtl} and `rwprobe`{.firrtl} for produ
 
 The following example exports a probe reference to a port:
 
-```firrtl
+``` firrtl
 module MyModule :
   input in: UInt
   output r : Probe<UInt>
@@ -2774,7 +2776,7 @@ module MyModule :
 
 The probed expression must be a static reference.
 
-See [@sec:probe-types;@sec:probe] for more details on probe references and their use.
+See [@sec:probe-types; @sec:probe] for more details on probe references and their use.
 
 # Namespaces
 
@@ -2802,7 +2804,7 @@ Annotations are serializable to JSON.
 
 Below is an example annotation used to mark some module `foo`{.firrtl}:
 
-```json
+``` json
 {
   "class":"myannotationpackage.FooAnnotation",
   "target":"MyModule>foo"
@@ -2811,7 +2813,7 @@ Below is an example annotation used to mark some module `foo`{.firrtl}:
 
 Below is an example of an annotation which does not have a target:
 
-```json
+``` json
 {
   "class":"myannotationpackage.BarAnnotation"
 }
@@ -2831,13 +2833,13 @@ A target with an instance hierarchy is non-local.
 
 Targets use a shorthand syntax of the form:
 
-```ebnf
+``` ebnf
 target = module , [ { “/” (instance) “:” (module) } , [ “>” , ref ] ]
 ```
 
 A reference is a name inside a module and one or more qualifying tokens that encode subfields (of a bundle) or subindices (of a vector):
 
-```ebnf
+``` ebnf
 ref = name , { ( "[" , index , "]" ) | ( "." , field ) }
 ```
 
@@ -2846,7 +2848,7 @@ Targets are specific enough to refer to any specific module in a folded, unfolde
 To show some examples of what these look like, consider the following example circuit.
 This consists of four instances of module `Baz`{.firrtl}, two instances of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
-```firrtl
+``` firrtl
 circuit:
   module Foo:
     inst a of Bar
@@ -2858,29 +2860,29 @@ circuit:
     skip
 ```
 
-This circuit can be represented in a _folded_, completely _unfolded_, or in some _partially folded_ state.
+This circuit can be represented in a *folded*, completely *unfolded*, or in some *partially folded* state.
 Figure [@fig:foo-folded] shows the folded representation.
 Figure [@fig:foo-unfolded] shows the completely unfolded representation where each instance is broken out into its own module.
 
-![A folded representation of circuit Foo](build/firrtl-folded-module.eps){#fig:foo-folded width=15%}
+![A folded representation of circuit Foo](build/firrtl-folded-module.eps){#fig:foo-folded width="15%"}
 
 ![A completely unfolded representation of circuit Foo](build/firrtl-unfolded-module.eps){#fig:foo-unfolded}
 
 Using targets (or multiple targets), any specific module, instance, or combination of instances can be expressed.
 Some examples include:
 
-Target              Description
-------------------  -------------
-`Foo`               refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl})
-`Bar`               refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})
-`Foo/a:Bar`         refers just to one instance of module `Bar`{.firrtl}
-`Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`{.firrtl}
-`Bar/d:Baz`         refers to two instances of module `Baz`{.firrtl}
+  Target              Description
+  ------------------- ---------------------------------------------------------------------------------
+  `Foo`               refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl})
+  `Bar`               refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})
+  `Foo/a:Bar`         refers just to one instance of module `Bar`{.firrtl}
+  `Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`{.firrtl}
+  `Bar/d:Baz`         refers to two instances of module `Baz`{.firrtl}
 
-If a target does not contain an instance path, it is a _local_ target.
+If a target does not contain an instance path, it is a *local* target.
 A local target points to all instances of a module.
-If a target contains an instance path, it is a _non-local_ target.
-A non-local target _may_ not point to all instances of a module.
+If a target contains an instance path, it is a *non-local* target.
+A non-local target *may* not point to all instances of a module.
 Additionally, a non-local target may have an equivalent local target representation.
 
 ## Annotation Storage
@@ -2950,7 +2952,9 @@ module IValue :
     connect a, v
   connect o, a
 ```
+
 is transformed to:
+
 ``` firrtl
 module IValue :
   output o : UInt<8>
@@ -2959,7 +2963,9 @@ module IValue :
 
   connect o, v
 ```
+
 Note that it is equally correct to produce:
+
 ``` firrtl
 module IValue :
   output o : UInt<8>
@@ -2976,21 +2982,21 @@ module IValue :
 
 The behavior of constructs which cause indeterminate values is implementation defined with the following constraints.
 
-- Register initialization is done in a consistent way for all registers.
-  If code is generated to randomly initialize some registers (or 0 fill them, etc), it should be generated for all registers.
-- All observations of a unique instance of an expression with indeterminate value must see the same value at runtime.
-  Multiple readers of a value will see the same runtime value.
-- Indeterminate values captured in stateful elements are not time-varying.
-  Time-aware constructs, such as registers, which hold an indeterminate value will return the same runtime value unless something changes the value in a normal way.
-  For example, an uninitialized register will return the same value over multiple clock cycles until it is written (or reset).
-- The value produced at runtime for an expression which produced an intermediate value shall only be a function of the inputs of the expression.
-  For example, an out-of-bounds vector access shall produce the same value for a given out-of-bounds index and vector contents.
-- Two constructs with indeterminate values place no constraint on the identity of their values.
-  For example, two uninitialized registers, which therefore contain indeterminate values, do not need to be equal under comparison.
+-   Register initialization is done in a consistent way for all registers.
+    If code is generated to randomly initialize some registers (or 0 fill them, etc), it should be generated for all registers.
+-   All observations of a unique instance of an expression with indeterminate value must see the same value at runtime.
+    Multiple readers of a value will see the same runtime value.
+-   Indeterminate values captured in stateful elements are not time-varying.
+    Time-aware constructs, such as registers, which hold an indeterminate value will return the same runtime value unless something changes the value in a normal way.
+    For example, an uninitialized register will return the same value over multiple clock cycles until it is written (or reset).
+-   The value produced at runtime for an expression which produced an intermediate value shall only be a function of the inputs of the expression.
+    For example, an out-of-bounds vector access shall produce the same value for a given out-of-bounds index and vector contents.
+-   Two constructs with indeterminate values place no constraint on the identity of their values.
+    For example, two uninitialized registers, which therefore contain indeterminate values, do not need to be equal under comparison.
 
 # FIRRTL Compiler Implementation Details
 
-This section provides auxiliary information necessary for developers of a FIRRTL Compiler _implementation_.
+This section provides auxiliary information necessary for developers of a FIRRTL Compiler *implementation*.
 A FIRRTL Compiler is a program that converts FIRRTL text to another representation, e.g., Verilog, VHDL, a programming language, or a binary program.
 
 ## Module Conventions
@@ -3004,15 +3010,15 @@ The scalarized convention should be the default convention for "public" modules,
 
 The lowering algorithm for the scalarized convention operates as follows:
 
-1. Ports are scalarized in the order they are declared.
+1.  Ports are scalarized in the order they are declared.
 
-2. Ground-typed ports' names are unmodified.
+2.  Ground-typed ports' names are unmodified.
 
-3. Vector-typed ports are scalarized to ground-typed ports by appending a suffix, `_<i>`, to the i^th^ element of the vector.
-   Elements are scalarized recursively, depth-first, and left-to-right.
+3.  Vector-typed ports are scalarized to ground-typed ports by appending a suffix, `_<i>`, to the i^th^ element of the vector.
+    Elements are scalarized recursively, depth-first, and left-to-right.
 
-4. Bundle-typed ports are scalarized to ground-typed ports by appending a suffix, `_<name>`, to the field called `name`.
-   Fields are scalarized recursively, depth-first, and left-to-right.
+4.  Bundle-typed ports are scalarized to ground-typed ports by appending a suffix, `_<name>`, to the field called `name`.
+    Fields are scalarized recursively, depth-first, and left-to-right.
 
 E.g., consider the following port:
 
@@ -3063,11 +3069,11 @@ Named components in the body of a module will be renamed as needed to ensure por
 
 ## The "Internal" Convention
 
-Private modules (i.e. modules that are _not_ the top of a circuit, device under test, or an extmodule) have no specified ABI.
+Private modules (i.e. modules that are *not* the top of a circuit, device under test, or an extmodule) have no specified ABI.
 The compiler is free to transform the ports of a private module in any way, or not at all.
 Private modules are said to have "internal" convention.
 
-# Primitive Operations
+# Primitive Operations {#primitive-operations}
 
 The arguments of all primitive operations must be expressions with ground types, while their parameters are integer literals.
 Each specific operation can place additional restrictions on the number and types of their arguments and parameters.
@@ -3078,39 +3084,49 @@ Notationally, the width of an argument e is represented as w~e~.
 
 ## Add Operation
 
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| add  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
-|      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
+  --------------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
+  ------ ----------- ------------ ------------- ------------- --------------------
+  add    (e1,e2)     ()           (UInt,UInt)   UInt          max(w~e1~,w~e2~)+1
+
+                                  (SInt,SInt)   SInt          max(w~e1~,w~e2~)+1
+  --------------------------------------------------------------------------------
 
 The add operation result is the sum of e1 and e2 without loss of precision.
 
 ## Subtract Operation
 
+  --------------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
+  ------ ----------- ------------ ------------- ------------- --------------------
+  sub    (e1,e2)     ()           (UInt,UInt)   UInt          max(w~e1~,w~e2~)+1
 
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| sub  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | max(w~e1~,w~e2~)+1          |
-|      |           |            | (SInt,SInt)   | SInt        | max(w~e1~,w~e2~)+1          |
+                                  (SInt,SInt)   SInt          max(w~e1~,w~e2~)+1
+  --------------------------------------------------------------------------------
 
 The subtract operation result is e2 subtracted from e1, without loss of precision.
 
 ## Multiply Operation
 
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| mul  | (e1,e2)   | ()         | (UInt,UInt)   | UInt        | w~e1~+w~e2~                 |
-|      |           |            | (SInt,SInt)   | SInt        | w~e1~+w~e2~                 |
+  --------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
+  ------ ----------- ------------ ------------- ------------- --------------
+  mul    (e1,e2)     ()           (UInt,UInt)   UInt          w~e1~+w~e2~
+
+                                  (SInt,SInt)   SInt          w~e1~+w~e2~
+  --------------------------------------------------------------------------
 
 The multiply operation result is the product of e1 and e2, without loss of precision.
 
 ## Divide Operation
 
+  --------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
+  ------ ----------- ------------ ------------- ------------- --------------
+  div    (num,den)   ()           (UInt,UInt)   UInt          w~num~
 
-| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
-|------|-----------|------------|-------------|-------------|--------------|
-| div  | (num,den) | ()         | (UInt,UInt) | UInt        | w~num~       |
-|      |           |            | (SInt,SInt) | SInt        | w~num~+1     |
+                                  (SInt,SInt)   SInt          w~num~+1
+  --------------------------------------------------------------------------
 
 The divide operation divides num by den, truncating the fractional portion of the result.
 This is equivalent to rounding the result towards zero.
@@ -3118,10 +3134,13 @@ The result of a division where den is zero is undefined.
 
 ## Modulus Operation
 
-| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
-|------|-----------|------------|-------------|-------------|--------------------|
-| rem  | (num,den) | ()         | (UInt,UInt) | UInt        | min(w~num~,w~den~) |
-|      |           |            | (SInt,SInt) | SInt        | min(w~num~,w~den~) |
+  --------------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
+  ------ ----------- ------------ ------------- ------------- --------------------
+  rem    (num,den)   ()           (UInt,UInt)   UInt          min(w~num~,w~den~)
+
+                                  (SInt,SInt)   SInt          min(w~num~,w~den~)
+  --------------------------------------------------------------------------------
 
 The modulus operation yields the remainder from dividing num by den, keeping the sign of the numerator.
 Together with the divide operator, the modulus operator satisfies the relationship below:
@@ -3130,21 +3149,26 @@ Together with the divide operator, the modulus operator satisfies the relationsh
 
 ## Comparison Operations
 
-| Name   | Arguments | Parameters | Arg Types     | Result Type | Result Width |
-|--------|-----------|------------|---------------|-------------|--------------|
-| lt,leq |           |            | (UInt,UInt)   | UInt        | 1            |
-| gt,geq | (e1,e2)   | ()         | (SInt,SInt)   | UInt        | 1            |
+  ----------------------------------------------------------------------------
+  Name     Arguments   Parameters   Arg Types     Result Type   Result Width
+  -------- ----------- ------------ ------------- ------------- --------------
+  lt,leq                            (UInt,UInt)   UInt          1
+
+  gt,geq   (e1,e2)     ()           (SInt,SInt)   UInt          1
+  ----------------------------------------------------------------------------
 
 The comparison operations return an unsigned 1 bit signal with value one if e1 is less than (lt), less than or equal to (leq), greater than (gt), greater than or equal to (geq), equal to (eq), or not equal to (neq) e2.
 The operation returns a value of zero otherwise.
 
 ## Padding Operations
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
-|------|-----------|------------|-----------|-------------|-----------------------------|
-| pad  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~,n)                 |
-|      |           |            | (SInt)    | SInt        | max(w~e~,n)                 |
+  ------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- --------------
+  pad    \(e\)       \(n\)        (UInt)      UInt          max(w~e~,n)
 
+                                  (SInt)      SInt          max(w~e~,n)
+  ------------------------------------------------------------------------
 
 If e's bit width is smaller than n, then the pad operation zero-extends or sign-extends e up to the given width n.
 Otherwise, the result is simply e.
@@ -3152,69 +3176,100 @@ n must be non-negative.
 
 ## Interpret As UInt
 
-| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|--------|-----------|------------|--------------|-------------|--------------|
-| asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~         |
-|        |           |            | (SInt)       | UInt        | w~e~         |
-|        |           |            | (Clock)      | UInt        | 1            |
-|        |           |            | (Reset)      | UInt        | 1            |
-|        |           |            | (AsyncReset) | UInt        | 1            |
+  -----------------------------------------------------------------------------
+  Name     Arguments   Parameters   Arg Types      Result Type   Result Width
+  -------- ----------- ------------ -------------- ------------- --------------
+  asUInt   \(e\)       ()           (UInt)         UInt          w~e~
+
+                                    (SInt)         UInt          w~e~
+
+                                    (Clock)        UInt          1
+
+                                    (Reset)        UInt          1
+
+                                    (AsyncReset)   UInt          1
+  -----------------------------------------------------------------------------
 
 The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 
 ## Interpret As SInt
 
-| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|--------|-----------|------------|--------------|-------------|--------------|
-| asSInt | \(e\)     | ()         | (UInt)       | SInt        | w~e~         |
-|        |           |            | (SInt)       | SInt        | w~e~         |
-|        |           |            | (Clock)      | SInt        | 1            |
-|        |           |            | (Reset)      | SInt        | 1            |
-|        |           |            | (AsyncReset) | SInt        | 1            |
+  -----------------------------------------------------------------------------
+  Name     Arguments   Parameters   Arg Types      Result Type   Result Width
+  -------- ----------- ------------ -------------- ------------- --------------
+  asSInt   \(e\)       ()           (UInt)         SInt          w~e~
+
+                                    (SInt)         SInt          w~e~
+
+                                    (Clock)        SInt          1
+
+                                    (Reset)        SInt          1
+
+                                    (AsyncReset)   SInt          1
+  -----------------------------------------------------------------------------
 
 The interpret as SInt operation reinterprets e's bits as a signed integer according to two's complement representation.
 
 ## Interpret as Clock
 
-| Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|---------|-----------|------------|--------------|-------------|--------------|
-| asClock | \(e\)     | ()         | (UInt)       | Clock       | n/a          |
-|         |           |            | (SInt)       | Clock       | n/a          |
-|         |           |            | (Clock)      | Clock       | n/a          |
-|         |           |            | (Reset)      | Clock       | n/a          |
-|         |           |            | (AsyncReset) | Clock       | n/a          |
+  ------------------------------------------------------------------------------
+  Name      Arguments   Parameters   Arg Types      Result Type   Result Width
+  --------- ----------- ------------ -------------- ------------- --------------
+  asClock   \(e\)       ()           (UInt)         Clock         n/a
+
+                                     (SInt)         Clock         n/a
+
+                                     (Clock)        Clock         n/a
+
+                                     (Reset)        Clock         n/a
+
+                                     (AsyncReset)   Clock         n/a
+  ------------------------------------------------------------------------------
 
 The result of the interpret as clock operation is the Clock typed signal obtained from interpreting a single bit integer as a clock signal.
 
 ## Interpret as AsyncReset
 
-| Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|--------------|-----------|------------|--------------|-------------|--------------|
-| asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
-|              |           |            | (UInt)       | AsyncReset  | n/a          |
-|              |           |            | (SInt)       | AsyncReset  | n/a          |
-|              |           |            | (Interval)   | AsyncReset  | n/a          |
-|              |           |            | (Clock)      | AsyncReset  | n/a          |
-|              |           |            | (Reset)      | AsyncReset  | n/a          |
+  -----------------------------------------------------------------------------------
+  Name           Arguments   Parameters   Arg Types      Result Type   Result Width
+  -------------- ----------- ------------ -------------- ------------- --------------
+  asAsyncReset   \(e\)       ()           (AsyncReset)   AsyncReset    n/a
+
+                                          (UInt)         AsyncReset    n/a
+
+                                          (SInt)         AsyncReset    n/a
+
+                                          (Interval)     AsyncReset    n/a
+
+                                          (Clock)        AsyncReset    n/a
+
+                                          (Reset)        AsyncReset    n/a
+  -----------------------------------------------------------------------------------
 
 The result of the interpret as asynchronous reset operation is an AsyncReset typed signal.
 
 ## Shift Left Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
-|------|-----------|------------|-----------|-------------|-----------------------------|
-| shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n                      |
-|      |           |            | (SInt)    | SInt        | w~e~+n                      |
+  ------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- --------------
+  shl    \(e\)       \(n\)        (UInt)      UInt          w~e~+n
+
+                                  (SInt)      SInt          w~e~+n
+  ------------------------------------------------------------------------
 
 The shift left operation concatenates n zero bits to the least significant end of e.
 n must be non-negative.
 
 ## Shift Right Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width                |
-|------|-----------|------------|-----------|-------------|-----------------------------|
-| shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 1)              |
-|      |           |            | (SInt)    | SInt        | max(w~e~-n, 1)              |
+  --------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- ----------------
+  shr    \(e\)       \(n\)        (UInt)      UInt          max(w~e~-n, 1)
+
+                                  (SInt)      SInt          max(w~e~-n, 1)
+  --------------------------------------------------------------------------
 
 The shift right operation truncates the least significant n bits from e.
 If n is greater than or equal to the bit-width of e, the resulting value will be zero for unsigned types and the sign bit for signed types.
@@ -3222,68 +3277,88 @@ n must be non-negative.
 
 ## Dynamic Shift Left Operation
 
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| dshl | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~ + 2`^`w~e2~ - 1       |
-|      |           |            | (SInt, UInt)  | SInt        | w~e1~ + 2`^`w~e2~ - 1       |
+  ------------------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types      Result Type   Result Width
+  ------ ----------- ------------ -------------- ------------- -----------------------
+  dshl   (e1, e2)    ()           (UInt, UInt)   UInt          w~e1~ + 2`^`w~e2~ - 1
+
+                                  (SInt, UInt)   SInt          w~e1~ + 2`^`w~e2~ - 1
+  ------------------------------------------------------------------------------------
 
 The dynamic shift left operation shifts the bits in e1 e2 places towards the most significant bit.
 e2 zeroes are shifted in to the least significant bits.
 
 ## Dynamic Shift Right Operation
 
-| Name | Arguments | Parameters | Arg Types     | Result Type | Result Width                |
-|------|-----------|------------|---------------|-------------|-----------------------------|
-| dshr | (e1, e2)  | ()         | (UInt, UInt)  | UInt        | w~e1~                       |
-|      |           |            | (SInt, UInt)  | SInt        | w~e1~                       |
+  ---------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types      Result Type   Result Width
+  ------ ----------- ------------ -------------- ------------- --------------
+  dshr   (e1, e2)    ()           (UInt, UInt)   UInt          w~e1~
+
+                                  (SInt, UInt)   SInt          w~e1~
+  ---------------------------------------------------------------------------
 
 The dynamic shift right operation shifts the bits in e1 e2 places towards the least significant bit.
 e2 signed or zeroed bits are shifted in to the most significant bits, and the e2 least significant bits are truncated.
 
 ## Arithmetic Convert to Signed Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
-|      |           |            | (SInt)    | SInt        | w~e~         |
+  ------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- --------------
+  cvt    \(e\)       ()           (UInt)      SInt          w~e~+1
+
+                                  (SInt)      SInt          w~e~
+  ------------------------------------------------------------------------
 
 The result of the arithmetic convert to signed operation is a signed integer representing the same numerical value as e.
 
 ## Negate Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
-|      |           |            | (SInt)    | SInt        | w~e~+1       |
+  ------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- --------------
+  neg    \(e\)       ()           (UInt)      SInt          w~e~+1
+
+                                  (SInt)      SInt          w~e~+1
+  ------------------------------------------------------------------------
 
 The result of the negate operation is a signed integer representing the negated numerical value of e.
 
 ## Bitwise Complement Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| not  | \(e\)     | ()         | (UInt)    | UInt        | w~e~         |
-|      |           |            | (SInt)    | UInt        | w~e~         |
+  ------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- --------------
+  not    \(e\)       ()           (UInt)      UInt          w~e~
+
+                                  (SInt)      UInt          w~e~
+  ------------------------------------------------------------------------
 
 The bitwise complement operation performs a logical not on each bit in e.
 
 ## Binary Bitwise Operations
 
-| Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width     |
-|------------|-----------|------------|-------------|-------------|------------------|
-| and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
-|            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
+  ------------------------------------------------------------------------------------
+  Name         Arguments   Parameters   Arg Types     Result Type   Result Width
+  ------------ ----------- ------------ ------------- ------------- ------------------
+  and,or,xor   (e1, e2)    ()           (UInt,UInt)   UInt          max(w~e1~,w~e2~)
+
+                                        (SInt,SInt)   UInt          max(w~e1~,w~e2~)
+  ------------------------------------------------------------------------------------
 
 The above bitwise operations perform a bitwise and, or, or exclusive or on e1 and e2.
 The result has the same width as its widest argument, and any narrower arguments are automatically zero-extended or sign-extended to match the width of the result before performing the operation.
 
 ## Bitwise Reduction Operations
 
+  ---------------------------------------------------------------------------------
+  Name            Arguments   Parameters   Arg Types   Result Type   Result Width
+  --------------- ----------- ------------ ----------- ------------- --------------
+  andr,orr,xorr   \(e\)       ()           (UInt)      UInt          1
 
-| Name          | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|---------------|-----------|------------|-----------|-------------|--------------|
-| andr,orr,xorr | \(e\)     | ()         | (UInt)    | UInt        | 1            |
-|               |           |            | (SInt)    | UInt        | 1            |
+                                           (SInt)      UInt          1
+  ---------------------------------------------------------------------------------
 
 The bitwise reduction operations correspond to a bitwise and, or, and exclusive or operation, reduced over every bit in e.
 
@@ -3293,19 +3368,25 @@ Note that the logical consequence is that the and-reduction of a zero-width expr
 
 ## Concatenate Operation
 
-| Name | Arguments | Parameters | Arg Types      | Result Type | Result Width |
-|------|-----------|------------|----------------|-------------|--------------|
-| cat  | (e1,e2)   | ()         | (UInt, UInt)   | UInt        | w~e1~+w~e2~  |
-|      |           |            | (SInt, SInt)   | UInt        | w~e1~+w~e2~  |
+  ---------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types      Result Type   Result Width
+  ------ ----------- ------------ -------------- ------------- --------------
+  cat    (e1,e2)     ()           (UInt, UInt)   UInt          w~e1~+w~e2~
+
+                                  (SInt, SInt)   UInt          w~e1~+w~e2~
+  ---------------------------------------------------------------------------
 
 The result of the concatenate operation is the bits of e1 concatenated to the most significant end of the bits of e2.
 
 ## Bit Extraction Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1      |
-|      |           |            | (SInt)    | UInt        | hi-lo+1      |
+  ------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- --------------
+  bits   \(e\)       (hi,lo)      (UInt)      UInt          hi-lo+1
+
+                                  (SInt)      UInt          hi-lo+1
+  ------------------------------------------------------------------------
 
 The result of the bit extraction operation are the bits of e between lo (inclusive) and hi (inclusive).
 hi must be greater than or equal to lo.
@@ -3313,20 +3394,26 @@ Both hi and lo must be non-negative and strictly less than the bit width of e.
 
 ## Head
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| head | \(e\)     | \(n\)      | (UInt)    | UInt        | n            |
-|      |           |            | (SInt)    | UInt        | n            |
+  ------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- --------------
+  head   \(e\)       \(n\)        (UInt)      UInt          n
+
+                                  (SInt)      UInt          n
+  ------------------------------------------------------------------------
 
 The result of the head operation are the n most significant bits of e.
 n must be non-negative and less than or equal to the bit width of e.
 
 ## Tail
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-|------|-----------|------------|-----------|-------------|--------------|
-| tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n       |
-|      |           |            | (SInt)    | UInt        | w~e~-n       |
+  ------------------------------------------------------------------------
+  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
+  ------ ----------- ------------ ----------- ------------- --------------
+  tail   \(e\)       \(n\)        (UInt)      UInt          w~e~-n
+
+                                  (SInt)      UInt          w~e~-n
+  ------------------------------------------------------------------------
 
 The tail operation truncates the n most significant bits from e.
 n must be non-negative and less than or equal to the bit width of e.
@@ -3337,15 +3424,15 @@ FIRRTL's syntax is designed to be human-readable but easily algorithmically pars
 
 FIRRTL allows for two types of identifiers:
 
-1. Identifiers
-2. Literal Identifiers
+1.  Identifiers
+2.  Literal Identifiers
 
 Identifiers may only have the following characters: upper and lower case letters, digits, and `_`{.firrtl}.
 Identifiers cannot begin with a digit.
 
 Literal identifiers allow for using an expanded set of characters in an identifier.
 Such an identifier is encoded using leading and trailing backticks, `` ` ``{.firrtl}.
-A literal identifier has the same restrictions as an identifier, _but it is allowed to start with a digit_.
+A literal identifier has the same restrictions as an identifier, *but it is allowed to start with a digit*.
 E.g., it is legal to use `` `0` ``{.firrtl} as a literal identifier in a Bundle field (or anywhere else an identifier may be used).
 
 A FIRRTL compiler is allowed to change a literal identifier to a legal identifier in the target language (e.g., Verilog) if the literal identifier is not directly representable in the target language.
@@ -3369,19 +3456,19 @@ Since conditional statements (`when`{.firrtl} and `else`{.firrtl}) may be nested
 
 As a concrete guide, a few consequences of these rules are summarized below:
 
-- The `circuit`{.firrtl} keyword must not be indented.
+-   The `circuit`{.firrtl} keyword must not be indented.
 
-- All `module`{.firrtl} keywords must be indented by the same number of spaces.
+-   All `module`{.firrtl} keywords must be indented by the same number of spaces.
 
-- In a module, all port declarations and all statements (that are not children of other statements) must be indented by the same number of spaces.
+-   In a module, all port declarations and all statements (that are not children of other statements) must be indented by the same number of spaces.
 
-- The number of spaces comprising the indent level of a module is specific to each module.
+-   The number of spaces comprising the indent level of a module is specific to each module.
 
-- The statements comprising a conditional statement's branch must be indented by the same number of spaces.
+-   The statements comprising a conditional statement's branch must be indented by the same number of spaces.
 
-- The statements of nested conditional statements establish their own, deeper indent level.
+-   The statements of nested conditional statements establish their own, deeper indent level.
 
-- Each `when`{.firrtl} and each `else`{.firrtl} context may have a different number of non-zero spaces in its indent level.
+-   Each `when`{.firrtl} and each `else`{.firrtl} context may have a different number of non-zero spaces in its indent level.
 
 As an example illustrating some of these points, the following is a legal FIRRTL circuit:
 
@@ -3443,12 +3530,13 @@ The following is an example of a raw string literal:
 ``` firrtl
 'world'
 ```
+
 A radix-specified integer literal is a special integer literal with one of the following leading characters to indicate the numerical encoding:
 
-- `0b`{.firrtl} -- for representing binary numbers
-- `0o`{.firrtl} -- for representing octal numbers
-- `0d`{.firrtl} -- for representing decimal numbers
-- `0h`{.firrtl} -- for representing hexadecimal numbers
+-   `0b`{.firrtl} -- for representing binary numbers
+-   `0o`{.firrtl} -- for representing octal numbers
+-   `0d`{.firrtl} -- for representing decimal numbers
+-   `0h`{.firrtl} -- for representing hexadecimal numbers
 
 Signed radix-specified integer literals have their sign before the leading encoding character.
 
@@ -3473,8 +3561,9 @@ The following string-encoded integer literals all have the value `-42`:
 Radix-specified integer literals are only usable when constructing hardware integer literals.
 Any use in place of an integer is disallowed.
 
+```{=tex}
 \clearpage
-
+```
 # Grammar
 
 ``` ebnf

@@ -155,7 +155,7 @@ Each module has a given name, a list of ports, and a list of statements represen
 A module port is specified by its direction, which may be input or output, a name, and the data type of the port.
 
 The following example declares a module with one input port, one output port, and one statement connecting the input port to the output port.
-See [@sec:connects] for details on the connect statement.
+See [@sec:connections] for details on the connect statement.
 
 ``` firrtl
 module MyModule :
@@ -165,7 +165,7 @@ module MyModule :
 ```
 
 Note that a module definition does *not* indicate that the module will be physically present in the final circuit.
-Refer to the description of the instance statement for details on how to instantiate a module ([@sec:instances]).
+Refer to the description of the instance statement for details on how to instantiate a module ([@sec:submodule-instances]).
 
 ### Public Modules
 
@@ -427,7 +427,7 @@ Circuit components are the named parts of a module corresponding to hardware.
 There are seven **kinds** of circuit components.
 They are: nodes, wires, registers, output ports, input ports, submodule instances, and memories.
 
-Circuit components can be connected together (see [@sec:connects]).
+Circuit components can be connected together (see [@sec:connections]).
 
 Each circuit component in a module has a type ([@sec:types]).
 It is used to determine the legality of connections.
@@ -446,7 +446,7 @@ The type of a node is the type of the expression given in the definition.
 
 ## Wires
 
-Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connects]).
+Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connections]).
 
 Example:
 
@@ -462,7 +462,7 @@ The type of a wire is given after the colon (`:`{.firrtl}).
 
 Registers are stateful elements of a design.
 
-The state of a register is controlled through what is connected to it (see [@sec:connects]).
+The state of a register is controlled through what is connected to it (see [@sec:connections]).
 The state may be any non-`const`{.firrtl} passive type (see [@sec:passive-types]).
 Registers are always associated with a clock.
 Optionally, registers may have a reset signal.
@@ -511,7 +511,7 @@ output myinput : SInt<8>
 
 For both variants of port, the type is given after the colon (`:`{.firrtl}).
 
-The two kinds of ports differ in the rules for how they may be connected (see [@sec:connects]).
+The two kinds of ports differ in the rules for how they may be connected (see [@sec:connections]).
 
 ## Submodule Instances
 
@@ -563,12 +563,12 @@ mem mymem :
   read-under-write => undefined
 ```
 
-The type of a memory is a bundle type derived from the declaration (see [@sec:mem]).
+The type of a memory is a bundle type derived from the declaration (see [@sec:memories]).
 
 The type named in `data-type`{.firrtl} must be passive.
 It indicates the type of the data being stored inside of the memory.
 
-See [@sec:mem] for more details.
+See [@sec:memories] for more details.
 
 # Types
 
@@ -752,7 +752,7 @@ output a: {word: UInt<32>, valid: UInt<1>, flip ready: UInt<1>}
 ```
 
 In a connection to the `a`{.firrtl} port, the data carried by the `word`{.firrtl} and `valid`{.firrtl} sub-fields will flow out of the module, while data carried by the `ready`{.firrtl} sub-field will flow into the module.
-More details about how the bundle field orientation affects connections are explained in [@sec:connects].
+More details about how the bundle field orientation affects connections are explained in [@sec:connections].
 
 As in the case of vector types, a bundle field may be declared with any type, including other aggregate types.
 
@@ -1029,7 +1029,7 @@ For instance types of `w`{.firrtl} and `in.w`{.firrtl} are equivalent in the exa
 ## Type Equivalence
 
 The type equivalence relation is used to determine whether a connection between two components is legal.
-See [@sec:connects] for further details about connect statements.
+See [@sec:connections] for further details about connect statements.
 
 An unsigned integer type is always equivalent to another unsigned integer type regardless of bit width, and is not equivalent to any other type.
 Similarly, a signed integer type is always equivalent to another signed integer type regardless of bit width, and is not equivalent to any other type.
@@ -1113,7 +1113,7 @@ In order for a connection to be legal the following conditions must hold:
 
 1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence] for details).
 
-2.  The flow of the left-hand side expression must be sink or duplex (see [@sec:flows] for an explanation of flow).
+2.  The flow of the left-hand side expression must be sink or duplex (see [@sec:flow] for an explanation of flow).
 
 3.  Either the flow of the right-hand side expression is source or duplex, or the right-hand side expression has a passive type.
 
@@ -1243,7 +1243,7 @@ The handing of invalidated components is covered in [@sec:indeterminate-values].
 
 ### The Invalidate Algorithm
 
-Invalidating a component with a ground type indicates that the component's value is undetermined if the component has sink or duplex flow (see [@sec:flows]).
+Invalidating a component with a ground type indicates that the component's value is undetermined if the component has sink or duplex flow (see [@sec:flow]).
 Otherwise, the component is unaffected.
 
 Invalidating a component with a vector type recursively invalidates each sub-element in the vector.
@@ -1309,11 +1309,11 @@ attach(z, y, x)   ; attach all three signals
 
 # Property Assignments
 
-Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connects]).
+Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connections]).
 
 Instead, property typed expressions are assigned with the `propassign`{.firrtl} statement.
 
-Property typed expressions have the normal rules for flow (see [@sec:flows]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
+Property typed expressions have the normal rules for flow (see [@sec:flow]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
 
 1. The left-hand and right-hand side expressions must be of property types.
 
@@ -2731,7 +2731,7 @@ A multiplexer expression is legal only if the following holds.
 
 1. The types of the two input expressions are passive (see [@sec:passive-types]).
 
-## Primitive Operations
+## Primitive Operations {#sec:expressions:primitive-operations}
 
 All fundamental operations on ground types are expressed as a FIRRTL primitive operation.
 In general, each operation takes some number of argument expressions, along with some number of integer literal parameters.
@@ -3111,7 +3111,7 @@ Private modules (i.e. modules that are _not_ the top of a circuit, device under 
 The compiler is free to transform the ports of a private module in any way, or not at all.
 Private modules are said to have "internal" convention.
 
-# Primitive Operations {#sec:primitive-operations}
+# Primitive Operations
 
 The arguments of all primitive operations must be expressions with ground types, while their parameters are integer literals.
 Each specific operation can place additional restrictions on the number and types of their arguments and parameters.

@@ -3,6 +3,7 @@ VERSION=$(shell git describe --tags --dirty --match 'v*.*.*' | sed 's/^v//')
 
 IMG_SRCS=$(shell find include/img_src/ -type f -name '*.dot')
 IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/%.eps)
+IMG_PNG=$(IMG_SRCS:include/img_src/%.dot=build/%.png)
 
 .PHONY: all clean format images
 .PRECIOUS: build/ build/img/
@@ -15,7 +16,7 @@ clean:
 format:
 	find . -type f -name '*.md'	| xargs -IX pandoc -o X --wrap=preserve X
 
-images: $(IMG_EPSS)
+images: $(IMG_EPSS) $(IMG_PNGS)
 
 PANDOC_FLAGS=\
 	--template include/spec-template.tex \
@@ -30,6 +31,9 @@ build/%.pdf: %.md %.yaml revision-history.yaml include/common.yaml include/spec-
 
 build/%.eps: include/img_src/%.dot | build/
 	dot -Teps $< -o $@
+
+build/%.png: include/img_src/%.dot | build/
+	dot -Tpng $< -o $@
 
 build/:
 	mkdir -p $@

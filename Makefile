@@ -20,6 +20,8 @@ images: $(IMG_EPSS) $(IMG_PNGS)
 
 PANDOC_FLAGS=\
 	--pdf-engine=latexmk \
+	--pdf-engine-opt=-logfilewarninglist \
+	--pdf-engine-opt=-Werror \
 	--template include/spec-template.tex \
 	--syntax-definition include/firrtl.xml \
 	--syntax-definition include/ebnf.xml \

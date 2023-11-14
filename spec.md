@@ -1022,7 +1022,7 @@ Nodes may only appear "on the left side" of a connect.
 Wires and registers may appear "on either side of a connect statement".
 Ports are always considered from the perspective of "inside the module".
 Moreover, input ports may only appear "on the left side" of a connect, while output ports may only appear "on the right side" of a connect.
-Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule below, allowing connections to their input ports
+Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule in such a way that their input ports are sinks.
 
 ## Type Equivalence
 

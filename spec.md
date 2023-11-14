@@ -1012,7 +1012,7 @@ Finally, while submodules instances and memories are strictly sources, they inte
 
 ## Type Equivalence
 
-The type equivalence relation determines whether one values of one type can be coerced into values of another.
+The type equivalence relation is used to determine whether a connection between two components is legal.
 
 An unsigned integer type is always equivalent to another unsigned integer type regardless of bit width, and is not equivalent to any other type.
 Similarly, a signed integer type is always equivalent to another signed integer type regardless of bit width, and is not equivalent to any other type.

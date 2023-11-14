@@ -980,6 +980,20 @@ connect z, asUInt(y)
 
 See [@sec:primitive-operations] for more details on casting.
 
+### Probes and Type Inference
+
+Given a `Probe<T>`{.firrtl} or `RWProbe<T>`{.firrtl}, the inner type `T`{.firrtl} may be an inferred type (see [@sec:probe-types]).
+The inner type `T`{.firrtl} will be inferred, however, they must do so in a way which does not affect the hardware.
+
+A module with a probe with an inferred inner type must resolve all other inferred types to the same uninferred types as it would if the probe were to be removed.
+
+Additionally, inference constraints may only flow in few restricted ways:
+
+- Inference constraints may flow from child to parent through its `output`{.firrtl} ports.
+- Inference constraints may flow from parent to child through its `input`{.firrtl} ports.
+- In a `define`{.firrtl} expression, only the right-hand side may impose inference constraints on the left-hand side.
+- Neither `read`{.firrtl} expressions nor `force`{.firrtl} statements may impose inference constraints.
+
 # Connections
 
 ## Flow

@@ -494,6 +494,16 @@ $endif$
   {\list{}{\leftmargin=2em\rightmargin=2em}\item[]\rule{\linewidth}{1pt}\it}
   {\endlist}
 
+%% This command can be used to take a JSON/YAML metadata file containing contributors and their GitHub URLs and put it into an itemized list.
+\newcommand{\contributors}{
+$if(contributors)$
+\begin{itemize}
+\tightlist
+$for(contributors)$\item \href{$it.html_url$}{\texttt{$it.login$}}$endfor$
+\end{itemize}
+$endif$
+}
+
 \begin{document}
 $if(has-frontmatter)$
 \frontmatter

@@ -29,8 +29,8 @@ PANDOC_FLAGS=\
 	--filter pandoc-crossref \
 	--metadata version:$(VERSION)
 
-build/%.pdf: %.md %.yaml revision-history.yaml include/common.yaml include/spec-template.tex include/firrtl.xml include/ebnf.xml $(IMG_EPSS) | build/
-	pandoc $< --metadata-file $*.yaml --metadata-file=revision-history.yaml --metadata-file=include/common.yaml $(PANDOC_FLAGS) -o $@
+build/%.pdf: %.md %.yaml revision-history.yaml include/contributors.json include/common.yaml include/spec-template.tex include/firrtl.xml include/ebnf.xml $(IMG_EPSS) | build/
+	pandoc $< --metadata-file $*.yaml --metadata-file=revision-history.yaml --metadata-file=include/contributors.json --metadata-file=include/common.yaml $(PANDOC_FLAGS) -o $@
 
 build/%.eps: include/img_src/%.dot | build/
 	dot -Teps $< -o $@

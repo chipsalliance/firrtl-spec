@@ -619,7 +619,6 @@ For example, given `wire w : { x : UInt<1>, y : UInt<8>[2] }`{.firrtl}, `w.x`{.f
 
 ### References
 
-Subcomponents may be named by references.
 A **reference** is a name that refers to a previously declared circuit component.
 These are constructed using the names of root components, and optionally, through the dot and bracket operators.
 
@@ -646,7 +645,6 @@ For example this connection to a dynamic reference:
 ``` firrtl
   ; given  wire v : UInt<8>[4]
   ; and    wire i : UInt<2>
-
   connect v[i], UInt(0)
 ```
 

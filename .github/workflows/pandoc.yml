@@ -1,6 +1,13 @@
 name:
 
-on: push
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    tags:
+      - '*'
+    branches:
+      - main
 
 jobs:
   markdown-to-pdf:

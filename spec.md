@@ -696,7 +696,7 @@ In the following example, all variants have the type `UInt<0>`{.firrtl}.
 
 ## Probe Types
 
-Probe types expose and provide access to circuit components contained inside a module for use
+Probe types expose and provide access to circuit components contained inside of a module.
 They are intended for verification.
 Ports with a probe type do not necessarily result in physical hardware.
 Special verification constructs enable the value of a probe to be read or forced remotely.

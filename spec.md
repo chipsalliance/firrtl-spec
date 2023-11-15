@@ -542,54 +542,77 @@ See [@sec:memories] for more details.
 
 ## Subcomponents
 
-Each circuit component factors into a tree of subcomponents.
-The subcomponents of a circuit component depends on its type and kind.
+Each circuit component factors into subcomponents which can be accessed through the dot and bracket operators.
 
-Subcomponents are themselves circuit components.
-Thus, they have both a kind and a type.
+### Examples
 
-TODO: When we refer to the "circuit components" of a module definition, context will make it clear whether we mean the circuit component declarations (the root circuit components), the leaf circuit components, or the total of all circuit components.
+To motivate the notion of subcomponents, let's look at a few examples.
 
-Subcomponents may be named by references (see TODO) and may appear as the target of a connect statement.
+First, let's look at a wire with a vector type:
 
-An immediate child of a circuit component is called a **direct subcomponent**.
+``` firrtl
+module Foo :
+  wire v : UInt<8>[3]
+  connect v[0], UInt(0)
+  connect v[1], UInt(10)
+  connect v[2], UInt(42)
+```
 
-A **root component** is a circuit component that is not the direct subcomponent of any other component.
-Equivalently, these are the circuit components which are declared in a module.
+Here, we hve declared a wire `v`{.firrtl} with a vector type with length 3.
+We can index into the wire `v`{.firrtl} with the expressions `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}, and target these with a `connect`{.firrtl} statement (see [@sec:connections]).
+Each of these is a subcomponent of `v`{.firrtl} and each acts like a wire with type `UInt<8>`{.firrtl}.
 
-A **leaf component** is a circuit component has no direct subcomponents.
-Leaf components are useful for checking initialization.
+Next, let's look at a port with a bundle type:
 
-One circuit component is a **subcomponent** of another if there is way to get from the first component to the second through the direct subcomponent relation.
-A circuit component is trivially considered to be a subcomponent of itself.
-If we need to speak of the subcomponents excluding the component itself, we call these the **proper subcomponents**.
+``` firrtl
+module Bar :
+  output io : { x : UInt<8>, flip y : UInt<8> }
+  connect io.x, add(io.y, UInt(1))
+```
 
-When a circuit component has a ground type, an enumeration type, a probe type, or property type (see TODO), has no direct subcomponents.
+The bundle of port `io`{.firrtl} has type `{ x : UInt<8>, flip y : UInt<8> }`{.firrtl}, with one aligned field `x`{.firrtl} and one flipped field `y`{.firrtl}.
+In the connect expression, we read from `io.y`{.firrtl}, add 1 to it, and then assign it to `io.x`{.firrtl}.
+Both `io.x`{.firrtl} and `io.y`{.firrtl} are subcomponents of `io`{.firrtl} and both have type `UInt<8>`{.firrtl}.
+Note that while `io.x`{.firrtl} is an output port, `io.y`{.firrtl} is an input port.
 
+### Definition
+
+Every circuit component declared within a module results in a tree of **subcomponents**.
+Circuit subcomponents have both a kind and a type.
+
+We define this tree of subcomponents recursively by defining the a **direct subcomponent** relation:
+
+A circuit component with a ground type, an enumeration type, a probe type, or property type (see TODO) has no direct subcomponents.
 For example, `wire w : UInt<8>`{.firrtl} has no direct subcomponents.
 
 When a circuit component has a vector type (see TODO), it has as many direct subcomponents as its length.
-Each subcomponent will have the same kind as its parent.
-Each will have the element type.
-
-For example, if we declare `wire v : UInt<8>[3]`{.firrtl}, it will have three proper subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
+Each subcomponent will have the same kind as its parent and will have the element type.
+For example, if we declare `wire v : UInt<8>[3]`{.firrtl}, it will have three direct subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
 All three are wires and all three have type `UInt<8>`{.firrtl}.
 
 When a circuit component has a bundle type (see TODO), it will end up with one direct subcomponent for each field.
 The type of each subcomponent will correspond to the type of the corresponding field.
 However, the kind of the subcomponent depends on both the kind and the type of the parent:
 
-- For wires with bundle types, the subcomponents are all wires.
-- For nodes, the subcomponents are all nodes.
-- For registers, the subcomponents are all registers.
-- For output and input ports, the kind of each subcomponent depends on whether or not the field is flipped.
-  When the field is not flipped, the kind remains the same as the parent.
-  When the field is flipped, it will change from either output to input or vice versa.
-- For submodule instances and memories, the kind depends on whether or not the field is flipped.
+- For nodes, wires, and registers, the kind of each direct subcomponent is the same.
+- For output and input ports, the kind of each direct subcomponent depends on whether or not the field is flipped.
+  When the field is not flipped, the kind remains the same.
+  When the field is flipped, it will change from output to input or vice versa.
+- For submodule instances and memories, the kind of each direct subcomponent depends on whether or not the field is flipped.
   When the field is not flipped, the kind is an input.
   When the field is flipped, the kind is an output.
 
-The intuition for submodule instances and memories is that circuit components with kind output are sinks, while circuit components with kind input are sources.
+One circuit component is a **subcomponent** of another if there is way to get from the first component to the second through the direct subcomponent relation.
+A circuit component is trivially considered to be a subcomponent of itself.
+If we need to speak of the subcomponents excluding the component itself, we call these the **proper subcomponents**.
+
+A **root component** is a circuit component that is not the direct subcomponent of any other component.
+Equivalently, these are the circuit components which are declared inside a module.
+
+A **leaf component** is a circuit component has no direct subcomponents.
+Leaf components are useful for checking initialization.
+
+Subcomponents may be named by references (see TODO) and may appear as the target of a connect statement.
 
 # Types
 

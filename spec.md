@@ -2060,14 +2060,10 @@ See [@sec:type-inference] for details.
 
 Probes can be passed through ports using the `define`{.firrtl} statement (see [@sec:define]).
 
-TODO: What does this next sentence mean:
-
-Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
-
-TODO: `define` statements can't appear in when statements.
+TODO: `define` statements can appear in when statements but aren't affected by them.
 TODO: `define` statements can only appear once per thing, ie, no last connects
-TODO: What does this mean? "Every sink-flow probe must be the target of exactly one of these statements"
-TODO: What about this? "The define statement takes a sink-flow static reference target and sets it to the specified reference, which must either be a compatible probe expression or static reference source."
+TODO: All probes must be initalized: "Every sink-flow probe must be the target of exactly one of these statements"
+TODO: Probes cannot be invalidated.
 
 TODO: What is this example?:
 
@@ -2105,25 +2101,18 @@ module Foo:
   define z[1] = probe(w)
 ```
 
-`RWProbe`{.firrtl} references to ports are not allowed on public-facing modules.
-
 TODO: Why not?
-
-### Limitations on `input`{.firrtl} Ports
-
-- TODO: Golden Rule: when using `input`{.firrtl} ports, you can only "use"(TODO) the probe in an anscestor in the module hierarchy.
-- Desquiggling
-- Examples
 
 ## `read`{.firrtl} Expressions
 
 Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression (see [@sec:reading-probe-references]).
-`RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
-However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
 
 ## Forcing
 
 TODO
+
+`RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
+However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
 
 ## Probes and Groups
 
@@ -2139,6 +2128,30 @@ RWProbe<UInt<8>, A.B>
 
 Probes are generally lowered to hierarchical names in Verilog.
 For details, see the FIRRTL ABI Specification.
+
+## Limitations
+
+### `RWProbe`{.firrtl} with Aggregate Types
+
+TODO.
+
+### Ports in Public Modules
+
+TODO: "You cannot take a rwprobe of a port on a public-facing module"
+TODO: You can't "take control" of a port unless you "own" both sides of it
+`RWProbe`{.firrtl} references to ports are not allowed on public-facing modules.
+
+### Input Ports
+
+- TODO: Golden Rule: when using `input`{.firrtl} ports, you can only "use"(TODO) the probe in an anscestor in the module hierarchy.
+- Desquiggling
+- Examples
+
+### External Modules
+
+TODO
+
+Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
 
 # Probes (OLD)
 

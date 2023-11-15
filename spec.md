@@ -2023,6 +2023,125 @@ cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 # Probes
 
+Probe types expose and provide access to circuit components contained inside of a module.
+
+## Motivation
+
+TODO
+
+They are intended for verification.
+Ports with a probe type do not necessarily result in physical hardware.
+Special verification constructs enable the value of a probe to be read or forced remotely.
+
+## Types
+
+TODO: See Probe Types ???
+
+There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
+
+Examples:
+
+``` firrtl
+Probe<UInt<8>>
+RWProbe<UInt<8>>
+```
+
+TODO: Relation between `Probe`{.firrtl} and `RWProbe`{.firrtl}
+
+Define statements can set a `Probe`{.firrtl} to either a `Probe`{.firrtl} or `RWProbe`{.firrtl}, but a `RWProbe`{.firrtl} cannot be set to a `Probe`{.firrtl}.
+The inner types of the two references must (recursively) be identical or identical with the destination containing uninferred versions of the corresponding element in the source type.
+See [@sec:type-inference] for details.
+
+## `probe`{.firrtl} and `rwprobe`{.firrtl} Expressions
+
+`Probe`{.firrtl} and `RWProbe`{.firrtl} are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions, respectively (see [@sec:probes]).
+
+## Passing Probes through Ports
+
+Probes can be passed through ports using the `define`{.firrtl} statement (see [@sec:define]).
+
+TODO: What does this next sentence mean:
+
+Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
+
+TODO: `define` statements can't appear in when statements.
+TODO: `define` statements can only appear once per thing, ie, no last connects
+TODO: What does this mean? "Every sink-flow probe must be the target of exactly one of these statements"
+TODO: What about this? "The define statement takes a sink-flow static reference target and sets it to the specified reference, which must either be a compatible probe expression or static reference source."
+
+TODO: What is this example?:
+
+``` firrtl
+module Refs:
+  input clock:  Clock
+  output a : Probe<{x: UInt, y: UInt}> ; read-only ref. to wire 'p'
+  output b : RWProbe<UInt> ; force-able ref. to node 'q', inferred width.
+  output c : Probe<UInt<1>> ; read-only ref. to register 'r'
+  output d : Probe<Clock> ; ref. to input clock port
+
+  wire p : {x: UInt, flip y : UInt}
+  define a = probe(p) ; probe is passive
+  node q = UInt<1>(0)
+  define b = rwprobe(q)
+  reg r: UInt, clock
+  define c = probe(r)
+  define d = probe(clock)
+```
+
+The target is not required to be only an identifier, it may be a field within a bundle or other statically known sub-element of an aggregate, for example:
+
+``` firrtl
+module Foo:
+  input x : UInt
+  output y : {x: UInt, p: Probe<UInt>}
+  output z : Probe<UInt>[2]
+
+  wire w : UInt
+  connect w, x
+  connect y.x, w
+
+  define y.p = probe(w)
+  define z[0] = probe(w)
+  define z[1] = probe(w)
+```
+
+`RWProbe`{.firrtl} references to ports are not allowed on public-facing modules.
+
+TODO: Why not?
+
+### Limitations on `input`{.firrtl} Ports
+
+- TODO: Golden Rule: when using `input`{.firrtl} ports, you can only "use"(TODO) the probe in an anscestor in the module hierarchy.
+- Desquiggling
+- Examples
+
+## `read`{.firrtl} Expressions
+
+Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression (see [@sec:reading-probe-references]).
+`RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
+However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
+
+## Forcing
+
+TODO
+
+## Probes and Groups
+
+`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with an optional group (see [@sec:optional-groups]).
+When associated with an optional group, the reference type may only be driven from that optional group.
+
+For example:
+
+``` firrtl
+Probe<UInt<8>, A.B>     ; A.B is an optional group
+RWProbe<UInt<8>, A.B>
+```
+
+Probes are generally lowered to hierarchical names in Verilog.
+For details, see the FIRRTL ABI Specification.
+
+# Probes (OLD)
+
 Probe references are created with `probe`{.firrtl} expressions, routed through the design using the `define`{.firrtl} statement, read using the `read`{.firrtl} expression (see [@sec:reading-probe-references]), and forced and released with `force`{.firrtl} and `release`{.firrtl} statements.
 
 These statements are detailed below.

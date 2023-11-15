@@ -593,13 +593,13 @@ All three are wires and all three have type `UInt<8>`{.firrtl}.
 When a circuit component has a bundle type (see TODO), it will end up with one direct subcomponent for each field.
 The kind of the subcomponent depends on both the kind and the type of the parent:
 
-- For nodes, wires, and registers, the kind of each direct subcomponent is the same.
-- For output and input ports, the kind of each direct subcomponent depends on whether or not the field is flipped.
-  When the field is not flipped, the kind remains the same.
-  When the field is flipped, it will change from output to input or vice versa.
-- For submodule instances and memories, the kind of each direct subcomponent depends on whether or not the field is flipped.
-  When the field is not flipped, the kind is an input port.
-  When the field is flipped, the kind is an output port.
+-   For nodes, wires, and registers, the kind of each direct subcomponent is the same.
+-   For output and input ports, the kind of each direct subcomponent depends on whether or not the field is flipped.
+    When the field is not flipped, the kind remains the same.
+    When the field is flipped, it will change from output to input or vice versa.
+-   For submodule instances and memories, the kind of each direct subcomponent depends on whether or not the field is flipped.
+    When the field is not flipped, the kind is an input port.
+    When the field is flipped, the kind is an output port.
 
 If the bundle is not `const`{.firrtl}, the type of each subcomponent will simply be the type of the corresponding field.
 However, if the bundle is `const`{.firrtl}, the type of each subcomponent will be the `const`{.firrtl} version of the type of the corresponding field.

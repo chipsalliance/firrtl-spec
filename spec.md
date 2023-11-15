@@ -582,15 +582,15 @@ Circuit subcomponents have both a kind and a type.
 
 We define this tree of subcomponents recursively by defining the a **direct subcomponent** relation:
 
-A circuit component with a ground type, an enumeration type, a probe type, or property type (see TODO) has no direct subcomponents.
+A circuit component with a ground type, an enumeration type, a probe type, or property type (see [@sec:types]) has no direct subcomponents.
 For example, `wire w : UInt<8>`{.firrtl} has no direct subcomponents.
 
-When a circuit component has a vector type (see TODO), it has as many direct subcomponents as its length.
+When a circuit component has a vector type (see [@sec:vector-types]), it has as many direct subcomponents as its length.
 Each subcomponent will have the same kind as its parent and will have the element type.
 For example, if we declare `wire v : UInt<8>[3]`{.firrtl}, it will have three direct subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
 All three are wires and all three have type `UInt<8>`{.firrtl}.
 
-When a circuit component has a bundle type (see TODO), it will end up with one direct subcomponent for each field.
+When a circuit component has a bundle type (see [@sec:bundle-types]), it will end up with one direct subcomponent for each field.
 The kind of the subcomponent depends on both the kind and the type of the parent:
 
 -   For nodes, wires, and registers, the kind of each direct subcomponent is the same.
@@ -615,7 +615,7 @@ A **leaf component** is a circuit component has no direct subcomponents.
 Leaf components are useful for checking initialization.
 
 Two components are **disjoint** if they have no common subcomponent.
-TODO: For example, given a register `r`{.firrtl} with ...
+For example, given `wire w : { x : UInt<1>, y : UInt<8>[2] }`{.firrtl}, `w.x`{.firrtl} and `w.y`{.firrtl} are disjoint, but `w.y[0]`{.firrtl} and `w.y`{.firrtl} are not.
 
 ### References
 
@@ -1243,8 +1243,7 @@ module MyModule :
   connect myport, portx
 ```
 
-TODO: Fix this reference.
-See ??? for more details about sub-field expressions.
+See [@sec:references] for more details about indexing.
 
 ## Invalidates
 

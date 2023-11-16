@@ -6,7 +6,7 @@
       <item>module</item>
       <item>extmodule</item>
       <item>intmodule</item>
-      <item>declgroup</item>
+      <item>layer</item>
     </list>
     <list name="keywords">
       <item>input</item>
@@ -16,7 +16,7 @@
       <item>parameter</item>
       <item>skip</item>
       <item>inst</item>
-      <item>group</item>
+      <item>layerblock</item>
       <item>of</item>
       <item>wire</item>
       <item>node</item>

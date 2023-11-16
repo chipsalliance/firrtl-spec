@@ -116,96 +116,96 @@ Passive bundles shall be lowered to Verilog packed structs.
 
 Reference types in ports shall be logically split out from aggregates and named as though "Aggregate Type Lowering" was used.
 
-## On Groups
+## On Layers
 
-The lowering convention of a declared optional group specifies how an optional group will be lowered.
+The lowering convention of a declared layer specifies how a layer and all its associated layer blocks will be lowered.
 Currently, the only lowering convention that must be supported is `"bind"`{.firrtl.}.
 FIRRTL compilers may implement other non-standard lowering conventions.
 
 ### Bind Lowering Convention
 
-The bind lowering convention is indicated by the `"bind"`{.firrtl} string on a declared group.
-When using this convention, optional groups are lowered to separate modules that are instantiated via SystemVerilog `bind`{.verilog} statements ("bind instantiation").
+The bind lowering convention is indicated by the `"bind"`{.firrtl} string on a declared layer.
+When using this convention, layer blocks associated with that layer are lowered to separate modules that are instantiated via SystemVerilog `bind`{.verilog} statements ("bind instantiation").
 
-Each module that contains group instances will produce one additional module per group that has "internal" module convention.
+Each module that contains layer blocks will produce one additional module per layer block that has "internal" module convention.
 I.e., the modules are private and have no defined ABI---the name of each module is implementation defined, the instantiation name of a bound instance is implementation defined, and any ports created on the module may have any name and may be optimized away.
 
-Practically speaking, additional ports of each generated module must be created whenever a value defined outside the group is used by the group.
-The values captured by the group will create input ports.
-Values defined in a group and used by a nested group will create output ports because SystemVerilog disallows the use of a bind instantiation underneath the scope of another bind instantiation.
+Practically speaking, additional ports of each generated module must be created whenever a value defined outside the layer block is used inside the layer block.
+The values captured by the layer block will create input ports.
+Values defined in a layer block and used by a nested layer block will create output ports because SystemVerilog disallows the use of a bind instantiation underneath the scope of another bind instantiation.
 The names of additional ports are implementation defined.
 
-For each optional group and public module, one binding file will be produced for each group or nested group.
-The public module, group name, and any nested groups are used to derive a predictable filename of the binding file.
-The file format uses the format below where `module` is the name of the public module, `root` is the name of the root-level group and `nested` is the name of zero or more nested groups:
+For each layer and public module, one binding file will be produced for each layer or nested layer.
+The public module, layer name, and any nested layer names are used to derive a predictable filename of the binding file.
+The file format uses the format below where `module` is the name of the public module, `root` is the name of the root-level layer and `nested` is the name of zero or more nested layers:
 
 ``` ebnf
-filename = "groups_" , module , "_", root , { "_" , nested } , ".sv" ;
+filename = "layers_" , module , "_", root , { "_" , nested } , ".sv" ;
 ```
 
-As an example, consider the following circuit with three optional groups:
+As an example, consider the following circuit with three layers:
 
 ``` firrtl
 circuit:
-  declgroup Group1, bind:
-    declgroup Group2, bind:
-      declgroup Group3, bind:
+  layer Layer1, bind:
+    layer Layer2, bind:
+      layer Layer3, bind:
   public module Bar:
   public module Baz:
 ```
 
 When compiled to Verilog, this will produce six bind files:
 
-    groups_Bar_Group1.sv
-    groups_Bar_Group1_Group2.sv
-    groups_Bar_Group1_Group2_Group3_.sv
-    groups_Baz_Group1.sv
-    groups_Baz_Group1_Group2.sv
-    groups_Baz_Group1_Group2_Group3_.sv
+    layers_Bar_Layer1.sv
+    layers_Bar_Layer1_Layer2.sv
+    layers_Bar_Layer1_Layer2_Layer3_.sv
+    layers_Baz_Layer1.sv
+    layers_Baz_Layer1_Layer2.sv
+    layers_Baz_Layer1_Layer2_Layer3_.sv
 
-The contents of each binding files must have the effect of including all code defined in a group or its parent groups.
+The contents of each binding files must have the effect of including all code defined in all of the layer blocks associated with a layer and any of its parent layer's layer blocks.
 
 #### Example
 
-The end-to-end below example shows a circuit with two groups that are lowered to Verilog.
+The end-to-end below example shows a circuit with two layers that are lowered to Verilog.
 This shows example Verilog output which is not part of the ABI, but is included for informative reasons.
 
-Consider the following circuit containing one optional group, `Group1`, and one nested optional group, `Group2`.
+Consider the following circuit containing one optional layer, `Layer1`, and one nested layer, `Layer2`.
 Module `Foo` contains one instantiation of module `Bar`.
-Both `Foo` and `Bar` contain groups.
+Both `Foo` and `Bar` contain layer blocks.
 To make the example simpler, no constant propagation is done:
 
 ``` firrtl
 circuit:
-  declgroup Group1, bind:
-    declgroup Group2, bind:
+  layer Layer1, bind:
+    layer Layer2, bind:
 
   module Bar:
-    output _notA: Probe<UInt<1>, Group1>
-    output _notNotA: Probe<UInt<1>, Group1.Group2>
+    output _notA: Probe<UInt<1>, Layerblock1>
+    output _notNotA: Probe<UInt<1>, Layerblock1.Layerblock2>
 
     wire a: UInt<1>
     connect a, UInt<1>(0)
 
-    group Group1:
+    layerblock Layerblock1:
       node notA = not(a)
       define _notA = probe(notA)
 
-      group Group2:
+      layerblock Layerblock2:
         node notNotA = not(notA)
         define _notNotA = probe(notNotA)
 
   public module Foo:
     inst bar of Bar
 
-    group Group1:
+    layerblock Layerblock1:
       node x = bar._notA
 
-      group Group2:
+      layerblock Layerblock2:
         node y = bar._notNotA
 ```
 
-The following Verilog will be produced for the modules without the groups:
+The following Verilog will be produced for the modules without layers:
 
 ``` verilog
 module Foo();
@@ -217,61 +217,61 @@ module Bar();
 endmodule
 ```
 
-The following Verilog associated with `Group1` is produced.
+The following Verilog associated with `Layer1` is produced.
 Note that all module names and ports are implementation defined:
 
 ``` verilog
-module Bar_Group1(
+module Bar_Layer1(
   input a
 );
   wire notA = ~a;
 endmodule
 
-module Foo_Group1(
+module Foo_Layer1(
   input bar_notA
 );
   wire x = bar_notA;
 endmodule
 ```
 
-The following Verilog associated with `Group2` is produced. Note that all module names and ports are implementation defined:
+The following Verilog associated with `Layer2` is produced. Note that all module names and ports are implementation defined:
 
 ``` verilog
-module Bar_Group1_Group2(
+module Bar_Layer1_Layer2(
   input notA
 );
   wire notNotA = ~notA;
 endmodule
 
-module Foo_Group1_Group2(
+module Foo_Layer1_Layer2(
   input bar_notNotA
 );
   wire y = bar_notNotA;
 endmodule
 ```
 
-Because there are two groups, two bindings files will be produced.
-The first bindings file is associated with `Group1`:
+Because there are two layers, two bindings files will be produced.
+The first bindings file is associated with `Layer1`:
 
 ``` verilog
-// Inside file "groups_Foo_Group1.sv" :
-`ifndef groups_Foo_Group1
-`define groups_Foo_Group1
-bind Foo Foo_Group1 group1(.bar_notA(Foo.bar.group1.notA));
-bind Bar Bar_Group1 group1(.a(Bar.a));
+// Inside file "layers_Foo_Layer1.sv" :
+`ifndef layers_Foo_Layer1
+`define layers_Foo_Layer1
+bind Foo Foo_Layer1 layer1(.bar_notA(Foo.bar.layer1.notA));
+bind Bar Bar_Layer1 layer1(.a(Bar.a));
 `endif
 ```
 
-The second bindings file is associated with `Group2`.
-This group, because it depends on `Group1` being available, will automatically bind in this dependent group:
+The second bindings file is associated with `Layer2`.
+This layer, because it depends on `Layer1` being available, will automatically bind in this dependent layer:
 
 ``` verilog
-// Inside file "groups_Foo_Group1_Group2.sv" :
-`ifndef groups_Foo_Group1_Group2
-`define groups_Foo_Group1_Group2
-`include "groups_Foo_Group1.sv"
-bind Foo Foo_Group1_Group2 group1_group2(.bar_notNotA(Foo.bar.group1_group2.notNotA));
-bind Bar Bar_Group1_Group2 group1_group2(.notA(Bar.group1.notA));
+// Inside file "layers_Foo_Layer1_Layer2.sv" :
+`ifndef layers_Foo_Layer1_Layer2
+`define layers_Foo_Layer1_Layer2
+`include "layers_Foo_Layer1.sv"
+bind Foo Foo_Layer1_Layer2 layer1_layer2(.bar_notNotA(Foo.bar.layer1_layer2.notNotA));
+bind Bar Bar_Layer1_Layer2 layer1_layer2(.notA(Bar.layer1.notA));
 `endif
 ```
 

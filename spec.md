@@ -164,112 +164,113 @@ For more information on the lowering of public modules, see the FIRRTL ABI Speci
 A private module is any module which is not public.
 Private modules have none of the restrictions of public modules.
 
-## Optional Groups
+## Layers
 
-Optional groups are named collections of statements inside a module.
-Optional groups contain functionality which will not be present in all executions of a circuit.
-Optional groups are intended to be used to keep verification, debugging, or other collateral, not relevant to the operation of the circuit, in a separate area.
-Each group can then be optionally included in the resulting design.
+Layers are collections of functionality which will not be present in all executions of a circuit.
+Layers are intended to be used to keep verification, debugging, or other collateral, not relevant to the operation of the circuit, in a separate area.
+Each layer can then be optionally included in the resulting design.
 
-The `declgroup`{.firrtl} keyword declares an optional group with a specific identifier.
-An optional group may be declared in a circuit or in another optional group declaration.
-An optional group's identifier must be unique within the current namespace.
-I.e., the identifier of a top-level group declared in a circuit must not conflict with the identifier of a module, external module, or implementation defined module.
+The `layer`{.firrtl} keyword declares a layer with a specific identifier.
+A layer may be declared in a circuit or in another layer declaration.
+An layer's identifier must be unique within the current namespace.
+I.e., the identifier of a top-level layer declared in a circuit must not conflict with the identifier of a module, external module, or implementation defined module.
 
-Each optional group declaration must include a string that sets the lowering convention for that group.
-The FIRRTL ABI specification defines supported lowering convention. One such strategy is `"bind"`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
+Each layer must include a string that sets the lowering convention for that layer.
+The FIRRTL ABI specification defines supported lowering conventions.
+One such strategy is `"bind"`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
 
-The `group`{.firrtl} keyword defines optional functionality inside a module.
-An optional group may only be defined inside a module.
-An optional group must reference a group declared in the current circuit.
-An optional group forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---a group may use identifiers declared outside the group, but identifiers declared in the group may not be used in parent lexical scopes.
-The statements in a group are restricted in what identifiers they are allowed to drive.
-A statement in a group may drive no sinks declared outside the group *with one exception*: a statement in a group may drive reference types declared outside the group if the reference types are associated with the group in which the statement is declared (see: [@sec:probe-types]).
+The `layerblock`{.firrtl} keyword declares a "layer block".
+This is a sequence of statements describing optional functionality associated with a layer inside a module.
+A layer block may only be declared inside a module.
+A layer block must reference a layer declared in the current circuit.
+A layer block forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---statements and expressions in a layer block may use identifiers declared outside the layer block, but identifiers declared in the layer block may not be used in parent lexical scopes.
+The statements in a layer block are restricted in what identifiers they are allowed to drive.
+A statement in a layer block may drive no sinks declared outside the layer block *with one exception*: a statement in a layer block may drive reference types declared outside the layer block if the reference types are associated with the layer in which the statement is declared (see: [@sec:probe-types]).
 
-The circuit below contains one optional group declaration, `Bar`.
-Module `Foo` contains a group definition that creates a node computed from a port defined in the scope of `Foo`.
+The circuit below contains one layer, `Bar`.
+Module `Foo` contains a layer block that creates a node computed from a port defined in the scope of `Foo`.
 
 ``` firrtl
 circuit:
-  declgroup Bar, bind:  ; Declaration of group Bar with convention "bind"
+  layer Bar, bind:       ; Declaration of layer Bar with convention "bind"
 
   module Foo:
     input a: UInt<1>
 
-    group Bar:            ; Definition of group Bar inside module Foo
+    layerblock Bar:      ; Declaration of a layer block associated with layer Bar inside module Foo
       node notA = not(a)
 ```
 
-Multiple optional group definitions may reference the same group declaration.
-Each optional group definition is a new lexical scope even if they reference the same declaration.
-The circuit below shows module `Foo` having two group definitions both referencing group declaration `Bar`.
-The first group definition may not reference node `c`.
-The second group definition may not reference node `b`.
+Multiple layer blocks may reference the same layer declaration.
+Each layer block is a new lexical scope even if they reference the same declaration.
+The circuit below shows module `Foo` having two layer blocks both referencing layer `Bar`.
+The first layer block may not reference node `c`.
+The second layer block may not reference node `b`.
 
 ``` firrtl
 circuit:
-  declgroup Bar, bind:
+  layer Bar, bind:
 
   module Foo:
     input a: UInt<1>
 
-    group Bar: ; First group definition
+    layerblock Bar: ; First layer block
       node b = a
 
-    group Bar: ; Second group definition
+    layerblock Bar: ; Second layer block
       node c = a
 ```
 
-Optional group declarations may be nested.
-Optional group declarations are declared with the `declgroup`{.firrtl} keyword indented under an existing `declgroup`{.firrtl} keyword.
-The circuit below contains four optional group declarations, three of which are nested.
-`Bar` is the top-level group.
+Layers may be nested.
+Layers are declared with the `layer`{.firrtl} keyword indented under an existing `layer`{.firrtl} keyword.
+The circuit below contains four layers, three of which are nested.
+`Bar` is the top-level layer.
 `Baz` and `Qux` are nested under `Bar`.
 `Quz` is nested under `Qux`.
 
 ``` firrtl
 circuit:
-  declgroup Bar, bind:
-    declgroup Baz, bind:
-    declgroup Qux, bind:
-      declgroup Quz, bind:
+  layer Bar, bind:
+    layer Baz, bind:
+    layer Qux, bind:
+      layer Quz, bind:
 ```
 
-Optional group definitions must match the nesting of declared groups.
-Optional groups are defined under existing groups with the `group`{.firrtl} keyword indented under an existing `group`{.firrtl} keyword.
-For the four declared groups in the circuit above, the following is a legal nesting of group definitions:
+Layer block nesting must match the nesting of declared layers.
+Layer blocks are declared under existing layer blocks with the `layerblock`{.firrtl} keyword indented under an existing `layerblock`{.firrtl} keyword.
+For the four layers in the circuit above, the following is a legal nesting of layerblocks:
 
 ``` firrtl
 module Foo:
   input a: UInt<1>
 
-  group Bar:
+  layerblock Bar:
     node notA = not(a)
-    group Baz:
-    group Qux:
-      group Quz:
+    layerblock Baz:
+    layerblock Qux:
+      layerblock Quz:
         node notNotA = not(notA)
 ```
 
-Statements in a nested optional group may only read from ports or declarations of the current module, the current group, or a parent group---statements in a group may not drive components declared outside the group except reference types associated with the same group.
-In the above example, `notA` is accessible in the group definition of `Quz` because `notA` is declared in a parent group.
+Statements in a layer block may only read from ports or declarations of the current module, the current layer, or a parent layer---statements in a layer block may not drive components declared outside the layer block except reference types associated with the same layer block.
+In the above example, `notA` is accessible in the layer block associated with `Quz` because `notA` is declared in a parent layer block.
 
-In the example below, module `Baz` defines a group `Bar`.
-Module `Baz` has an output port, `_a`, that is associated with the group, `Bar`.
-This port can then be driven from inside the group.
-In module `Foo`, the port may be read from inside the group.
-*Stated differently, module `Baz` has an additional port `_a` that is only accessible inside a defined group `Bar`*.
+In the example below, module `Baz` defines a layer block associated with layer `Bar`.
+Module `Baz` has an output port, `_a`, that is also associated with layer `Bar`.
+This port can then be driven from the layer block.
+In module `Foo`, the port may be read from inside the layer block.
+*Stated differently, module `Baz` has an additional port `_a` that is only accessible in a layer block associated with `Bar`*.
 
 ``` firrtl
 circuit:
-  declgroup Bar, bind:
+  layer Bar, bind:
 
   module Baz:
     output _a: Probe<UInt<1>, Bar>
 
     wire a: UInt<1>
 
-    group Bar:
+    layerblock Bar:
       node notA = not(a)
       define _a = probe(notA)
 
@@ -277,24 +278,24 @@ circuit:
 
     inst baz of Baz
 
-    group Bar:
+    layerblock Bar:
       node _b = baz._a
 ```
 
-If a port is associated with a nested group then a period is used to indicate the nesting.
-E.g., the following circuit has a port associated with the nested group `Bar.Baz`:
+If a port is associated with a nested layer then a period is used to indicate the nesting.
+E.g., the following circuit has a port associated with the nested layer `Bar.Baz`:
 
 ``` firrtl
 circuit:
-  declgroup Bar, bind:
-    declgroup Baz, bind:
+  layer Bar, bind:
+    layer Baz, bind:
 
   module Foo:
     output a: Probe<UInt<1>, Bar.Baz>
 ```
 
-Optional groups will be compiled to modules whose ports are derived from what they capture from their visible scope.
-For full details of the way optional groups are compiled, see the FIRRTL ABI specification.
+Layer blocks will be compiled to modules whose ports are derived from what they capture from their visible scope.
+For full details of the way layers are compiled, see the FIRRTL ABI specification.
 
 ## Externally Defined Modules
 
@@ -825,13 +826,13 @@ Probes can be passed through ports using the `define`{.firrtl} statement (see [@
 
 Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
 
-`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with an optional group (see [@sec:optional-groups]).
-When associated with an optional group, the reference type may only be driven from that optional group.
+`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with a layer (see [@sec:layers]).
+When associated with a layer, the reference type may only be driven from layer blocks associated with the same layer.
 
 For example:
 
 ``` firrtl
-Probe<UInt<8>, A.B>     ; A.B is an optional group
+Probe<UInt<8>, A.B>     ; A.B is a layer
 RWProbe<UInt<8>, A.B>
 ```
 
@@ -3460,7 +3461,7 @@ decl =
     decl_module
   | decl_extmodule
   | decl_intmodule
-  | decl_group
+  | decl_layer
   | decl_type_alias ;
 
 decl_module =
@@ -3485,9 +3486,9 @@ decl_intmodule =
     { "parameter" , id , "=" , ( int | string_dq ) , newline } ,
   dedent ;
 
-decl_group =
-  "declgroup" , id , string , ":" , [ info ] , newline , indent ,
-    { declgroup , newline } ,
+decl_layer =
+  "layer" , id , string , ":" , [ info ] , newline , indent ,
+    { decl_layer , newline } ,
   dedent ;
 
 decl_type_alias = "type", id, "=", type ;
@@ -3502,7 +3503,7 @@ statement =
   | connectlike
   | conditional
   | command
-  | group
+  | layerblock
   | skip ;
 
 (* Circuit Components *)
@@ -3576,9 +3577,9 @@ command =
     , ")" ,
     [ ":" , id ] , [ info ] ;
 
-(* Group Statement *)
-group =
-  "group" , id , "of" , id , ":" , [ info ] , newline , indent ,
+(* Layer Block Statement *)
+layerblock =
+  "layerblock" , id , "of" , id , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     { statement , newline } ,
   dedent ;

@@ -2137,9 +2137,14 @@ TODO.
 
 ### Ports in Public Modules
 
-TODO: "You cannot take a rwprobe of a port on a public-facing module"
-TODO: You can't "take control" of a port unless you "own" both sides of it
-`RWProbe`{.firrtl} references to ports are not allowed on public-facing modules.
+Conceptually, in order to force a value onto a circuit component, you need to be able to disconnect it from its former driver.
+However, the driver of a port is another port in some other module.
+And so, to force a port, you must have control over both "ends" of a port.
+
+Trouble arises with ports on a public module (see TODO).
+Since we don't control the remote side of ports (since they might live in another FIRRTL file), we cannot force these ports either.
+
+For this reason, it is an error to use `rwprobe`{.firrtl} on any port on a public module.
 
 ### Input Ports
 

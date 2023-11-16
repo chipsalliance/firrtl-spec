@@ -570,7 +570,8 @@ module Bar :
   connect io.x, add(io.y, UInt(1))
 ```
 
-The bundle of port `io`{.firrtl} has type `{ x : UInt<8>, flip y : UInt<8> }`{.firrtl}, with one aligned field `x`{.firrtl} and one flipped field `y`{.firrtl}.
+The bundle of port `io`{.firrtl} has type `{ x : UInt<8>, flip y : UInt<8> }`{.firrtl}.
+It has two fields, `x`{.firrtl} and `y`{.firrtl}, and `y`{.firrtl} is flipped.
 In the connect expression, we read from `io.y`{.firrtl}, add 1 to it, and then assign it to `io.x`{.firrtl}.
 Both `io.x`{.firrtl} and `io.y`{.firrtl} are subcomponents of `io`{.firrtl} and both have type `UInt<8>`{.firrtl}.
 Note that while `io.x`{.firrtl} is an output port, `io.y`{.firrtl} is an input port.
@@ -580,38 +581,38 @@ Note that while `io.x`{.firrtl} is an output port, `io.y`{.firrtl} is an input p
 Every circuit component declared within a module results in a tree of **subcomponents**.
 Circuit subcomponents have both a kind and a type.
 
-We define this tree of subcomponents recursively by defining the a **direct subcomponent** relation:
+We define this tree of subcomponents recursively by defining the **direct subcomponent** relation.
 
 A circuit component with a ground type, an enumeration type, a probe type, or property type (see [@sec:types]) has no direct subcomponents.
 For example, `wire w : UInt<8>`{.firrtl} has no direct subcomponents.
 
 When a circuit component has a vector type (see [@sec:vector-types]), it has as many direct subcomponents as its length.
-Each subcomponent will have the same kind as its parent and will have the element type.
-For example, if we declare `wire v : UInt<8>[3]`{.firrtl}, it will have three direct subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
+Each subcomponent has the same kind as its parent and has the element type.
+For example, if we declare `wire v : UInt<8>[3]`{.firrtl}, it has three direct subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
 All three are wires and all three have type `UInt<8>`{.firrtl}.
 
-When a circuit component has a bundle type (see [@sec:bundle-types]), it will end up with one direct subcomponent for each field.
+When a circuit component has a bundle type (see [@sec:bundle-types]), it has one direct subcomponent for each field.
 The kind of the subcomponent depends on both the kind and the type of the parent:
 
 -   For nodes, wires, and registers, the kind of each direct subcomponent is the same.
 -   For output and input ports, the kind of each direct subcomponent depends on whether or not the field is flipped.
     When the field is not flipped, the kind remains the same.
-    When the field is flipped, it will change from output to input or vice versa.
+    When the field is flipped, it changes from output to input or vice versa.
 -   For submodule instances and memories, the kind of each direct subcomponent depends on whether or not the field is flipped.
     When the field is not flipped, the kind is an input port.
     When the field is flipped, the kind is an output port.
 
-If the bundle is not `const`{.firrtl}, the type of each subcomponent will simply be the type of the corresponding field.
-However, if the bundle is `const`{.firrtl}, the type of each subcomponent will be the `const`{.firrtl} version of the type of the corresponding field.
+If the bundle is not `const`{.firrtl}, the type of each subcomponent is simply the type of the corresponding field.
+However, if the bundle is `const`{.firrtl}, the type of each subcomponent is the `const`{.firrtl} version of the type of the corresponding field.
 
-A circuit component is a **subcomponent** of another if there is way to get from the first component to the second through the direct subcomponent relation.
+A circuit component is a **subcomponent** of another if there is a way to get from the first component to the second through the direct subcomponent relation.
 A circuit component is trivially considered to be a subcomponent of itself.
 If we need to speak of the subcomponents excluding the component itself, we call these the **proper subcomponents**.
 
 A **root component** is a circuit component that is not the direct subcomponent of any other component.
 Equivalently, these are the circuit components which are declared inside a module.
 
-A **leaf component** is a circuit component has no direct subcomponents.
+A **leaf component** is a circuit component that has no direct subcomponents.
 Leaf components are useful for checking initialization.
 
 Two components are **disjoint** if they have no common subcomponent.
@@ -633,35 +634,14 @@ The result of an out-of-bounds dynamic index is an indeterminate value (see [@se
 
 A **static reference** is a reference where all indexing is static.
 For instances, `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl} are static references.
-A static reference identify a concrete subcomponent within the module definition.
+Static references are checked to ensure they are always in-bounds.
+A static reference identifies a concrete subcomponent within the module definition.
 Static references may be used in `probe`{.firrtl} or `rwprobe`{.firrtl} expressions (see [@sec:probes]).
 
 A **dynamic reference** is one which is not a static reference.
 
 References may appear as the target of `connect`{.firrtl} statements (see [@sec:connections]).
-A connection to a dynamic reference is equivalent to a (potentially large) conditional statement where each branch connects to a static reference.
-For example this connection to a dynamic reference:
-
-``` firrtl
-  ; given  wire v : UInt<8>[4]
-  ; and    wire i : UInt<2>
-  connect v[i], UInt(0)
-```
-
-is equivalent to:
-
-``` firrtl
-  when eq(i, UInt(0)) :
-    connect v[0], UInt(0)
-  when eq(i, UInt(1)) :
-    connect v[1], UInt(0)
-  when eq(i, UInt(2)) :
-    connect v[2], UInt(0)
-  when eq(i, UInt(3)) :
-    connect v[3], UInt(0)
-  else :
-    invalidate v
-```
+A connection to a dynamic reference is equivalent to a (potentially large) conditional statement consisting of only connects to static references.
 
 # Types
 

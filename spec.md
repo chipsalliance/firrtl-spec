@@ -400,7 +400,9 @@ Circuit components can be connected together (see [@sec:connections]).
 Each circuit component in a module has a type ([@sec:types]).
 It is used to determine the legality of connections.
 
-## Nodes
+## Kinds
+
+### Nodes
 
 Nodes are named expressions in FIRRTL.
 
@@ -412,7 +414,7 @@ node mynode = and(in, UInt<4>(1))
 
 The type of a node is the type of the expression given in the definition.
 
-## Wires
+### Wires
 
 Wires represent named expressions whose value is determined by FIRRTL `connect`{.firrtl} statements (see [@sec:connections]).
 
@@ -426,7 +428,7 @@ connect mywire, UInt<1>(0)
 Unlike nodes, the type of a wire must be explicitly declared.
 The type of a wire is given after the colon (`:`{.firrtl}).
 
-## Registers
+### Registers
 
 Registers are stateful elements of a design.
 
@@ -466,7 +468,7 @@ Semantically, registers become flip-flops in the design.
 The next value is latched on the positive edge of the clock.
 The initial value of a register is indeterminate (see [@sec:indeterminate-values]).
 
-## Output Ports and Input Ports
+### Output Ports and Input Ports
 
 The way a module interacts with the outside world is through its output and input ports.
 
@@ -481,7 +483,7 @@ For both variants of port, the type is given after the colon (`:`{.firrtl}).
 
 The two kinds of ports differ in the rules for how they may be connected (see [@sec:connections]).
 
-## Submodule Instances
+### Submodule Instances
 
 A module in FIRRTL may contain submodules.
 
@@ -513,7 +515,7 @@ The type of the submodule instance `passthrough`{.firrtl} above is thus:
 { flip in : UInt<8>, out : UInt<8> }
 ```
 
-## Memories
+### Memories
 
 Memories are stateful elements of a design.
 
@@ -537,6 +539,109 @@ The type named in `data-type`{.firrtl} must be passive.
 It indicates the type of the data being stored inside of the memory.
 
 See [@sec:memories] for more details.
+
+## Subcomponents
+
+Each circuit component factors into subcomponents which can be accessed through references.
+
+### Examples
+
+To motivate the notion of subcomponents, let's look at a few examples.
+
+First, let's look at a wire with a vector type:
+
+``` firrtl
+module Foo :
+  wire v : UInt<8>[3]
+  connect v[0], UInt(0)
+  connect v[1], UInt(10)
+  connect v[2], UInt(42)
+```
+
+Here, we have declared a wire `v`{.firrtl} with a vector type with length 3.
+We can index into the wire `v`{.firrtl} with the expressions `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}, and target these with a `connect`{.firrtl} statement (see [@sec:connections]).
+Each of these is a subcomponent of `v`{.firrtl} and each acts like a wire with type `UInt<8>`{.firrtl}.
+
+Next, let's look at a port with a bundle type:
+
+``` firrtl
+module Bar :
+  output io : { x : UInt<8>, flip y : UInt<8> }
+  connect io.x, add(io.y, UInt(1))
+```
+
+The bundle of port `io`{.firrtl} has type `{ x : UInt<8>, flip y : UInt<8> }`{.firrtl}.
+It has two fields, `x`{.firrtl} and `y`{.firrtl}, and `y`{.firrtl} is flipped.
+In the connect expression, we read from `io.y`{.firrtl}, add 1 to it, and then assign it to `io.x`{.firrtl}.
+Both `io.x`{.firrtl} and `io.y`{.firrtl} are subcomponents of `io`{.firrtl} and both have type `UInt<8>`{.firrtl}.
+Note that while `io.x`{.firrtl} is an output port, `io.y`{.firrtl} is an input port.
+
+### Definition
+
+Every circuit component declared within a module results in a tree of **subcomponents**.
+Circuit subcomponents have both a kind and a type.
+
+We define this tree of subcomponents recursively by defining the **direct subcomponent** relation.
+
+A circuit component with a ground type, an enumeration type, a probe type, or property type (see [@sec:types]) has no direct subcomponents.
+For example, `wire w : UInt<8>`{.firrtl} has no direct subcomponents.
+
+When a circuit component has a vector type (see [@sec:vector-types]), it has as many direct subcomponents as its length.
+Each subcomponent has the same kind as its parent and has the element type.
+For example, if we declare `wire v : UInt<8>[3]`{.firrtl}, it has three direct subcomponents: `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl}.
+All three are wires and all three have type `UInt<8>`{.firrtl}.
+
+When a circuit component has a bundle type (see [@sec:bundle-types]), it has one direct subcomponent for each field.
+The kind of the subcomponent depends on both the kind and the type of the parent:
+
+-   For nodes, wires, and registers, the kind of each direct subcomponent is the same.
+-   For output and input ports, the kind of each direct subcomponent depends on whether or not the field is flipped.
+    When the field is not flipped, the kind remains the same.
+    When the field is flipped, it changes from output to input or vice versa.
+-   For submodule instances and memories, the kind of each direct subcomponent depends on whether or not the field is flipped.
+    When the field is not flipped, the kind is an input port.
+    When the field is flipped, the kind is an output port.
+
+If the bundle is not `const`{.firrtl}, the type of each subcomponent is simply the type of the corresponding field.
+However, if the bundle is `const`{.firrtl}, the type of each subcomponent is the `const`{.firrtl} version of the type of the corresponding field.
+
+A circuit component is a **subcomponent** of another if there is a way to get from the first component to the second through the direct subcomponent relation.
+A circuit component is trivially considered to be a subcomponent of itself.
+If we need to speak of the subcomponents excluding the component itself, we call these the **proper subcomponents**.
+
+A **root component** is a circuit component that is not the direct subcomponent of any other component.
+Equivalently, these are the circuit components which are declared inside a module.
+
+A **leaf component** is a circuit component that has no direct subcomponents.
+Leaf components are useful for checking initialization.
+
+Two components are **disjoint** if they have no common subcomponent.
+For example, given `wire w : { x : UInt<1>, y : UInt<8>[2] }`{.firrtl}, `w.x`{.firrtl} and `w.y`{.firrtl} are disjoint, but `w.y[0]`{.firrtl} and `w.y`{.firrtl} are not.
+
+### References
+
+A **reference** is a name that refers to a previously declared circuit component.
+These are constructed using the names of root components, and optionally, through the dot and bracket operators.
+
+For instance, suppose we declare `wire w : { x : UInt<1>, v : UInt<8>[2] }`{.firrtl}.
+Then `w`{.firrtl}, `w.x`{.firrtl}, `w.y`{.firrtl}, `w.y[0]`{.firrtl}, and `w.y[1]`{.firrtl}, and `w.y[i]`{.firrtl} are all examples of references.
+
+When a circuit component has a vector type, you can perform both static and dynamic indexing.
+For example, given `wire v : UInt<8>[2]`{.firrtl}, both `v[0]`{.firrtl} and `v[1]`{.firrtl} are references using static indexing.
+On the other hand, `v[i]`{.firrtl} is a reference using dynamic indexing, given an expression `i`{.firrtl} with an unsigned integer type.
+
+The result of an out-of-bounds dynamic index is an indeterminate value (see [@sec:indeterminate-values]).
+
+A **static reference** is a reference where all indexing is static.
+For instances, `v[0]`{.firrtl}, `v[1]`{.firrtl}, and `v[2]`{.firrtl} are static references.
+Static references are checked to ensure they are always in-bounds.
+A static reference identifies a concrete subcomponent within the module definition.
+Static references may be used in `probe`{.firrtl} or `rwprobe`{.firrtl} expressions (see [@sec:probes]).
+
+A **dynamic reference** is one which is not a static reference.
+
+References may appear as the target of `connect`{.firrtl} statements (see [@sec:connections]).
+A connection to a dynamic reference is equivalent to a (potentially large) conditional statement consisting of only connects to static references.
 
 # Types
 
@@ -1116,7 +1221,7 @@ module MyModule :
   connect myport, portx
 ```
 
-See [@sec:sub-fields] for more details about sub-field expressions.
+See [@sec:references] for more details about indexing.
 
 ## Invalidates
 
@@ -2430,195 +2535,6 @@ The data value expression may be omitted when the data type is `UInt<0>(0)`{.fir
 ``` firrtl
 {|a, b, c|}(a)
 {|some: UInt<8>, None|}(Some, x)
-```
-
-## References
-
-A reference is simply a name that refers to a previously declared circuit component.
-
-The following example connects a reference expression `in`{.firrtl}, referring to the previously declared port `in`{.firrtl}, to the reference expression `out`{.firrtl}, referring to the previously declared port `out`{.firrtl}.
-
-``` firrtl
-module MyModule :
-  input in: UInt
-  output out: UInt
-  connect out, in
-```
-
-In the rest of the document, for brevity, the names of components will be used to refer to a reference expression to that component.
-Thus, the above example will be rewritten as "the port `in`{.firrtl} is connected to the port `out`{.firrtl}".
-
-### Static Reference Expressions
-
-Static references start with an identifier, optionally followed by sub-fields or sub-indices selecting a particular sub-element.
-Sub-accesses are not allowed.
-
-Define statements must have static references as their target, and their source must be either a static reference or a probe expression whose argument is a static reference.
-
-## Sub-fields
-
-The sub-field expression refers to a sub-element of an expression with a bundle type.
-If the expression is of a constant bundle type, the sub-element shall be of a constant type (`const`{.firrtl} propagates from the bundle to the element on indexing).
-
-The following example connects the `in`{.firrtl} port to the `a`{.firrtl} sub-element of the `out`{.firrtl} port.
-
-``` firrtl
-module MyModule :
-  input in: UInt
-  output out: {a: UInt, b: UInt}
-  connect out.a, in
-```
-
-The following example is the same as above, but with a constant output bundle.
-
-``` firrtl
-module MyModule :
-  input in: const UInt
-  output out: const {a: UInt, b: UInt}
-  connect out.a, in ; out.a is of type const UInt
-```
-
-The following example is the same as above, but with a bundle with a constant field.
-
-``` firrtl
-module MyModule :
-  input in: const UInt
-  output out: {a: const UInt, b: UInt}
-  connect out.a, in ; out.a is of type const UInt
-```
-
-A sub-field referring to a field whose name is a literal identifier is shown below:
-
-``` firrtl
-module MyModule :
-  input a: { `0` : { `0` : { b : UInt<1> } } }
-  output b: UInt<1>
-  connect b, a.`0`.`0`.b
-```
-
-## Sub-indices
-
-The sub-index expression statically refers, by index, to a sub-element of an expression with a vector type.
-The index must be a non-negative integer and cannot be equal to or exceed the length of the vector it indexes.
-If the expression is of a constant vector type, the sub-element shall be of a constant type.
-
-The following example connects the `in`{.firrtl} port to the fifth sub-element of the `out`{.firrtl} port.
-
-``` firrtl
-module MyModule :
-  input in: UInt
-  output out: UInt[10]
-  connect out[4], in
-```
-
-The following example is the same as above, but with a constant vector.
-
-``` firrtl
-module MyModule :
-  input in: const UInt
-  output out: const UInt[10]
-  connect out[4], in ; out[4] has a type of const UInt
-```
-
-## Sub-accesses
-
-The sub-access expression dynamically refers to a sub-element of a vector-typed expression using a calculated index.
-The index must be an expression with an unsigned integer type.
-If the expression is of a constant vector type, the sub-element shall be of a constant type.
-An access to an out-of-bounds element results in an indeterminate value (see [@sec:indeterminate-values]).
-Each out-of-bounds element is a different indeterminate value.
-Sub-access operations with constant index may be converted to sub-index operations even though it converts indeterminate-value-on-out-of-bounds behavior to a compile-time error.
-
-The following example connects the n'th sub-element of the `in`{.firrtl} port to the `out`{.firrtl} port.
-
-``` firrtl
-module MyModule :
-  input in: UInt[3]
-  input n: UInt<2>
-  output out: UInt
-  connect out, in[n]
-```
-
-A connection from a sub-access expression can be modeled by conditionally connecting from every sub-element in the vector, where the condition holds when the dynamic index is equal to the sub-element's static index.
-
-``` firrtl
-module MyModule :
-  input in: UInt[3]
-  input n: UInt<2>
-  output out: UInt
-  when eq(n, UInt(0)) :
-    connect out, in[0]
-  else when eq(n, UInt(1)) :
-    connect out, in[1]
-  else when eq(n, UInt(2)) :
-    connect out, in[2]
-  else :
-    invalidate out
-```
-
-The following example connects the `in`{.firrtl} port to the n'th sub-element of the `out`{.firrtl} port.
-All other sub-elements of the `out`{.firrtl} port are connected from the corresponding sub-elements of the `default`{.firrtl} port.
-
-``` firrtl
-module MyModule :
-  input in: UInt
-  input default: UInt[3]
-  input n: UInt<2>
-  output out: UInt[3]
-  connect out, default
-  connect out[n], in
-```
-
-A connection to a sub-access expression can be modeled by conditionally connecting to every sub-element in the vector, where the condition holds when the dynamic index is equal to the sub-element's static index.
-
-``` firrtl
-module MyModule :
-  input in: UInt
-  input default: UInt[3]
-  input n: UInt<2>
-  output out: UInt[3]
-  connect out, default
-  when eq(n, UInt(0)) :
-    connect out[0], in
-  else when eq(n, UInt(1)) :
-    connect out[1], in
-  else when eq(n, UInt(2)) :
-    connect out[2], in
-```
-
-The following example connects the `in`{.firrtl} port to the m'th `UInt`{.firrtl} sub-element of the n'th vector-typed sub-element of the `out`{.firrtl} port.
-All other sub-elements of the `out`{.firrtl} port are connected from the corresponding sub-elements of the `default`{.firrtl} port.
-
-``` firrtl
-module MyModule :
-  input in: UInt
-  input default: UInt[2][2]
-  input n: UInt<1>
-  input m: UInt<1>
-  output out: UInt[2][2]
-  connect out, default
-  connect out[n][m], in
-```
-
-A connection to an expression containing multiple nested sub-access expressions can also be modeled by conditionally connecting to every sub-element in the expression.
-However the condition holds only when all dynamic indices are equal to all of the sub-element's static indices.
-
-``` firrtl
-module MyModule :
-  input in: UInt
-  input default: UInt[2][2]
-  input n: UInt<1>
-  input m: UInt<1>
-  output out: UInt[2][2]
-  connect out, default
-  when and(eq(n, UInt(0)), eq(m, UInt(0))) :
-    connect out[0][0], in
-  else when and(eq(n, UInt(0)), eq(m, UInt(1))) :
-    connect out[0][1], in
-  else when and(eq(n, UInt(1)), eq(m, UInt(0))) :
-    connect out[1][0], in
-  else when and(eq(n, UInt(1)), eq(m, UInt(1))) :
-    connect out[1][1], in
 ```
 
 ## Multiplexers

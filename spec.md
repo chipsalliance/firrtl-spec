@@ -2148,9 +2148,13 @@ For this reason, it is an error to use `rwprobe`{.firrtl} on any port on a publi
 
 ### Input Ports
 
-- TODO: Golden Rule: when using `input`{.firrtl} ports, you can only "use"(TODO) the probe in an anscestor in the module hierarchy.
-- Desquiggling
-- Examples
+FIRRTL allows probes to be passed through ports.
+However, due to the limitations of Verilog, there is an important restriction on where they may be used.
+
+A module which only sends probes up towards its parent via output ports have no restriction.
+However, when a module receives a probe from its parent through an input port, you may not use it in a `read`{.firrtl} expression nor may you force it if the circuit component it refences does not live in a module that is a descendent of the current module.
+
+For more information on the how probes are lowered, see the FIRRTL ABI Specification.
 
 ### External Modules
 

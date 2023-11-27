@@ -150,27 +150,29 @@ The following macros are emitted in the RTL that simulators or instantiators
 can use configure the initialization and randomization
 of registers and memories before their reset:
 
-* `INIT_RANDOM`
-* `RANDOM`
-* `RANDOMIZE`
-* `RANDOMIZE_DELAY`
-* `RANDOMIZE_GARBAGE_ASSIGN`
-* `RANDOMIZE_INVALID_ASSIGN`
-* `RANDOMIZE_REG_INIT`
-* `RANDOMIZE_MEM_INIT`
+* `RANDOMIZE` - True/False flag that indicates whether any randomization should occur at all.
+* `INIT_RANDOM`- Users can define INIT_RANDOM as general code that gets injected into the initializer block for modules with registers.
+* `RANDOM` - May be set to an expression that produces a 32-bit random unsigned value.
+* `RANDOMIZE_DELAY` - The delay used within the `initial` block to delay randomization.
+* `RANDOMIZE_REG_INIT` - True/False define flag if registers should have randomized values (rather than X) at start of simulation.
+* `RANDOMIZE_MEM_INIT` - True/False define flag if multi-dimenstional state elements should have randomized values (rather than X) at start of simulation.
 
 ### Conditionals
 
 The following macros are emitted in the RTL that simulators or instantiators
 can use configure behavior of certain events:
 
-* `PRINTF_COND`
-* `STOP_COND`
+* `PRINTF_COND` - Users can define 'PRINTF_COND' to add an extra gate to prints.
+* `STOP_COND` - Users can define 'STOP_COND' to add an extra gate to stop conditions.
+* `ASSERT_VERBOSE_COND` - Users can define 'ASSERT_VERBOSE_COND' to add an extra gate to assert error printing.
 
 ### General
 
-* `SYNTHESIS`
-* `VCS`
+* `SYNTHESIS` - True/False define macro that indicates whether a section of code is valid for Synthesis (vs simulation)
+
+## On Attributes
+
+* `VCS coverage exclude_file`
 
 # Versioning Scheme of this Document
 

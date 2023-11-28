@@ -152,6 +152,32 @@ Private modules have none of the restrictions of public modules.
 Private modules have no stable, defined interface and may not be used outside the current circuit.
 A private module may not be physically present in a compiled circuit.
 
+## Option Groups
+
+The option group mechanism declares configurable parameters with a pre-defined set of values to enable the specialization of designs during or after lowering.
+Options groups address the need for configurability.
+For example, designs may need to behave differently on ASIC and FPGA platforms, but at the time of FIRRTL elaboration it is not known which platform the design will be used on.
+This feature allows such choices to be expressed and embedded into the design.
+
+The `option`{.firrtl} keyword declares an option group, which contains `case`{.firrtl} declarations naming the settings allotted to that option.
+The circuit can be specialized for a single case of a given option at any time.
+Multiple option groups can be declared to capture orthogonal dimensions of configuration.
+
+Specialization can occur either in the compiler or it can be materialized in the lowering.
+For details, consult the FIRRTL ABI specification.
+Specialization is not mandatory: options can be left unspecified, resorting to explicitly-defined default behaviour.
+
+``` firrtl
+circuit:
+  option Platform:
+    case FPGA:
+    case ASIC:
+
+  option Performance:
+    case Slow:
+    case Fast
+```
+
 ## Externally Defined Modules
 
 Externally defined modules are modules whose implementation is not provided in the current circuit.
@@ -480,6 +506,36 @@ circuit Foo:
       { flip in : UInt<8>, out : UInt<8> }
     ;; snippetend
 ```
+
+#### Instance Choices
+
+FIRRTL supports the specialization of designs through the `instchoice`{.firrtl} declaration, which selects the instantiated module based on an `option`{.firrtl}.
+
+Example:
+
+``` firrtl
+circuit:
+  option Platform:
+    case FPGA:
+    case ASIC:
+
+  module InstanceChoice:
+    instchoice clock_gate of DefaultTarget, Platform:
+      FPGA => FPGATarget
+
+  module DefaultTarget:
+
+  module FPGATarget:
+```
+
+The instance choice declaration specifies the instance name and names the option group based on which the choices are selected.
+A default module is provided, to be instantiated when the design is not specialized or it is not specialised for a known case.
+Subsequently, modules can be specified for the known choices of the selected option group.
+The operation does not need to specify modules for all cases.
+The references must be either modules or extmodules.
+
+The type of the instance bundle is determined identically to regular instances.
+The port lists of all modules must match and the ports are limited to ground and aggregate types.
 
 ### Memories
 
@@ -4128,6 +4184,7 @@ decl =
   | decl_extmodule
   | decl_intmodule
   | decl_layer
+  | decl_option
   | decl_type_alias ;
 
 decl_module =
@@ -4156,6 +4213,11 @@ decl_layer =
     { decl_layer , newline } ,
   dedent ;
 
+decl_option =
+  "option" , id , ":" , [info] , newline, indent ,
+    { "case" , id , ":" , [ info ] , newline } ,
+  dedent ;
+
 decl_type_alias = "type", id, "=", type ;
 
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
@@ -4177,11 +4239,17 @@ circuit_component =
   | circuit_component_wire
   | circuit_component_reg
   | circuit_component_inst
+  | circuit_component_instchoice
   | circuit_component_mem ;
 
 circuit_component_node = "node" , id , "=" , expr , [ info ] ;
 circuit_component_wire = "wire" , id , ":" , type , [ info ] ;
 circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
+circuit_component_instchoice =
+  "instchoice" , id , "of" , id , "," , id , ":" , newline ,
+  indent ,
+  { id , "=>" , id , newline } ,
+  dedent;
 
 circuit_component_reg =
     "reg" , id , ":" , type , expr , [ info ]

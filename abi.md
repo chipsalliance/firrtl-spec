@@ -311,6 +311,136 @@ bind Bar Bar_Layer1_Layer2 layer1_layer2(.notA(Bar.layer1.notA));
 The `` `ifdef ``{.verilog} guards enable any combination of the bind files to be included while still producing legal SystemVerilog.
 I.e., the end user may safely include none, either, or both of the bindings files.
 
+## On Targets
+
+A target will result in the creation of specialization files.
+One specialization file per public module per option for a given target will be created.
+
+Including a specialization file in the elaboration of Verilog produced by a FIRRTL compiler specializes the instantiation hierarchy under the associated public module with that option.
+
+Each specialization file must have the following filename where `module` is the name of the public module, `target` is the name of the target, and `option` is the name of the option:
+
+``` ebnf
+filename = "targets_" , module , "_" , target , "_", option , ".vh" ;
+```
+
+Each specialization file will guard for multiple inclusion.
+Namely, if two files that specialize the same target are included, this must produce an error.
+If the file is included after a module which relies on the specialization, this must produce an error.
+
+### Example
+
+The following circuit is an example implementation of how a target can be lowered to align with the ABI defined above.
+This circuit has one target named `Target` with two options, `A` and `B`.
+Module `Foo` may be specialized using an instance choice that will instantiate `Bar` by default and `Baz` if `Target` is set to `A`.
+If `Target` is set to `B`, then the default instantiation, `Bar`, will occur.
+Module `Foo` includes a probe whose define is inside the instance choice.
+
+``` firrtl
+FIRRTL version 4.1.0
+circuit Foo:
+
+  option Target:
+    case A
+    case B
+
+  module Baz:
+    output a: Probe<UInt<1>>
+
+    node c = UInt<1>(1)
+    define a = probe(c)
+
+  module Bar:
+    output a: Probe<UInt<1>>
+
+    node b = UInt<1>(0)
+    define a = probe(b)
+
+  public module Foo:
+    output a: Probe<UInt<1>>
+
+    instchoice x of Bar, Target:
+      A => Baz
+
+    define a = x.a
+```
+
+To align with the ABI, this must produce the following files to specialize the circuit for option `A` or option `B`, respectively:
+
+-   `targets_Foo_Target_A.sv`
+-   `targets_Foo_Target_B.sv`
+
+What follows describes a possible implementation that aligns with the ABI.
+Note that the internal details are not part of the ABI.
+
+When compiled, this produces the following Verilog:
+
+``` systemverilog
+module Baz(output a);
+  assign a = 1'h1;
+endmodule
+
+module Bar(output a);
+  assign a = 1'h0;
+endmodule
+
+// Defines for the instance choices
+`ifndef __target_Target_foo_x
+ `define __target_Target_foo_x Bar
+`endif
+
+module Foo();
+
+  `__target_Target_foo_x x();
+
+endmodule
+```
+
+The contents of the two option enabling files are shown below:
+
+``` systemverilog
+// Contents of "targets_Target_A.vh"
+`ifdef __target_Target_foo_x
+ `ERROR__target_Target_foo_x__must__not__be__set
+`else
+ `define __target_Target_foo_x Baz
+`endif
+
+`ifdef __targetref_Foo_x_a a
+ `ERROR__targetref_Foo_x_a__must__not__be__set
+`else
+ `define __targetref_Foo_x_a a
+`endif
+```
+
+``` systemverilog
+// Contents of "targets_Target_B.vh"
+`ifdef __target_Target_foo_x
+  `ERROR__target_Target_foo_x__must__not__be__set
+`endif
+
+// This file has no defines.
+```
+
+Additionally, probe on public module `Foo` requires that the following file is produced:
+
+``` systemverilog
+// Contents of "refs_Foo.sv"
+`ifndef __targetref_Foo_x_a
+ `define __targetref_Foo_x_a b
+`endif
+
+`define ref_Foo_x x.`__targetref_Foo_x_a
+```
+
+If neither of the option enabling files are included, then `Bar` will by default be instantiated.
+If `targets_Foo_Target_A.vh` is included before elaboration of `Foo`, then `Baz` will be instantiated.
+If `targets_Foo_Target_B.vh` is included before elaboration of `Foo`, then `Bar` will be instantiated.
+If both `targets_Foo_Target_A.vh` and `targets_Foo_Target_B.vh` are included, then an error (by means of an undefined macro error) will be produced.
+If either `targets_Foo_Target_A.vh` or `targets_Foo_Target_B.vh` are included after `Foo` is elaborated, then an error will be produced.
+
+If `ref_Foo.vh` is included before either `targets_Foo_Target_A.vh` or `targets_Foo_Target_B.vh`, then an error will be produced.
+
 ## On Types
 
 Types are only guaranteed to follow this lowering when the Verilog type is on an element which is part of the ABI defined public elements.

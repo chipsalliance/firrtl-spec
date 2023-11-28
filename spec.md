@@ -2023,21 +2023,17 @@ cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 
 # Probes
 
-Probe types expose and provide access to circuit components contained inside of a module.
+Probes are a feature which facilitate graybox testing of FIRRTL modules.
 
-## Motivation
+Probes allow modules to expose circuit components contained inside of them.
+Given a probe, you can use it to read the value of the circuit component it references.
+For read-writeable probes, you can also force it, causing it to take on a specified value.
 
-TODO
-
-They are intended for verification.
-Ports with a probe type do not necessarily result in physical hardware.
-Special verification constructs enable the value of a probe to be read or forced remotely.
+Since they are intended for verification, ports with a probe type do not necessarily result in physical hardware.
 
 ## Types
-
-TODO: See Probe Types ???
-
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
+(See [@sec:probe-types]).
 
 Examples:
 
@@ -2046,26 +2042,27 @@ Probe<UInt<8>>
 RWProbe<UInt<8>>
 ```
 
-TODO: Relation between `Probe`{.firrtl} and `RWProbe`{.firrtl}
+A `RWProbe<T>`{.firrtl} will be implicitly cast to a `Probe<T>`{.firrtl} whenever an expression of type `RWProbe<T>`{.firrtl} is assigned to a port with type `Probe<T>`{.firrtl}.
 
-Define statements can set a `Probe`{.firrtl} to either a `Probe`{.firrtl} or `RWProbe`{.firrtl}, but a `RWProbe`{.firrtl} cannot be set to a `Probe`{.firrtl}.
-The inner types of the two references must (recursively) be identical or identical with the destination containing uninferred versions of the corresponding element in the source type.
-See [@sec:type-inference] for details.
+While `RWProbe<T>`{.firrtl} is strictly more powerful, `Probe<T>`{.firrtl} allows for more aggressive optimization.
+You should consider using `Probe`{.firrtl} whenever you know you don't need to ability to force (see [@sec:forcing]).
 
-## `probe`{.firrtl} and `rwprobe`{.firrtl} Expressions
+## The `probe`{.firrtl} and `rwprobe`{.firrtl} Expressions
 
-`Probe`{.firrtl} and `RWProbe`{.firrtl} are created using the `probe`{.firrtl} and `rwprobe`{.firrtl} expressions, respectively (see [@sec:probes]).
+Given a reference to a circuit component, you can capture it in a probe with `probe`{.firrtl} for a read-only probe or with `rwprobe`{.firrtl} for a read-writeable probe.
 
-## Passing Probes through Ports
+## The `define`{.firrtl} Statement
 
-Probes can be passed through ports using the `define`{.firrtl} statement (see [@sec:define]).
+Since neither `Probe<T>`{.firrtl} nor `RWProbe<T>`{.firrtl} is a connectable type ([@sec:connectable-types]), circuit components with these types cannot be connected to.
+Instead, we use the `define`{.firrtl} statement to route probes through a FIRRTL circuit.
 
-TODO: `define` statements can appear in when statements but aren't affected by them.
-TODO: `define` statements can only appear once per thing, ie, no last connects
-TODO: All probes must be initalized: "Every sink-flow probe must be the target of exactly one of these statements"
-TODO: Probes cannot be invalidated.
+The `define`{.firrtl} statements works similarly to `connect`{.firrtl}, but it has special interactions with conditional statements ([@sec:conditionals]).
+`define`{.firrtl} statements may appear within conditional blocks, and when they do, they may connect circuit components defined in a local scope.
+However, `define`{.firrtl} are not subject to last connect semantics, and the `define`{.firrtl} statement is always and unconditionally in effect.
 
-TODO: What is this example?:
+All probes in a module definition must be initialized with a `define`{.firrtl} statement.
+
+Here is an example of a module which uses `define`{.firrtl} to pass a number of probes to its ports:
 
 ``` firrtl
 module Refs:
@@ -2084,12 +2081,12 @@ module Refs:
   define d = probe(clock)
 ```
 
-The target is not required to be only an identifier, it may be a field within a bundle or other statically known sub-element of an aggregate, for example:
+The target may also be a subcomponent of a circuit component:
 
 ``` firrtl
 module Foo:
   input x : UInt
-  output y : {x: UInt, p: Probe<UInt>}
+  output y : { x: UInt, p: Probe<UInt> }
   output z : Probe<UInt>[2]
 
   wire w : UInt
@@ -2101,28 +2098,182 @@ module Foo:
   define z[1] = probe(w)
 ```
 
-TODO: Why not?
+## The `read`{.firrtl} Expressions
 
-## `read`{.firrtl} Expressions
+Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression.
 
-Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression (see [@sec:reading-probe-references]).
+Keep in mind that probes are intended for verification and isn't intended to be synthesizable.
+A `read`{.firrtl} expression can reach arbitrarily far into the module hierarchy to read from a distant circuit component, which is arguably unphysical at worst and potentially expensive at best.
 
 ## Forcing
 
-TODO
+A `RWProbe`{.firrtl} may be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands.
+When you force a component, it will ignore all other drivers and take on the value supplied by the force statement instead.
+The `release`{.firrtl} and `release_initial`{.firrtl} statements end the forcing, reconnecting the circuit component to its usual driver.
 
-`RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
-However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
+Like `read`{.firrtl}, the force statements are verification constructs.
 
-## Probes and Groups
+  -------------------------------------------------------------------------------------------------------------------
+  Name              Arguments                      Argument Types
+  ----------------- ------------------------------ ------------------------------------------------------------------
+  force_initial     (ref, val)                     (`RWProbe<T>`{.firrtl}, T)
 
-`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with an optional group (see [@sec:optional-groups]).
-When associated with an optional group, the reference type may only be driven from that optional group.
+  release_initial   (ref)                          (`RWProbe<T>`{.firrtl})
+
+  force             (clock, condition, ref, val)   (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T)
+
+  release           (clock, condition, ref)        (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})
+  -------------------------------------------------------------------------------------------------------------------
+
+Backends optionally generate corresponding constructs in the target language, or issue an warning.
+
+The following `AddRefs`{.firrtl} module is used in the examples that follow for each construct.
+
+``` firrtl
+module AddRefs:
+  output a : RWProbe<UInt<2>>
+  output b : RWProbe<UInt<2>>
+  output c : RWProbe<UInt<2>>
+  output sum : UInt<3>
+
+  node x = UInt<2>(0)
+  node y = UInt<2>(0)
+  node z = UInt<2>(0)
+  connect sum, add(x, add(y, z))
+
+  define a = rwprobe(x)
+  define b = rwprobe(y)
+  define c = rwprobe(z)
+```
+
+### Initial Force and Initial Release
+
+These variants force and release continuously:
+
+Example:
+
+``` firrtl
+module ForceAndRelease:
+  output o : UInt<3>
+
+  inst r of AddRefs
+  connect o, r.sum
+
+  force_initial(r.a, UInt<2>(0))
+  force_initial(r.a, UInt<2>(1))
+  force_initial(r.b, UInt<2>(2))
+  force_initial(r.c, UInt<2>(3))
+  release_initial(r.c)
+```
+
+In this example, the output `o`{.firrtl} will be `3`.
+Note that globally the last force statement overrides the others until another force or release including the target.
+
+Sample SystemVerilog output for the force and release statements would be:
+
+``` systemverilog
+initial begin
+  force ForceAndRelease.AddRefs.x = 0;
+  force ForceAndRelease.AddRefs.x = 1;
+  force ForceAndRelease.AddRefs.y = 2;
+  force ForceAndRelease.AddRefs.z = 3;
+  release ForceAndRelease.AddRefs.z;
+end
+```
+
+The `force_initial`{.firrtl} and `release_initial`{.firrtl} statements may occur under `when`{.firrtl} blocks which becomes a check of the condition first.
+Note that this condition is only checked once and changes to it afterwards are irrelevant, and if executed the force will continue to be active.
+For more control over their behavior, the other variants should be used.
+Example:
+
+``` firrtl
+when c : force_initial(ref, x)
+```
+
+would become:
+
+``` systemverilog
+initial if (c) force a.b = x;
+```
+
+### Force and Release
+
+These more detailed variants allow specifying a clock and condition for when activating the force or release behavior continuously:
+
+``` firrtl
+module ForceAndRelease:
+  input a: UInt<2>
+  input clock : Clock
+  input cond : UInt<1>
+  output o : UInt<3>
+
+  inst r of AddRefs
+  connect o, r.sum
+
+  force(clock, cond, r.a, a)
+  release(clock, not(cond), r.a)
+```
+
+Which at the positive edge of `clock`{.firrtl} will either force or release `AddRefs.x`{.firrtl}.
+Note that once active, these remain active regardless of the condition, until another force or release.
+
+Sample SystemVerilog output:
+
+``` systemverilog
+always @(posedge clock) begin
+  if (cond)
+    force ForceAndRelease.AddRefs.x = a;
+  else
+    release ForceAndRelease.AddRefs.x;
+end
+```
+
+Condition is checked in procedural block before the force, as shown above.
+When placed under `when`{.firrtl} blocks, condition is mixed in as with other statements (e.g., `assert`{.firrtl}).
+
+### Non-Passive Force Target
+
+Force on a non-passive bundle drives in the direction of each field's orientation.
+
+Example:
+
+``` firrtl
+module Top:
+  input x : {a: UInt<2>, flip b: UInt<2>}
+  output y : {a: UInt<2>, flip b: UInt<2>}
+
+  inst d of DUT
+  connect d.x, x
+  connect y, d.y
+
+  wire val : {a: UInt<2>, b: UInt<2>}
+  connect val.a, UInt<2>(1)
+  connect val.b, UInt<2>(2)
+
+  ; Force takes a RWProbe and overrides the target with 'val'.
+  force_initial(d.xp, val)
+
+module DUT :
+  input x : {a: UInt<2>, flip b: UInt<2>}
+  output y : {a: UInt<2>, flip b: UInt<2>}
+  output xp : RWProbe<{a: UInt<2>, b: UInt<2>}>
+
+  ; Force drives p.a, p.b, y.a, and x.b, but not y.b and x.a
+  wire p : {a: UInt<2>, flip b: UInt<2>}
+  define xp = rwprobe(p)
+  connect p, x
+  connect y, p
+```
+
+## Probes and Layers
+
+`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with a layer (see [@sec:layers]).
+When associated with a layer, the reference type may only be driven from tha layer.
 
 For example:
 
 ``` firrtl
-Probe<UInt<8>, A.B>     ; A.B is an optional group
+Probe<UInt<8>, A.B>     ; A.B is a layer
 RWProbe<UInt<8>, A.B>
 ```
 
@@ -2135,7 +2286,9 @@ For details, see the FIRRTL ABI Specification.
 
 TODO.
 
-### Ports in Public Modules
+For more information on the how probes are lowered, see the FIRRTL ABI Specification.
+
+### No `RWProbe`{.firrtl}s of Ports on Public Modules
 
 Conceptually, in order to force a value onto a circuit component, you need to be able to disconnect it from its former driver.
 However, the driver of a port is another port in some other module.

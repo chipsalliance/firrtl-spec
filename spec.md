@@ -3518,7 +3518,7 @@ circuit_component_node = "node" , id , "=" , expr , [ info ] ;
 circuit_component_wire = "wire" , id , ":" , type , [ info ] ;
 circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
 
-conditional_reg =
+circuit_component_reg =
     "reg" , id , ":" , type , expr , [ info ]
   | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
 

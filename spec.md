@@ -822,7 +822,7 @@ Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.
 `RWProbe`{.firrtl} may also be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands (see [@sec:force-and-release]).
 However, when forcing is not needed, the `Probe`{.firrtl} allows more aggressive optimization.
 
-Probes can be passed through ports using the `define`{.firrtl} statement (see [@sec:define]).
+Probes can be passed through ports using the `define`{.firrtl} statement (see [@sec:the-define-statement]).
 
 Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
 
@@ -2494,7 +2494,6 @@ Read operations can be used anywhere a signal of the same underlying type can be
 ```
 
 The source of the probe must reside at or below the point of the `read`{.firrtl} expression in the design hierarchy.
-See [@sec:invalid-input-reference] for an example of an invalid `read`{.firrtl} of an input reference.
 
 ## Probe
 

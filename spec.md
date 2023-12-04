@@ -2278,8 +2278,7 @@ Probe<UInt<8>, A.B>     ; A.B is a layer
 RWProbe<UInt<8>, A.B>
 ```
 
-Probes are generally lowered to hierarchical names in Verilog.
-For details, see the FIRRTL ABI Specification.
+For details on how probes are lowered, see the FIRRTL ABI Specification.
 
 ## External Modules
 

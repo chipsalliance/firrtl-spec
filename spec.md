@@ -2032,6 +2032,7 @@ For read-writeable probes, you can also force it, causing it to take on a specif
 Since they are intended for verification, ports with a probe type do not necessarily result in physical hardware.
 
 ## Types
+
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
 (See [@sec:probe-types]).
 
@@ -2280,11 +2281,16 @@ RWProbe<UInt<8>, A.B>
 Probes are generally lowered to hierarchical names in Verilog.
 For details, see the FIRRTL ABI Specification.
 
+## External Modules
+
+Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
+
 ## Limitations
 
 ### `RWProbe`{.firrtl} with Aggregate Types
 
-TODO.
+Probes of aggregates do not working under all ABI versions.
+In these cases, it is recommended that if you have a need to probe a bundle, you instead use a bundle of probes, each targeting an individual subcomponent.
 
 For more information on the how probes are lowered, see the FIRRTL ABI Specification.
 
@@ -2294,9 +2300,8 @@ Conceptually, in order to force a value onto a circuit component, you need to be
 However, the driver of a port is another port in some other module.
 And so, to force a port, you must have control over both "ends" of a port.
 
-Trouble arises with ports on a public module (see TODO).
+Trouble arises with ports on a public module ([@sec:public-modules]).
 Since we don't control the remote side of ports (since they might live in another FIRRTL file), we cannot force these ports either.
-
 For this reason, it is an error to use `rwprobe`{.firrtl} on any port on a public module.
 
 ### Input Ports
@@ -2308,12 +2313,6 @@ A module which only sends probes up towards its parent via output ports have no 
 However, when a module receives a probe from its parent through an input port, you may not use it in a `read`{.firrtl} expression nor may you force it if the circuit component it refences does not live in a module that is a descendent of the current module.
 
 For more information on the how probes are lowered, see the FIRRTL ABI Specification.
-
-### External Modules
-
-TODO
-
-Probe types may be specified as part of an external module (see [@sec:externally-defined-modules]), with the resolved referent for each specified using `ref`{.firrtl} statements.
 
 # Expressions
 

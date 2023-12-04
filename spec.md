@@ -2103,7 +2103,7 @@ module Foo:
 
 Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression.
 
-Keep in mind that probes are intended for verification and isn't intended to be synthesizable.
+Keep in mind that probes are intended for verification and aren't intended to be synthesizable.
 A `read`{.firrtl} expression can reach arbitrarily far into the module hierarchy to read from a distant circuit component, which is arguably unphysical at worst and potentially expensive at best.
 
 ## Forcing
@@ -2269,7 +2269,7 @@ module DUT :
 ## Probes and Layers
 
 `Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with a layer (see [@sec:layers]).
-When associated with a layer, the reference type may only be driven from tha layer.
+When associated with a layer, the reference type may only be driven from that layer.
 
 For example:
 

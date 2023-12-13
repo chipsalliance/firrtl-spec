@@ -2048,8 +2048,8 @@ Given a reference to a circuit component, you can capture it in a probe with `pr
 Since neither `Probe<T>`{.firrtl} nor `RWProbe<T>`{.firrtl} is a connectable type ([@sec:connectable-types]), circuit components with these types cannot be connected to.
 Instead, we use the `define`{.firrtl} statement to route probes through a FIRRTL circuit.
 
-The `define`{.firrtl} statements works similarly to `connect`{.firrtl}, but it has special interactions with conditional statements ([@sec:conditionals]).
-`define`{.firrtl} statements may appear within conditional blocks, and when they do, they may connect circuit components defined in a local scope.
+The `define`{.firrtl} statement works similarly to `connect`{.firrtl}, but it has special interactions with conditional statements ([@sec:conditionals]).
+`define`{.firrtl} statements may appear within conditional blocks, and when they do, they may refer to circuit components defined in a local scope.
 However, `define`{.firrtl} are not subject to last connect semantics, and the `define`{.firrtl} statement is always and unconditionally in effect.
 
 All probes in a module definition must be initialized with a `define`{.firrtl} statement.
@@ -2260,7 +2260,7 @@ module DUT :
 ## Probes and Layers
 
 `Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with a layer (see [@sec:layers]).
-When associated with a layer, the reference type may only be driven from that layer.
+When associated with a layer, the probe type may only be driven from that layer.
 
 For example:
 
@@ -2281,7 +2281,7 @@ A `ref`{.firrtl} statement is used to indicate the Verilog name of the component
 
 ### `RWProbe`{.firrtl} with Aggregate Types
 
-Probes of aggregates do not working under all ABI versions.
+Probes of aggregates do not work under all ABI versions.
 In these cases, it is recommended that if you have a need to probe a bundle, you instead use a bundle of probes, each targeting an individual subcomponent.
 
 For more information on the how probes are lowered, see the FIRRTL ABI Specification.

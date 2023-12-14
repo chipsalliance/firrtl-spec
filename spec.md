@@ -825,6 +825,7 @@ For example:
 Probe<UInt<8>, A.B>     ; A.B is a layer
 RWProbe<UInt<8>, A.B>
 ```
+
 Probes are generally lowered to hierarchical names in Verilog.
 For details, see the FIRRTL ABI Specification.
 

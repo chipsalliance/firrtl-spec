@@ -17,6 +17,7 @@ revisionHistory:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.
         These now use the public module and not the circuit.
+      - Use EBNF to describe probe port macros and filename.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 3.2.0

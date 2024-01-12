@@ -101,13 +101,13 @@ Ports of aggregate type shall be scalarized according to the "Aggregate Type Low
 Ports of ref type on public modules shall, for each public module, be lowered to a Verilog macro with the following format where `module` is the name of the public module, `portname` is the name of the port, and `internalpath` is the hierarchical path name:
 
 ``` ebnf
-macro = "`define " , "ref_" , module , "_" , portname , " ", internalpath
+macro = "`define " , "ref_" , module , "_" , portname , " ", internalpath ;
 ```
 
 All macros for a public module will be put in a file with name:
 
 ``` ebnf
-filename = "ref_" , module , ".sv"
+filename = "ref_" , module , ".sv" ;
 ```
 
 References to aggregates will be lowered to a series of references to ground types.

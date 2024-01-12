@@ -3512,7 +3512,7 @@ type_enum = "{|" , { type_enum_alt } , "|}" ;
 type_enum_alt = id, [ ":" , type_constable ] ;
 
 (* Probe Types *)
-type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id , "," ] ">" ;
+type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id ] ">" ;
 
 (* Primitive Operations *)
 primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr ")" ;

@@ -680,15 +680,23 @@ All registers are linked to a clock (see [@sec:registers]).
 ### Reset Types
 
 Once a circuit is powered on, it may require an explicit reset in order to put it into a known state.
-For this, we use a reset type.
-In FIRRTL, we have the option of using both synchronous or asynchronous resets.
+For this, registers take a reset signal of a reset type.  The reset type
+determines the implementation of the registers.
 
-The synchronous reset type is simply a 1-bit unsigned integer: `UInt<1>`{.firrtl}.
-The asynchronous reset type is `AsyncReset`{.firrtl}.
+There are 3 reset behaviors captured by reset type:
+* Synchronous resets (`sync`{.firrtl}) - These are sampled for activation on the rising clock edge.
+* Asynchronous resets (`async`{.firrtl}) - These become active (and inactive) immediately without regard to a clock.
+* Asynchronous activation, synchronous deactivation (`asyncsync`{.firrtl}) - These become active immediate without regard to a clock, but deactivate on the clock edge after the reset is no longer asserted.
+
+There are 2 implementations of the reset signal:
+* Active high (`high`{.firrtl}) - a 1 indicates the reset is active
+* Active low (`low`{.firrtl}) - a 0 indicates the reset is active
+
+The entire cross product of behavior and implementation is valid.
 
 Registers may be declared linked to a reset (see [@sec:registers-with-reset]).
 
-The reset types also have the inferred form: `Reset`{.firrtl} (see [@sec:reset-inference]).
+There are explicit and inferred reset types.  The inferred form is `Reset`{.firrtl} (see [@sec:reset-inference]).  The explicit form is `Reset<Kind,Active>`{.firrtl} where `Kind`{.firrtl} is one of `sync`{.firrtl}, `async`{.firrtl}, or `asyncsync`{.firrtl} and `Active`{.firrtl} is one of `high`{.firrtl} or `low`{.firrtl}.
 
 ### Analog Type
 
@@ -1003,47 +1011,39 @@ The following example shows an inferred reset that will get inferred to a synchr
 ``` firrtl
 input a : UInt<1>
 wire reset : Reset
-connect reset, a
+connect reset, asReset(a, Reset<sync, high>)
 ```
 
-After reset inference, `reset`{.firrtl} is inferred to the synchronous `UInt<1>`{.firrtl} type:
+After reset inference, `reset`{.firrtl} is inferred to the synchronous `Reset<sync, high>`{.firrtl} type:
 
 ``` firrtl
 input a : UInt<1>
-wire reset : UInt<1>
-connect reset, a
-```
-
-The following example demonstrates usage of an asynchronous reset.
-
-``` firrtl
-input clock : Clock
-input reset : AsyncReset
-input x : UInt<8>
-regreset y : UInt<8>, clock, reset, UInt(123)
-; ...
+wire reset : Reset<sync, high>
+connect reset, asReset(a, Reset<sync, high>)
 ```
 
 Inference rules are as follows:
 
 1.  An uninferred reset driven by and/or driving only asynchronous resets will be inferred as asynchronous reset.
-2.  An uninferred reset driven by and/or driving both asynchronous and synchronous resets is an error.
+1.  An uninferred reset driven by and/or driving only asynchronous set, synchronous release resets will be inferred as asynchronous set, synchronous release reset.
+2.  An uninferred reset driven by and/or driving both synchronous resets and any other type of reset is an error.
 3.  Otherwise, the reset is inferred as synchronous (i.e. the uninferred reset is only invalidated or is driven by or drives only synchronous resets).
+4. A reset driven by and/or driving both `high` and `low` shall be an error.
 
-`Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other types.
-Casting between reset types is also legal:
+`Reset`{.firrtl}s, whether synchronous or asynchronous, can be converted to other types.
+Converting between reset types is also legal:
 
 ``` firrtl
 input a : UInt<1>
 output y : AsyncReset
 output z : Reset
 wire r : Reset
-connect r, a
+connect r, asReset(a, Reset)
 connect y, asAsyncReset(r)
 connect z, asUInt(y)
 ```
 
-See [@sec:primitive-operations] for more details on casting.
+See [@sec:primitive-operations] for more details on conversion.
 
 ### Probes and Type Inference
 
@@ -1098,10 +1098,7 @@ Similarly, a signed integer type is always equivalent to another signed integer 
 
 Clock types are equivalent to clock types, and are not equivalent to any other type.
 
-An uninferred `Reset`{.firrtl} can be connected to another `Reset`{.firrtl}, `UInt`{.firrtl} of unknown width, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl} (see [@sec:reset-inference]).
-It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
-
-The `AsyncReset`{.firrtl} type can be connected to another `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
+The `Reset<y,x>`{.firrtl} type can be connected to another `Reset<y,x>`{.firrtl} or to a `Reset`{.firrtl}.
 
 Two enumeration types are equivalent if both have the same number of variants, and both the enumerations' i'th variants have matching names and equivalent types.
 
@@ -1409,17 +1406,17 @@ reg myreg: SInt, myclock
 A register with a reset is declared using `regreset`{.firrtl}.
 A `regreset`{.firrtl} adds two expressions after the type and clock arguments: a reset signal and a reset value.
 The register's value is updated with the reset value when the reset is asserted.
-The reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization value must be equivalent to the declared type of the register (see [@sec:type-equivalence] for details).
-If the reset signal is an `AsyncReset`{.firrtl}, then the reset value must be a constant type.
+The reset signal must be a `Reset`{.firrtl} or `Reset<_,_>`{.firrtl}, and the type of initialization value must be equivalent to the declared type of the register (see [@sec:type-equivalence] for details).
+If the reset signal is an `Reset<async,_>`{.firrtl} or an `Reset<asyncsync,_>`{.firrtl}, then the reset value must be a constant type.
 The behavior of the register depends on the type of the reset signal.
-`AsyncReset`{.firrtl} will immediately change the value of the register.
-`UInt<1>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-types]).
+`Reset<async,_>`{.firrtl} and `Reset<asyncsync,_>`{.firrtl} will immediately change the value of the register.
+`Reset<sync,_>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-types]).
 `Reset`{.firrtl} is an abstract reset whose behavior depends on reset inference.
 In the following example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.
 
 ``` firrtl
 wire myclock: Clock
-wire myreset: UInt<1>
+wire myreset: Reset<sync,high>
 wire myinit: SInt
 regreset myreg: SInt, myclock, myreset, myinit
 ; ...
@@ -2919,8 +2916,6 @@ n must be non-negative.
                                     (Clock)        UInt          1
 
                                     (Reset)        UInt          1
-
-                                    (AsyncReset)   UInt          1
   -----------------------------------------------------------------------------
 
 The interpret as UInt operation reinterprets e's bits as an unsigned integer.
@@ -2937,8 +2932,6 @@ The interpret as UInt operation reinterprets e's bits as an unsigned integer.
                                     (Clock)        SInt          1
 
                                     (Reset)        SInt          1
-
-                                    (AsyncReset)   SInt          1
   -----------------------------------------------------------------------------
 
 The interpret as SInt operation reinterprets e's bits as a signed integer according to two's complement representation.
@@ -2948,38 +2941,52 @@ The interpret as SInt operation reinterprets e's bits as a signed integer accord
   ------------------------------------------------------------------------------
   Name      Arguments   Parameters   Arg Types      Result Type   Result Width
   --------- ----------- ------------ -------------- ------------- --------------
-  asClock   \(e\)       ()           (UInt)         Clock         n/a
+  asClock   \(e\)       ()           (UInt<1>)      Clock         n/a
 
-                                     (SInt)         Clock         n/a
+                                     (SInt<1>)      Clock         n/a
 
                                      (Clock)        Clock         n/a
 
                                      (Reset)        Clock         n/a
-
-                                     (AsyncReset)   Clock         n/a
   ------------------------------------------------------------------------------
 
 The result of the interpret as clock operation is the Clock typed signal obtained from interpreting a single bit integer as a clock signal.
 
-## Interpret as AsyncReset
+## Interpret as Reset
 
-  -----------------------------------------------------------------------------------
-  Name           Arguments   Parameters   Arg Types      Result Type   Result Width
-  -------------- ----------- ------------ -------------- ------------- --------------
-  asAsyncReset   \(e\)       ()           (AsyncReset)   AsyncReset    n/a
+|  Name    | Arguments  | Parameters  | Arg Types     | Result Type  | Result Width |
+| -------- | ---------- | ----------- | ------------- | ------------ | -------------|
+| asReset  | \(e\)      | \(t\)       | (Reset)       | t            | n/a          |
+|          |            |             | (UInt<1>)     | t            | n/a          |
+|          |            |             | (SInt<1>)     | t            | n/a          |
+|          |            |             | (Clock)       | t            | n/a          |
 
-                                          (UInt)         AsyncReset    n/a
+The result of the interpret as reset operation is an reset typed signal.  This operation doesn't interpret the data based on type, it is a simple cast.  To write general reset operations, use the `setReset`{.firrtl} operation.
 
-                                          (SInt)         AsyncReset    n/a
 
-                                          (Interval)     AsyncReset    n/a
+## Activate or Release a Reset
 
-                                          (Clock)        AsyncReset    n/a
+|  Name    | Arguments  | Parameters  | Arg Types  | Result Type  | Result Width |
+| -------- | ---------- | ----------- | ---------- | ------------ | -------------|
+| setReset | \(e\)      | \(t\)       | (UInt<1>)  | t            | n/a          |
 
-                                          (Reset)        AsyncReset    n/a
-  -----------------------------------------------------------------------------------
+This operation takes a single bit value and interprets a 1 as an active reset and interprets a 0 as an inactive reset.  This interpretation of the argument is mapped to the appropriate values for the result type.
 
-The result of the interpret as asynchronous reset operation is an AsyncReset typed signal.
+This allows writing generic reset handling code by decoupling the reset implementation from activation logic.
+
+## Test a Reset
+
+|  Name     | Arguments  | Arg Types  | Result Type  | Result Width |
+| --------- | ---------- | ---------- | ------------ | -------------|
+| testReset | \(e\)      | (Reset)    | (UInt<1>)    | 1            |
+
+This operation returns a 1 if a reset is active and a 0 if a reset is inactive regardless of the type of the reset signal.
+
+This allows writing generic reset handling code by decoupling the reset implementation from activation logic.  This operation is different from `asUInt`{.firrtl} in that it always returns `1`{.firrtl} for active resets regardless of the underlying implmentation values.
+
+The behavior of a circuit testing an asynchronous reset are unspecified due to the lack of
+an execution model for FIRRTL in the presence of signal transitions between clock
+edges.  There is a risk of metastability when using this operation on an asynchronous reset.  This danger is also present with `asUInt`{.firrtl}.
 
 ## Shift Left Operation
 
@@ -3489,16 +3496,17 @@ type_hardware =
 type_ground =  type_ground_nowidth | type_ground_width ;
 
 type_ground_nowidth =
-    "Clock"
-  | "Reset"
-  | "AsyncReset" ;
+    "Clock" ;
 
 type_ground_width =
     "UInt" , [ width ]
   | "SInt" , [ width ]
-  | "Analog" , [ width ] ;
+  | "Analog" , [ width ] 
+  | "Reset" , [ resetspec ] ;
 
 width = "<" , int , ">" ;
+
+resetspec = "<" , ( "sync" | "async" | "syncasync" ) ,  "," , ( "high | "low" ) , ">" ;
 
 (* Bundle Types *)
 type_bundle = "{" , type_bundle_field , { type_bundle_field } , "}" ;
@@ -3515,10 +3523,11 @@ type_enum_alt = id, [ ":" , type_constable ] ;
 type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id ] ">" ;
 
 (* Primitive Operations *)
-primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr ")" ;
-primop_1expr     = primop_1expr_keyword , "(" , expr , ")" ;
-primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
-primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
+primop_2expr      = primop_2expr_keyword , "(" , expr , "," , expr ")" ;
+primop_1expr      = primop_1expr_keyword , "(" , expr , ")" ;
+primop_1expr1type = primop_1expr1type_keyword , "(" , expr , "," , type , ")" ;
+primop_1expr1int  = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
+primop_1expr2int  = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 
 (* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;
@@ -3572,10 +3581,13 @@ linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
 
 (* Tokens: PrimOp Keywords *)
 primop_1expr_keyword =
-    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
+    "testRest" | "asUInt" | "asSInt" | "asClock" | "cvt"
   | "neg"    | "not"
   | "andr"   | "orr"    | "xorr" ;
 
+primop_1expr1type_keyword =
+    "asReset" | "setReset" ;
+    
 primop_2expr_keyword =
     "add"  | "sub" | "mul" | "div" | "mod"
   | "lt"   | "leq" | "gt"  | "geq" | "eq" | "neq"

@@ -434,7 +434,7 @@ The type of a wire is given after the colon (`:`{.firrtl}).
 Registers are stateful elements of a design.
 
 The state of a register is controlled through what is connected to it (see [@sec:connections]).
-The state may be any non-`const`{.firrtl} passive type (see [@sec:passive-types]).
+The state may be any storable type (see [@sec:storable-types]).
 Registers are always associated with a clock.
 Optionally, registers may have a reset signal.
 
@@ -536,7 +536,7 @@ mem mymem :
 
 The type of a memory is a bundle type derived from the declaration (see [@sec:memories]).
 
-The type named in `data-type`{.firrtl} must be passive.
+The type named in `data-type`{.firrtl} must be storable (see [@sec:storable-types]).
 It indicates the type of the data being stored inside of the memory.
 
 See [@sec:memories] for more details.
@@ -785,7 +785,7 @@ Enumerations are disjoint union types.
 
 Each enumeration consists of a set of variants.
 Each variant is named with a tag.
-Each variant also has a type associated with it which must be connectable (see [@sec:connectable-types]) and passive (see [@sec:passive-types]).
+Each variant also has a type associated with it which must be connectable (see [@sec:connectable-types]), storable (see [@sec:storable-types]), passive (see [@sec:passive-types]).
 
 In the following example, the first variant has the tag `a`{.firrtl} with type `UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type `UInt<16>`{.firrtl}.
 
@@ -1395,7 +1395,7 @@ A register is a stateful circuit component.
 Reads from a register return the current value of the element, writes are not visible until after the next positive edge of the register's clock.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.
-The type of a register must be a passive type (see [@sec:passive-types]) and may not be `const`{.firrtl}.
+The type of a register must be a storable type (see [@sec:storable-types]).
 
 Registers may be declared without a reset using the `reg`{.firrtl} syntax and with a reset using the `regreset`{.firrtl} syntax.
 
@@ -1736,7 +1736,7 @@ connect w.b, x.b
 A memory is an abstract representation of a hardware memory.
 It is characterized by the following parameters.
 
-1.  A passive type representing the type of each element in the memory.
+1.  A storable type representing the type of each element in the memory (see [@sec:storable-types]).
 
 2.  A positive integer literal representing the number of elements in the memory.
 

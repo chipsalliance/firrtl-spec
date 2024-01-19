@@ -870,26 +870,31 @@ A connectable type is defined recursively:
 -   bundles where each field type is a connectable type, or
 -   an enumeration type
 
+## Storable Types
+
+Stateful elements, such as registers and memories, are restricted in what types they can store.
+A **storable type** is a type which may appear as the type of a register or the element type of a memory.
+
+A storable type is defined recursively:
+
+-   All non-`const`{.firrtl} integer types are storable.
+-   All non-`const`{.firrtl} enumeration types are storable.
+-   A non-`const`{.firrtl} vector type is storable if and only if the element type is storable.
+-   A non-`const`{.firrtl} bundle type is storable if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is storable.
+
 ## Passive Types
 
-Stateful elements, such as registers and memories, may contain data of aggregate types.
-Registers with bundle types are especially common.
-However, when using bundle types in stateful elements, the notion of `flip`{.firrtl} does not make sense.
-There is no directionality to the data inside a register; the data just *is*.
-
+In certain contexts, the notion of `flip`{.firrtl} does not make sense.
 A **passive type** is a type which does not make use of `flip`{.firrtl}.
 
-More precisely, a passive type is defined recursively:
+A passive type is defined recursively:
 
 -   All ground types are passive.
 -   All probe types are passive.
 -   All property types are passive.
 -   A vector type is passive if and only if the element type is passive.
--   A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl}
-    and the type of each field is passive.
+-   A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is passive.
 -   All enumeration types are passive.
-
-Registers and memories may only be parametrized over passive types.
 
 ## Constant Types
 

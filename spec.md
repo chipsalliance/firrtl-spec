@@ -785,7 +785,7 @@ Enumerations are disjoint union types.
 
 Each enumeration consists of a set of variants.
 Each variant is named with a tag.
-Each variant also has a type associated with it which must be connectable (see [@sec:connectable-types]), storable (see [@sec:storable-types]), passive (see [@sec:passive-types]).
+Each variant also has a type associated with it which must be connectable (see [@sec:connectable-types]) and passive (see [@sec:passive-types]).
 
 In the following example, the first variant has the tag `a`{.firrtl} with type `UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type `UInt<16>`{.firrtl}.
 
@@ -878,7 +878,7 @@ A **storable type** is a type which may appear as the type of a register or the 
 A storable type is defined recursively:
 
 -   All non-`const`{.firrtl} integer types are storable.
--   All non-`const`{.firrtl} enumeration types are storable.
+-   A non-`const`{.firrtl} enumeration types are storable if and only if the type of each of its variants is storable.
 -   A non-`const`{.firrtl} vector type is storable if and only if the element type is storable.
 -   A non-`const`{.firrtl} bundle type is storable if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is storable.
 

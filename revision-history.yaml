@@ -13,6 +13,7 @@ revisionHistory:
       - Reorganized statements section.
       - Rewrite of the Types section.
       - Fix mistake in layer-associated probe grammar.
+      - Define "Storable Type".
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

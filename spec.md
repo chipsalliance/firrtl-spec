@@ -2106,12 +2106,12 @@ The `release`{.firrtl} and `release_initial`{.firrtl} statements end the forcing
 
 Like `read`{.firrtl}, the force statements are verification constructs.
 
-| Name            | Arguments                    | Argument Types |
-| --------------- | ---------------------------- | -------------- |
-| force_initial   | (ref, val)                   | (`RWProbe<T>`{.firrtl}, T) |
-| release_initial | (ref)                        | (`RWProbe<T>`{.firrtl}) |
+| Name            | Arguments                    | Argument Types                                                   |
+|-------------------|-----------------------------------|------------------|
+| force_initial   | (ref, val)                   | (`RWProbe<T>`{.firrtl}, T)                                       |
+| release_initial | (ref)                        | (`RWProbe<T>`{.firrtl})                                          |
 | force           | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
-| release         | (clock, condition, ref)      | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}) |
+| release         | (clock, condition, ref)      | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})    |
 
 Backends optionally generate corresponding constructs in the target language, or issue an warning.
 
@@ -2599,13 +2599,13 @@ Figure [@fig:foo-unfolded] shows the completely unfolded representation where ea
 Using targets (or multiple targets), any specific module, instance, or combination of instances can be expressed.
 Some examples include:
 
-| Target            | Description |
-| ----------------- | ----------- |
+| Target            | Description                                                                     |
+|-------------------------------------------|-----------------------------|
 | `Foo`             | refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl}) |
-| `Bar`             | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl}) |
-| `Foo/a:Bar`       | refers just to one instance of module `Bar`{.firrtl} |
-| `Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl} |
-| `Bar/d:Baz`       | refers to two instances of module `Baz`{.firrtl} |
+| `Bar`             | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})    |
+| `Foo/a:Bar`       | refers just to one instance of module `Bar`{.firrtl}                            |
+| `Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl}                                 |
+| `Bar/d:Baz`       | refers to two instances of module `Baz`{.firrtl}                                |
 
 If a target does not contain an instance path, it is a *local* target.
 A local target points to all instances of a module.
@@ -2812,17 +2812,17 @@ Notationally, the width of an argument e is represented as w~e~.
 
 ## Add Operation
 
-| Name | Arguments |  Parameters |  Arg Types  | Result Type | Result Width |
-| ---- | --------- | ----------- | ----------- | ----------- | ------------ |
-|  add |(e1,e2)    | ()          | (UInt,UInt) | UInt        | max(w~e1~,w~e2~)+1 |
-|      |           |             | (SInt,SInt) | SInt        | max(w~e1~,w~e2~)+1 |
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
+|------|-----------|------------|-------------|-------------|--------------------|
+| add  | (e1,e2)   | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~)+1 |
+|      |           |            | (SInt,SInt) | SInt        | max(w~e1~,w~e2~)+1 |
 
 The add operation result is the sum of e1 and e2 without loss of precision.
 
 ## Subtract Operation
 
-| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
-| ---- | --------- | ---------- | ----------- | ----------- | ------------ |
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
+|------|-----------|------------|-------------|-------------|--------------------|
 | sub  | (e1,e2)   | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~)+1 |
 |      |           |            | (SInt,SInt) | SInt        | max(w~e1~,w~e2~)+1 |
 
@@ -2830,19 +2830,19 @@ The subtract operation result is e2 subtracted from e1, without loss of precisio
 
 ## Multiply Operation
 
-| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width | 
-| ---- | --------- | ---------- | ----------- | ----------- | ------------ |
-| mul  | (e1,e2)   | ()         | (UInt,UInt) | UInt        | w~e1~+w~e2~ |
-|                               | (SInt,SInt) | SInt        | w~e1~+w~e2~ |
+| Name | Arguments   | Parameters | Arg Types   | Result Type | Result Width |
+|------|-------------|------------|-------------|-------------|--------------|
+| mul  | (e1,e2)     | ()         | (UInt,UInt) | UInt        | w~e1~+w~e2~  |
+|      | (SInt,SInt) | SInt       | w~e1~+w~e2~ |             |              |
 
 The multiply operation result is the product of e1 and e2, without loss of precision.
 
 ## Divide Operation
 
-| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width | 
-| ---- | --------- | ---------- | ----------- | ----------- | ------------ |
-| div  | (num,den) | ()         | (UInt,UInt) | UInt        | w~num~ |
-|      |           |            | (SInt,SInt) | SInt        | w~num~+1 |
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|------|-----------|------------|-------------|-------------|--------------|
+| div  | (num,den) | ()         | (UInt,UInt) | UInt        | w~num~       |
+|      |           |            | (SInt,SInt) | SInt        | w~num~+1     |
 
 The divide operation divides num by den, truncating the fractional portion of the result.
 This is equivalent to rounding the result towards zero.
@@ -2850,8 +2850,8 @@ The result of a division where den is zero is undefined.
 
 ## Modulus Operation
 
-| Name | Arguments | Parameters |  Arg Types  | Result Type | Result Width | 
-| ---- | --------- | ---------- | ----------- | ----------- |------------- |
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
+|------|-----------|------------|-------------|-------------|--------------------|
 | rem  | (num,den) | ()         | (UInt,UInt) | UInt        | min(w~num~,w~den~) |
 |      |           |            | (SInt,SInt) | SInt        | min(w~num~,w~den~) |
 
@@ -2862,20 +2862,20 @@ Together with the divide operator, the modulus operator satisfies the relationsh
 
 ## Comparison Operations
 
-| Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width | 
-| ------ | --------- | ---------- | ----------- | ----------- | ------------ |
-| lt,leq |           |            | (UInt,UInt) | UInt        | 1 |
-| gt,geq | (e1,e2)   | ()         | (SInt,SInt) | UInt        | 1 |
+| Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|--------|-----------|------------|-------------|-------------|--------------|
+| lt,leq |           |            | (UInt,UInt) | UInt        | 1            |
+| gt,geq | (e1,e2)   | ()         | (SInt,SInt) | UInt        | 1            |
 
 The comparison operations return an unsigned 1 bit signal with value one if e1 is less than (lt), less than or equal to (leq), greater than (gt), greater than or equal to (geq), equal to (eq), or not equal to (neq) e2.
 The operation returns a value of zero otherwise.
 
 ## Padding Operations
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
-| pad  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~,n) |
-|      |           |            | (SInt)    | SInt        | max(w~e~,n) |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| pad  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~,n)  |
+|      |           |            | (SInt)    | SInt        | max(w~e~,n)  |
 
 If e's bit width is smaller than n, then the pad operation zero-extends or sign-extends e up to the given width n.
 Otherwise, the result is simply e.
@@ -2883,67 +2883,67 @@ n must be non-negative.
 
 ## Interpret As UInt
 
-| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width | 
-| ------ | --------- | ---------- | ------------ | ----------- | ------------ |
-| asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~ |
-|        |           |            | (SInt)       | UInt        | w~e~ |
-|        |           |            | (Clock)      | UInt        | 1 |
-|        |           |            | (Reset)      | UInt        | 1 |
-|        |           |            | (AsyncReset) | UInt        | 1 |
+| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~         |
+|        |           |            | (SInt)       | UInt        | w~e~         |
+|        |           |            | (Clock)      | UInt        | 1            |
+|        |           |            | (Reset)      | UInt        | 1            |
+|        |           |            | (AsyncReset) | UInt        | 1            |
 
 The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 
 ## Interpret As SInt
 
-| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width | 
-| ------ | --------- | ---------- | ------------ | ----------- | ------------ |
-| asSInt | \(e\)     | ()         | (UInt)       | SInt        |  w~e~ |
-|        |           |            | (SInt)       | SInt        |  w~e~ |
-|        |           |            | (Clock)      | SInt        |  1 |
-|        |           |            | (Reset)      | SInt        |  1 |
-|        |           |            | (AsyncReset) | SInt        |  1 |
+| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asSInt | \(e\)     | ()         | (UInt)       | SInt        | w~e~         |
+|        |           |            | (SInt)       | SInt        | w~e~         |
+|        |           |            | (Clock)      | SInt        | 1            |
+|        |           |            | (Reset)      | SInt        | 1            |
+|        |           |            | (AsyncReset) | SInt        | 1            |
 
 The interpret as SInt operation reinterprets e's bits as a signed integer according to two's complement representation.
 
 ## Interpret as Clock
 
-| Name    | Arguments |  Parameters | Arg Types    | Result Type | Result Width | 
-| ------- | --------- | ----------- | ------------ | ----------- | ------------ |
-| asClock | \(e\)     | ()          | (UInt)       | Clock       | n/a |
-|         |           |             | (SInt)       | Clock       | n/a |
-|         |           |             | (Clock)      | Clock       | n/a |
-|         |           |             | (Reset)      | Clock       | n/a |
-|         |           |             | (AsyncReset) | Clock       | n/a |
+| Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|---------|-----------|------------|--------------|-------------|--------------|
+| asClock | \(e\)     | ()         | (UInt)       | Clock       | n/a          |
+|         |           |            | (SInt)       | Clock       | n/a          |
+|         |           |            | (Clock)      | Clock       | n/a          |
+|         |           |            | (Reset)      | Clock       | n/a          |
+|         |           |            | (AsyncReset) | Clock       | n/a          |
 
 The result of the interpret as clock operation is the Clock typed signal obtained from interpreting a single bit integer as a clock signal.
 
 ## Interpret as AsyncReset
 
-| Name         | Arguments |  Parameters | Arg Types    | Result Type | Result Width | 
-| ------------ | --------- | ----------- | ------------ | ----------- | ------------ |
-| asAsyncReset | \(e\)     | ()          | (AsyncReset) | AsyncReset  | n/a |
-|              |           |             | (UInt)       | AsyncReset  | n/a |
-|              |           |             | (SInt)       | AsyncReset  | n/a |
-|              |           |             | (Interval)   | AsyncReset  | n/a |
-|              |           |             | (Clock)      | AsyncReset  | n/a |
-|              |           |             | (Reset)      | AsyncReset  | n/a |
+| Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|-------------|----------|------------|-------------|------------|-------------|
+| asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
+|              |           |            | (UInt)       | AsyncReset  | n/a          |
+|              |           |            | (SInt)       | AsyncReset  | n/a          |
+|              |           |            | (Interval)   | AsyncReset  | n/a          |
+|              |           |            | (Clock)      | AsyncReset  | n/a          |
+|              |           |            | (Reset)      | AsyncReset  | n/a          |
 
 The result of the interpret as asynchronous reset operation is an AsyncReset typed signal.
 
 ## Shift Left Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
-| shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n |
-|      |           |            | (SInt)    | SInt        | w~e~+n |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n       |
+|      |           |            | (SInt)    | SInt        | w~e~+n       |
 
 The shift left operation concatenates n zero bits to the least significant end of e.
 n must be non-negative.
 
 ## Shift Right Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width   |
+|------|-----------|------------|-----------|-------------|----------------|
 | shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 1) |
 |      |           |            | (SInt)    | SInt        | max(w~e~-n, 1) |
 
@@ -2953,8 +2953,8 @@ n must be non-negative.
 
 ## Dynamic Shift Left Operation
 
-| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width | 
-| ---- | --------- | ---------- | ------------ | ----------- | ------------ |
+| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width          |
+|------|------------|-------------|---------------|--------------|---------------|
 | dshl | (e1, e2)  | ()         | (UInt, UInt) | UInt        | w~e1~ + 2`^`w~e2~ - 1 |
 |      |           |            | (SInt, UInt) | SInt        | w~e1~ + 2`^`w~e2~ - 1 |
 
@@ -2963,45 +2963,45 @@ e2 zeroes are shifted in to the least significant bits.
 
 ## Dynamic Shift Right Operation
 
-| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width | 
-| ---- | --------- | ---------- | ------------ | ----------- | ------------ |
-| dshr | (e1, e2)  | ()         | (UInt, UInt) | UInt        | w~e1~ |
-|      |           |            | (SInt, UInt) | SInt        | w~e1~ |
+| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|------|-----------|------------|--------------|-------------|--------------|
+| dshr | (e1, e2)  | ()         | (UInt, UInt) | UInt        | w~e1~        |
+|      |           |            | (SInt, UInt) | SInt        | w~e1~        |
 
 The dynamic shift right operation shifts the bits in e1 e2 places towards the least significant bit.
 e2 signed or zeroed bits are shifted in to the most significant bits, and the e2 least significant bits are truncated.
 
 ## Arithmetic Convert to Signed Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
-| cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1 |
-|      |           |            | (SInt)    | SInt        | w~e~ |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
+|      |           |            | (SInt)    | SInt        | w~e~         |
 
 The result of the arithmetic convert to signed operation is a signed integer representing the same numerical value as e.
 
 ## Negate Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
-| neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1 |
-|      |           |            | (SInt)    | SInt        | w~e~+1 |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
+|      |           |            | (SInt)    | SInt        | w~e~+1       |
 
 The result of the negate operation is a signed integer representing the negated numerical value of e.
 
 ## Bitwise Complement Operation
 
-| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
-| not  | \(e\)     | ()         | (UInt)    | UInt        | w~e~ |
-|      |           |            | (SInt)    | UInt        | w~e~ |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| not  | \(e\)     | ()         | (UInt)    | UInt        | w~e~         |
+|      |           |            | (SInt)    | UInt        | w~e~         |
 
 The bitwise complement operation performs a logical not on each bit in e.
 
 ## Binary Bitwise Operations
 
-| Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width | 
-| ---------- | --------- | ---------- | ----------- | ----------- | ------------ |
+| Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width     |
+|------------|-----------|------------|-------------|-------------|--------------|
 | and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
 |            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
 
@@ -3010,10 +3010,10 @@ The result has the same width as its widest argument, and any narrower arguments
 
 ## Bitwise Reduction Operations
 
-| Name          | Arguments |  Parameters |  Arg Types  | Result Type | Result Width | 
-| ------------- | --------- | ----------- | ----------- | ----------- | ------------ |
-| andr,orr,xorr | \(e\)     | ()          | (UInt)      | UInt        | 1 |
-|               |           |             | (SInt)      | UInt        | 1 |
+| Name          | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|---------------|-----------|------------|-----------|-------------|--------------|
+| andr,orr,xorr | \(e\)     | ()         | (UInt)    | UInt        | 1            |
+|               |           |            | (SInt)    | UInt        | 1            |
 
 The bitwise reduction operations correspond to a bitwise and, or, and exclusive or operation, reduced over every bit in e.
 
@@ -3024,18 +3024,18 @@ Note that the logical consequence is that the and-reduction of a zero-width expr
 ## Concatenate Operation
 
 | Name | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-| ---- | --------- | ---------- | ------------ | ----------- | ------------ |
-| cat  | (e1,e2)   | ()         | (UInt, UInt) | UInt        | w~e1~+w~e2~ |
-|      |           |            | (SInt, SInt) | UInt        | w~e1~+w~e2~ |
+|------|-----------|------------|--------------|-------------|--------------|
+| cat  | (e1,e2)   | ()         | (UInt, UInt) | UInt        | w~e1~+w~e2~  |
+|      |           |            | (SInt, SInt) | UInt        | w~e1~+w~e2~  |
 
 The result of the concatenate operation is the bits of e1 concatenated to the most significant end of the bits of e2.
 
 ## Bit Extraction Operation
 
 | Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
-| bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1 |
-|      |           |            | (SInt)    | UInt        | hi-lo+1 |
+|------|-----------|------------|-----------|-------------|--------------|
+| bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1      |
+|      |           |            | (SInt)    | UInt        | hi-lo+1      |
 
 The result of the bit extraction operation are the bits of e between lo (inclusive) and hi (inclusive).
 hi must be greater than or equal to lo.
@@ -3044,9 +3044,9 @@ Both hi and lo must be non-negative and strictly less than the bit width of e.
 ## Head
 
 | Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
-| head | \(e\)     | \(n\)      | (UInt)    | UInt        | n |
-|      |           |            | (SInt)    | UInt        | n |
+|------|-----------|------------|-----------|-------------|--------------|
+| head | \(e\)     | \(n\)      | (UInt)    | UInt        | n            |
+|      |           |            | (SInt)    | UInt        | n            |
 
 The result of the head operation are the n most significant bits of e.
 n must be non-negative and less than or equal to the bit width of e.
@@ -3054,9 +3054,9 @@ n must be non-negative and less than or equal to the bit width of e.
 ## Tail
 
 | Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
-| ---- | --------- | ---------- | --------- | ----------- | ------------ |
-| tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n |
-|      |           |            | (SInt)    | UInt        | w~e~-n |
+|------|-----------|------------|-----------|-------------|--------------|
+| tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n       |
+|      |           |            | (SInt)    | UInt        | w~e~-n       |
 
 The tail operation truncates the n most significant bits from e.
 n must be non-negative and less than or equal to the bit width of e.

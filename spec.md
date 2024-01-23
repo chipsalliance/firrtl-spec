@@ -685,17 +685,18 @@ determines the implementation of the registers.
 
 There are 2 reset behaviors captured by reset type:
 \* Synchronous resets with synchronous release (`sync`{.firrtl}) - These become active or inactive on the rising edge of the clock which drives the user.
-\* Asynchronous activation, synchronous deactivation (`async`{.firrtl}) - These become active immediate without regard to a clock, but deactivate on the clock edge after the reset is no longer asserted.
+\* Asynchronous resets with synchronous release (`async`{.firrtl}) - These become active immediate without regard to a clock, but deactivate on the clock edge after the reset is no longer asserted.
 
 There are 2 implementations of the reset signal:
 \* Active high (`high`{.firrtl}) - a 1 indicates the reset is active
 \* Active low (`low`{.firrtl}) - a 0 indicates the reset is active
 
-The entire cross product of behavior and implementation is valid.
+All combinations of reset behavior and reset signal implementation are valid.
 
 Registers may be declared linked to a reset (see [@sec:registers-with-reset]).
 
 There are explicit and inferred reset types. The form is `Reset<Kind,Active>`{.firrtl} where `Kind`{.firrtl} is `sync`{.firrtl},`async`{.firrtl}, or `_`{.firrtl} and `Active`{.firrtl} is `high`{.firrtl}, `low`{.firrtl}, or `_`{.firrtl}. When a parameter is `_`, the parameter is inferred (see [@sec:reset-inference]).
+
 
 ### Analog Type
 
@@ -1102,7 +1103,7 @@ Similarly, a signed integer type is always equivalent to another signed integer 
 
 Clock types are equivalent to clock types, and are not equivalent to any other type.
 
-The `Reset<y,x>`{.firrtl} type can be connected to another `Reset<y,x>`{.firrtl}, `Reset<y,_>`{.firrtl}, `Reset<_,x>`{.firrtl}, or `Reset<_,_>`{.firrtl} type.
+The `Reset<x,y>`{.firrtl} type can be connected to another `Reset<x,y>`{.firrtl}, `Reset<x,_>`{.firrtl}, `Reset<_,y>`{.firrtl}, or `Reset<_,_>`{.firrtl} type.
 
 Two enumeration types are equivalent if both have the same number of variants, and both the enumerations' i'th variants have matching names and equivalent types.
 
@@ -2924,7 +2925,7 @@ The result of the interpret as clock operation is the Clock typed signal obtaine
 |         |           |            | (SInt\<1\>) | t (Reset)   | n/a          |
 |         |           |            | (Clock)     | t (Reset)   | n/a          |
 
-The result of the interpret as reset operation is an reset typed signal. This operation doesn't interpret the data based on type, it is a simple cast. To write general reset operations, use the `setReset`{.firrtl} operation.
+The result of the interpret as reset operation is a reset typed signal. This operation doesn't interpret the data based on type, it is a simple cast. To write general reset operations, use the `setReset`{.firrtl} operation.
 
 ## Activate or Release a Reset
 
@@ -2934,7 +2935,11 @@ The result of the interpret as reset operation is an reset typed signal. This op
 
 This operation takes a single bit value and interprets a 1 as an active reset and interprets a 0 as an inactive reset. This interpretation of the argument is mapped to the appropriate values for the result type.
 
-This allows writing generic reset handling code by decoupling the reset implementation from activation logic.
+This allows writing generic reset handling code by decoupling the reset implementation from activation logic.  For example, to convert any reset to an active low reset:
+
+``` firrtl
+out_reset = setReset(testReset(in_reset), Reset<_,low>)
+```
 
 ## Test a Reset
 
@@ -2946,9 +2951,7 @@ This operation returns a 1 if a reset is active and a 0 if a reset is inactive r
 
 This allows writing generic reset handling code by decoupling the reset implementation from activation logic. This operation is different from `asUInt`{.firrtl} in that it always returns `1`{.firrtl} for active resets regardless of the underlying implmentation values.
 
-The behavior of a circuit testing an asynchronous reset are unspecified due to the lack of
-an execution model for FIRRTL in the presence of signal transitions between clock
-edges. There is a risk of metastability when using this operation on an asynchronous reset. This danger is also present with `asUInt`{.firrtl}.
+The behavior of a circuit testing an asynchronous reset are unspecified. There is a risk of metastability when using this operation on an asynchronous reset. This danger is also present with `asUInt`{.firrtl}.
 
 ## Shift Left Operation
 
@@ -3425,11 +3428,15 @@ type_ground_width =
     "UInt" , [ width ]
   | "SInt" , [ width ]
   | "Analog" , [ width ] 
-  | "Reset" , [ resetspec ] ;
+  | "Reset" ,  resetspec ;
 
 width = "<" , int , ">" ;
 
-resetspec = "<" , ( "sync" | "async" | "syncasync" ) ,  "," , ( "high | "low" ) , ">" ;
+resetspec = "<" , reset_synchronicity ,  "," , reset_activation , ">" ;
+
+reset_synchronicity = "sync" | "async" | "_" ;
+
+reset_activation = "high | "low" | "_" ;
 
 (* Bundle Types *)
 type_bundle = "{" , type_bundle_field , { type_bundle_field } , "}" ;
@@ -3504,7 +3511,7 @@ linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
 
 (* Tokens: PrimOp Keywords *)
 primop_1expr_keyword =
-    "testRest" | "asUInt" | "asSInt" | "asClock" | "cvt"
+    "testReset" | "asUInt" | "asSInt" | "asClock" | "cvt"
   | "neg"    | "not"
   | "andr"   | "orr"    | "xorr" ;
 

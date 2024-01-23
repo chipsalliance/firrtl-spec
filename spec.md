@@ -2107,7 +2107,7 @@ The `release`{.firrtl} and `release_initial`{.firrtl} statements end the forcing
 Like `read`{.firrtl}, the force statements are verification constructs.
 
 | Name            | Arguments                    | Argument Types                                                   |
-|-------------------|-----------------------------------|-------------------|
+|-------------------|----------------------------------|-------------------|
 | force_initial   | (ref, val)                   | (`RWProbe<T>`{.firrtl}, T)                                       |
 | release_initial | (ref)                        | (`RWProbe<T>`{.firrtl})                                          |
 | force           | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
@@ -2954,7 +2954,7 @@ n must be non-negative.
 ## Dynamic Shift Left Operation
 
 | Name | Arguments | Parameters | Arg Types    | Result Type | Result Width          |
-|-------|------------|-------------|---------------|--------------|---------------|
+|---------|------------|-------------|--------------|-------------|--------------|
 | dshl | (e1, e2)  | ()         | (UInt, UInt) | UInt        | w~e1~ + 2`^`w~e2~ - 1 |
 |      |           |            | (SInt, UInt) | SInt        | w~e1~ + 2`^`w~e2~ - 1 |
 

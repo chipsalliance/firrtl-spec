@@ -697,7 +697,6 @@ Registers may be declared linked to a reset (see [@sec:registers-with-reset]).
 
 There are explicit and inferred reset types. The form is `Reset<Kind,Active>`{.firrtl} where `Kind`{.firrtl} is `sync`{.firrtl},`async`{.firrtl}, or `_`{.firrtl} and `Active`{.firrtl} is `high`{.firrtl}, `low`{.firrtl}, or `_`{.firrtl}. When a parameter is `_`, the parameter is inferred (see [@sec:reset-inference]).
 
-
 ### Analog Type
 
 The analog type specifies that a wire or port can be attached to multiple drivers.
@@ -2935,7 +2934,7 @@ The result of the interpret as reset operation is a reset typed signal. This ope
 
 This operation takes a single bit value and interprets a 1 as an active reset and interprets a 0 as an inactive reset. This interpretation of the argument is mapped to the appropriate values for the result type.
 
-This allows writing generic reset handling code by decoupling the reset implementation from activation logic.  For example, to convert any reset to an active low reset:
+This allows writing generic reset handling code by decoupling the reset implementation from activation logic. For example, to convert any reset to an active low reset:
 
 ``` firrtl
 out_reset = setReset(testReset(in_reset), Reset<_,low>)
@@ -2943,9 +2942,9 @@ out_reset = setReset(testReset(in_reset), Reset<_,low>)
 
 ## Test a Reset
 
-| Name      | Arguments | Arg Types | Result Type | Result Width |
+| Name      | Arguments | Arg Types |Result Type  | Result Width |
 |-----------|-----------|-----------|-------------|--------------|
-| testReset | \(e\)     | (Reset)   | (UInt\<1\>) | 1            |
+| testReset | \(e\)     | (Reset)   | (UInt\<1\>) |  1           |
 
 This operation returns a 1 if a reset is active and a 0 if a reset is inactive regardless of the type of the reset signal.
 

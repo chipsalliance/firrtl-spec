@@ -434,7 +434,7 @@ The type of a wire is given after the colon (`:`{.firrtl}).
 Registers are stateful elements of a design.
 
 The state of a register is controlled through what is connected to it (see [@sec:connections]).
-The state may be any non-`const`{.firrtl} passive type (see [@sec:passive-types]).
+The state may be any storable type (see [@sec:storable-types]).
 Registers are always associated with a clock.
 Optionally, registers may have a reset signal.
 
@@ -536,7 +536,7 @@ mem mymem :
 
 The type of a memory is a bundle type derived from the declaration (see [@sec:memories]).
 
-The type named in `data-type`{.firrtl} must be passive.
+The type named in `data-type`{.firrtl} must be storable (see [@sec:storable-types]).
 It indicates the type of the data being stored inside of the memory.
 
 See [@sec:memories] for more details.
@@ -870,26 +870,31 @@ A connectable type is defined recursively:
 -   bundles where each field type is a connectable type, or
 -   an enumeration type
 
+## Storable Types
+
+Stateful elements, such as registers and memories, are restricted in what types they can store.
+A **storable type** is a type which may appear as the type of a register or the element type of a memory.
+
+A storable type is defined recursively:
+
+-   All non-`const`{.firrtl} integer types are storable.
+-   A non-`const`{.firrtl} enumeration types are storable if and only if the type of each of its variants is storable.
+-   A non-`const`{.firrtl} vector type is storable if and only if the element type is storable.
+-   A non-`const`{.firrtl} bundle type is storable if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is storable.
+
 ## Passive Types
 
-Stateful elements, such as registers and memories, may contain data of aggregate types.
-Registers with bundle types are especially common.
-However, when using bundle types in stateful elements, the notion of `flip`{.firrtl} does not make sense.
-There is no directionality to the data inside a register; the data just *is*.
-
+In certain contexts, the notion of `flip`{.firrtl} does not make sense.
 A **passive type** is a type which does not make use of `flip`{.firrtl}.
 
-More precisely, a passive type is defined recursively:
+A passive type is defined recursively:
 
 -   All ground types are passive.
 -   All probe types are passive.
 -   All property types are passive.
 -   A vector type is passive if and only if the element type is passive.
--   A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl}
-    and the type of each field is passive.
+-   A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is passive.
 -   All enumeration types are passive.
-
-Registers and memories may only be parametrized over passive types.
 
 ## Constant Types
 
@@ -1390,7 +1395,7 @@ A register is a stateful circuit component.
 Reads from a register return the current value of the element, writes are not visible until after the next positive edge of the register's clock.
 
 The clock signal for a register must be of type `Clock`{.firrtl}.
-The type of a register must be a passive type (see [@sec:passive-types]) and may not be `const`{.firrtl}.
+The type of a register must be a storable type (see [@sec:storable-types]).
 
 Registers may be declared without a reset using the `reg`{.firrtl} syntax and with a reset using the `regreset`{.firrtl} syntax.
 
@@ -1731,7 +1736,7 @@ connect w.b, x.b
 A memory is an abstract representation of a hardware memory.
 It is characterized by the following parameters.
 
-1.  A passive type representing the type of each element in the memory.
+1.  A storable type representing the type of each element in the memory (see [@sec:storable-types]).
 
 2.  A positive integer literal representing the number of elements in the memory.
 

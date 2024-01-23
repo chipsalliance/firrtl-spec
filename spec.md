@@ -2938,9 +2938,9 @@ This allows writing generic reset handling code by decoupling the reset implemen
 
 ## Test a Reset
 
-|  Name       | Arguments  | Arg Types  | Result Type  | Result Width |
-|  ----------- | ----------- | ----------- | ------------- | -------------- |
-|  testReset   | \(e\)       | (Reset)     | (UInt\<1\>)   1 |
+| Name      | Arguments | Arg Types | Result Type | Result Width |
+|-----------|-----------|-----------|-------------|--------------|
+| testReset | \(e\)     | (Reset)   | (UInt\<1\>) | 1            |
 
 This operation returns a 1 if a reset is active and a 0 if a reset is inactive regardless of the type of the reset signal.
 

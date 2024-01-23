@@ -2963,57 +2963,57 @@ e2 zeroes are shifted in to the least significant bits.
 
 ## Dynamic Shift Right Operation
 
-| Name | Arguments |  Parameters |  Arg Types |   Result Type | Result Width | 
-| ------ | ----------- | ------------ | -------------- | ------------- | -------------- |
-| dshr   (e1, e2)    ()           (UInt, UInt)   UInt          w~e1~ |
-                                  (SInt, UInt)   SInt          w~e1~ |
+| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width | 
+| ---- | --------- | ---------- | ------------ | ----------- | ------------ |
+| dshr | (e1, e2)  | ()         | (UInt, UInt) | UInt        | w~e1~ |
+|      |           |            | (SInt, UInt) | SInt        | w~e1~ |
 
 The dynamic shift right operation shifts the bits in e1 e2 places towards the least significant bit.
 e2 signed or zeroed bits are shifted in to the most significant bits, and the e2 least significant bits are truncated.
 
 ## Arithmetic Convert to Signed Operation
 
-| Name | Arguments |  Parameters |  Arg Types   Result Type | Result Width | 
-| ------ | ----------- | ------------ | ----------- | ------------- | -------------- |
-| cvt    \(e\)       ()           (UInt)      SInt          w~e~+1 |
-|                                 (SInt)      SInt          w~e~ |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
+| ---- | --------- | ---------- | --------- | ----------- | ------------ |
+| cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1 |
+|      |           |            | (SInt)    | SInt        | w~e~ |
 
 The result of the arithmetic convert to signed operation is a signed integer representing the same numerical value as e.
 
 ## Negate Operation
 
-| Name | Arguments |  Parameters |  Arg Types   Result Type | Result Width | 
-| ------ | ----------- | ------------ | ----------- | ------------- | -------------- |
-| neg    \(e\)       ()           (UInt)      SInt          w~e~+1 |
-|                                 (SInt)      SInt          w~e~+1 |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
+| ---- | --------- | ---------- | --------- | ----------- | ------------ |
+| neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1 |
+|      |           |            | (SInt)    | SInt        | w~e~+1 |
 
 The result of the negate operation is a signed integer representing the negated numerical value of e.
 
 ## Bitwise Complement Operation
 
-| Name | Arguments |  Parameters |  Arg Types   Result Type | Result Width | 
-| ------ | ----------- | ------------ | ----------- | ------------- | -------------- |
-| not    \(e\)       ()           (UInt)      UInt          w~e~ |
-|                                 (SInt)      UInt          w~e~ |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width | 
+| ---- | --------- | ---------- | --------- | ----------- | ------------ |
+| not  | \(e\)     | ()         | (UInt)    | UInt        | w~e~ |
+|      |           |            | (SInt)    | UInt        | w~e~ |
 
 The bitwise complement operation performs a logical not on each bit in e.
 
 ## Binary Bitwise Operations
 
-| Name |       Arguments |  Parameters |  Arg Types |  Result Type | Result Width | 
-| ------------ | ----------- | ------------ | ------------- | ------------- | ------------------ |
-| and,or,xor   (e1, e2)    ()           (UInt,UInt)   UInt          max(w~e1~,w~e2~) |
-|                                       (SInt,SInt)   UInt          max(w~e1~,w~e2~) |
+| Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width | 
+| ---------- | --------- | ---------- | ----------- | ----------- | ------------ |
+| and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
+|            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
 
 The above bitwise operations perform a bitwise and, or, or exclusive or on e1 and e2.
 The result has the same width as its widest argument, and any narrower arguments are automatically zero-extended or sign-extended to match the width of the result before performing the operation.
 
 ## Bitwise Reduction Operations
 
-| Name |          Arguments |  Parameters |  Arg Types   Result Type | Result Width | 
-| --------------- | ----------- | ------------ | ----------- | ------------- | -------------- |
-| andr,orr,xorr   \(e\)       ()           (UInt)      UInt          1 |
-|                                          (SInt)      UInt          1 |
+| Name          | Arguments |  Parameters |  Arg Types  | Result Type | Result Width | 
+| ------------- | --------- | ----------- | ----------- | ----------- | ------------ |
+| andr,orr,xorr | \(e\)     | ()          | (UInt)      | UInt        | 1 |
+|               |           |             | (SInt)      | UInt        | 1 |
 
 The bitwise reduction operations correspond to a bitwise and, or, and exclusive or operation, reduced over every bit in e.
 
@@ -3026,7 +3026,7 @@ Note that the logical consequence is that the and-reduction of a zero-width expr
 | Name | Arguments | Parameters | Arg Types    | Result Type | Result Width |
 | ---- | --------- | ---------- | ------------ | ----------- | ------------ |
 | cat  | (e1,e2)   | ()         | (UInt, UInt) | UInt        | w~e1~+w~e2~ |
-|                                 (SInt, SInt) | UInt        | w~e1~+w~e2~ |
+|      |           |            | (SInt, SInt) | UInt        | w~e1~+w~e2~ |
 
 The result of the concatenate operation is the bits of e1 concatenated to the most significant end of the bits of e2.
 

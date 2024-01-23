@@ -13,6 +13,7 @@ revisionHistory:
       - Reorganized statements section.
       - Rewrite of the Types section.
       - Fix mistake in layer-associated probe grammar.
+      - Change the minimum width of the result of "Shift Right" on UInt to 0-bit.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

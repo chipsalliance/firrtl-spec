@@ -2,12 +2,12 @@
 
 ## Writing
 
-- One sentence per line.
-  No linewraps.
-- Inline FIRRTL code snippets should be tagged as FIRRTL code with `{.firrtl}`.
-  - This isn’t recognized by GitHub, but is used for the PDF generation.
-- Match terminology and capitalization preferences used elsewhere by default.
-- Don’t forget to spell-check!
+-   One sentence per line.
+    No linewraps.
+-   Inline FIRRTL code snippets should be tagged as FIRRTL code with `{.firrtl}`.
+    -   This isn't recognized by GitHub, but is used for the PDF generation.
+-   Match terminology and capitalization preferences used elsewhere by default.
+-   Don't forget to spell-check!
 
 ## Pushing Changes
 
@@ -19,11 +19,11 @@
     The PR title should then be used in a squash-and-merge GitHub merge strategy.
     The available tags are:
 
-    - `[nfc]` – a “non-functional change” to the spec or to something outside
-      the spec should not modify the current spec version
-    - `[patch]` – a change to the spec that should increment the patch version
-    - `[minor]` – a change to the spec that should increment the minor version
-    - `[major]` – a change to the spec that should increment the major version the spec.
+    -   `[nfc]` -- a "non-functional change" to the spec or to something outside
+        the spec should not modify the current spec version
+    -   `[patch]` -- a change to the spec that should increment the patch version
+    -   `[minor]` -- a change to the spec that should increment the minor version
+    -   `[major]` -- a change to the spec that should increment the major version the spec.
 
 3.  PRs or commits that are `[patch]`, `[minor]`, or `[major]` should add an item to [`revision-history.yaml`](revision-history.yaml) under the `thisVersion`key.
     `[nfc]` PRs or commits do not modify this section.

@@ -33,7 +33,7 @@ The module shall exist with a Verilog name matching the defname value or, lackin
 The ports of an external module shall adhere to one of the port lowering ABIs.
 
 No assumption is made of the filename of an implementation of an external module.
-It is the user’s job to include files in such a way in their tools to resolve the name.
+It is the user's job to include files in such a way in their tools to resolve the name.
 
 ### Public Modules
 
@@ -56,7 +56,7 @@ The filelist contents are a newline-delimited list of filenames.
 
 The ports of public modules shall be lowered using one of the Port Lowering ABIs.
 
-No information about the instantiations of a public module may be used to compile a public module—a public module is compiled as if it is never instantiated.
+No information about the instantiations of a public module may be used to compile a public module---a public module is compiled as if it is never instantiated.
 However, it is legal to compile modules which instantiate public modules with full knowledge of the public module internals.
 
 ### Private Modules
@@ -75,7 +75,7 @@ These ABIs are applicable to public modules or external modules only.
 
 #### Port Lowering ABIv1
 
-Ports are generally lowered to netlist types, except where Verilog’s type system prevents it.
+Ports are generally lowered to netlist types, except where Verilog's type system prevents it.
 
 Ports of integer types shall be lowered to netlist ports (`wire`{.verilog}) as a packed vector of equivalent size.
 For example, consider the following FIRRTL:
@@ -96,7 +96,7 @@ module Top(
 );
 ```
 
-Ports of aggregate type shall be scalarized according to the “Aggregate Type Lowering” description in the FIRRTL spec.
+Ports of aggregate type shall be scalarized according to the "Aggregate Type Lowering" description in the FIRRTL spec.
 
 Ports of ref type on public modules shall, for each public module, be lowered to a Verilog macro with the following format where `module` is the name of the public module, `portname` is the name of the port, and `internalpath` is the hierarchical path name:
 
@@ -113,7 +113,7 @@ filename = "ref_" , module , ".sv" ;
 References to aggregates will be lowered to a series of references to ground types.
 This ABI does not specify whether the original aggregate referent is scalarized or not.
 
-All other port types shall lower according ot the type lowering in section [“On Types”](#On-Types).
+All other port types shall lower according ot the type lowering in section ["On Types"](#On-Types).
 
 #### Port Lowering ABIv2
 
@@ -121,11 +121,11 @@ Ports are lowered per the v1 ABI above, except for aggregate types.
 
 Vectors shall be lowered to Verilog packed vectors.
 
-Bundles shall be recursively split as per “Aggregate Type Lowering”, except instead of recursively converting bundles to ground types, the recursion stops at passive types.
+Bundles shall be recursively split as per "Aggregate Type Lowering", except instead of recursively converting bundles to ground types, the recursion stops at passive types.
 
 Passive bundles shall be lowered to Verilog packed structs.
 
-Reference types in ports shall be logically split out from aggregates and named as though “Aggregate Type Lowering” was used.
+Reference types in ports shall be logically split out from aggregates and named as though "Aggregate Type Lowering" was used.
 
 ## On Layers
 
@@ -136,10 +136,10 @@ FIRRTL compilers may implement other non-standard lowering conventions.
 ### Bind Lowering Convention
 
 The bind lowering convention is indicated by the `"bind"`{.firrtl} string on a declared layer.
-When using this convention, layer blocks associated with that layer are lowered to separate modules that are instantiated via SystemVerilog `bind`{.verilog} statements (“bind instantiation”).
+When using this convention, layer blocks associated with that layer are lowered to separate modules that are instantiated via SystemVerilog `bind`{.verilog} statements ("bind instantiation").
 
-Each module that contains layer blocks will produce one additional module per layer block that has “internal” module convention.
-I.e., the modules are private and have no defined ABI—the name of each module is implementation defined, the instantiation name of a bound instance is implementation defined, and any ports created on the module may have any name and may be optimized away.
+Each module that contains layer blocks will produce one additional module per layer block that has "internal" module convention.
+I.e., the modules are private and have no defined ABI---the name of each module is implementation defined, the instantiation name of a bound instance is implementation defined, and any ports created on the module may have any name and may be optimized away.
 
 Practically speaking, additional ports of each generated module must be created whenever a value defined outside the layer block is used inside the layer block.
 The values captured by the layer block will create input ports.
@@ -174,7 +174,7 @@ When compiled to Verilog, this will produce six bind files:
     layers_Baz_Layer1_Layer2.sv
     layers_Baz_Layer1_Layer2_Layer3_.sv
 
-The contents of each binding files must have the effect of including all code defined in all of the layer blocks associated with a layer and any of its parent layer’s layer blocks.
+The contents of each binding files must have the effect of including all code defined in all of the layer blocks associated with a layer and any of its parent layer's layer blocks.
 
 #### Example
 

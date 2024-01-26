@@ -2949,7 +2949,7 @@ n must be non-negative.
 
 | Name | Arguments | Parameters | Arg Types | Result Type | Result Width   |
 |------|-----------|------------|-----------|-------------|----------------|
-| shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 1) |
+| shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 0) |
 |      |           |            | (SInt)    | SInt        | max(w~e~-n, 1) |
 
 The shift right operation truncates the least significant n bits from e.

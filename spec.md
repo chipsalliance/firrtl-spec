@@ -1957,7 +1957,7 @@ Format strings support the following escape characters:
 
 To facilitate simulation, model checking and formal methods, there are three non-synthesizable verification statements available: assert, assume and cover.
 Assert and assume statements require a clock signal, a predicate signal, an enable signal, a format string and a variable list of argument signals.
-Cover statement requires a clock signal, a predicate signal, an enable signal, a format string and a string literal.
+Cover statement requires a clock signal, a predicate signal, an enable signal, and a string literal.
 The predicate and enable signals must have single bit unsigned integer type.
 Assert and assume statement may print the format string as an explanatory message where its argument placeholders are substituted.
 See [@sec:format-strings] for information about format strings.

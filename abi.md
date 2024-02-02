@@ -113,7 +113,7 @@ filename = "ref_" , module , ".sv" ;
 References to aggregates will be lowered to a series of references to ground types.
 This ABI does not specify whether the original aggregate referent is scalarized or not.
 
-All other port types shall lower according ot the type lowering in section ["On Types"](#On-Types).
+All other port types shall lower according ot the type lowering in section ["On Types"](@sec:On-Types).
 
 #### Port Lowering ABIv2
 

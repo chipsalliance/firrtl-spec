@@ -1956,9 +1956,11 @@ Format strings support the following escape characters:
 ## Verification
 
 To facilitate simulation, model checking and formal methods, there are three non-synthesizable verification statements available: assert, assume and cover.
-Each type of verification statement requires a clock signal, a predicate signal, an enable signal and a string literal.
+Assert and assume statements require a clock signal, a predicate signal, an enable signal, a format string and a variable list of argument signals.
+Cover statement requires a clock signal, a predicate signal, an enable signal, and a string literal.
 The predicate and enable signals must have single bit unsigned integer type.
-Assert and assume use the string as an explanatory message.
+Assert and assume statement may print the format string as an explanatory message where its argument placeholders are substituted.
+See [@sec:format-strings] for information about format strings.
 For cover statements the string indicates a suggested comment.
 When an assert or assume is violated the explanatory message may be issued as guidance.
 The explanatory message may be phrased as if prefixed by the words "Verifies that\...".
@@ -1977,6 +1979,7 @@ However it can never be used in a reference since it is not of any valid type.
 
 The assert statement verifies that the predicate is true on the rising edge of any clock cycle when the enable is true.
 In other words, it verifies that enable implies predicate.
+When the predicate is false, the assert statement may print out the format string where its argument placeholders are substituted.
 
 ``` firrtl
 wire clk: Clock
@@ -1984,7 +1987,7 @@ wire pred: UInt<1>
 wire en: UInt<1>
 connect pred, eq(X, Y)
 connect en, Z_valid
-assert(clk, pred, en, "X equals Y when Z is valid") : optional_name
+assert(clk, pred, en, "X equals Y when Z is valid but got X=%d Y=%d", X, Y) : optional_name
 ```
 
 ## Assume
@@ -1993,6 +1996,7 @@ The assume statement directs the model checker to disregard any states where the
 In other words, it reduces the states to be checked to only those where enable implies predicate is true by definition.
 In simulation, assume is treated
 as an assert.
+When the predicate is false in simulation, the assume statement may print out the format string where its argument placeholders are substituted.
 
 ``` firrtl
 wire clk: Clock
@@ -2000,7 +2004,7 @@ wire pred: UInt<1>
 wire en: UInt<1>
 connect pred, eq(X, Y)
 connect en, Z_valid
-assume(clk, pred, en, "X equals Y when Z is valid") : optional_name
+assume(clk, pred, en, "X equals Y when Z is valid but got X=%d Y=%d", X, Y) : optional_name
 ```
 
 ## Cover
@@ -3340,6 +3344,26 @@ command =
         expr , "," ,
         string_dq ,
         { "," , expr }
+    , ")" ,
+  | "assert" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        expr , "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+  | "assume" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        expr , "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+  | "cover" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        expr , "," ,
+        string_dq
     , ")" ,
     [ ":" , id ] , [ info ] ;
 

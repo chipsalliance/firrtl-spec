@@ -72,11 +72,13 @@ A FIRRTL circuit is a named collection of FIRRTL modules.
 Each module is a hardware "unit" that has ports, registers, wires, and may instantiate other modules (see: [@sec:modules]).
 (This is the same concept as a Verilog `module`{.verilog}.)
 Each FIRRTL circuit has one *main module*.
-The name of the FIRRTL circuit is the name of the main module.
+The name of the FIRRTL circuit must match the name of the main module.
 Modules in a FIRRTL circuit may be public or private.
 A public module may be instantiated outside the current circuit.
 Public modules are the exported identifiers of a circuit.
 Any non-public module may not be instantiated outside the current circuit.
+It is not enforced that a circuit has at least one public module.
+It is not enforced that the main module is public.
 
 Consider the following circuit. This contains two modules, `Bar` and `Baz`.
 Module `Baz` is marked public.
@@ -115,10 +117,6 @@ circuit Foo :
 
   module Qux :
 ```
-
-A circuit that contains no public modules is trivially equivalent to an empty circuit.
-It is not enforced that a circuit has at least one public module.
-It is not enforced that the main module is public.
 
 ## Modules
 

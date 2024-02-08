@@ -71,51 +71,18 @@ circuit Foo :
 A FIRRTL circuit is a named collection of FIRRTL modules.
 Each module is a hardware "unit" that has ports, registers, wires, and may instantiate other modules (see: [@sec:modules]).
 (This is the same concept as a Verilog `module`{.verilog}.)
-Each FIRRTL circuit has one *main module*.
-The name of the FIRRTL circuit must match the name of the main module.
-Modules in a FIRRTL circuit may be public or private.
-A public module may be instantiated outside the current circuit.
-Public modules are the exported identifiers of a circuit.
-Any non-public module may not be instantiated outside the current circuit.
-It is not enforced that a circuit has at least one public module.
-It is not enforced that the main module is public.
 
-Consider the following circuit. This contains two modules, `Bar` and `Baz`.
-Module `Baz` is marked public.
+Each FIRRTL circuit must have exactly one *main module*.
+The main module is a module that has the same name as the FIRRTL circuit.
 
-``` firrtl
-circuit Baz :
-  module Bar :
-    input a: UInt<1>
-    output b: UInt<1>
-
-    connect b, a
-
-  public module Baz :
-    input a: UInt<1>
-    output b: UInt<1>
-
-    inst bar of Bar
-    connect bar.a, a
-    connect b, bar.b
-```
-
-The circuit below is more complex.
-This circuit contains three public modules, `Foo`, `Bar`, and `Baz`, and one non-public module, `Qux`.
-Module `Foo` has no common instances with `Bar` or `Baz`.
-`Bar` and `Baz` both instantiate `Qux`:
+The following circuit contains a FIRRTL circuit with two modules.
+`Foo` is the main module:
 
 ``` firrtl
 circuit Foo :
   public module Foo :
 
-  public module Bar :
-    inst qux of Qux
-
-  public module Baz :
-    inst qux of Qux
-
-  module Qux :
+  module Bar :
 ```
 
 ## Modules
@@ -133,13 +100,16 @@ module MyModule :
   connect bar, foo
 ```
 
-Note that a module definition does *not* indicate that the module will be physically present in the final circuit.
 Refer to the description of the instance statement for details on how to instantiate a module ([@sec:submodule-instances]).
+
+Modules may be either public or private.
 
 ### Public Modules
 
-A public module is a module that is marked with the `public`{.firrtl} keyword.
-A public module may be instantiated outside by other circuits.
+A public module is marked with the `public`{.firrtl} keyword.
+A public module has a stable interface allowing it to be instantiated by *other* circuits.
+A public module will always be physically present in a compiled circuit.
+In effect, public modules are the exported identifiers of a circuit.
 
 The example below shows a public module `Foo`:
 
@@ -163,8 +133,10 @@ For more information on the lowering of public modules, see the FIRRTL ABI Speci
 
 ### Private Modules
 
-A private module is any module which is not public.
+A private module is any module which is not marked with the `public`{.firrtl} keyword.
 Private modules have none of the restrictions of public modules.
+Private modules have no stable, defined interface and may not be used outside the current circuit.
+A private module may not be physically present in a compiled circuit.
 
 ## Layers
 

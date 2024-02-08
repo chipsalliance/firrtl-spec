@@ -2450,6 +2450,26 @@ asClock(x)
 
 [@sec:primitive-operations] will describe the format and semantics of each primitive operation.
 
+## Primitive Property Operations {#sec:expressions:primitive-property-operations}
+
+All fundamental operations on property types are expressed as a FIRRTL primitive operation.
+In general, each operation takes some number of property type expressions as arguments.
+
+The general form of a primitive property operation is expressed as follows:
+
+```firrtl
+op(arg0, arg1, ..., argn)
+```
+
+The following examples of primitive property operations demonstrate adding two property expressions, `a`{.firrtl} and `b`{.firrtl}, and adding an integer property literal to expression `a`{.firrtl}.
+
+```firrtl
+integer_add(a, b)
+integer_add(a, Integer(2))
+```
+
+[@sec:primitive-property-operations] will describe the format and semantics of each primitive property operation.
+
 ## Reading Probe References
 
 Probes are read using the `read`{.firrtl} operation.
@@ -3070,6 +3090,24 @@ n must be non-negative and less than or equal to the bit width of e.
 The tail operation truncates the n most significant bits from e.
 n must be non-negative and less than or equal to the bit width of e.
 
+# Primitive Property Operations {#primitive-property-operations}
+
+The arguments of all primitive property operations must be expressions with property types.
+Each specific operation can place additional restrictions on the number and types of their arguments.
+In general, primitive property operations are named with a prefix indicating the property type on which they operate.
+
+## Integer Arthmetic
+
+Integer arithmetic operations take `Integer`{.firrtl} property type expressions as arguments and return an `Integer`{.firrtl} property type result.
+
+### Integer Add Operation
+
+| Name         | Arguments | Arg Types         | Result Type |
+|--------------|-----------|-------------------|-------------|
+| integer_add  | (e1,e2)   | (Integer,Integer) | Integer     |
+
+The add operation result is the arbitrary precision signed integer arithmetic sum of e1 and e2.
+
 # Notes on Syntax
 
 FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
@@ -3411,7 +3449,8 @@ expr_probe =
   | reference_static ;
 
 property_literal_expr = "Integer", "(", int, ")" ;
-property_expr = reference_static | property_literal_expr ;
+property_expr = reference_static | property_literal_expr | property_expr_primop ;
+property_expr_primop = property_primop_2expr ;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 (* Types *)
@@ -3458,6 +3497,9 @@ primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr ")" ;
 primop_1expr     = primop_1expr_keyword , "(" , expr , ")" ;
 primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
+
+(* Primitive Property Operations *)
+property_primop_2expr = property_primop_2expr_keyword , "(" , property_expr , "," , property_expr ")" ;
 
 (* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;
@@ -3525,6 +3567,9 @@ primop_1expr1int_keyword =
     "pad" | "shl" | "shr" | "head" | "tail" ;
 
 primop_1expr2int_keyword = "bits" ;
+
+property_primop_2expr_keyword =
+    "integer_add" ;
 ```
 
 # Versioning Scheme of this Document

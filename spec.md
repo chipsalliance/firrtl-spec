@@ -61,16 +61,19 @@ This will not be present on files generated according to versions of this standa
 
 ``` firrtl
 FIRRTL version 1.1.0
-circuit :
+circuit Foo :
 ```
 
 # Circuits and Modules
 
 ## Circuits
 
-A FIRRTL circuit is a collection of FIRRTL modules.
+A FIRRTL circuit is a named collection of FIRRTL modules.
 Each module is a hardware "unit" that has ports, registers, wires, and may instantiate other modules (see: [@sec:modules]).
 (This is the same concept as a Verilog `module`{.verilog}.)
+Each FIRRTL circuit has one _main module_.
+The name of the FIRRTL circuit is the name of the main module.
+Modules in a FIRRTL circuit may be public or private.
 A public module may be instantiated outside the current circuit.
 Public modules are the exported identifiers of a circuit.
 Any non-public module may not be instantiated outside the current circuit.
@@ -79,7 +82,7 @@ Consider the following circuit. This contains two modules, `Bar` and `Baz`.
 Module `Baz` is marked public.
 
 ``` firrtl
-circuit :
+circuit Baz :
   module Bar :
     input a: UInt<1>
     output b: UInt<1>
@@ -101,7 +104,7 @@ Module `Foo` has no common instances with `Bar` or `Baz`.
 `Bar` and `Baz` both instantiate `Qux`:
 
 ``` firrtl
-circuit :
+circuit Foo :
   public module Foo :
 
   public module Bar :
@@ -113,8 +116,9 @@ circuit :
   module Qux :
 ```
 
-A circuit that contains no public modules is trivially equivalent to a circuit that contains no modules.
-It is not enforced that a circuit has at least one public module, but it is expected that it does.
+A circuit that contains no public modules is trivially equivalent to an empty circuit.
+It is not enforced that a circuit has at least one public module.
+It is not enforced that the main module is public.
 
 ## Modules
 
@@ -191,10 +195,10 @@ The circuit below contains one layer, `Bar`.
 Module `Foo` contains a layer block that creates a node computed from a port defined in the scope of `Foo`.
 
 ``` firrtl
-circuit:
+circuit Foo:
   layer Bar, bind:       ; Declaration of layer Bar with convention "bind"
 
-  module Foo:
+  public module Foo:
     input a: UInt<1>
 
     layerblock Bar:      ; Declaration of a layer block associated with layer Bar inside module Foo
@@ -208,10 +212,10 @@ The first layer block may not reference node `c`.
 The second layer block may not reference node `b`.
 
 ``` firrtl
-circuit:
+circuit Foo:
   layer Bar, bind:
 
-  module Foo:
+  public module Foo:
     input a: UInt<1>
 
     layerblock Bar: ; First layer block
@@ -229,7 +233,7 @@ The circuit below contains four layers, three of which are nested.
 `Quz` is nested under `Qux`.
 
 ``` firrtl
-circuit:
+circuit Foo:
   layer Bar, bind:
     layer Baz, bind:
     layer Qux, bind:
@@ -262,7 +266,7 @@ In module `Foo`, the port may be read from inside the layer block.
 *Stated differently, module `Baz` has an additional port `_a` that is only accessible in a layer block associated with `Bar`*.
 
 ``` firrtl
-circuit:
+circuit Foo:
   layer Bar, bind:
 
   module Baz:
@@ -274,7 +278,7 @@ circuit:
       node notA = not(a)
       define _a = probe(notA)
 
-  module Foo:
+  public module Foo:
 
     inst baz of Baz
 
@@ -286,11 +290,11 @@ If a port is associated with a nested layer then a period is used to indicate th
 E.g., the following circuit has a port associated with the nested layer `Bar.Baz`:
 
 ``` firrtl
-circuit:
+circuit Foo:
   layer Bar, bind:
     layer Baz, bind:
 
-  module Foo:
+  public module Foo:
     output a: Probe<UInt<1>, Bar.Baz>
 ```
 
@@ -1865,7 +1869,7 @@ FIRRTL modules are instantiated with the instance statement.
 The following example demonstrates creating an instance named `myinstance`{.firrtl} of the `MyModule`{.firrtl} module within the top level module `Top`{.firrtl}.
 
 ``` firrtl
-circuit :
+circuit Top :
   module MyModule :
     input a: UInt
     output b: UInt
@@ -2586,8 +2590,8 @@ To show some examples of what these look like, consider the following example ci
 This consists of four instances of module `Baz`{.firrtl}, two instances of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
 ``` firrtl
-circuit:
-  module Foo:
+circuit Foo:
+  public module Foo:
     inst a of Bar
     inst b of Bar
   module Bar:
@@ -3125,7 +3129,7 @@ As a concrete guide, a few consequences of these rules are summarized below:
 As an example illustrating some of these points, the following is a legal FIRRTL circuit:
 
 ``` firrtl
-circuit :
+circuit Foo :
     public module Foo :
       skip
     module Bar :
@@ -3143,7 +3147,7 @@ The following characters need to be escaped with a leading '`\`': '`\n`' (new li
 The following example shows the info tokens included:
 
 ``` firrtl
-circuit : @[myfile.txt 14:8]
+circuit Top : @[myfile.txt 14:8]
   public module Top : @[myfile.txt 15:2]
     output out: UInt @[myfile.txt 16:3]
     input b: UInt<32> @[myfile.txt 17:3]
@@ -3222,7 +3226,7 @@ Any use in place of an integer is disallowed.
 (* Circuit Definition *)
 circuit =
   version , newline ,
-  "circuit" , ":" , [ annotations ] , [ info ] , newline , indent ,
+  "circuit" , id , ":" , [ annotations ] , [ info ] , newline , indent ,
     { decl } ,
   dedent ;
 

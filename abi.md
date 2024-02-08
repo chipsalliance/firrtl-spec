@@ -23,7 +23,7 @@ Both these ABIs may evolve as new FIRRTL constructs are added.
 
 ### The Circuit
 
-The circuit is a container modules with a single "main module" entry point.
+The circuit is a container of modules with a single "main module" entry point.
 The circuit, by itself, does not have any ABI.
 
 ### External Modules

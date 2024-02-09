@@ -138,6 +138,98 @@ Private modules have none of the restrictions of public modules.
 Private modules have no stable, defined interface and may not be used outside the current circuit.
 A private module may not be physically present in a compiled circuit.
 
+## Externally Defined Modules
+
+Externally defined modules are modules whose implementation is not provided in the current circuit.
+Only the ports and name of the externally defined module are specified in the circuit.
+An externally defined module may include, in order, an optional *defname* which sets the name of the external module in the resulting Verilog, zero or more name--value *parameter* statements, and zero or more *ref* statements indicating the resolved paths of the module's exported references.
+Each name--value parameter statement will result in a value being passed to the named parameter in the resulting Verilog.
+Every port or port sub-element of reference type must have exactly one `ref`{.firrtl} statement.
+
+The widths of all externally defined module ports must be specified.
+Width inference, described in [@sec:width-inference], is not supported for externally defined module ports.
+
+A common use of an externally defined module is to represent a Verilog module that will be written separately and provided together with FIRRTL-generated Verilog to downstream tools.
+
+An example of an externally defined module with parameters is:
+
+``` firrtl
+extmodule MyExternalModule :
+  input foo: UInt<2>
+  output bar: UInt<4>
+  output baz: SInt<8>
+  defname = VerilogName
+  parameter x = "hello"
+  parameter y = 42
+```
+
+An example of an externally defined module with references is:
+
+``` firrtl
+extmodule MyExternalModuleWithRefs :
+  input foo : UInt<2>
+  output mysignal : Probe<UInt<1>>
+  output myreg : RWProbe<UInt<8>>
+  ref mysignal is "a.b"
+  ref myreg is "x.y"
+```
+
+These resolved reference paths capture important information for use in the current FIRRTL design.
+While they are part of the FIRRTL-level interface to the external module, they are not expected to correspond to a particular Verilog construct.
+They exist to carry information about the implementation of the extmodule necessary for code generation of the current circuit.
+
+The types of parameters may be any of the following literal types.
+See [@sec:literals] for more information:
+
+1.  Integer literal, e.g. `42`{.firrtl}
+2.  String literal, e.g., `"hello"`{.firrtl}
+3.  Raw String Literal, e.g., `'world'`{.firrtl}
+
+An integer literal is lowered to a Verilog literal.
+A string literal is lowered to a Verilog string.
+A raw string literal is lowered verbatim to Verilog.
+
+As an example, consider the following external module:
+
+``` firrtl
+extmodule Foo:
+  parameter foo = 'hello'
+  parameter bar = "world"
+  parameter baz = 42
+```
+
+This is lowered to a Verilog instantiation site as:
+
+``` verilog
+Foo #(
+  .foo(hello),
+  .bar("world")
+  .baz(42)
+) bar();
+```
+
+## Implementation Defined Modules (Intrinsics)
+
+Intrinsic modules are modules which represent implementation-defined, compiler-provided functionality.
+Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
+What intrinsics are supported by an implementation is defined by the implementation.
+The particular intrinsic represented by an intrinsic module is encoded in *intrinsic*.
+The name of the intmodule is only used to identify a specific instance.
+An implementation shall type-check all ports and parameters.
+Ports may be uninferred (either width or reset) if specified by the implementation (which is useful for inspecting and interacting with those inference features).
+
+``` firrtl
+intmodule MyIntrinsicModule_xhello_y64 :
+  input foo: UInt
+  output bar: UInt<4>
+  output baz: SInt<8>
+  intrinsic = IntrinsicName
+  parameter x = "hello"
+  parameter y = 42
+```
+
+The types of intrinsic module parameters may only be literal integers or string literals.
+
 ## Layers
 
 Layers are collections of functionality which will not be present in all executions of a circuit.
@@ -270,98 +362,6 @@ circuit Foo:
 
 Layer blocks will be compiled to modules whose ports are derived from what they capture from their visible scope.
 For full details of the way layers are compiled, see the FIRRTL ABI specification.
-
-## Externally Defined Modules
-
-Externally defined modules are modules whose implementation is not provided in the current circuit.
-Only the ports and name of the externally defined module are specified in the circuit.
-An externally defined module may include, in order, an optional *defname* which sets the name of the external module in the resulting Verilog, zero or more name--value *parameter* statements, and zero or more *ref* statements indicating the resolved paths of the module's exported references.
-Each name--value parameter statement will result in a value being passed to the named parameter in the resulting Verilog.
-Every port or port sub-element of reference type must have exactly one `ref`{.firrtl} statement.
-
-The widths of all externally defined module ports must be specified.
-Width inference, described in [@sec:width-inference], is not supported for externally defined module ports.
-
-A common use of an externally defined module is to represent a Verilog module that will be written separately and provided together with FIRRTL-generated Verilog to downstream tools.
-
-An example of an externally defined module with parameters is:
-
-``` firrtl
-extmodule MyExternalModule :
-  input foo: UInt<2>
-  output bar: UInt<4>
-  output baz: SInt<8>
-  defname = VerilogName
-  parameter x = "hello"
-  parameter y = 42
-```
-
-An example of an externally defined module with references is:
-
-``` firrtl
-extmodule MyExternalModuleWithRefs :
-  input foo : UInt<2>
-  output mysignal : Probe<UInt<1>>
-  output myreg : RWProbe<UInt<8>>
-  ref mysignal is "a.b"
-  ref myreg is "x.y"
-```
-
-These resolved reference paths capture important information for use in the current FIRRTL design.
-While they are part of the FIRRTL-level interface to the external module, they are not expected to correspond to a particular Verilog construct.
-They exist to carry information about the implementation of the extmodule necessary for code generation of the current circuit.
-
-The types of parameters may be any of the following literal types.
-See [@sec:literals] for more information:
-
-1.  Integer literal, e.g. `42`{.firrtl}
-2.  String literal, e.g., `"hello"`{.firrtl}
-3.  Raw String Literal, e.g., `'world'`{.firrtl}
-
-An integer literal is lowered to a Verilog literal.
-A string literal is lowered to a Verilog string.
-A raw string literal is lowered verbatim to Verilog.
-
-As an example, consider the following external module:
-
-``` firrtl
-extmodule Foo:
-  parameter foo = 'hello'
-  parameter bar = "world"
-  parameter baz = 42
-```
-
-This is lowered to a Verilog instantiation site as:
-
-``` verilog
-Foo #(
-  .foo(hello),
-  .bar("world")
-  .baz(42)
-) bar();
-```
-
-## Implementation Defined Modules (Intrinsics)
-
-Intrinsic modules are modules which represent implementation-defined, compiler-provided functionality.
-Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
-What intrinsics are supported by an implementation is defined by the implementation.
-The particular intrinsic represented by an intrinsic module is encoded in *intrinsic*.
-The name of the intmodule is only used to identify a specific instance.
-An implementation shall type-check all ports and parameters.
-Ports may be uninferred (either width or reset) if specified by the implementation (which is useful for inspecting and interacting with those inference features).
-
-``` firrtl
-intmodule MyIntrinsicModule_xhello_y64 :
-  input foo: UInt
-  output bar: UInt<4>
-  output baz: SInt<8>
-  intrinsic = IntrinsicName
-  parameter x = "hello"
-  parameter y = 42
-```
-
-The types of intrinsic module parameters may only be literal integers or string literals.
 
 # Circuit Components
 

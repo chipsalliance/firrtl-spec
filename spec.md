@@ -2457,13 +2457,13 @@ In general, each operation takes some number of property type expressions as arg
 
 The general form of a primitive property operation is expressed as follows:
 
-```firrtl
+``` firrtl
 op(arg0, arg1, ..., argn)
 ```
 
-The following examples of primitive property operations demonstrate adding two property expressions, `a`{.firrtl} and `b`{.firrtl}, and adding an integer property literal to expression `a`{.firrtl}.
+The following examples of primitive property operations demonstrate adding two property expressions, `a` and `b`, and adding an integer property literal to expression `a`.
 
-```firrtl
+``` firrtl
 integer_add(a, b)
 integer_add(a, Integer(2))
 ```

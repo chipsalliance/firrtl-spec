@@ -6,7 +6,6 @@ revisionHistory:
   thisVersion:
     spec:
       - Add public modules.
-        Change circuits to support any number of public modules which may have disjoint instance hierarchies.
       - Rename a "FIRRTL Language Definition" to "Grammar".
       - Rename "Details about Syntax" to "Notes on Syntax".
       - Add section "Circuit Components".

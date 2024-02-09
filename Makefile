@@ -14,7 +14,7 @@ clean:
 	rm -rf build
 
 format:
-	find . -type f -name '*.md'	| xargs -IX pandoc -o X --wrap=preserve -t markdown+pipe_tables-multiline_tables-grid_tables X
+	find . -type f -name '*.md' -exec ./scripts/format.sh {} ';'
 
 images: $(IMG_EPSS) $(IMG_PNGS)
 

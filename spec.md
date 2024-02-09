@@ -3499,7 +3499,8 @@ primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 
 (* Primitive Property Operations *)
-property_primop_2expr = property_primop_2expr_keyword , "(" , property_expr , "," , property_expr ")" ;
+property_primop_2expr = property_primop_2expr_keyword ,
+                          "(" , property_expr , "," , property_expr ")" ;
 
 (* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;

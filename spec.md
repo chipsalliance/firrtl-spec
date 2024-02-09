@@ -260,6 +260,10 @@ circuit Foo :
 Functionality enabled by a layer is put in one or more layer blocks inside modules.
 For more information on layer blocks see [@sec:layer-blocks].
 
+Probe types may be colored with a layer.
+Layer coloring indicates which layers must be enabled for a probe to be used.
+For more information on layer-colored probes see [@sec:probe-types] and [@sec:probes-and-layers].
+
 # Circuit Components
 
 Circuit components are the named parts of a module corresponding to hardware.

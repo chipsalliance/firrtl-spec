@@ -238,130 +238,27 @@ Each layer can then be optionally included in the resulting design.
 
 The `layer`{.firrtl} keyword declares a layer with a specific identifier.
 A layer may be declared in a circuit or in another layer declaration.
-An layer's identifier must be unique within the current namespace.
+A layer's identifier must be unique within the current namespace.
 I.e., the identifier of a top-level layer declared in a circuit must not conflict with the identifier of a module, external module, or implementation defined module.
+
+Layers may be nested.
+Nested layers are declared with the `layer`{.firrtl} keyword indented under an existing `layer`{.firrtl} keyword.
 
 Each layer must include a string that sets the lowering convention for that layer.
 The FIRRTL ABI specification defines supported lowering conventions.
-One such strategy is `"bind"`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
+One such strategy is `bind`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
 
-The `layerblock`{.firrtl} keyword declares a "layer block".
-This is a sequence of statements describing optional functionality associated with a layer inside a module.
-A layer block may only be declared inside a module.
-A layer block must reference a layer declared in the current circuit.
-A layer block forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---statements and expressions in a layer block may use identifiers declared outside the layer block, but identifiers declared in the layer block may not be used in parent lexical scopes.
-The statements in a layer block are restricted in what identifiers they are allowed to drive.
-A statement in a layer block may drive no sinks declared outside the layer block *with one exception*: a statement in a layer block may drive reference types declared outside the layer block if the reference types are associated with the layer in which the statement is declared (see: [@sec:probe-types]).
-
-The circuit below contains one layer, `Bar`.
-Module `Foo` contains a layer block that creates a node computed from a port defined in the scope of `Foo`.
+The example below shows a circuit with layers `A`, `B`, and `B.C`:
 
 ``` firrtl
-circuit Foo:
-  layer Bar, bind:       ; Declaration of layer Bar with convention "bind"
-
-  public module Foo:
-    input a: UInt<1>
-
-    layerblock Bar:      ; Declaration of a layer block associated with layer Bar inside module Foo
-      node notA = not(a)
+circuit Foo :
+  layer A, bind :
+  layer B, bind :
+    layer C, bind :
 ```
 
-Multiple layer blocks may reference the same layer declaration.
-Each layer block is a new lexical scope even if they reference the same declaration.
-The circuit below shows module `Foo` having two layer blocks both referencing layer `Bar`.
-The first layer block may not reference node `c`.
-The second layer block may not reference node `b`.
-
-``` firrtl
-circuit Foo:
-  layer Bar, bind:
-
-  public module Foo:
-    input a: UInt<1>
-
-    layerblock Bar: ; First layer block
-      node b = a
-
-    layerblock Bar: ; Second layer block
-      node c = a
-```
-
-Layers may be nested.
-Layers are declared with the `layer`{.firrtl} keyword indented under an existing `layer`{.firrtl} keyword.
-The circuit below contains four layers, three of which are nested.
-`Bar` is the top-level layer.
-`Baz` and `Qux` are nested under `Bar`.
-`Quz` is nested under `Qux`.
-
-``` firrtl
-circuit Foo:
-  layer Bar, bind:
-    layer Baz, bind:
-    layer Qux, bind:
-      layer Quz, bind:
-```
-
-Layer block nesting must match the nesting of declared layers.
-Layer blocks are declared under existing layer blocks with the `layerblock`{.firrtl} keyword indented under an existing `layerblock`{.firrtl} keyword.
-For the four layers in the circuit above, the following is a legal nesting of layerblocks:
-
-``` firrtl
-module Foo:
-  input a: UInt<1>
-
-  layerblock Bar:
-    node notA = not(a)
-    layerblock Baz:
-    layerblock Qux:
-      layerblock Quz:
-        node notNotA = not(notA)
-```
-
-Statements in a layer block may only read from ports or declarations of the current module, the current layer, or a parent layer---statements in a layer block may not drive components declared outside the layer block except reference types associated with the same layer block.
-In the above example, `notA` is accessible in the layer block associated with `Quz` because `notA` is declared in a parent layer block.
-
-In the example below, module `Baz` defines a layer block associated with layer `Bar`.
-Module `Baz` has an output port, `_a`, that is also associated with layer `Bar`.
-This port can then be driven from the layer block.
-In module `Foo`, the port may be read from inside the layer block.
-*Stated differently, module `Baz` has an additional port `_a` that is only accessible in a layer block associated with `Bar`*.
-
-``` firrtl
-circuit Foo:
-  layer Bar, bind:
-
-  module Baz:
-    output _a: Probe<UInt<1>, Bar>
-
-    wire a: UInt<1>
-
-    layerblock Bar:
-      node notA = not(a)
-      define _a = probe(notA)
-
-  public module Foo:
-
-    inst baz of Baz
-
-    layerblock Bar:
-      node _b = baz._a
-```
-
-If a port is associated with a nested layer then a period is used to indicate the nesting.
-E.g., the following circuit has a port associated with the nested layer `Bar.Baz`:
-
-``` firrtl
-circuit Foo:
-  layer Bar, bind:
-    layer Baz, bind:
-
-  public module Foo:
-    output a: Probe<UInt<1>, Bar.Baz>
-```
-
-Layer blocks will be compiled to modules whose ports are derived from what they capture from their visible scope.
-For full details of the way layers are compiled, see the FIRRTL ABI specification.
+Functionality enabled by a layer is put in one or more layer blocks inside modules.
+For more information on layer blocks see [@sec:layer-blocks].
 
 # Circuit Components
 
@@ -1995,6 +1892,127 @@ connect pred, eq(X, Y)
 connect en, Z_valid
 cover(clk, pred, en, "X equals Y when Z is valid") : optional_name
 ```
+
+# Layer Blocks
+
+The `layerblock`{.firrtl} keyword declares a *layer block* and associates it with a layer.
+Statements inside a layer block are only executed when the associated layer is enabled.
+
+A layer block may only be declared inside a module or in another layer block.
+A layer block must be associated with a layer declared in the current circuit.
+A layer block forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---statements and expressions in a layer block may use identifiers declared outside the layer block, but identifiers declared in the layer block may not be used in parent lexical scopes.
+The statements in a layer block are restricted in what identifiers they are allowed to drive.
+A statement in a layer block may drive no sinks declared outside the layer block *with one exception*: a statement in a layer block may drive reference types declared outside the layer block if the reference types are associated with the layer in which the statement is declared (see: [@sec:probe-types]).
+
+The circuit below contains one layer, `Bar`.
+Module `Foo` contains a layer block that creates a node computed from a port defined in the scope of `Foo`.
+
+``` firrtl
+circuit Foo:
+  layer Bar, bind:       ; Declaration of layer Bar with convention "bind"
+
+  public module Foo:
+    input a: UInt<1>
+
+    layerblock Bar:      ; Declaration of a layer block associated with layer Bar inside module Foo
+      node notA = not(a)
+```
+
+Multiple layer blocks may reference the same layer declaration.
+Each layer block is a new lexical scope even if they reference the same declaration.
+The circuit below shows module `Foo` having two layer blocks both referencing layer `Bar`.
+The first layer block may not reference node `c`.
+The second layer block may not reference node `b`.
+
+``` firrtl
+circuit Foo:
+  layer Bar, bind:
+
+  public module Foo:
+    input a: UInt<1>
+
+    layerblock Bar: ; First layer block
+      node b = a
+
+    layerblock Bar: ; Second layer block
+      node c = a
+```
+
+Layers may be nested.
+Layers are declared with the `layer`{.firrtl} keyword indented under an existing `layer`{.firrtl} keyword.
+The circuit below contains four layers, three of which are nested.
+`Bar` is the top-level layer.
+`Baz` and `Qux` are nested under `Bar`.
+`Quz` is nested under `Qux`.
+
+``` firrtl
+circuit Foo:
+  layer Bar, bind:
+    layer Baz, bind:
+    layer Qux, bind:
+      layer Quz, bind:
+```
+
+Layer block nesting must match the nesting of declared layers.
+Layer blocks are declared under existing layer blocks with the `layerblock`{.firrtl} keyword indented under an existing `layerblock`{.firrtl} keyword.
+For the four layers in the circuit above, the following is a legal nesting of layerblocks:
+
+``` firrtl
+module Foo:
+  input a: UInt<1>
+
+  layerblock Bar:
+    node notA = not(a)
+    layerblock Baz:
+    layerblock Qux:
+      layerblock Quz:
+        node notNotA = not(notA)
+```
+
+Statements in a layer block may only read from ports or declarations of the current module, the current layer, or a parent layer---statements in a layer block may not drive components declared outside the layer block except reference types associated with the same layer block.
+In the above example, `notA` is accessible in the layer block associated with `Quz` because `notA` is declared in a parent layer block.
+
+In the example below, module `Baz` defines a layer block associated with layer `Bar`.
+Module `Baz` has an output port, `_a`, that is also associated with layer `Bar`.
+This port can then be driven from the layer block.
+In module `Foo`, the port may be read from inside the layer block.
+*Stated differently, module `Baz` has an additional port `_a` that is only accessible in a layer block associated with `Bar`*.
+
+``` firrtl
+circuit Foo:
+  layer Bar, bind:
+
+  module Baz:
+    output _a: Probe<UInt<1>, Bar>
+
+    wire a: UInt<1>
+
+    layerblock Bar:
+      node notA = not(a)
+      define _a = probe(notA)
+
+  public module Foo:
+
+    inst baz of Baz
+
+    layerblock Bar:
+      node _b = baz._a
+```
+
+If a port is associated with a nested layer then a period is used to indicate the nesting.
+E.g., the following circuit has a port associated with the nested layer `Bar.Baz`:
+
+``` firrtl
+circuit Foo:
+  layer Bar, bind:
+    layer Baz, bind:
+
+  public module Foo:
+    output a: Probe<UInt<1>, Bar.Baz>
+```
+
+Layer blocks will be compiled to modules whose ports are derived from what they capture from their visible scope.
+For full details of the way layers are compiled, see the FIRRTL ABI specification.
 
 # Probes
 

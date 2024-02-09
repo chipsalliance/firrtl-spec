@@ -3102,9 +3102,9 @@ Integer arithmetic operations take `Integer`{.firrtl} property type expressions 
 
 ### Integer Add Operation
 
-| Name         | Arguments | Arg Types         | Result Type |
-|--------------|-----------|-------------------|-------------|
-| integer_add  | (e1,e2)   | (Integer,Integer) | Integer     |
+  Name          Arguments   Arg Types           Result Type
+  ------------- ----------- ------------------- -------------
+  integer_add   (e1,e2)     (Integer,Integer)   Integer
 
 The add operation result is the arbitrary precision signed integer arithmetic sum of e1 and e2.
 

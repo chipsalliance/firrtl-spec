@@ -1,4 +1,4 @@
-name:
+name: "Continuous Integration (CI)"
 
 on:
   workflow_dispatch:
@@ -19,12 +19,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
+      - name: "Checkout chipsalliance/firrtl-spec"
         uses: actions/checkout@v3
         # We use `git describe` which requires tags
         with:
           fetch-depth: 0
-      - name: "Install pandoc"
+      - name: "Install pandoc ${{ env.pandoc-version }}, pandoc-crossref ${{ env.pandoc-crossref-version }}"
         shell: bash
         run: |
           mkdir -p usr/bin
@@ -42,20 +42,20 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
-      - name: "Install TeX Live"
+      - name: "Install Other Dependencies"
         shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install graphviz latexmk texlive-latex-extra texlive-latex-recommended texlive-font-utils
       - name: "Markdown -> [pandox] -> [TeXLive] -> PDF"
         run: make
-      - name: "Upload build directory"
+      - name: "Upload Build Directory"
         uses: actions/upload-artifact@v3
         with:
           name: build
           path: build
           retention-days: 1
-      - name: "Create Release if Tagged"
+      - name: "Create Release If Tagged"
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:

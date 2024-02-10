@@ -27,6 +27,7 @@
       <item>intrinsic</item>
       <item>propassign</item>
       <item>public</item>
+      <item>enablelayer</item>
     </list>
     <list name="types">
       <item>UInt</item>

@@ -265,6 +265,22 @@ Probe types may be colored with a layer.
 Layer coloring indicates which layers must be enabled for a probe to be used.
 For more information on layer-colored probes see [@sec:probe-types] and [@sec:probes-and-layers].
 
+### Modules with Enabled Layers
+
+Modules may be declared with enabled layers.
+A module with enabled layers colors the body of the module with the color of all enabled layers.
+This affects the legality of operations which use probes.
+See [@sec:probes-and-layers] for more information on layer coloring.
+
+To declare a module with layers enabled, use the `enablelayer`{.firrtl} keyword.
+The circuit below shows a module with one layer enabled:
+
+``` firrtl
+circuit Foo :
+  layer A, bind :
+  module Foo enablelayer A :
+```
+
 # Circuit Components
 
 Circuit components are the named parts of a module corresponding to hardware.

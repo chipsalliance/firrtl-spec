@@ -10,8 +10,8 @@ on:
       - main
 
 env:
-  pandoc-version: 3.1.8
-  pandoc-crossref-version: v0.3.17.0
+  pandoc-version: 3.1.11.1
+  pandoc-crossref-version: v0.3.17.0c
 
 jobs:
   markdown-to-pdf:

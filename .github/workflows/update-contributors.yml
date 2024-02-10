@@ -14,7 +14,7 @@ jobs:
       pull-requests: write
     steps:
       - name: "Checkout chipsalliance/firrtl-spec"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "Update Contributors In-Place"
         shell: bash
         run: |

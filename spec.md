@@ -263,14 +263,14 @@ For more information on layer blocks see [@sec:layer-blocks].
 
 Probe types may be colored with a layer.
 Layer coloring indicates which layers must be enabled for a probe to be used.
-For more information on layer-colored probes see [@sec:probe-types] and [@sec:probes-and-layers].
+For more information on layer-colored probes see [@sec:probe-types] and [@sec:layer-coloring].
 
 ### Modules with Enabled Layers
 
 Modules may be declared with enabled layers.
 A module with enabled layers colors the body of the module with the color of all enabled layers.
 This affects the legality of operations which use probes.
-See [@sec:probes-and-layers] for more information on layer coloring.
+See [@sec:layer-coloring] for more information on layer coloring.
 
 To declare a module with layers enabled, use the `enablelayer`{.firrtl} keyword.
 The circuit below shows a module with one layer enabled:
@@ -708,8 +708,9 @@ Probe<UInt<8>>
 RWProbe<UInt<8>>
 ```
 
-`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with a layer (see [@sec:layers]).
-When associated with a layer, the reference type may only be driven from layer blocks associated with the same layer.
+`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be *colored* with a layer (see [@sec:layers]).
+When *layer-colored*, there are restrictions placed on the use of the probe.
+See [@sec:layer-coloring] for a description of these restrictions.
 
 For example:
 
@@ -2048,19 +2049,16 @@ Since they are intended for verification, ports with a probe type do not necessa
 ## Types
 
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
-(See [@sec:probe-types]).
+Probes may be layer-colored.
+See [@sec:probe-types] for more information.
 
-Examples:
+## Layer Coloring
 
-``` firrtl
-Probe<UInt<8>>
-RWProbe<UInt<8>>
-```
+Probe types may be colored with a layer (see [@sec:layers]).
+A layer-colored probe type places restrictions on the operations which use it.
 
-A `RWProbe<T>`{.firrtl} will be implicitly cast to a `Probe<T>`{.firrtl} whenever an expression of type `RWProbe<T>`{.firrtl} is assigned to a port with type `Probe<T>`{.firrtl}.
-
-While `RWProbe<T>`{.firrtl} is strictly more powerful, `Probe<T>`{.firrtl} allows for more aggressive optimization.
-You should consider using `Probe`{.firrtl} whenever you know you don't need to ability to force (see [@sec:forcing]).
+An operation may only "read" from a probe whose layer color is enabled when the operation is enabled.
+An operation that "writes" to a probe must be in a region whose layer color is enabled when the probe's layer color is enabled.
 
 ## The `probe`{.firrtl} and `rwprobe`{.firrtl} Expressions
 
@@ -2274,20 +2272,6 @@ module DUT :
   connect p, x
   connect y, p
 ```
-
-## Probes and Layers
-
-`Probe`{.firrtl} and `RWProbe`{.firrtl} types may be associated with a layer (see [@sec:layers]).
-When associated with a layer, the probe type may only be driven from that layer.
-
-For example:
-
-``` firrtl
-Probe<UInt<8>, A.B>     ; A.B is a layer
-RWProbe<UInt<8>, A.B>
-```
-
-For details on how probes are lowered, see the FIRRTL ABI Specification.
 
 ## External Modules
 

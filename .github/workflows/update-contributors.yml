@@ -9,9 +9,6 @@ on:
 jobs:
   update-contributors:
     runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - name: "Checkout chipsalliance/firrtl-spec"
         uses: actions/checkout@v4
@@ -22,6 +19,7 @@ jobs:
       - name: "Open PR If New Contributors"
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.CHISEL_BOT_TOKEN }}
           branch: ci/update-contributors
           author: chiselbot <chiselbot@users.noreply.github.com>
           committer: chiselbot <chiselbot@users.noreply.github.com>

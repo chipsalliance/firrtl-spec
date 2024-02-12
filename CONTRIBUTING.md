@@ -9,6 +9,22 @@
 -   Match terminology and capitalization preferences used elsewhere by default.
 -   Don't forget to spell-check!
 
+## Code Blocks
+
+Code blocks containing FIRRTL, Verilog, or SystemVerilog are, by default, extracted to separate files in the build area and passed through `firtool` or `verilator` to check that they are correct.
+You can run this manually with `make test`.
+
+Sometimes, you may want to prune the code block in the generated specification `.pdf`.
+You can do this by inserting special keywords in the code block:
+
+-   `snippetbegin` starts a snippet
+-   `snippetend` ends a snippet
+
+If a code block has more than one snippet, then each snippet is appended in the output `.pdf`.
+
+You may prevent a code block from being checked by adding a second class with name `notest` to the code block.
+E.g., put the following on a FIRRTL code block to cause it to not be tested: `{.firrtl .notest}`.
+
 ## Pushing Changes
 
 1.  Read the [Versioning Scheme of this

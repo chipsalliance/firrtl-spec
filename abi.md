@@ -81,7 +81,7 @@ Ports of integer types shall be lowered to netlist ports (`wire`{.verilog}) as a
 For example, consider the following FIRRTL:
 
 ``` firrtl
-circuit :
+circuit Top :
   public module Top :
     output out: UInt<16>
     input b: UInt<32>
@@ -157,7 +157,7 @@ filename = "layers_" , module , "_", root , { "_" , nested } , ".sv" ;
 As an example, consider the following circuit with three layers:
 
 ``` firrtl
-circuit:
+circuit Bar:
   layer Layer1, bind:
     layer Layer2, bind:
       layer Layer3, bind:
@@ -187,7 +187,7 @@ Both `Foo` and `Bar` contain layer blocks.
 To make the example simpler, no constant propagation is done:
 
 ``` firrtl
-circuit:
+circuit Foo:
   layer Layer1, bind:
     layer Layer2, bind:
 

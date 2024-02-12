@@ -729,6 +729,63 @@ module Example:
   input intProp : Integer ; an input port of Integer property type
 ```
 
+### String Type
+
+The `String` type represents a human-readable ASCII (TODO Unicode?) string.
+
+TODO Add an example:
+
+``` firrtl
+module Example:
+  input intProp : Integer ; TODO
+```
+
+### Double Type
+
+The `Double` type represents a IEEE 754 double-precision floating point number.
+
+TODO Add an example:
+
+``` firrtl
+module Example:
+  input intProp : Integer ; TODO
+```
+
+### Boolean Type
+
+The `Boolean` type represents a boolean value.
+
+TODO Add an example:
+
+``` firrtl
+module Example:
+  input intProp : Integer ; TODO
+```
+
+### Reference to objects
+
+TODO Fix this section
+The `Ref<T>` type represents a reference to a TODO.
+
+TODO Add an example:
+
+``` firrtl
+module Example:
+  input intProp : Integer ; TODO
+```
+
+### List Type
+
+The `List<T>` type represents a list of properties.
+The type `T` must be a property type.
+
+TODO Add an example:
+
+``` firrtl
+module Example:
+  input intProp : Integer ; TODO
+```
+
 ## Connectable Types
 
 A **connectable type** is one which may be the type of expressions which may participate in the `connect`{.firrtl} statement.
@@ -1196,45 +1253,6 @@ wire y: Analog<2>
 wire z: Analog<2>
 attach(x, y)      ; binary attach
 attach(z, y, x)   ; attach all three signals
-```
-
-# Property Assignments
-
-Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connections]).
-
-Instead, property typed expressions are assigned with the `propassign`{.firrtl} statement.
-
-Property typed expressions have the normal rules for flow (see [@sec:flow]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
-
-1.  The left-hand and right-hand side expressions must be of property types.
-
-2.  The types of the left-hand and right-hand side expressions must be the same.
-
-3.  The flow of the left-hand side expression must be sink.
-
-4.  The flow of the right-hand side expression must be source.
-
-5.  The left-hand side expression may be used as the left-hand side in at most one property assignment.
-
-6.  The property assignment must not occur within a conditional scope.
-
-Note that property types are not legal for any expressions with duplex flow.
-
-The following example demonstrates a property assignment from a module's input property type port to its output property type port.
-
-``` firrtl
-module Example:
-  input propIn : Integer
-  output propOut : Integer
-  propassign propOut, propIn
-```
-
-The following example demonstrates a property assignment from a property literal expression to a module's output property type port.
-
-``` firrtl
-module Example:
-  output propOut : Integer
-  propassign propOut, Integer(42)
 ```
 
 # Empty Statement
@@ -2526,6 +2544,88 @@ module MyModule :
 The probed expression must be a static reference.
 
 See [@sec:probe-types; @sec:probe] for more details on probe references and their use.
+
+# Properties
+
+TODO
+
+TODO See https://www.chisel-lang.org/docs/explanations/properties
+
+Properties allow us to describe the hardware in a way which is suitable for consumption by tooling after the FIRRTL-level RTL has been produced.
+They cannot affect the behavior of hardware.
+
+For the types see [@sec:property-types]
+
+
+## Object Graphs
+
+TODO
+
+## Classes
+
+TODO
+
+A class is a bit like a module where all of the ports are property type.
+The only statements allowed in a class are property-level statements (or somethign like that), etc and propassign statements.
+They are used to represent arbitrary object graphs.
+
+When you instantiate a module, it takes some property inputs, it instantiates a class into a module, then takes a referene to that object and passes it out.
+We want to be able to tie the object graphs to the RTL instance graph.
+
+Eg, if you want to describe the properties of a cache, we want to allow the graph to "overlay" the RTL for that cache.
+
+They are a little different than the plain structs that you see in Rust or C++.
+Because they are closer to a module in that they separate their outputs from their inputs.
+You can have a class that is like a simple struct where you plug in the inputs and you can read from the outputs as if they were fields.
+They are more like a class in Java with the class constructor arguments, you need to supply those to instantiate, and then you can read out the values you instantiated.
+
+## Objects
+
+TODO
+
+## Property Ports
+
+TODO
+
+## Property Assignments
+
+Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connections]).
+
+Instead, property typed expressions are assigned with the `propassign`{.firrtl} statement.
+
+Property typed expressions have the normal rules for flow (see [@sec:flow]), but otherwise use a stricter, simpler algorithm than `connect`{.firrtl}. In order for a property assignment to be legal, the following conditions must hold:
+
+1.  The left-hand and right-hand side expressions must be of property types.
+
+2.  The types of the left-hand and right-hand side expressions must be the same.
+
+3.  The flow of the left-hand side expression must be sink.
+
+4.  The flow of the right-hand side expression must be source.
+
+5.  The left-hand side expression may be used as the left-hand side in at most one property assignment.
+
+6.  The property assignment must not occur within a conditional scope.
+
+Note that property types are not legal for any expressions with duplex flow.
+
+The following example demonstrates a property assignment from a module's input property type port to its output property type port.
+
+``` firrtl
+module Example:
+  input propIn : Integer
+  output propOut : Integer
+  propassign propOut, propIn
+```
+
+The following example demonstrates a property assignment from a property literal expression to a module's output property type port.
+
+``` firrtl
+module Example:
+  output propOut : Integer
+  propassign propOut, Integer(42)
+```
+
 
 # Namespaces
 

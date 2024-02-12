@@ -81,6 +81,7 @@ Ports of integer types shall be lowered to netlist ports (`wire`{.verilog}) as a
 For example, consider the following FIRRTL:
 
 ``` firrtl
+FIRRTL version 4.0.0
 circuit Top :
   public module Top :
     output out: UInt<16>
@@ -157,6 +158,7 @@ filename = "layers_" , module , "_", root , { "_" , nested } , ".sv" ;
 As an example, consider the following circuit with three layers:
 
 ``` firrtl
+FIRRTL version 4.0.0
 circuit Bar:
   layer Layer1, bind:
     layer Layer2, bind:
@@ -187,33 +189,34 @@ Both `Foo` and `Bar` contain layer blocks.
 To make the example simpler, no constant propagation is done:
 
 ``` firrtl
+FIRRTL version 4.0.0
 circuit Foo:
   layer Layer1, bind:
     layer Layer2, bind:
 
   module Bar:
-    output _notA: Probe<UInt<1>, Layerblock1>
-    output _notNotA: Probe<UInt<1>, Layerblock1.Layerblock2>
+    output _notA: Probe<UInt<1>, Layer1>
+    output _notNotA: Probe<UInt<1>, Layer1.Layer2>
 
     wire a: UInt<1>
     connect a, UInt<1>(0)
 
-    layerblock Layerblock1:
+    layerblock Layer1:
       node notA = not(a)
       define _notA = probe(notA)
 
-      layerblock Layerblock2:
+      layerblock Layer2:
         node notNotA = not(notA)
         define _notNotA = probe(notNotA)
 
   public module Foo:
     inst bar of Bar
 
-    layerblock Layerblock1:
-      node x = bar._notA
+    layerblock Layer1:
+      node x = read(bar._notA)
 
-      layerblock Layerblock2:
-        node y = bar._notNotA
+      layerblock Layer2:
+        node y = read(bar._notNotA)
 ```
 
 The following Verilog will be produced for the modules without layers:

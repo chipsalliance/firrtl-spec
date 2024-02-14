@@ -3113,6 +3113,15 @@ The add operation result is the arbitrary precision signed integer arithmetic su
 
 The multiply operation result is the arbitrary precision signed integer arithmetic product of e1 and e2.
 
+### Integer Shift Right Operation
+
+  Name          Arguments   Arg Types           Result Type
+  ------------- ----------- ------------------- -------------
+  integer_shr   (e1,e2)     (Integer,Integer)   Integer
+
+The shift right operation result is the arbitrary precision signed integer arithmetic shift right of e1 by e2.
+e2 sign bits from e1 are shifted into the most significant bits, and the e2 least significant bits of e1 are truncated.
+
 # Notes on Syntax
 
 FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
@@ -3575,7 +3584,7 @@ primop_1expr1int_keyword =
 primop_1expr2int_keyword = "bits" ;
 
 property_primop_2expr_keyword =
-    "integer_add" | "integer_mul" ;
+    "integer_add" | "integer_mul" | "integer_shr" ;
 ```
 
 # Versioning Scheme of this Document

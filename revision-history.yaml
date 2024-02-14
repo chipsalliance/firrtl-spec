@@ -17,6 +17,7 @@ revisionHistory:
       - Allow assert and assume statements to have a format string
       - Add Property primitive operations, starting with integer addition
       - Define/clarify layer-colored probe semantics.
+      - Add Property primitive operation for integer multiplication
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

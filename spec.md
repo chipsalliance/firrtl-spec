@@ -3105,6 +3105,14 @@ Integer arithmetic operations take `Integer`{.firrtl} property type expressions 
 
 The add operation result is the arbitrary precision signed integer arithmetic sum of e1 and e2.
 
+### Integer Multiply Operation
+
+  Name          Arguments   Arg Types           Result Type
+  ------------- ----------- ------------------- -------------
+  integer_mul   (e1,e2)     (Integer,Integer)   Integer
+
+The multiply operation result is the arbitrary precision signed integer arithmetic product of e1 and e2.
+
 # Notes on Syntax
 
 FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
@@ -3567,7 +3575,7 @@ primop_1expr1int_keyword =
 primop_1expr2int_keyword = "bits" ;
 
 property_primop_2expr_keyword =
-    "integer_add" ;
+    "integer_add" | "integer_mul" ;
 ```
 
 # Versioning Scheme of this Document

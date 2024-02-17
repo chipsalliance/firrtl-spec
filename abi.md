@@ -95,6 +95,7 @@ module Top(
     output wire [15:0] out,
     input wire [31:0] in
 );
+endmodule
 ```
 
 Ports of aggregate type shall be scalarized according to the "Aggregate Type Lowering" description in the FIRRTL spec.
@@ -267,26 +268,46 @@ endmodule
 Because there are two layers, two bindings files will be produced.
 The first bindings file is associated with `Layer1`:
 
-``` verilog
+``` systemverilog
+module Foo();
+  Bar bar();
+endmodule
+module Bar();
+  wire a = 1'b0;
+endmodule
+module Bar_Layer1(
+  input a
+);
+  wire notA = ~a;
+endmodule
+module Foo_Layer1(
+  input bar_notA
+);
+  wire x = bar_notA;
+endmodule
+// snippetbegin
 // Inside file "layers_Foo_Layer1.sv" :
 `ifndef layers_Foo_Layer1
 `define layers_Foo_Layer1
 bind Foo Foo_Layer1 layer1(.bar_notA(Foo.bar.layer1.notA));
 bind Bar Bar_Layer1 layer1(.a(Bar.a));
 `endif
+// snippetend
 ```
 
 The second bindings file is associated with `Layer2`.
 This layer, because it depends on `Layer1` being available, will automatically bind in this dependent layer:
 
-``` verilog
+``` {.systemverilog .notest}
 // Inside file "layers_Foo_Layer1_Layer2.sv" :
 `ifndef layers_Foo_Layer1_Layer2
 `define layers_Foo_Layer1_Layer2
 `include "layers_Foo_Layer1.sv"
 bind Foo Foo_Layer1_Layer2 layer1_layer2(.bar_notNotA(Foo.bar.layer1_layer2.notNotA));
 bind Bar Bar_Layer1_Layer2 layer1_layer2(.notA(Bar.layer1.notA));
+// snippetbegin
 `endif
+// snippetend
 ```
 
 The `` `ifdef ``{.verilog} guards enable any combination of the bind files to be included while still producing legal SystemVerilog.

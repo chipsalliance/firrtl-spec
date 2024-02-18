@@ -13,6 +13,7 @@ env:
   pandoc-version: 3.1.11.1
   pandoc-crossref-version: v0.3.17.0c
   pandoc-install-dir: /opt/pandoc
+  tabby-cad-version: 2024-02-18
 
 jobs:
   markdown-to-pdf:
@@ -50,6 +51,21 @@ jobs:
           sudo apt-get install graphviz latexmk texlive-latex-extra texlive-latex-recommended texlive-font-utils
       - name: "Markdown -> [pandox] -> [TeXLive] -> PDF"
         run: make
+      - name: Install Verilator (OSS CAD Suite)
+        shell: bash
+        run: |
+          VERSION=${{ env.tabby-cad-version }}
+          ARTIFACT=oss-cad-suite-linux-x64-$(echo $VERSION | tr -d '-')
+          wget -q -O - https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${VERSION}/${ARTIFACT}.tgz | tar -zx
+          echo "$(pwd)/oss-cad-suite/bin" >> $GITHUB_PATH
+      - name: Install CIRCT
+        id: install-circt
+        uses: circt/install-circt@v1.1.1
+        with:
+          github-token: ${{ github.token }}
+          version-file: include/circt.json
+      - name: "Test code blocks"
+        run: make test
       - name: "Upload Build Directory"
         uses: actions/upload-artifact@v3
         with:

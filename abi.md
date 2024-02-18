@@ -305,9 +305,7 @@ This layer, because it depends on `Layer1` being available, will automatically b
 `include "layers_Foo_Layer1.sv"
 bind Foo Foo_Layer1_Layer2 layer1_layer2(.bar_notNotA(Foo.bar.layer1_layer2.notNotA));
 bind Bar Bar_Layer1_Layer2 layer1_layer2(.notA(Bar.layer1.notA));
-// snippetbegin
 `endif
-// snippetend
 ```
 
 The `` `ifdef ``{.verilog} guards enable any combination of the bind files to be included while still producing legal SystemVerilog.

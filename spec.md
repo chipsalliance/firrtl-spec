@@ -2838,6 +2838,7 @@ Example:
 
 ``` firrtl
 FIRRTL version 4.0.0
+;; snippetbegin
 circuit Top:
   module Top:
     input x : {a: UInt<2>, flip b: UInt<2>}
@@ -2864,7 +2865,7 @@ circuit Top:
     define xp = rwprobe(p)
     connect p, x
     connect y, p
-  ;; snippetend
+;; snippetend
 ```
 
 ## Limitations
@@ -4080,7 +4081,6 @@ The following string-encoded integer literals all have the value `-42`:
 FIRRTL version 4.0.0
 circuit Foo:
   module Foo:
-      ;; snippetbegin
     node a = SInt<7>(
       ;; snippetbegin
       -0b101010

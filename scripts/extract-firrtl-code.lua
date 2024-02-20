@@ -40,19 +40,17 @@ function CodeBlock(elem)
    local ext = extMap[elem.classes[1]]
    local skip = elem.classes[2] == "notest"
 
-   -- Early exit if we don't know a file extension for this code block.
-   if (not ext) or skip then
-      return
+   -- Write the entire code block to a file if we know its extension and we're
+   -- not told to skip testing it.
+   if ext and not skip then
+     local filename = string.format("build/%s-code-example-%03d.%s", PANDOC_STATE.input_files[1], index, ext)
+     index = index + 1
+
+     local f = io.open(filename, 'w')
+     f:write(elem.text)
+     f:write("\n")
+     f:close()
    end
-
-   -- Write the entire code block to a file.
-   local filename = string.format("build/%s-code-example-%03d.%s", PANDOC_STATE.input_files[1], index, ext)
-   index = index + 1
-
-   local f = io.open(filename, 'w')
-   f:write(elem.text)
-   f:write("\n")
-   f:close()
 
    local snippets = getSnippets(elem.text)
 

@@ -3121,6 +3121,7 @@ The multiply operation result is the arbitrary precision signed integer arithmet
 
 The shift right operation result is the arbitrary precision signed integer arithmetic shift right of e1 by e2.
 e2 sign bits from e1 are shifted into the most significant bits, and the e2 least significant bits of e1 are truncated.
+e2 must be non-negative.
 
 # Notes on Syntax
 

@@ -142,9 +142,8 @@ A private module may not be physically present in a compiled circuit.
 
 Externally defined modules are modules whose implementation is not provided in the current circuit.
 Only the ports and name of the externally defined module are specified in the circuit.
-An externally defined module may include, in order, an optional *defname* which sets the name of the external module in the resulting Verilog, zero or more name--value *parameter* statements, and zero or more *ref* statements indicating the resolved paths of the module's exported references.
+An externally defined module may include, in order, an optional *defname* which sets the name of the external module in the resulting Verilog, zero or more name--value *parameter* statements.
 Each name--value parameter statement will result in a value being passed to the named parameter in the resulting Verilog.
-Every port or port sub-element of reference type must have exactly one `ref`{.firrtl} statement.
 
 The widths of all externally defined module ports must be specified.
 Width inference, described in [@sec:width-inference], is not supported for externally defined module ports.
@@ -162,21 +161,6 @@ extmodule MyExternalModule :
   parameter x = "hello"
   parameter y = 42
 ```
-
-An example of an externally defined module with references is:
-
-``` firrtl
-extmodule MyExternalModuleWithRefs :
-  input foo : UInt<2>
-  output mysignal : Probe<UInt<1>>
-  output myreg : RWProbe<UInt<8>>
-  ref mysignal is "a.b"
-  ref myreg is "x.y"
-```
-
-These resolved reference paths capture important information for use in the current FIRRTL design.
-While they are part of the FIRRTL-level interface to the external module, they are not expected to correspond to a particular Verilog construct.
-They exist to carry information about the implementation of the extmodule necessary for code generation of the current circuit.
 
 The types of parameters may be any of the following literal types.
 See [@sec:literals] for more information:
@@ -2273,11 +2257,6 @@ module DUT :
   connect y, p
 ```
 
-## External Modules
-
-Ports with probe types may be specified on the interface of an external module (see [@sec:externally-defined-modules]).
-A `ref`{.firrtl} statement is used to indicate the Verilog name of the component being referred to.
-
 ## Limitations
 
 ### `RWProbe`{.firrtl} with Aggregate Types
@@ -3298,8 +3277,6 @@ decl_extmodule =
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
     { "parameter" , id , "=" , type_param , newline } ,
-    { "ref" , reference_static , "is" ,
-      '"' , reference_static , '"' , newline } ,
   dedent ;
 
 decl_intmodule =

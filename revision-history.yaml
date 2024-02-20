@@ -19,6 +19,7 @@ revisionHistory:
       - Define/clarify layer-colored probe semantics.
       - Add Property primitive operation for integer multiplication
       - Add Property primitive operation for integer shift right
+      - Drop "ref statement" support.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

@@ -162,6 +162,8 @@ Each name--value parameter statement will result in a value being passed to the 
 The widths of all externally defined module ports must be specified.
 Width inference, described in [@sec:width-inference], is not supported for externally defined module ports.
 
+An externally-defined module must have no ports of or containing the abstract reset type.
+
 A common use of an externally defined module is to represent a Verilog module that will be written separately and provided together with FIRRTL-generated Verilog to downstream tools.
 
 An example of an externally defined module with parameters is:

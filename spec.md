@@ -139,9 +139,8 @@ A public module has a number of restrictions:
 
 1.  A public module may have no ports of uninferred width.
 2.  A public module may have no ports of abstract reset type.
-3.  A public module may have no ports of input probe type.
-4.  A `RWProbe`{.firrtl} may not be used to access a public module's ports.
-5.  A public module may be instantiated by other modules within a circuit, but the behavior of the module must not be affected by these instantiations.
+3.  A `RWProbe`{.firrtl} may not be used to access a public module's ports.
+4.  A public module may be instantiated by other modules within a circuit, but the behavior of the module must not be affected by these instantiations.
 
 For more information on the lowering of public modules, see the FIRRTL ABI Specification.
 
@@ -2889,13 +2888,7 @@ For this reason, it is an error to use `rwprobe`{.firrtl} on any port on a publi
 
 ### Input Ports
 
-FIRRTL allows probes to be passed through ports.
-However, due to the limitations of Verilog, there is an important restriction on where they may be used.
-
-A module which only sends probes up towards its parent via output ports have no restriction.
-However, when a module receives a probe from its parent through an input port, it may not use it in a `read`{.firrtl} expression nor may it force it if the circuit component it references does not live in a module that is a descendent of the current module.
-
-For more information on the how probes are lowered, see the FIRRTL ABI Specification.
+Probes may not be inputs to modules.
 
 # Expressions
 

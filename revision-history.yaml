@@ -21,6 +21,7 @@ revisionHistory:
       - Add Property primitive operation for integer shift right
       - Drop "ref statement" support.
       - Correct mistakes in code examples.
+      - Drop support for input probes.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

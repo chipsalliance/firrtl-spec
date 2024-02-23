@@ -4121,7 +4121,8 @@ decl =
   | decl_type_alias ;
 
 decl_module =
-  [ "public" ], "module" , id , ":" , [ info ] , newline , indent ,
+  [ "public" ], "module" , id , { enablelayer } , ":" , [ info ] ,
+    newline , indent ,
     { port , newline } ,
     { statement , newline } ,
   dedent ;
@@ -4347,6 +4348,9 @@ primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int
 (* Primitive Property Operations *)
 property_primop_2expr = property_primop_2expr_keyword ,
                           "(" , property_expr , "," , property_expr ")" ;
+
+(* Enable Layers *)
+enablelayer = "enablelayer" , id , { "." , id } ;
 
 (* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;

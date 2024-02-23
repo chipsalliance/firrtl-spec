@@ -22,6 +22,7 @@ revisionHistory:
       - Drop "ref statement" support.
       - Correct mistakes in code examples.
       - Drop support for input probes.
+      - Add "enablelayer" to grammar.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

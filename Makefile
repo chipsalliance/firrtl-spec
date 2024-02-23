@@ -19,9 +19,9 @@ format:
 images: $(IMG_EPSS) $(IMG_PNGS)
 
 test: build/spec.pdf build/abi.pdf | build/
-	find build/ -type f -name '*.fir' | xargs -n1 firtool -parse-only -disable-annotation-unknown -o /dev/null
-	find build/ -type f -name '*.v' | xargs -n1 verilator --default-language 1364-2005 -Wall -Wno-DECLFILENAME -Wno-UNDRIVEN -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-MULTITOP --lint-only -o /dev/null
-	find build/ -type f -name '*.sv' | xargs -n1 verilator --default-language 1800-2017 -Wall -Wno-DECLFILENAME -Wno-UNDRIVEN -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-MULTITOP --lint-only -o /dev/null
+	find build/ -type f -name '*.fir' | sort | xargs -n1 firtool -parse-only -disable-annotation-unknown -o /dev/null
+	find build/ -type f -name '*.v' | sort | xargs -n1 verilator --default-language 1364-2005 -Wall -Wno-DECLFILENAME -Wno-UNDRIVEN -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-MULTITOP --lint-only -o /dev/null
+	find build/ -type f -name '*.sv' | sort | xargs -n1 verilator --default-language 1800-2017 -Wall -Wno-DECLFILENAME -Wno-UNDRIVEN -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-MULTITOP --lint-only -o /dev/null
 
 PANDOC_FLAGS=\
 	--pdf-engine=latexmk \

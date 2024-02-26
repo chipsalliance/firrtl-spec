@@ -23,6 +23,7 @@ revisionHistory:
       - Correct mistakes in code examples.
       - Drop support for input probes.
       - Add "enablelayer" to grammar.
+      - Main module must be public.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

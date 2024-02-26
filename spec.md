@@ -77,6 +77,7 @@ Each module is a hardware "unit" that has ports, registers, wires, and may insta
 
 Each FIRRTL circuit must have exactly one *main module*.
 The main module is a module that has the same name as the FIRRTL circuit.
+The main module must be public (see [@sec:public-modules]).
 
 The following circuit contains a FIRRTL circuit with two modules.
 `Foo` is the main module:
@@ -100,12 +101,12 @@ The following example declares a module with one input port, one output port, an
 See [@sec:connections] for details on the connect statement.
 
 ``` firrtl
-FIRRTL version 4.0.0
+FIRRTL version 3.2.0
 circuit MyModule:
   ;; snippetbegin
   module MyModule :
-    input foo: UInt
-    output bar: UInt
+    input foo: UInt<3>
+    output bar: UInt<3>
     connect bar, foo
   ;; snippetend
 ```
@@ -237,7 +238,7 @@ Ports may be uninferred (either width or reset) if specified by the implementati
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo :
-  module Foo :
+  public module Foo :
   ;; snippetbegin
   intmodule MyIntrinsicModule_xhello_y64 :
     input foo: UInt
@@ -280,7 +281,7 @@ circuit Foo :
   layer B, bind :
     layer C, bind :
 ;; snippetend
-  module Foo :
+  public module Foo :
 ```
 
 Functionality enabled by a layer is put in one or more layer blocks inside modules.
@@ -304,7 +305,7 @@ The circuit below shows a module with one layer enabled:
 FIRRTL version 4.0.0
 circuit Foo :
   layer A, bind :
-  module Foo enablelayer A :
+  public module Foo enablelayer A :
 ```
 
 # Circuit Components
@@ -330,7 +331,7 @@ Example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input in: UInt<4>
     ;; snippetbegin
     node mynode = and(in, UInt<4>(1))
@@ -348,7 +349,7 @@ Example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire mywire : UInt<1>
     connect mywire, UInt<1>(0)
@@ -378,7 +379,7 @@ Examples:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire myclock : Clock
     reg myreg : SInt, myclock
@@ -388,7 +389,7 @@ circuit Foo:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire myclock : Clock
     reg myreg : SInt, myclock
@@ -398,7 +399,7 @@ circuit Foo:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire myclock : Clock
     wire myreset : UInt<1>
@@ -422,7 +423,7 @@ Example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     input myinput : UInt<1>
     output myoutput : SInt<8>
@@ -443,7 +444,7 @@ Example:
 FIRRTL version 4.0.0
 circuit Foo:
   module Passthrough:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     inst passthrough of Passthrough
     ;; snippetend
@@ -462,7 +463,7 @@ For example:
 FIRRTL version 4.0.0
 circuit Passthrough:
   ;; snippetbegin
-  module Passthrough :
+  public module Passthrough :
     input in : UInt<8>
     output out : UInt<8>
     connect out, in
@@ -474,7 +475,7 @@ The type of the submodule instance `passthrough`{.firrtl} above is thus:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     input a:
       { flip in : UInt<8>, out : UInt<8> }
@@ -490,7 +491,7 @@ Example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     mem mymem :
       data-type => { real:SInt<16>, imag:SInt<16> }
@@ -525,7 +526,7 @@ First, let's look at a wire with a vector type:
 FIRRTL version 4.0.0
 circuit Foo:
   ;; snippetbegin
-  module Foo :
+  public module Foo :
     wire v : UInt<8>[3]
     connect v[0], UInt(0)
     connect v[1], UInt(10)
@@ -543,7 +544,7 @@ Next, let's look at a port with a bundle type:
 FIRRTL version 4.0.0
 circuit Bar:
   ;; snippetbegin
-  module Bar :
+  public module Bar :
     output io : { x : UInt<8>, flip y : UInt<8> }
     connect io.x, add(io.y, UInt(1))
   ;; snippetend
@@ -641,7 +642,7 @@ FIRRTL supports both signed and unsigned integer types.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       UInt<10> ; a 10-bit unsigned integer
@@ -695,7 +696,7 @@ When analog signals are not given a concrete width, their widths are inferred ac
 
     FIRRTL version 4.0.0
     circuit Foo:
-      module Foo:
+      public module Foo:
         input a:
           ;; snippetbegin
           Analog<1>  ; 1-bit analog type
@@ -720,7 +721,7 @@ The following example specifies a 10-element vector of 16-bit unsigned integers.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       UInt<16>[10]
@@ -733,7 +734,7 @@ The following example specifies a 20-element vector, each of which is a 10-eleme
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       UInt<16>[10][20]
@@ -758,7 +759,7 @@ It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed inte
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       { real : SInt<10>, imag : SInt<10> }
@@ -770,7 +771,7 @@ The types of each field may be any type, including other aggregate types.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       { real : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> },
@@ -784,7 +785,7 @@ Because the `ready` field is marked with the keyword `flip`, it will indicate th
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> }
@@ -797,7 +798,7 @@ As an example of how `flip`{.firrtl} works in context, consider a module declare
 FIRRTL version 4.0.0
 circuit Processor:
   ;; snippetbegin
-  module Processor :
+  public module Processor :
     input enq : { word : UInt<32>, valid : UInt<1>, flip ready : UInt<1> }
     ; ...
   ;; snippetend
@@ -820,7 +821,7 @@ In the following example, the first variant has the tag `a`{.firrtl} with type `
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       {|a : UInt<8>, b : UInt<16>|}
@@ -833,7 +834,7 @@ In the following example, all variants have the type `UInt<0>`{.firrtl}.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       {|a, b, c|}
@@ -854,7 +855,7 @@ Examples:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     output a:
       ;; snippetbegin
       Probe<UInt<8>>
@@ -876,7 +877,7 @@ FIRRTL version 4.0.0
 circuit Foo:
   layer A, bind:
     layer B, bind:
-  module Foo:
+  public module Foo:
     output a:
       ;; snippetbegin
       Probe<UInt<8>, A.B>     ; A.B is a layer
@@ -918,7 +919,7 @@ It can represent arbitrary-precision signed integer values.
 FIRRTL version 4.0.0
 circuit Example:
   ;; snippetbegin
-  module Example:
+  public module Example:
     input intProp : Integer ; an input port of Integer property type
   ;; snippetend
 ```
@@ -973,7 +974,7 @@ For example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a:
       ;; snippetbegin
       const UInt<3>
@@ -1017,7 +1018,7 @@ For example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     input c : const { real : SInt<8>, imag : SInt<8> }
     ; c.real has type const SInt<8>
@@ -1040,7 +1041,7 @@ circuit TypeAliasMod:
   type ValidType = UInt<1>
   type Data = { w : WordType, valid : ValidType, flip ready : UInt<1> }
   type AnotherWordType = UInt<32>
-  module TypeAliasMod:
+  public module TypeAliasMod:
     input in : Data
     output out : Data
     wire w : AnotherWordType
@@ -1074,7 +1075,7 @@ They are written as follows:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     wire a:
       ;; snippetbegin
       UInt
@@ -1105,7 +1106,7 @@ The following example shows an inferred reset that will get inferred to a synchr
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     input a : UInt<1>
     wire reset : Reset
@@ -1118,7 +1119,7 @@ After reset inference, `reset`{.firrtl} is inferred to the synchronous `UInt<1>`
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     input a : UInt<1>
     wire reset : UInt<1>
@@ -1131,7 +1132,7 @@ The following example demonstrates usage of an asynchronous reset.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     input clock : Clock
     input reset : AsyncReset
@@ -1153,11 +1154,11 @@ Casting between reset types is also legal:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     input a : UInt<1>
     output y : AsyncReset
-    output z : Reset
+    output z : UInt<1>
     wire r : Reset
     connect r, a
     connect y, asAsyncReset(r)
@@ -1244,9 +1245,9 @@ The following example demonstrates connecting a module's input port to its outpu
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
-  module MyModule :
-    input myinput: UInt
-    output myoutput: UInt
+  public module MyModule :
+    input myinput: UInt<2>
+    output myoutput: UInt<2>
     connect myoutput, myinput
   ;; snippetend
 ```
@@ -1284,11 +1285,11 @@ In the following example port `b`{.firrtl} will be connected to `myport1`{.firrt
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
-  module MyModule :
-    input a: UInt
-    input b: UInt
-    output myport1: UInt
-    output myport2: UInt
+  public module MyModule :
+    input a: UInt<5>
+    input b: UInt<5>
+    output myport1: UInt<5>
+    output myport2: UInt<5>
 
     connect myport1, a
     connect myport1, b
@@ -1307,10 +1308,10 @@ In the following example the `c`{.firrtl} sub-element of port `portx`{.firrtl} w
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
-  module MyModule :
-    input portx: {b: UInt, c: UInt}
-    input porty: UInt
-    output myport: {b: UInt, c: UInt}
+  public module MyModule :
+    input portx: {b: UInt<1>, c: UInt<2>}
+    input porty: UInt<1>
+    output myport: {b: UInt<1>, c: UInt<2>}
     connect myport, portx
     connect myport.b, porty
   ;; snippetend
@@ -1322,10 +1323,10 @@ The above circuit can be rewritten as:
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input portx: {b: UInt, c: UInt}
-    input porty: UInt
-    output myport: {b: UInt, c: UInt}
+  public module MyModule :
+    input portx: {b: UInt<1>, c: UInt<2>}
+    input porty: UInt<2>
+    output myport: {b: UInt<1>, c: UInt<2>}
     connect myport.b, porty
     connect myport.c, portx.c
   ;; snippetend
@@ -1337,10 +1338,10 @@ When a connection to a sub-element of an aggregate component is followed by a co
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input portx: {b: UInt, c: UInt}
-    input porty: UInt
-    output myport: {b: UInt, c: UInt}
+  public module MyModule :
+    input portx: {b: UInt<1>, c: UInt<2>}
+    input porty: UInt<2>
+    output myport: {b: UInt<1>, c: UInt<2>}
     connect myport.b, porty
     connect myport, portx
   ;; snippetend
@@ -1352,10 +1353,10 @@ The above circuit can be rewritten as:
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input portx: {b: UInt, c: UInt}
-    input porty: UInt
-    output myport: {b: UInt, c: UInt}
+  public module MyModule :
+    input portx: {b: UInt<1>, c: UInt<2>}
+    input porty: UInt<1>
+    output myport: {b: UInt<1>, c: UInt<2>}
     connect myport, portx
   ;; snippetend
 ```
@@ -1373,7 +1374,7 @@ It is specified as follows:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire w: UInt
     invalidate w
@@ -1388,10 +1389,10 @@ details on the algorithm for determining what is invalidated.
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
-  module MyModule :
-    input in: {flip a: UInt, b: UInt}
-    output out: {flip a: UInt, b: UInt}
-    wire w: {flip a: UInt, b: UInt}
+  public module MyModule :
+    input in: {flip a: UInt<1>, b: UInt<2>}
+    output out: {flip a: UInt<1>, b: UInt<2>}
+    wire w: {flip a: UInt<1>, b: UInt<2>}
     invalidate in
     invalidate out
     invalidate w
@@ -1404,10 +1405,10 @@ is equivalent to the following:
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input in: {flip a: UInt, b: UInt}
-    output out: {flip a: UInt, b: UInt}
-    wire w: {flip a: UInt, b: UInt}
+  public module MyModule :
+    input in: {flip a: UInt<1>, b: UInt<2>}
+    output out: {flip a: UInt<1>, b: UInt<2>}
+    wire w: {flip a: UInt<1>, b: UInt<2>}
     invalidate in.a
     invalidate out.b
     invalidate w.a
@@ -1441,7 +1442,7 @@ The module `Foo`{.firrtl} has a combinational loop and is not legal, even though
 FIRRTL version 4.0.0
 circuit Foo:
   ;; snippetbegin
-  module Foo:
+  public module Foo:
     input a: UInt<1>
     output b: UInt<1>
     connect b, b
@@ -1455,7 +1456,7 @@ The following module `Foo2`{.firrtl} has a combinational loop, even if it can be
 FIRRTL version 4.0.0
 circuit Foo2:
   ;; snippetbegin
-  module Foo2 :
+  public module Foo2 :
     input n1: UInt<2>
     input n2: UInt<2>
     wire tmp: UInt<1>
@@ -1471,7 +1472,7 @@ Module `Foo3`{.firrtl} is another example of an illegal combinational loop, even
 FIRRTL version 4.0.0
 circuit Foo3:
   ;; snippetbegin
-  module Foo3:
+  public module Foo3:
     wire a : UInt<2>
     wire b : UInt<1>
     wire c : UInt<1>
@@ -1489,7 +1490,7 @@ It can only be applied to signals with analog type, and each analog signal may b
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire x: Analog<2>
     wire y: Analog<2>
@@ -1527,7 +1528,7 @@ The following example demonstrates a property assignment from a module's input p
 FIRRTL version 4.0.0
 circuit Example:
   ;; snippetbegin
-  module Example:
+  public module Example:
     input propIn : Integer
     output propOut : Integer
     propassign propOut, propIn
@@ -1540,7 +1541,7 @@ The following example demonstrates a property assignment from a property literal
 FIRRTL version 4.0.0
 circuit Example:
   ;; snippetbegin
-  module Example:
+  public module Example:
     output propOut : Integer
     propassign propOut, Integer(42)
   ;; snippetend
@@ -1556,7 +1557,7 @@ The following example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     output a: UInt<1>
     input b: UInt<1>
     output c: UInt<1>
@@ -1573,7 +1574,7 @@ can be equivalently expressed as:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     output a: UInt<1>
     input b: UInt<1>
     output c: UInt<1>
@@ -1604,7 +1605,7 @@ The following example demonstrates instantiating a register with the given name 
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire myclock: Clock
     reg myreg: SInt, myclock
@@ -1628,7 +1629,7 @@ In the following example, `myreg`{.firrtl} is assigned the value `myinit`{.firrt
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire myclock: Clock
     wire myreset: UInt<1>
@@ -1656,9 +1657,9 @@ Otherwise, the wire `x`{.firrtl} is connected to the input `b`{.firrtl}.
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input a: UInt
-    input b: UInt
+  public module MyModule :
+    input a: UInt<3>
+    input b: UInt<3>
     input en: UInt<1>
     wire x: UInt
     when en :
@@ -1678,9 +1679,9 @@ Thus the following example:
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input a: UInt
-    input b: UInt
+  public module MyModule :
+    input a: UInt<3>
+    input b: UInt<3>
     input en: UInt<1>
     wire x: UInt
     when en :
@@ -1694,9 +1695,9 @@ can be equivalently expressed as:
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input a: UInt
-    input b: UInt
+  public module MyModule :
+    input a: UInt<3>
+    input b: UInt<3>
     input en: UInt<1>
     wire x: UInt
     when en :
@@ -1714,11 +1715,11 @@ Thus the following example:
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input a: UInt
-    input b: UInt
-    input c: UInt
-    input d: UInt
+  public module MyModule :
+    input a: UInt<3>
+    input b: UInt<3>
+    input c: UInt<3>
+    input d: UInt<3>
     input c1: UInt<1>
     input c2: UInt<1>
     input c3: UInt<1>
@@ -1742,11 +1743,11 @@ can be equivalently written as:
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input a: UInt
-    input b: UInt
-    input c: UInt
-    input d: UInt
+  public module MyModule :
+    input a: UInt<3>
+    input b: UInt<3>
+    input c: UInt<3>
+    input d: UInt<3>
     input c1: UInt<1>
     input c2: UInt<1>
     input c3: UInt<1>
@@ -1770,7 +1771,7 @@ The following statement:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     output a: UInt<1>
     input b: UInt<1>
     input c: UInt<1>
@@ -1789,7 +1790,7 @@ can have the `when`{.firrtl} keyword, the `when`{.firrtl} branch, and the `else`
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     output a: UInt<1>
     input b: UInt<1>
     input c: UInt<1>
@@ -1806,7 +1807,7 @@ The `else`{.firrtl} branch may also be added to the single line:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     output a: UInt<1>
     input b: UInt<1>
     input c: UInt<1>
@@ -1826,7 +1827,7 @@ An optional binder may be specified to extract the data of the variant.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input x: {|some: UInt<1>, none|}
     output a: UInt<1>
     output e: UInt<1>
@@ -1851,9 +1852,9 @@ and register `myreg2`{.firrtl} is always connected to `b`{.firrtl}.
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
-  module MyModule :
-    input a: UInt
-    input b: UInt
+  public module MyModule :
+    input a: UInt<3>
+    input b: UInt<3>
     input en: UInt<1>
     input clk : Clock
     when en :
@@ -1878,9 +1879,9 @@ In the following example, the wire `a`{.firrtl} is connected to the wire `w`{.fi
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
+  public module MyModule :
   input en: UInt<1>
-  input a: UInt
+  input a: UInt<3>
   wire w: UInt
   when en :
     connect w, a
@@ -1916,7 +1917,7 @@ The following example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire a: UInt
     wire b: UInt
@@ -1933,7 +1934,7 @@ can be rewritten equivalently using a multiplexer as follows:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire a: UInt
     wire b: UInt
@@ -1949,7 +1950,7 @@ E.g., in the following circuit `w`{.firrtl} has an indeterminate value when `c`{
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire a: UInt
     wire c: UInt<1>
@@ -1965,7 +1966,7 @@ A FIRRTL compiler is free to optimize this to the following circuit by assuming 
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire a: UInt
     wire c: UInt<1>
@@ -1983,7 +1984,7 @@ For example, the following snippet:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire x: {a: UInt, b: UInt}
     wire y: {a: UInt, b: UInt}
@@ -2000,7 +2001,7 @@ can be rewritten equivalently as follows:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire x: {a:UInt, b:UInt}
     wire y: {a:UInt, b:UInt}
@@ -2018,7 +2019,7 @@ For example, the following snippet:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire x: {a: UInt, b: UInt}
     wire y: UInt
@@ -2035,7 +2036,7 @@ can be rewritten equivalently as follows:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire x: {a: UInt, b: UInt}
     wire y: UInt
@@ -2073,7 +2074,7 @@ Finally, its read-under-write behavior is undefined.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     mem mymem :
       data-type => {real:SInt<16>, imag:SInt<16>}
@@ -2092,7 +2093,7 @@ In the example above, the type of `mymem`{.firrtl} is:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     wire mymem:
       ;; snippetbegin
       {flip r1: {addr: UInt<8>,
@@ -2230,7 +2231,7 @@ However it can never be used in a reference since it is not of any valid type.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire clk: Clock
     wire halt: UInt<1>
@@ -2255,7 +2256,7 @@ However it can never be used in a reference since it is not of any valid type.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     ;; snippetbegin
     wire clk: Clock
     wire cond: UInt<1>
@@ -2322,7 +2323,7 @@ When the predicate is false, the assert statement may print out the format strin
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     wire X: UInt<1>
     wire Y: UInt<1>
     wire Z_valid: UInt<1>
@@ -2347,7 +2348,7 @@ When the predicate is false in simulation, the assume statement may print out th
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     wire X: UInt<1>
     wire Y: UInt<1>
     wire Z_valid: UInt<1>
@@ -2370,7 +2371,7 @@ The string argument may be emitted as a comment with the cover.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     wire X: UInt<1>
     wire Y: UInt<1>
     wire Z_valid: UInt<1>
@@ -2451,7 +2452,7 @@ circuit Foo:
     layer Qux, bind:
       layer Quz, bind:
 ;; snippetend
-  module Foo:
+  public module Foo:
 ```
 
 Layer block nesting must match the nesting of declared layers.
@@ -2466,7 +2467,7 @@ circuit Foo:
     layer Qux, bind:
       layer Quz, bind:
   ;; snippetbegin
-  module Foo:
+  public module Foo:
     input a: UInt<1>
 
     layerblock Bar:
@@ -2574,19 +2575,19 @@ Here is an example of a module which uses `define`{.firrtl} to pass a number of 
 FIRRTL version 4.0.0
 circuit Refs:
   ;; snippetbegin
-  module Refs:
+  public module Refs:
     input clock:  Clock
-    output a : Probe<{x: UInt, y: UInt}> ; read-only ref. to wire 'p'
-    output b : RWProbe<UInt> ; force-able ref. to node 'q', inferred width.
-    output c : Probe<UInt> ; read-only ref. to register 'r'
+    output a : Probe<{x: UInt<1>, y: UInt<2>}> ; read-only ref. to wire 'p'
+    output b : RWProbe<UInt<1>> ; force-able ref. to node 'q', inferred width.
+    output c : Probe<UInt<3>> ; read-only ref. to register 'r'
     output d : Probe<Clock> ; ref. to input clock port
 
-    wire p : {x: UInt, flip y : UInt}
+    wire p : {x: UInt<1>, flip y : UInt<2>}
     define a = probe(p) ; probe is passive
     wire q: UInt<1>
     connect q, UInt<1>(0)
     define b = rwprobe(q)
-    reg r: UInt, clock
+    reg r: UInt<3>, clock
     define c = probe(r)
     define d = probe(clock)
   ;; snippetend
@@ -2598,12 +2599,12 @@ The target may also be a subcomponent of a circuit component:
 FIRRTL version 4.0.0
 circuit Foo:
   ;; snippetbegin
-  module Foo:
-    input x : UInt
-    output y : { x: UInt, p: Probe<UInt> }
-    output z : Probe<UInt>[2]
+  public module Foo:
+    input x : UInt<3>
+    output y : { x: UInt<3>, p: Probe<UInt<3>> }
+    output z : Probe<UInt<3>>[2]
 
-    wire w : UInt
+    wire w : UInt<3>
     connect w, x
     connect y.x, w
 
@@ -2643,7 +2644,7 @@ The following `AddRefs`{.firrtl} module is used in the examples that follow for 
 FIRRTL version 4.0.0
 circuit AddRefs:
   ;; snippetbegin
-  module AddRefs:
+  public module AddRefs:
     output a : RWProbe<UInt<2>>
     output b : RWProbe<UInt<2>>
     output c : RWProbe<UInt<2>>
@@ -2690,7 +2691,7 @@ circuit ForceAndRelease:
     define b = rwprobe(y)
     define c = rwprobe(z)
   ;; snippetbegin
-  module ForceAndRelease:
+  public module ForceAndRelease:
     output o : UInt<3>
 
     inst r of AddRefs
@@ -2735,7 +2736,7 @@ Example:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input c: UInt<1>
     wire ref: RWProbe<UInt<1>>
     wire x: UInt<1>
@@ -2786,7 +2787,7 @@ circuit ForceAndRelease:
     define b = rwprobe(y)
     define c = rwprobe(z)
   ;; snippetbegin
-  module ForceAndRelease:
+  public module ForceAndRelease:
     input a: UInt<2>
     input clock : Clock
     input cond : UInt<1>
@@ -2839,7 +2840,7 @@ Example:
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Top:
-  module Top:
+  public module Top:
     input x : {a: UInt<2>, flip b: UInt<2>}
     output y : {a: UInt<2>, flip b: UInt<2>}
 
@@ -2910,7 +2911,7 @@ All of the following examples create a 10-bit unsigned constant integer expressi
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     node a =
       ;; snippetbegin
       UInt<10>(42)
@@ -2940,7 +2941,7 @@ All of the following will infer a bit width of five:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     node a =
       ;; snippetbegin
       UInt(42)
@@ -2969,7 +2970,7 @@ All of the following examples create a 10-bit signed hardware integer representi
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     node a =
       ;; snippetbegin
       SInt<10>(-42)
@@ -2998,7 +2999,7 @@ All of the following examples create and infer a 6-bit signed integer with value
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     node a =
       ;; snippetbegin
       SInt(-42)
@@ -3034,7 +3035,7 @@ The following examples show literal `Integer` property type expressions.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     output a: Integer
     output b: Integer
 
@@ -3056,7 +3057,7 @@ The data value expression may be omitted when the data type is `UInt<0>(0)`{.fir
 ``` {.firrtl .notest}
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     node z =
       ;; snippetbegin
       {|a, b, c|}(a)
@@ -3080,11 +3081,11 @@ is selected.
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input a: UInt
-    input b: UInt
+  public module MyModule :
+    input a: UInt<3>
+    input b: UInt<3>
     input sel: UInt<1>
-    output c: UInt
+    output c: UInt<3>
     connect c, mux(sel, a, b)
   ;; snippetend
 ```
@@ -3122,7 +3123,7 @@ a Clock typed signal.
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     wire a: UInt<8>
     wire b: UInt<8>
     node c =
@@ -3162,7 +3163,7 @@ The following examples of primitive property operations demonstrate adding two p
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     input a: Integer
     input b: Integer
     output c: Integer
@@ -3193,8 +3194,8 @@ circuit Bar:
     output p : Probe<UInt>
     ; ...
 
-  module Bar :
-    output x : UInt
+  public module Bar :
+    output x : UInt<3>
 
     inst f of Foo
     connect x, read(f.p) ; indirectly access the probed data
@@ -3211,8 +3212,8 @@ circuit Bar:
     output p : Probe<{a: UInt, b: UInt}>
     ; ...
 
-  module Bar :
-    output x : UInt
+  public module Bar :
+    output x : UInt<3>
 
     inst f of Foo
     connect x, read(f.p.b) ; indirectly access the probed data
@@ -3224,7 +3225,7 @@ Read operations can be used anywhere a signal of the same underlying type can be
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     output x: UInt<2>
     wire f: Probe<{p: { a: UInt<1>, b: UInt<1> }}>
     ;; snippetbegin
@@ -3251,9 +3252,9 @@ The following example exports a probe reference to a port:
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
-  module MyModule :
-    input in: UInt
-    output r : Probe<UInt>
+  public module MyModule :
+    input in: UInt<5>
+    output r : Probe<UInt<5>>
 
     define r = probe(in)
   ;; snippetend
@@ -3409,7 +3410,7 @@ circuit Foo: %[[
 ]]
   module Baz :
   module Bar :
-  module Foo :
+  public module Foo :
 ;; snippetend
 ```
 
@@ -3436,7 +3437,7 @@ In both cases, there is no visibility of `a`{.firrtl} when it has an indetermina
 FIRRTL version 4.0.0
 circuit IValue:
   ;; snippetbegin
-  module IValue :
+  public module IValue :
     output o : UInt<8>
     input c : UInt<1>
     input v : UInt<8>
@@ -3455,7 +3456,7 @@ is transformed to:
 FIRRTL version 4.0.0
 circuit IValue:
   ;; snippetbegin
-  module IValue :
+  public module IValue :
     output o : UInt<8>
     input c : UInt<1>
     input v : UInt<8>
@@ -3470,7 +3471,7 @@ Note that it is equally correct to produce:
 FIRRTL version 4.0.0
 circuit IValue:
   ;; snippetbegin
-  module IValue :
+  public module IValue :
     output o : UInt<8>
     input c : UInt<1>
     input v : UInt<8>
@@ -3530,7 +3531,7 @@ E.g., consider the following port:
 FIRRTL version 4.0.0
 circuit Top:
   ;; snippetbegin
-  module Top :
+  public module Top :
     input a : { b: UInt<1>, c: UInt<2> }[2]
   ;; snippetend
 ```
@@ -3541,7 +3542,7 @@ Scalarization breaks `a` into the following ports:
 FIRRTL version 4.0.0
 circuit Top:
   ;; snippetbegin
-  module Top :
+  public module Top :
     input a_0_b : UInt<1>  ; a[0].b
     input a_0_c : UInt<2>  ; a[0].c
     input a_1_b : UInt<1>  ; a[1].b
@@ -3561,7 +3562,7 @@ E.g., consider the following ports:
 FIRRTL version 4.0.0
 circuit Top:
   ;; snippetbegin
-  module Top :
+  public module Top :
     input a : { b: UInt<1>[2], b_0: UInt<2>, b_1: UInt<3> }
     input a_b : UInt<4>[2]
     input a_b_0 : UInt<5>
@@ -3574,7 +3575,7 @@ Scalarization breaks these ports into the following ports:
 FIRRTL version 4.0.0
 circuit Top:
   ;; snippetbegin
-  module Top :
+  public module Top :
     input a_b_0: UInt<1>    ; a.b[0]
     input a_b_1: UInt<1>    ; a.b[1]
     input a_b_0_0: UInt<2>  ; a.b_0
@@ -3969,11 +3970,11 @@ FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Top : @[myfile.txt 14:8]
   public module Top : @[myfile.txt 15:2]
-    output out: UInt @[myfile.txt 16:3]
+    output out: UInt<3> @[myfile.txt 16:3]
     input b: UInt<32> @[myfile.txt 17:3]
     input c: UInt<1> @[myfile.txt 18:3]
     input d: UInt<16> @[myfile.txt 19:3]
-    wire a: UInt @[myfile.txt 21:8]
+    wire a: UInt<2> @[myfile.txt 21:8]
     when c : @[myfile.txt 24:8]
       connect a, b @[myfile.txt 27:16]
     else :
@@ -3992,7 +3993,7 @@ The following are examples of integer literals:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     node a = UInt<8>(
     ;; snippetbegin
       42
@@ -4045,7 +4046,7 @@ The following string-encoded integer literals all have the value `42`:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     node a = UInt<6>(
       ;; snippetbegin
       0b101010
@@ -4073,7 +4074,7 @@ The following string-encoded integer literals all have the value `-42`:
 ``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
-  module Foo:
+  public module Foo:
     node a = SInt<7>(
       ;; snippetbegin
       -0b101010

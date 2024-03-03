@@ -35,5 +35,5 @@ fi
 RESPONSE=$(eval curl $CURL_ARGS https://api.github.com/repos/chipsalliance/firrtl-spec/contributors?per_page=100)
 
 echo $RESPONSE | \
-  jq '.[] | {login, html_url}' | \
+  jq '.[] | {login, html_url} | select(.login | contains("chiselbot") | not)' | \
   jq -s 'sort_by(.login) | {contributors: .}'

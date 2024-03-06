@@ -24,6 +24,7 @@ revisionHistory:
       - Drop support for input probes.
       - Add "enablelayer" to grammar.
       - Main module must be public.
+      - Make commas mandatory, not whitespace.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

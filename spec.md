@@ -3910,7 +3910,6 @@ E.g., it is legal to use `` `0` ``{.firrtl} as a literal identifier in a Bundle 
 A FIRRTL compiler is allowed to change a literal identifier to a legal identifier in the target language (e.g., Verilog) if the literal identifier is not directly representable in the target language.
 
 Comments begin with a semicolon and extend until the end of the line.
-Commas are treated as whitespace, and may be used by the user for clarity if desired.
 
 In FIRRTL, indentation is significant.
 Indentation must consist of spaces only---tabs are illegal characters.

@@ -25,6 +25,7 @@ revisionHistory:
       - Add "enablelayer" to grammar.
       - Main module must be public.
       - Make commas mandatory, not whitespace.
+      - Restore flow description.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

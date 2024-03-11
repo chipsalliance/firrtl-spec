@@ -1209,7 +1209,7 @@ Here are a few comments to help with intuition:
 Nodes may only appear on the right side of a connect.
 Wires and registers may appear on either side of a connect statement.
 Ports are always considered from the perspective of "inside the module".
-Moreover, input ports may only appear "on the right side" of a connect, while output ports may only appear on either side of a connect.
+Moreover, input ports may only appear "on the right side" of a connect, while output ports may appear on either side of a connect.
 Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule in such a way that their input ports are sinks.
 
 The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.

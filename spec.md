@@ -1212,7 +1212,14 @@ Ports are always considered from the perspective of "inside the module".
 Moreover, input ports may only appear "on the right side" of a connect, while output ports may only appear on either side of a connect.
 Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule in such a way that their input ports are sinks.
 
-Subindex, subaccess, and subfield preserve flow from argument to result.  All other primitive operations produce source flows, including mux and cast. 
+The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.
+The flow of a sub-field expression depends upon the orientation of the field.
+If the field is not flipped, its flow is the same flow as the bundle-typed expression it selects its field from.
+If the field is flipped, then its flow is the reverse of the flow of the bundle-typed expression it selects its field from.
+The reverse of source is sink, and vice-versa.
+The reverse of duplex remains duplex.
+
+The flow of all other expressions are source, including mux and cast. 
 
 ## Type Equivalence
 

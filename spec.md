@@ -1197,20 +1197,22 @@ A duplex expression is an expression that is both a source and sink.
 
 The rules for the flow of an expression are as follows:
 
-If the expression is a reference, we look at the kind of the circuit component:
+If the expression is an identifier, we look at the kind of the circuit component the identifier refers to:
 
 -   Nodes are sources.
 -   Wires and registers are duplex.
--   For ports, `input` ports are sources and `output` ports are sinks.
+-   For ports, `input` ports are sources and `output` ports are duplex.
 -   Submodule instances are sources.
 -   Memories are sources.
 
 Here are a few comments to help with intuition:
-Nodes may only appear "on the left side" of a connect.
-Wires and registers may appear "on either side of a connect statement".
+Nodes may only appear on the right side of a connect.
+Wires and registers may appear on either side of a connect statement.
 Ports are always considered from the perspective of "inside the module".
-Moreover, input ports may only appear "on the left side" of a connect, while output ports may only appear "on the right side" of a connect.
+Moreover, input ports may only appear "on the right side" of a connect, while output ports may only appear on either side of a connect.
 Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule in such a way that their input ports are sinks.
+
+Subindex, subaccess, and subfield preserve flow from argument to result.  All other primitive operations produce source flows, including mux and cast. 
 
 ## Type Equivalence
 

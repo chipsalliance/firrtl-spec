@@ -240,13 +240,12 @@ FIRRTL version 4.0.0
 circuit Foo :
   public module Foo :
   ;; snippetbegin
-  intmodule MyIntrinsicModule_xhello_y64 :
-    input foo: UInt
-    output bar: UInt<4>
-    output baz: SInt<8>
-    intrinsic = IntrinsicName
-    parameter x = "hello"
-    parameter y = 42
+  intmodule LTLDelay:
+    input in: UInt<1>
+    output out: UInt<1>
+    intrinsic = circt_ltl_delay
+    parameter delay = 1
+    parameter length = 0
   ;; snippetend
 ```
 

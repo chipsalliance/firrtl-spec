@@ -25,6 +25,7 @@ revisionHistory:
       - Add "enablelayer" to grammar.
       - Main module must be public.
       - Make commas mandatory, not whitespace.
+      - Update intrinsic module example to use a real intrinsic.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

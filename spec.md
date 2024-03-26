@@ -3656,8 +3656,9 @@ Together with the divide operator, the modulus operator satisfies the relationsh
 
 | Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width |
 |--------|-----------|------------|-------------|-------------|--------------|
-| lt,leq |           |            | (UInt,UInt) | UInt        | 1            |
-| gt,geq | (e1,e2)   | ()         | (SInt,SInt) | UInt        | 1            |
+| lt,leq |  (e1,e2)  | ()         | (UInt,UInt) | UInt        | 1            |
+| gt,geq |           |            | (SInt,SInt) | UInt        | 1            |
+| eq,neq |           |            |             |             |              |
 
 The comparison operations return an unsigned 1 bit signal with value one if e1 is less than (lt), less than or equal to (leq), greater than (gt), greater than or equal to (geq), equal to (eq), or not equal to (neq) e2.
 The operation returns a value of zero otherwise.

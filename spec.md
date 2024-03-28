@@ -3832,6 +3832,7 @@ The result of the concatenate operation is the bits of e1 concatenated to the mo
 The result of the bit extraction operation are the bits of e between lo (inclusive) and hi (inclusive).
 hi must be greater than or equal to lo.
 Both hi and lo must be non-negative and strictly less than the bit width of e.
+The index of the least significant bit is 0 and the index of the most significant bit is one less than the width of the argument.
 
 ## Head
 

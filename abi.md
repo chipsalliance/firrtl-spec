@@ -72,6 +72,18 @@ This is done to avoid name collisions with the private modules produced by other
 
 There are two supported port lowering ABIs.
 These ABIs are applicable to public modules or external modules only.
+These ABIs can be specified on each public module or external module using the following syntax:
+
+``` {.firrtl .notest}
+FIRRTL version 4.0.0
+circuit Foo :
+  ;; snippetbegin
+  public module<v1> Foo:
+  extmodule<v2> Bar:
+  ;; snippetend
+```
+
+*Port Lowering ABIv1 is the default lowering for public modules if no port lowering is specified.*
 
 #### Port Lowering ABIv1
 
@@ -117,6 +129,8 @@ This ABI does not specify whether the original aggregate referent is scalarized 
 
 All other port types shall lower according ot the type lowering in section ["On Types"](@sec:On-Types).
 
+Port lowering ABIv1 uses the identifier `v1` when explicitly specified on a public module or external module.
+
 #### Port Lowering ABIv2
 
 Ports are lowered per the v1 ABI above, except for aggregate types.
@@ -128,6 +142,8 @@ Bundles shall be recursively split as per "Aggregate Type Lowering", except inst
 Passive bundles shall be lowered to Verilog packed structs.
 
 Reference types in ports shall be logically split out from aggregates and named as though "Aggregate Type Lowering" was used.
+
+Port lowering ABIv2 uses the identifier `v2` when explicitly specified on a public module or external module.
 
 ## On Layers
 

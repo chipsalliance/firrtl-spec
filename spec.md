@@ -1194,22 +1194,24 @@ A source expression supplies a signal and can be used to drive a circuit compone
 A sink expression can be driven by another expression.
 A duplex expression is an expression that is both a source and sink.
 
-The rules for the flow of an expression are as follows:
+The rules for the flow of an expression are as follows.
 
-If the expression is a reference, we look at the kind of the circuit component:
+If the expression is an identifier, we look at the kind of the circuit component the identifier refers to:
 
 -   Nodes are sources.
 -   Wires and registers are duplex.
--   For ports, `input` ports are sources and `output` ports are sinks.
+-   For ports, `input` ports are sources and `output` ports are duplex.
 -   Submodule instances are sources.
 -   Memories are sources.
 
-Here are a few comments to help with intuition:
-Nodes may only appear "on the left side" of a connect.
-Wires and registers may appear "on either side of a connect statement".
-Ports are always considered from the perspective of "inside the module".
-Moreover, input ports may only appear "on the left side" of a connect, while output ports may only appear "on the right side" of a connect.
-Finally, while submodules instances and memories are strictly sources, they interact with the sub-field rule in such a way that their input ports are sinks.
+The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.
+The flow of a sub-field expression depends upon the orientation of the field.
+If the field is not flipped, its flow is the same flow as the bundle-typed expression it selects its field from.
+If the field is flipped, then its flow is the reverse of the flow of the bundle-typed expression it selects its field from.
+The reverse of source is sink, and vice-versa.
+The reverse of duplex remains duplex.
+
+The flow of all other expressions are source, including mux and cast.
 
 ## Type Equivalence
 

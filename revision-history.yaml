@@ -25,7 +25,7 @@ revisionHistory:
       - Add "enablelayer" to grammar.
       - Main module must be public.
       - Make commas mandatory, not whitespace.
-      - Restore flow description.
+      - [patch] Restore flow description.
       - Update intrinsic module example to use a real intrinsic.
     abi:
       - Add ABI for public modules and filelist output.

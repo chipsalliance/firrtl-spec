@@ -240,13 +240,12 @@ FIRRTL version 4.0.0
 circuit Foo :
   public module Foo :
   ;; snippetbegin
-  intmodule MyIntrinsicModule_xhello_y64 :
-    input foo: UInt
-    output bar: UInt<4>
-    output baz: SInt<8>
-    intrinsic = IntrinsicName
-    parameter x = "hello"
-    parameter y = 42
+  intmodule LTLDelay:
+    input in: UInt<1>
+    output out: UInt<1>
+    intrinsic = circt_ltl_delay
+    parameter delay = 1
+    parameter length = 0
   ;; snippetend
 ```
 
@@ -3659,8 +3658,18 @@ Together with the divide operator, the modulus operator satisfies the relationsh
 
 | Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width |
 |--------|-----------|------------|-------------|-------------|--------------|
-| lt,leq |           |            | (UInt,UInt) | UInt        | 1            |
-| gt,geq | (e1,e2)   | ()         | (SInt,SInt) | UInt        | 1            |
+| eq,neq | (e1,e2)   | ()         | (UInt,UInt) | UInt        | 1            |
+|        |           |            | (SInt,SInt) | UInt        | 1            |
+
+| Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|--------|-----------|------------|-------------|-------------|--------------|
+| lt,leq | (e1,e2)   | ()         | (UInt,UInt) | UInt        | 1            |
+|        |           |            | (SInt,SInt) | UInt        | 1            |
+
+| Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|--------|-----------|------------|-------------|-------------|--------------|
+| gt,geq | (e1,e2)   | ()         | (UInt,UInt) | UInt        | 1            |
+|        |           |            | (SInt,SInt) | UInt        | 1            |
 
 The comparison operations return an unsigned 1 bit signal with value one if e1 is less than (lt), less than or equal to (leq), greater than (gt), greater than or equal to (geq), equal to (eq), or not equal to (neq) e2.
 The operation returns a value of zero otherwise.
@@ -3835,6 +3844,7 @@ The result of the concatenate operation is the bits of e1 concatenated to the mo
 The result of the bit extraction operation are the bits of e between lo (inclusive) and hi (inclusive).
 hi must be greater than or equal to lo.
 Both hi and lo must be non-negative and strictly less than the bit width of e.
+The index of the least significant bit is 0 and the index of the most significant bit is one less than the width of the argument.
 
 ## Head
 

@@ -1211,7 +1211,7 @@ If the field is flipped, then its flow is the reverse of the flow of the bundle-
 The reverse of source is sink, and vice-versa.
 The reverse of duplex remains duplex.
 
-The flow of all other expressions are source, including mux and cast. 
+The flow of all other expressions are source, including mux and cast.
 
 ## Type Equivalence
 

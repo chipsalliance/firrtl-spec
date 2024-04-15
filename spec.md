@@ -227,6 +227,9 @@ endmodule
 
 ## Implementation Defined Modules (Intrinsics)
 
+Intrinsics ([@sec:intrinsics]) can be expressed as intrinsic modules but this will be deprecated in the future.
+Intrinsic modules are equivalent to their inline syntax which should be preferred.
+
 Intrinsic modules are modules which represent implementation-defined, compiler-provided functionality.
 Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
 What intrinsics are supported by an implementation is defined by the implementation.
@@ -2386,6 +2389,12 @@ circuit Foo:
     ;; snippetend
 ```
 
+## Intrinsic Statements
+
+Intrinsics may be used as statements.
+If the intrinsic has a return type, it is unused.
+See [@sec:intrinsics].
+
 # Layer Blocks
 
 The `layerblock`{.firrtl} keyword declares a *layer block* and associates it with a layer.
@@ -2899,8 +2908,9 @@ for creating literal property type expressions,
 for referencing a circuit component,
 for statically and dynamically accessing a nested element within a component,
 for creating multiplexers,
-for performing primitive operations, and
-for reading a remote reference to a probe.
+for performing primitive operations,
+for reading a remote reference to a probe, and
+for intrinsics ([@sec:intrinsics]).
 
 ## Constant Integer Expressions
 
@@ -3277,6 +3287,31 @@ Within a bundle type declaration, all field names must be unique.
 Within a memory declaration, all port names must be unique.
 
 Any modifications to names must preserve the uniqueness of names within a namespace.
+
+# Intrinsics
+
+Intrinsics are expressions and statements and which represent implementation-defined, compiler-provided functionality.
+Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
+What intrinsics are supported by an implementation is defined by the implementation.
+The particular intrinsic represented by an intrinsic expression or statement is specified inline.
+An implementation shall type-check all ports and parameters.
+Inputs and the result type may be uninferred (either width or reset) if specified by the implementation (which is useful for inspecting and interacting with those inference features).
+
+``` firrtl
+FIRRTL version 4.0.0
+circuit Foo :
+  ;; snippetbegin
+  public module Foo :
+    input in : UInt<1>
+    input data : UInt<5>
+
+    node d = intrinsic(circt_ltl_delay<delay = 1, length = 0> : UInt<1>, in)
+
+    intrinsic(circt_verif_assert, intrinsic(circt_isX: UInt<1>, data))
+  ;; snippetend
+```
+
+The types of intrinsic module parameters may only be literal integers or string literals.
 
 # Annotations
 
@@ -4236,6 +4271,7 @@ command =
   | "force_initial" , "(" , expr_probe , "," , expr , ")"
   | "release" , "(" , expr , "," , expr , "," , expr_probe , ")"
   | "release_initial" , "(" , expr_probe , ")"
+  | intrinsic , [ info ]
   | "printf" , "(" ,
         expr , "," ,
         expr , "," ,
@@ -4267,6 +4303,12 @@ command =
     , ")" ,
     [ ":" , id ] , [ info ] ;
 
+intrinsic = "intrinsic(" , id ,
+  [ "<"     "parameter" , id , "=" , ( int | string_dq ) ,
+    { "," , "parameter" , id , "=" , ( int | string_dq ) } , ">" ] ,
+  [ ":" , type ] ,
+  { "," , expr } , ")"
+
 (* Layer Block Statement *)
 layerblock =
   "layerblock" , id , "of" , id , ":" , [ info ] , newline , indent ,
@@ -4297,7 +4339,8 @@ expr =
   | expr_enum
   | expr_mux
   | expr_read
-  | expr_primop ;
+  | expr_primop
+  | intrinsic ;
 
 expr_reference = reference ;
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;

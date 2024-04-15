@@ -28,6 +28,7 @@ revisionHistory:
       - Restore flow description.
       - Update intrinsic module example to use a real intrinsic.
       - Restore id and info in printf grammar, add to verif commands.
+      - Add intrinsic expressions and statements.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

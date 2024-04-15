@@ -3293,8 +3293,12 @@ Intrinsics are expressions and statements and which represent implementation-def
 
 Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
 Which intrinsics are supported by an implementation is defined by the implementation.
-The particular intrinsic represented by an intrinsic expression or statement is specified inline.
-An implementation shall type-check all ports and parameters.
+
+Intrinsics first specify the intrinsic: the name of the intrinsic, any parameters, and return type if applicable.
+Any inputs to the intrinsic follow.
+An implementation shall type-check the specification and all operands.
+
+Below are some examples of intrinsics:
 
 ``` firrtl
 FIRRTL version 4.0.0
@@ -3304,12 +3308,19 @@ circuit Foo :
     input in : UInt<1>
     input data : UInt<5>
 
+    ; Intrinsic named "circt_ltl_delay", two parameters,
+    ; returns UInt<1>, and has one operand.
     node d = intrinsic(circt_ltl_delay<delay = 1, length = 0> : UInt<1>, in)
 
+    ; Intrinsic "circt_verif_assert" statement with one operand.
+    ; This operand is itself an intrinsic, a "circt_isX" expression
+    ; which returns a UInt<1> and has one operand.
     intrinsic(circt_verif_assert, intrinsic(circt_isX: UInt<1>, data))
   ;; snippetend
 ```
 
+Operands and the return type of intrinsics must be passive and ground or aggregate types.
+When used as an expression, the intrinsic must have a return type.
 The types of intrinsic module parameters may only be literal integers or string literals.
 
 # Annotations

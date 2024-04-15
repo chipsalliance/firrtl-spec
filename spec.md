@@ -227,12 +227,11 @@ endmodule
 
 ## Implementation Defined Modules (Intrinsics)
 
-Intrinsics ([@sec:intrinsics]) can be expressed as intrinsic modules but this will be deprecated in the future.
-Intrinsic modules are equivalent to their inline syntax which should be preferred.
+Intrinsics ([@sec:intrinsics]) can be expressed as intrinsic modules but this is deprecated.
 
 Intrinsic modules are modules which represent implementation-defined, compiler-provided functionality.
 Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
-What intrinsics are supported by an implementation is defined by the implementation.
+Which intrinsics are supported by an implementation is defined by the implementation.
 The particular intrinsic represented by an intrinsic module is encoded in *intrinsic*.
 The name of the intmodule is only used to identify a specific instance.
 An implementation shall type-check all ports and parameters.
@@ -3291,11 +3290,11 @@ Any modifications to names must preserve the uniqueness of names within a namesp
 # Intrinsics
 
 Intrinsics are expressions and statements and which represent implementation-defined, compiler-provided functionality.
+
 Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
-What intrinsics are supported by an implementation is defined by the implementation.
+Which intrinsics are supported by an implementation is defined by the implementation.
 The particular intrinsic represented by an intrinsic expression or statement is specified inline.
 An implementation shall type-check all ports and parameters.
-Inputs and the result type may be uninferred (either width or reset) if specified by the implementation (which is useful for inspecting and interacting with those inference features).
 
 ``` firrtl
 FIRRTL version 4.0.0

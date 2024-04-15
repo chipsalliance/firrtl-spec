@@ -4242,6 +4242,7 @@ command =
         string_dq ,
         { "," , expr }
     , ")" ,
+    [ ":" , id ] , [ info ]
   | "assert" , "(" ,
         expr , "," ,
         expr , "," ,
@@ -4249,6 +4250,7 @@ command =
         string_dq ,
         { "," , expr }
     , ")" ,
+    [ ":" , id ] , [ info ]
   | "assume" , "(" ,
         expr , "," ,
         expr , "," ,
@@ -4256,6 +4258,7 @@ command =
         string_dq ,
         { "," , expr }
     , ")" ,
+    [ ":" , id ] , [ info ]
   | "cover" , "(" ,
         expr , "," ,
         expr , "," ,

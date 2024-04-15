@@ -4313,12 +4313,6 @@ command =
     , ")" ,
     [ ":" , id ] , [ info ] ;
 
-intrinsic = "intrinsic(" , id ,
-  [ "<"     "parameter" , id , "=" , ( int | string_dq ) ,
-    { "," , "parameter" , id , "=" , ( int | string_dq ) } , ">" ] ,
-  [ ":" , type ] ,
-  { "," , expr } , ")"
-
 (* Layer Block Statement *)
 layerblock =
   "layerblock" , id , "of" , id , ":" , [ info ] , newline , indent ,
@@ -4350,7 +4344,7 @@ expr =
   | expr_mux
   | expr_read
   | expr_primop
-  | intrinsic ;
+  | expr_intrinsic ;
 
 expr_reference = reference ;
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
@@ -4367,6 +4361,12 @@ property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = reference_static | property_literal_expr | property_expr_primop ;
 property_expr_primop = property_primop_2expr ;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
+
+expr_intrinsic = "intrinsic(" , id ,
+  [ "<"     "parameter" , id , "=" , ( int | string_dq ) ,
+    { "," , "parameter" , id , "=" , ( int | string_dq ) } , ">" ] ,
+  [ ":" , type ] ,
+  { "," , expr } , ")"
 
 (* Types *)
 type = ( [ "const" ] , type_hardware ) | type_probe ;

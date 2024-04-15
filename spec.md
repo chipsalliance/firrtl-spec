@@ -3300,7 +3300,7 @@ An implementation shall type-check the specification and all operands.
 
 Below are some examples of intrinsics:
 
-``` firrtl
+``` {.firrtl .notest}
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin

@@ -3289,7 +3289,7 @@ Any modifications to names must preserve the uniqueness of names within a namesp
 
 # Intrinsics
 
-Intrinsics are expressions and statements and which represent implementation-defined, compiler-provided functionality.
+Intrinsics are expressions and statements which represent implementation-defined, compiler-provided functionality.
 
 Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
 Which intrinsics are supported by an implementation is defined by the implementation.

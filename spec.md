@@ -3055,7 +3055,7 @@ circuit Foo:
 An enumeration can be constructed by applying an enumeration type to a variant tag and a data value expression.
 The data value expression may be omitted when the data type is `UInt<0>(0)`{.firrtl}, where it is implicitly defined to be `UInt<0>(0)`{.firrtl}.
 
-``` {.firrtl .notest}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:

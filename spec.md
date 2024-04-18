@@ -3298,23 +3298,33 @@ Intrinsics first specify the intrinsic: the name of the intrinsic, any parameter
 Any inputs to the intrinsic follow.
 An implementation shall type-check the specification and all operands.
 
-Below are some examples of intrinsics:
+Below are some examples of intrinsics.
+These are for demonstration and their meaning or validity is determined by the implementation.
 
-``` {.firrtl .notest}
+The following shows an intrinsic expression for the intrinsic named "circt_ltl_delay" with two parameters, returns `UInt<1>`{.firrtl}, and has one operand.
+
+``` .firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin
   public module Foo :
     input in : UInt<1>
+
+    node d = intrinsic(circt_ltl_delay<delay = 1, length = 0> : UInt<1>, in)
+  ;; snippetend
+```
+
+The following has an intrinsic statement with an intrinsic expression as its operand.
+The statement is for the intrinsic named "circt_verif_assert".
+The expression is for the intrinsic named "circt_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
+
+``` .firrtl
+FIRRTL version 4.0.0
+circuit Foo :
+  ;; snippetbegin
+  public module Foo :
     input data : UInt<5>
 
-    ; Intrinsic named "circt_ltl_delay", two parameters,
-    ; returns UInt<1>, and has one operand.
-    node d = intrinsic(circt_ltl_delay<delay = 1, length = 0> : UInt<1>, in)
-
-    ; Intrinsic "circt_verif_assert" statement with one operand.
-    ; This operand is itself an intrinsic, a "circt_isX" expression
-    ; which returns a UInt<1> and has one operand.
     intrinsic(circt_verif_assert, intrinsic(circt_isX: UInt<1>, data))
   ;; snippetend
 ```

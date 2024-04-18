@@ -3329,7 +3329,7 @@ circuit Foo :
   ;; snippetend
 ```
 
-Operands and the return type of intrinsics must be passive and ground or aggregate types.
+Operands and the return type of intrinsics must be passive and either ground or aggregate.
 When used as an expression, the intrinsic must have a return type.
 The types of intrinsic module parameters may only be literal integers or string literals.
 

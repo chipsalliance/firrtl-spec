@@ -4281,7 +4281,7 @@ command =
   | "force_initial" , "(" , expr_probe , "," , expr , ")"
   | "release" , "(" , expr , "," , expr , "," , expr_probe , ")"
   | "release_initial" , "(" , expr_probe , ")"
-  | intrinsic , [ info ]
+  | expr_intrinsic , [ info ]
   | "printf" , "(" ,
         expr , "," ,
         expr , "," ,

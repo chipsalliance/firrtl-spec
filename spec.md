@@ -227,9 +227,11 @@ endmodule
 
 ## Implementation Defined Modules (Intrinsics)
 
+Intrinsics ([@sec:intrinsics]) can be expressed as intrinsic modules but this is deprecated.
+
 Intrinsic modules are modules which represent implementation-defined, compiler-provided functionality.
 Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
-What intrinsics are supported by an implementation is defined by the implementation.
+Which intrinsics are supported by an implementation is defined by the implementation.
 The particular intrinsic represented by an intrinsic module is encoded in *intrinsic*.
 The name of the intmodule is only used to identify a specific instance.
 An implementation shall type-check all ports and parameters.
@@ -2386,6 +2388,12 @@ circuit Foo:
     ;; snippetend
 ```
 
+## Intrinsic Statements
+
+Intrinsics may be used as statements.
+If the intrinsic has a return type, it is unused.
+See [@sec:intrinsics].
+
 # Layer Blocks
 
 The `layerblock`{.firrtl} keyword declares a *layer block* and associates it with a layer.
@@ -2899,8 +2907,9 @@ for creating literal property type expressions,
 for referencing a circuit component,
 for statically and dynamically accessing a nested element within a component,
 for creating multiplexers,
-for performing primitive operations, and
-for reading a remote reference to a probe.
+for performing primitive operations,
+for reading a remote reference to a probe, and
+for intrinsics ([@sec:intrinsics]).
 
 ## Constant Integer Expressions
 
@@ -3277,6 +3286,52 @@ Within a bundle type declaration, all field names must be unique.
 Within a memory declaration, all port names must be unique.
 
 Any modifications to names must preserve the uniqueness of names within a namespace.
+
+# Intrinsics
+
+Intrinsics are expressions and statements which represent implementation-defined, compiler-provided functionality.
+
+Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
+Which intrinsics are supported by an implementation is defined by the implementation.
+
+Intrinsics first specify the intrinsic: the name of the intrinsic, any parameters, and return type if applicable.
+Any inputs to the intrinsic follow.
+An implementation shall type-check the specification and all operands.
+
+Below are some examples of intrinsics.
+These are for demonstration and their meaning or validity is determined by the implementation.
+
+The following shows an intrinsic expression for the intrinsic named "circt_ltl_delay" with two parameters, returns `UInt<1>`{.firrtl}, and has one operand.
+
+``` .firrtl
+FIRRTL version 4.0.0
+circuit Foo :
+  ;; snippetbegin
+  public module Foo :
+    input in : UInt<1>
+
+    node d = intrinsic(circt_ltl_delay<delay = 1, length = 0> : UInt<1>, in)
+  ;; snippetend
+```
+
+The following has an intrinsic statement with an intrinsic expression as its operand.
+The statement is for the intrinsic named "circt_verif_assert".
+The expression is for the intrinsic named "circt_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
+
+``` .firrtl
+FIRRTL version 4.0.0
+circuit Foo :
+  ;; snippetbegin
+  public module Foo :
+    input data : UInt<5>
+
+    intrinsic(circt_verif_assert, intrinsic(circt_isX: UInt<1>, data))
+  ;; snippetend
+```
+
+Operands and the return type of intrinsics must be passive and either ground or aggregate.
+When used as an expression, the intrinsic must have a return type.
+The types of intrinsic module parameters may only be literal integers or string literals.
 
 # Annotations
 
@@ -4236,6 +4291,7 @@ command =
   | "force_initial" , "(" , expr_probe , "," , expr , ")"
   | "release" , "(" , expr , "," , expr , "," , expr_probe , ")"
   | "release_initial" , "(" , expr_probe , ")"
+  | expr_intrinsic , [ info ]
   | "printf" , "(" ,
         expr , "," ,
         expr , "," ,
@@ -4297,7 +4353,8 @@ expr =
   | expr_enum
   | expr_mux
   | expr_read
-  | expr_primop ;
+  | expr_primop
+  | expr_intrinsic ;
 
 expr_reference = reference ;
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
@@ -4314,6 +4371,12 @@ property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = reference_static | property_literal_expr | property_expr_primop ;
 property_expr_primop = property_primop_2expr ;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
+
+expr_intrinsic = "intrinsic", "(" , id ,
+  [ "<"     "parameter" , id , "=" , ( int | string_dq ) ,
+    { "," , "parameter" , id , "=" , ( int | string_dq ) } , ">" ] ,
+  [ ":" , type ] ,
+  { "," , expr } , ")"
 
 (* Types *)
 type = ( [ "const" ] , type_hardware ) | type_probe ;

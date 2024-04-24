@@ -117,7 +117,6 @@
         <DetectChar char= ";" context="comment" attribute="Comment"/>
         <Detect2Chars char="{" char1="|" context="field" attribute="Separator"/>
         <DetectChar char="{" context="field" attribute="Separator"/>
-        <DetectChar char="`" context="field" attribute="ID"/>
         <Detect2Chars char="=" char1="&gt;" attribute="Operator" context="#stay"/>
         <AnyChar String=":=.,()" attribute="Separator" context="#stay"/>
         <DetectChar char="[" attribute="Operator" context="widthOrDepth"/>
@@ -208,7 +207,7 @@
     <comments>
       <comment name="singleLine" start=";"/>
     </comments>
-    <keywords casesensitive="1"/>
+    <keywords casesensitive="1" weakDeliminator="-"/>
     <folding indentationsensitive="0"/>
     <emptyLines>
       <emptyLine regexpr="\s+"/>

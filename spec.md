@@ -2424,8 +2424,8 @@ circuit Foo:
   public module Foo:
     input a: UInt<1>
 
-    ; Declaration of a layer block associated with layer Bar inside module
-    ; Foo
+    ; Declaration of a layer block associated with layer Bar
+    ; inside module Foo
     layerblock Bar:
       node notA = not(a)
 ;; snippetend
@@ -4226,8 +4226,7 @@ decl_layer =
 
 decl_type_alias = "type", id, "=", type ;
 
-port = ( "input" | "output" ) , id , ":" , (type | type_property) ,
-       [ info ] ;
+port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
 type_param = int | string_dq | string_sq ;
 type_property = "Integer" ;
 
@@ -4254,8 +4253,7 @@ circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
 
 circuit_component_reg =
     "reg" , id , ":" , type , "," , expr , [ info ]
-  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," ,
-    expr , [info] ;
+  | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
 
 circuit_component_mem =
   "mem" , id , ":" , [ info ] , newline , indent ,
@@ -4381,11 +4379,9 @@ expr_probe =
   | reference_static ;
 
 property_literal_expr = "Integer", "(", int, ")" ;
-property_expr = reference_static | property_literal_expr
-              | property_expr_primop ;
+property_expr = reference_static | property_literal_expr | property_expr_primop ;
 property_expr_primop = property_primop_2expr ;
-expr_primop = primop_2expr | primop_1expr | primop_1expr1int
-            | primop_1expr2int ;
+expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 expr_intrinsic = "intrinsic", "(" , id ,
   [ "<"     "parameter" , id , "=" , ( int | string_dq ) ,
@@ -4436,8 +4432,7 @@ type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id ] ">" ;
 primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr ")" ;
 primop_1expr     = primop_1expr_keyword , "(" , expr , ")" ;
 primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
-primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," ,
-                   int , "," , int , ")" ;
+primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 
 (* Primitive Property Operations *)
 property_primop_2expr = property_primop_2expr_keyword ,
@@ -4481,8 +4476,7 @@ string_sq = "'" , string , "'" ;
 
 (* Tokens: Identifiers *)
 id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
-literal_id = "`" , ( "_" | letter | digit_dec ),
-             { "_" | letter | digit_dec } , "`" ;
+literal_id = "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
 letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "H" | "I" | "J" | "K" | "L" | "M" | "N"
        | "O" | "P" | "Q" | "R" | "S" | "T" | "U"

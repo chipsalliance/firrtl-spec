@@ -506,12 +506,10 @@ circuit Foo:
     ;; snippetend
 ```
 
-The type of a memory is a bundle type derived from the declaration (see [@sec:memories]).
+The type of a memory is a bundle type derived from the declaration.
 
 The type named in `data-type`{.firrtl} must be storable (see [@sec:storable-types]).
 It indicates the type of the data being stored inside of the memory.
-
-See [@sec:memories] for more details.
 
 ## Subcomponents
 
@@ -2150,7 +2148,8 @@ The port is driven by the clock signal in the `clk`{.firrtl} field.
 Finally, the readwrite ports have type:
 
 ``` {.firrtl .notest}
-{addr: UInt<N>, en: UInt<1>, clk: Clock, flip rdata: T, wmode: UInt<1>, wdata: T, wmask: M}
+{addr: UInt<N>, en: UInt<1>, clk: Clock, flip rdata: T, wmode: UInt<1>,
+ wdata: T, wmask: M}
 ```
 
 A readwrite port is a single port that, on a given cycle, can be used either as a read or a write port.
@@ -2265,7 +2264,9 @@ circuit Foo:
     wire cond: UInt<1>
     wire a: UInt
     wire b: UInt
-    printf(clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b) : optional_name
+    printf(
+      clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b
+    ) : optional_name
     ;; snippetend
 ```
 
@@ -2336,7 +2337,9 @@ circuit Foo:
     wire en: UInt<1>
     connect pred, eq(X, Y)
     connect en, Z_valid
-    assert(clk, pred, en, "X equals Y when Z is valid but got X=%d Y=%d", X, Y) : optional_name
+    assert(
+      clk, pred, en, "X equals Y when Z is valid but got X=%d Y=%d", X, Y
+    ) : optional_name
     ;; snippetend
 ```
 
@@ -2361,7 +2364,10 @@ circuit Foo:
     wire en: UInt<1>
     connect pred, eq(X, Y)
     connect en, Z_valid
-    assume(clk, pred, en, "X equals Y when Z is valid but got X=%d Y=%d", X, Y) : optional_name
+    assume(
+      clk, pred, en, "X equals Y when Z is valid but got X=%d Y=%d", X,
+      Y
+    ) : optional_name
     ;; snippetend
 ```
 
@@ -2412,12 +2418,15 @@ Module `Foo` contains a layer block that creates a node computed from a port def
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo:
-  layer Bar, bind:       ; Declaration of layer Bar with convention "bind"
+  ; Declaration of layer Bar with convention "bind"
+  layer Bar, bind:
 
   public module Foo:
     input a: UInt<1>
 
-    layerblock Bar:      ; Declaration of a layer block associated with layer Bar inside module Foo
+    ; Declaration of a layer block associated with layer Bar
+    ; inside module Foo
+    layerblock Bar:
       node notA = not(a)
 ;; snippetend
 ```
@@ -2586,8 +2595,10 @@ circuit Refs:
   ;; snippetbegin
   public module Refs:
     input clock:  Clock
-    output a : Probe<{x: UInt<1>, y: UInt<2>}> ; read-only ref. to wire 'p'
-    output b : RWProbe<UInt<1>> ; force-able ref. to node 'q', inferred width.
+    ; read-only ref. to wire 'p'
+    output a : Probe<{x: UInt<1>, y: UInt<2>}>
+    ; force-able ref. to node 'q', inferred width.
+    output b : RWProbe<UInt<1>>
     output c : Probe<UInt<3>> ; read-only ref. to register 'r'
     output d : Probe<Clock> ; ref. to input clock port
 
@@ -3927,7 +3938,7 @@ The arguments of all primitive property operations must be expressions with prop
 Each specific operation can place additional restrictions on the number and types of their arguments.
 In general, primitive property operations are named with a prefix indicating the property type on which they operate.
 
-## Integer Arthmetic
+## Integer Arithmetic
 
 Integer arithmetic operations take `Integer`{.firrtl} property type expressions as arguments and return an `Integer`{.firrtl} property type result.
 
@@ -4241,7 +4252,7 @@ circuit_component_wire = "wire" , id , ":" , type , [ info ] ;
 circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
 
 circuit_component_reg =
-    "reg" , id , ":" , type , expr , [ info ]
+    "reg" , id , ":" , type , "," , expr , [ info ]
   | "regreset" , id , ":" , type , "," , expr , "," , expr , "," , expr , [info] ;
 
 circuit_component_mem =

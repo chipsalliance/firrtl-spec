@@ -152,32 +152,6 @@ Private modules have none of the restrictions of public modules.
 Private modules have no stable, defined interface and may not be used outside the current circuit.
 A private module may not be physically present in a compiled circuit.
 
-## Option Groups
-
-The option group mechanism declares configurable parameters with a pre-defined set of values to enable the specialization of designs during or after lowering.
-Options groups address the need for configurability.
-For example, designs may need to behave differently on ASIC and FPGA platforms, but at the time of FIRRTL elaboration it is not known which platform the design will be used on.
-This feature allows such choices to be expressed and embedded into the design.
-
-The `option`{.firrtl} keyword declares an option group, which contains `case`{.firrtl} declarations naming the settings allotted to that option.
-The circuit can be specialized for a single case of a given option at any time.
-Multiple option groups can be declared to capture orthogonal dimensions of configuration.
-
-Specialization can occur either in the compiler or it can be materialized in the lowering.
-For details, consult the FIRRTL ABI specification.
-Specialization is not mandatory: options can be left unspecified, resorting to explicitly-defined default behaviour.
-
-``` firrtl
-circuit:
-  option Platform:
-    case FPGA:
-    case ASIC:
-
-  option Performance:
-    case Slow:
-    case Fast
-```
-
 ## Externally Defined Modules
 
 Externally defined modules are modules whose implementation is not provided in the current circuit.
@@ -331,6 +305,40 @@ FIRRTL version 4.0.0
 circuit Foo :
   layer A, bind :
   public module Foo enablelayer A :
+```
+
+## Targets
+
+A `target`{.firrtl} describes one way that a FIRRTL circuit may be specialized for a certain use case.
+Here, specialization means choosing a specific option for a target.
+
+It is often desirable to have one FIRRTL circuit that has different logic when simulated, synthesized and mapped to a field-programmable gate array (FPGA), or synthesized to a given process technology and standard cell library.
+While this per-target customizability can be expressed and specialized in a frontend language that produces FIRRTL, it is often desirable to expose the target specialization in the FIRRTL.
+By delaying the specialization, the specialization can either be done by a FIRRTL compiler or exposed in the artifacts of a FIRRTL compiler for specialization by the consumer.
+
+Practically, targets describe a limited form of parameterization and, if not specialized by a FIRRTL compiler, allow for FIRRTL compilers to generate parametric artifacts (e.g., parametric Verilog).
+
+The `option`{.firrtl} keyword declares an option group, which contains `case`{.firrtl} declarations naming the settings allotted to that option.
+The circuit can be specialized for a single case of a given option at any time.
+Multiple option groups can be declared to capture orthogonal dimensions of configuration.
+
+Specialization can occur either in the compiler or it can be materialized in the lowering.
+For details, consult the FIRRTL ABI specification.
+Specialization is not mandatory: options can be left unspecified, resorting to explicitly-defined default behaviour.
+
+A target may be delcared using the `target`{.firrtl} keyword.
+The availble options for which a target may take are listed using the `option`{.firrtl} keyword.
+An example FIRRTL circuit showing two targets, `Platform` and `Performance`, and their allowable options is shown below:
+
+``` firrtl
+circuit:
+  target Platform:
+    option FPGA
+    option ASIC
+
+  target Performance:
+    option Slow
+    option Fast
 ```
 
 # Circuit Components
@@ -507,35 +515,46 @@ circuit Foo:
     ;; snippetend
 ```
 
-#### Instance Choices
+#### Instance Choice
 
-FIRRTL supports the specialization of designs through the `instchoice`{.firrtl} declaration, which selects the instantiated module based on an `option`{.firrtl}.
+An instance choice is a submodule instance where the choice of submodule is conditioned based on the value of a `target`{.firrtl}.
+This enables per-instance specialization for different targets.
+Additionally, this is a mechanism for module replacement.
 
-Example:
+An instance choice declaration specifies the instance name and names the option group based on which the choices are selected.
+A default module must be provided.
+The default module is instantiated by the instance choice when an option for its associated target is not specified.
+Subsequently, modules can be specified for the known choices of the selected option group.
+An instance choice does not need to specify modules for all cases.
+The instantiated modules must be either modules or external modules.
+
+An example of an instance choice is shown below.
+This instance choice is conditioned on the `Platform` target.
+By default, it will instantiate `DefaultClockGate` and when `Platform` is `FPGA` it will instantiate `FPGAClockGate`.
 
 ``` firrtl
 circuit:
-  option Platform:
-    case FPGA:
-    case ASIC:
+  targe Platform:
+    option FPGA
+    option ASIC
+
+  module DefaultClockGate:
+    input clock_in: Clock
+    output clock_out: Clock
+    input enable: UInt<1>
+
+  extmodule FPGAClockGate:
+    input clock_in: Clock
+    output clock_out: Clock
+    input enable: UInt<1>
 
   module InstanceChoice:
-    instchoice clock_gate of DefaultTarget, Platform:
-      FPGA => FPGATarget
-
-  module DefaultTarget:
-
-  module FPGATarget:
+    instchoice clock_gate of DefaultClockGate, Platform:
+      FPGA => FPGAClockGate
 ```
 
-The instance choice declaration specifies the instance name and names the option group based on which the choices are selected.
-A default module is provided, to be instantiated when the design is not specialized or it is not specialised for a known case.
-Subsequently, modules can be specified for the known choices of the selected option group.
-The operation does not need to specify modules for all cases.
-The references must be either modules or extmodules.
-
-The type of the instance bundle is determined identically to regular instances.
-The port lists of all modules must match and the ports are limited to ground and aggregate types.
+The type of an instance choice is the same as an instantiation of the default module.
+The ports of all module choices must be the same as the default module.
 
 ### Memories
 

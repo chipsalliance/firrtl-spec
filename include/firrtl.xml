@@ -5,7 +5,6 @@
       <item>circuit</item>
       <item>module</item>
       <item>extmodule</item>
-      <item>intmodule</item>
       <item>layer</item>
     </list>
     <list name="keywords">

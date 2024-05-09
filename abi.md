@@ -311,6 +311,110 @@ bind Bar Bar_Layer1_Layer2 layer1_layer2(.notA(Bar.layer1.notA));
 The `` `ifdef ``{.verilog} guards enable any combination of the bind files to be included while still producing legal SystemVerilog.
 I.e., the end user may safely include none, either, or both of the bindings files.
 
+## On Targets
+
+A target will result in the creation of one file per option for that target.
+When one of these files is included in elaboration of the Verilog produced by a FIRRTL compiler, this will have the effect of specializing the design with that option.
+
+Each file must have the following filename where `target` is the name of the target and `option` is the name of the option:
+
+``` ebnf
+filename = "targets_" , target , "_", option , ".sv" ;
+```
+
+This file will guard for multiple inclusion.
+Namely, if two files that specialize the same target are included, this must produce an error.
+If the file is included after a module which relies on the specialization, this must produce an error.
+
+### Example
+
+The following circuit is an example implementation of how a target can be lowered to align with the ABI defined above.
+This circuit has one target named `Target` with two options, `A` and `B`.
+Module `Foo` may be specialized using an instance choice that will instantiate `Bar` by default and `Baz` if `Target` is set to `A`.
+If `Target` is set to `B`, then the default instantiation, `Bar`, will occur.
+
+``` firrtl
+FIRRTL version 4.0.0
+circuit Foo:
+
+  target Target:
+    option A
+    option B
+
+  module Baz:
+    output a: UInt<1>
+
+    connect a, UInt<1>(1)
+
+  module Bar:
+    output a: UInt<1>
+
+    connect b, UInt<1>(0)
+
+  public module Foo:
+    output a: UInt<1>
+
+    instchoice x of Bar, Target:
+      A => Baz
+
+    connect a, x.a
+```
+
+To align with the ABI, this must produce the following files to specialize the circuit for option `A` or option `B`, respectively:
+
+- `targets_Target_A.sv`
+- `targets_Target_B.sv`
+
+What follows describes a possible implementation that aligns with the ABI.
+Note that the internal details are not part of the ABI.
+
+When compiled, this produces the following Verilog:
+
+``` systemverilog
+module Baz(output a);
+  assign a = 1'h1;
+endmodule
+
+module Bar(output a);
+  assign a = 1'h0;
+endmodule
+
+module Foo(output a);
+
+`ifndef target_Target_foo_x
+ `define target_Target_foo_x Bar
+`endif
+  `target_Target_foo_x x(.a(a));
+
+endmodule
+```
+
+The contents of the two option enabling files are shown below:
+
+``` systemverilog
+// Contents of "targets_Target_A.sv"
+`ifdef target_Target_foo_x
+  `ERROR__target_Target_foo_x__must__not__be__set
+`endif
+
+`define target_Target_foo_x Baz
+```
+
+``` systemverilog
+// Contents of "targets_Target_B.sv"
+`ifdef target_Target_foo_x
+  `ERROR__target_Target_foo_x__must__not__be__set
+`endif
+
+// This file has no defines.
+```
+
+If neither of the option enabling files are included, then `Bar` will by default be instantiated.
+If `targets_Target_A.sv` is included before elaboration of `Foo`, then `Baz` will be instantiated.
+If `targets_Target_B.sv` is included before elaboration of `Foo`, then `Bar` will be instantiated.
+If both `targets_Target_A.sv` and `targets_Target_B.sv` are included, then an error (by means of an undefined macro error) will be produced.
+If either `targets_Target_A.sv` or `targets_Target_B.sv` are included after `Foo` is elaborated, then an error will be produced.
+
 ## On Types
 
 Types are only guaranteed to follow this lowering when the Verilog type is on an element which is part of the ABI defined public elements.

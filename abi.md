@@ -313,16 +313,18 @@ I.e., the end user may safely include none, either, or both of the bindings file
 
 ## On Targets
 
-A target will result in the creation of one file per option for that target.
-When one of these files is included in elaboration of the Verilog produced by a FIRRTL compiler, this will have the effect of specializing the design with that option.
+A target will result in the creation of specialization files.
+One specialization file per public module per option for a given target will be created.
 
-Each file must have the following filename where `target` is the name of the target and `option` is the name of the option:
+Including a specialization file in the elaboration of Verilog produced by a FIRRTL compiler specializes the instantiation hierarchy of a public module with that option.
+
+Each specialization file must have the following filename where `module` is the name of the public module, `target` is the name of the target, and `option` is the name of the option:
 
 ``` ebnf
-filename = "targets_" , target , "_", option , ".sv" ;
+filename = "targets_" , module , "_" , target , "_", option , ".sv" ;
 ```
 
-This file will guard for multiple inclusion.
+Each specialization file will guard for multiple inclusion.
 Namely, if two files that specialize the same target are included, this must produce an error.
 If the file is included after a module which relies on the specialization, this must produce an error.
 
@@ -332,6 +334,7 @@ The following circuit is an example implementation of how a target can be lowere
 This circuit has one target named `Target` with two options, `A` and `B`.
 Module `Foo` may be specialized using an instance choice that will instantiate `Bar` by default and `Baz` if `Target` is set to `A`.
 If `Target` is set to `B`, then the default instantiation, `Bar`, will occur.
+Module `Foo` includes a probe whose define is inside the instance choice.
 
 ``` firrtl
 FIRRTL version 4.0.0
@@ -342,28 +345,30 @@ circuit Foo:
     option B
 
   module Baz:
-    output a: UInt<1>
+    output a: Probe<UInt<1>>
 
-    connect a, UInt<1>(1)
+    node c = UInt<1>(1)
+    define a = probe(c)
 
   module Bar:
-    output a: UInt<1>
+    output a: Probe<UInt<1>>
 
-    connect b, UInt<1>(0)
+    node b = UInt<1>(0)
+    define a = probe(b)
 
   public module Foo:
-    output a: UInt<1>
+    output a: Probe<UInt<1>>
 
     instchoice x of Bar, Target:
       A => Baz
 
-    connect a, x.a
+    define a = x.a
 ```
 
 To align with the ABI, this must produce the following files to specialize the circuit for option `A` or option `B`, respectively:
 
-- `targets_Target_A.sv`
-- `targets_Target_B.sv`
+- `targets_Foo_Target_A.sv`
+- `targets_Foo_Target_B.sv`
 
 What follows describes a possible implementation that aligns with the ABI.
 Note that the internal details are not part of the ABI.
@@ -379,12 +384,14 @@ module Bar(output a);
   assign a = 1'h0;
 endmodule
 
-module Foo(output a);
-
-`ifndef target_Target_foo_x
- `define target_Target_foo_x Bar
+// Defines for the instance choices
+`ifndef __target_Target_foo_x
+ `define __target_Target_foo_x Bar
 `endif
-  `target_Target_foo_x x(.a(a));
+
+module Foo();
+
+  `__target_Target_foo_x x();
 
 endmodule
 ```
@@ -393,27 +400,46 @@ The contents of the two option enabling files are shown below:
 
 ``` systemverilog
 // Contents of "targets_Target_A.sv"
-`ifdef target_Target_foo_x
-  `ERROR__target_Target_foo_x__must__not__be__set
+`ifdef __target_Target_foo_x
+ `ERROR__target_Target_foo_x__must__not__be__set
+`else
+ `define __target_Target_foo_x Baz
 `endif
 
-`define target_Target_foo_x Baz
+`ifdef __targetref_Foo_x_a a
+ `ERROR__targetref_Foo_x_a__must__not__be__set
+`else
+ `define __targetref_Foo_x_a a
+`endif
 ```
 
 ``` systemverilog
 // Contents of "targets_Target_B.sv"
-`ifdef target_Target_foo_x
+`ifdef __target_Target_foo_x
   `ERROR__target_Target_foo_x__must__not__be__set
 `endif
 
 // This file has no defines.
 ```
 
+Additionally, probe on public module `Foo` requires that the following file is produced:
+
+``` systemverilog
+// Contents of "refs_Foo.sv"
+`ifndef __targetref_Foo_x_a
+ `define __targetref_Foo_x_a b
+`endif
+
+`define ref_Foo_x x.`__targetref_Foo_x_a
+```
+
 If neither of the option enabling files are included, then `Bar` will by default be instantiated.
-If `targets_Target_A.sv` is included before elaboration of `Foo`, then `Baz` will be instantiated.
-If `targets_Target_B.sv` is included before elaboration of `Foo`, then `Bar` will be instantiated.
-If both `targets_Target_A.sv` and `targets_Target_B.sv` are included, then an error (by means of an undefined macro error) will be produced.
-If either `targets_Target_A.sv` or `targets_Target_B.sv` are included after `Foo` is elaborated, then an error will be produced.
+If `targets_Foo_Target_A.sv` is included before elaboration of `Foo`, then `Baz` will be instantiated.
+If `targets_Foo_Target_B.sv` is included before elaboration of `Foo`, then `Bar` will be instantiated.
+If both `targets_Foo_Target_A.sv` and `targets_Foo_Target_B.sv` are included, then an error (by means of an undefined macro error) will be produced.
+If either `targets_Foo_Target_A.sv` or `targets_Foo_Target_B.sv` are included after `Foo` is elaborated, then an error will be produced.
+
+If `ref_Foo.sv` is included before either `targets_Foo_Target_A.sv` or `targets_Foo_Target_B.sv`, then an error will be produced.
 
 ## On Types
 

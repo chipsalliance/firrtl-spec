@@ -326,8 +326,8 @@ Specialization can occur either in the compiler or it can be materialized in the
 For details, consult the FIRRTL ABI specification.
 Specialization is not mandatory: options can be left unspecified, resorting to explicitly-defined default behaviour.
 
-A target may be delcared using the `target`{.firrtl} keyword.
-The availble options for which a target may take are listed using the `option`{.firrtl} keyword.
+A target may be declared using the `target`{.firrtl} keyword.
+The available options for which a target may take are listed using the `option`{.firrtl} keyword.
 An example FIRRTL circuit showing two targets, `Platform` and `Performance`, and their allowable options is shown below:
 
 ``` firrtl
@@ -534,7 +534,7 @@ By default, it will instantiate `DefaultClockGate` and when `Platform` is `FPGA`
 
 ``` firrtl
 circuit:
-  targe Platform:
+  target Platform:
     option FPGA
     option ASIC
 
@@ -4203,7 +4203,7 @@ decl =
   | decl_extmodule
   | decl_intmodule
   | decl_layer
-  | decl_option
+  | decl_target
   | decl_type_alias ;
 
 decl_module =
@@ -4232,9 +4232,9 @@ decl_layer =
     { decl_layer , newline } ,
   dedent ;
 
-decl_option =
-  "option" , id , ":" , [info] , newline, indent ,
-    { "case" , id , ":" , [ info ] , newline } ,
+decl_target =
+  "target" , id , ":" , [info] , newline, indent ,
+    { "option" , id , ":" , [ info ] , newline } ,
   dedent ;
 
 decl_type_alias = "type", id, "=", type ;

@@ -7,7 +7,7 @@
       <item>extmodule</item>
       <item>intmodule</item>
       <item>layer</item>
-      <item>option</item>
+      <item>target</item>
     </list>
     <list name="keywords">
       <item>input</item>
@@ -29,7 +29,7 @@
       <item>public</item>
       <item>enablelayer</item>
       <item>instchoice</item>
-      <item>case</item>
+      <item>option</item>
     </list>
     <list name="types">
       <item>UInt</item>

@@ -321,7 +321,7 @@ Including a specialization file in the elaboration of Verilog produced by a FIRR
 Each specialization file must have the following filename where `module` is the name of the public module, `target` is the name of the target, and `option` is the name of the option:
 
 ``` ebnf
-filename = "targets_" , module , "_" , target , "_", option , ".sv" ;
+filename = "targets_" , module , "_" , target , "_", option , ".vh" ;
 ```
 
 Each specialization file will guard for multiple inclusion.
@@ -367,8 +367,8 @@ circuit Foo:
 
 To align with the ABI, this must produce the following files to specialize the circuit for option `A` or option `B`, respectively:
 
-- `targets_Foo_Target_A.sv`
-- `targets_Foo_Target_B.sv`
+- `targets_Foo_Target_A.vh`
+- `targets_Foo_Target_B.vh`
 
 What follows describes a possible implementation that aligns with the ABI.
 Note that the internal details are not part of the ABI.
@@ -399,7 +399,7 @@ endmodule
 The contents of the two option enabling files are shown below:
 
 ``` systemverilog
-// Contents of "targets_Target_A.sv"
+// Contents of "targets_Target_A.vh"
 `ifdef __target_Target_foo_x
  `ERROR__target_Target_foo_x__must__not__be__set
 `else
@@ -414,7 +414,7 @@ The contents of the two option enabling files are shown below:
 ```
 
 ``` systemverilog
-// Contents of "targets_Target_B.sv"
+// Contents of "targets_Target_B.vh"
 `ifdef __target_Target_foo_x
   `ERROR__target_Target_foo_x__must__not__be__set
 `endif
@@ -434,12 +434,12 @@ Additionally, probe on public module `Foo` requires that the following file is p
 ```
 
 If neither of the option enabling files are included, then `Bar` will by default be instantiated.
-If `targets_Foo_Target_A.sv` is included before elaboration of `Foo`, then `Baz` will be instantiated.
-If `targets_Foo_Target_B.sv` is included before elaboration of `Foo`, then `Bar` will be instantiated.
-If both `targets_Foo_Target_A.sv` and `targets_Foo_Target_B.sv` are included, then an error (by means of an undefined macro error) will be produced.
-If either `targets_Foo_Target_A.sv` or `targets_Foo_Target_B.sv` are included after `Foo` is elaborated, then an error will be produced.
+If `targets_Foo_Target_A.vh` is included before elaboration of `Foo`, then `Baz` will be instantiated.
+If `targets_Foo_Target_B.vh` is included before elaboration of `Foo`, then `Bar` will be instantiated.
+If both `targets_Foo_Target_A.vh` and `targets_Foo_Target_B.vh` are included, then an error (by means of an undefined macro error) will be produced.
+If either `targets_Foo_Target_A.vh` or `targets_Foo_Target_B.vh` are included after `Foo` is elaborated, then an error will be produced.
 
-If `ref_Foo.sv` is included before either `targets_Foo_Target_A.sv` or `targets_Foo_Target_B.sv`, then an error will be produced.
+If `ref_Foo.vh` is included before either `targets_Foo_Target_A.vh` or `targets_Foo_Target_B.vh`, then an error will be produced.
 
 ## On Types
 

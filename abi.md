@@ -316,7 +316,7 @@ I.e., the end user may safely include none, either, or both of the bindings file
 A target will result in the creation of specialization files.
 One specialization file per public module per option for a given target will be created.
 
-Including a specialization file in the elaboration of Verilog produced by a FIRRTL compiler specializes the instantiation hierarchy of a public module with that option.
+Including a specialization file in the elaboration of Verilog produced by a FIRRTL compiler specializes the instantiation hierarchy under the associated public module with that option.
 
 Each specialization file must have the following filename where `module` is the name of the public module, `target` is the name of the target, and `option` is the name of the option:
 

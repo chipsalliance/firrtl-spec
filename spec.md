@@ -225,34 +225,6 @@ Foo #(
 endmodule
 ```
 
-## Implementation Defined Modules (Intrinsics)
-
-Intrinsics ([@sec:intrinsics]) can be expressed as intrinsic modules but this is deprecated.
-
-Intrinsic modules are modules which represent implementation-defined, compiler-provided functionality.
-Intrinsics generally are used for functionality which requires knowledge of the implementation or circuit not available to a library writer.
-Which intrinsics are supported by an implementation is defined by the implementation.
-The particular intrinsic represented by an intrinsic module is encoded in *intrinsic*.
-The name of the intmodule is only used to identify a specific instance.
-An implementation shall type-check all ports and parameters.
-Ports may be uninferred (either width or reset) if specified by the implementation (which is useful for inspecting and interacting with those inference features).
-
-``` firrtl
-FIRRTL version 4.0.0
-circuit Foo :
-  public module Foo :
-  ;; snippetbegin
-  intmodule LTLDelay:
-    input in: UInt<1>
-    output out: UInt<1>
-    intrinsic = circt_ltl_delay
-    parameter delay = 1
-    parameter length = 0
-  ;; snippetend
-```
-
-The types of intrinsic module parameters may only be literal integers or string literals.
-
 ## Layers
 
 Layers are collections of functionality which will not be present in all executions of a circuit.
@@ -451,7 +423,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-This assumes you have a `module`, `extmodule`, or `intmodule` named `Passthrough`{.firrtl} declared elsewhere in the current circuit.
+This assumes you have a `module` or `extmodule` named `Passthrough`{.firrtl} declared elsewhere in the current circuit.
 The keyword `of`{.firrtl} is used instead of a colon (`:`{.firrtl}).
 
 The type of a submodule instance is bundle type determined by its ports.
@@ -4194,7 +4166,6 @@ circuit =
 decl =
     decl_module
   | decl_extmodule
-  | decl_intmodule
   | decl_layer
   | decl_type_alias ;
 
@@ -4210,13 +4181,6 @@ decl_extmodule =
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
     { "parameter" , id , "=" , type_param , newline } ,
-  dedent ;
-
-decl_intmodule =
-  "intmodule" , id , ":" , [ info ] , newline , indent ,
-    { port , newline } ,
-    "intrinsic" , "=" , id , newline ,
-    { "parameter" , id , "=" , ( int | string_dq ) , newline } ,
   dedent ;
 
 decl_layer =

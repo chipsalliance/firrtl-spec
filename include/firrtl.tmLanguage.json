@@ -1,0 +1,482 @@
+{
+    "scopeName": "source.firrtl",
+    "fileTypes": [
+        "fir"
+    ],
+    "name": "FIRRTL",
+    "patterns": [
+        {
+            "include": "#version"
+        },
+        {
+            "include": "#circuit"
+        },
+        {
+            "include": "#declaration"
+        },
+        {
+            "include": "#statement"
+        },
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#file_info"
+        }
+    ],
+    "repository": {
+        "version": {
+            "match": "^FIRRTL version \\d+\\.\\d+\\.\\d+$",
+            "name": "comment.line.character.firrtl"
+        },
+        "circuit": {
+            "match": "^(circuit)\\s+(\\w+)\\s*:",
+            "captures": {
+                "1": {
+                    "name": "storage.type.class.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "declaration": {
+            "patterns": [
+                {
+                    "include": "#module"
+                },
+                {
+                    "include": "#extmodule"
+                },
+                {
+                    "include": "#layer"
+                },
+                {
+                    "include": "#type_decl"
+                },
+                {
+                    "include": "#port"
+                },
+                {
+                    "include": "#wire_or_register"
+                },
+                {
+                    "include": "#node"
+                },
+                {
+                    "include": "#instance"
+                },
+                {
+                    "include": "#memory"
+                }
+            ]
+        },
+        "module": {
+            "match": "^\\s*(public\\s+)?(module)\\s+(\\w+)\\s*:",
+            "captures": {
+                "1": {
+                    "name": "storage.modifier.firrtl"
+                },
+                "2": {
+                    "name": "storage.type.class.firrtl"
+                },
+                "3": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "extmodule": {
+            "match": "(extmodule)\\s+(\\w+)\\s*:",
+            "captures": {
+                "1": {
+                    "name": "storage.modifier.firrtl"
+                },
+                "2": {
+                    "name": "storage.type.class.firrtl"
+                },
+                "3": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "layer": {
+            "match": "(layer)\\s+(\\w+)\\s*,?\\s*(\\w*)",
+            "captures": {
+                "1": {
+                    "name": "storage.type.class.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                },
+                "3": {
+                    "name": "storage.modifier.firrtl"
+                }
+            }
+        },
+        "type_decl": {
+            "begin": "(type)\\s+(\\w+)\\s*=",
+            "end": "$",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.port.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "port": {
+            "begin": "(input|output)\\s+(\\w+)\\s*:",
+            "end": "$",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.port.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type"
+                },
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#file_info"
+                }
+            ]
+        },
+        "type": {
+            "patterns": [
+                {
+                    "include": "#type_ground_nowidth"
+                },
+                {
+                    "include": "#type_ground_width"
+                },
+                {
+                    "include": "#type_bundle"
+                },
+                {
+                    "include": "#type_probe"
+                },
+                {
+                    "include": "#type_enum"
+                },
+                {
+                    "include": "#type_property"
+                }
+            ]
+        },
+        "type_ground_nowidth": {
+            "match": "(const\\s+)?(Clock|Reset|AsyncReset)",
+            "name": "storage.type.firrtl",
+            "captures": {
+                "1": {
+                    "name": "storage.modifier.firrtl"
+                }
+            }
+        },
+        "type_ground_width": {
+            "match": "(const\\s+)?([US]Int|Analog)(<(\\d+)>)?",
+            "name": "storage.type.firrtl",
+            "captures": {
+                "1": {
+                    "name": "storage.modifier.firrtl"
+                },
+                "4": {
+                    "name": "constant.numeric.firrtl"
+                }
+            }
+        },
+        "type_bundle": {
+            "begin": "(const\\s+)?{",
+            "end": "}",
+            "name": "meta.type.bundle.firrtl",
+            "captures": {
+                "1": {
+                    "name": "storage.modifier.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type_bundle_field"
+                },
+                {
+                    "include": "#type"
+                }
+            ]
+        },
+        "type_bundle_field": {
+            "match": "(flip\\s+)?(\\w+)\\s*:",
+            "captures": {
+                "1": {
+                    "name": "storage.modifier.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "type_probe": {
+            "begin": "((RW)?Probe<)",
+            "end": "(>)",
+            "captures": {
+                "1": {
+                    "name": "storage.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type"
+                }
+            ]
+        },
+        "type_enum": {
+            "begin": "({\\|)",
+            "end": "(\\|})",
+            "captures": {
+                "1": {
+                    "name": "storage.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type"
+                }
+            ]
+        },
+        "type_property": {
+            "match": "Integer",
+            "name": "storage.type.firrtl"
+        },
+        "wire_or_register": {
+            "begin": "(wire|reg|regreset)\\s+(\\w+)\\s*:",
+            "end": "$",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.type.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type"
+                },
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#file_info"
+                }
+            ]
+        },
+        "node": {
+            "match": "(node)\\s+(\\w+)\\s*",
+            "captures": {
+                "1": {
+                    "name": "storage.type.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "instance": {
+            "match": "inst\\s+(\\w+)\\s+of\\s+",
+            "name": "keyword.other.firrtl",
+            "captures": {
+                "1": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "memory": {
+            "match": "(mem)\\s+(\\w+)",
+            "captures": {
+                "1": {
+                    "name": "storage.type.class.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "statement": {
+            "patterns": [
+                {
+                    "include": "#statement_generic"
+                },
+                {
+                    "include": "#statement_memory_config"
+                },
+                {
+                    "include": "#statement_extmodule_config"
+                }
+            ]
+        },
+        "statement_generic": {
+            "begin": "(connect|invalidate|attach\\(|propassign|skip|when|else(\\s+when)?|stop|printf|assert|assume|cover|layerblock|define|force(_initial)?|release(_initial)?)",
+            "end": "$",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#file_info"
+                }
+            ]
+        },
+        "statement_memory_config": {
+            "patterns": [
+                {
+                    "begin": "(data-type)\\s*=>",
+                    "end": "$",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.firrtl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#type"
+                        }
+                    ]
+                },
+                {
+                    "match": "(depth|reader|writer|read-latency|write-latency)\\s*=>\\s*\\w+",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.other.firrtl"
+                        }
+                    }
+                },
+                {
+                    "match": "(read-under-write)\\s*=>\\s*(old|new|undefined)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.other.firrtl"
+                        },
+                        "2": {
+                            "name": "keyword.other.firrtl"
+                        }
+                    }
+                }
+            ]
+        },
+        "statement_extmodule_config": {
+            "patterns": [
+                {
+                    "match": "(parameter)\\s+(\\w+)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.other.firrtl"
+                        }
+                    }
+                }
+            ]
+        },
+        "expression": {
+            "patterns": [
+                {
+                    "include": "#expression_literal"
+                },
+                {
+                    "include": "#expression_primop"
+                },
+                {
+                    "include": "#expression_primop_deprecated"
+                },
+                {
+                    "include": "#property_literal"
+                },
+                {
+                    "include": "#format_string"
+                }
+            ]
+        },
+        "expression_literal": {
+            "match": "(([US]Int|Analog)(<(\\d+)>)?\\(.+\\))",
+            "captures": {
+                "1": {
+                    "name": "constant.numeric.firrtl"
+                }
+            }
+        },
+        "expression_primop": {
+            "begin": "(add|sub|mul|div|rem|lt|leq|gt|geq|eq|neq|pad|asAsyncReset|asUInt|asSInt|asClock|shl|shr|dshl|dshr|cvt|neg|not|and|or|xor|andr|orr|xorr|cat|bits|head|tail|mux|probe|rwprobe|read)\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.operator.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                }
+            ]
+        },
+        "expression_primop_deprecated": {
+            "begin": "(asFixedPoint|bpshl|bpshr|bpset|validif)\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "invalid.deprecated.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                }
+            ]
+        },
+        "property_literal": {
+            "match": "Integer\\((\\d+)\\)",
+            "name": "constant.numeric.firrtl"
+        },
+        "format_string": {
+            "begin": "\"",
+            "end": "\"",
+            "name": "string.quoted.double.firrtl",
+            "patterns": [
+                {
+                    "match": "%[bdx%]",
+                    "name": "variable.other.firrtl"
+                },
+                {
+                    "match": "\\\\[nt\\\\\"']",
+                    "name": "variable.other.firrtl"
+                }
+            ]
+        },
+        "comment": {
+            "match": ";.*$",
+            "name": "comment.line.character.firrtl"
+        },
+        "file_info": {
+            "match": "(@\\[.*\\])",
+            "name": "comment.line.character.firrtl"
+        }
+    }
+}

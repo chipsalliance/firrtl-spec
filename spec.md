@@ -2218,7 +2218,7 @@ circuit Foo:
 The formatted print statement is used to print a formatted string during simulations of the circuit.
 Backends are free to generate hardware that relays this information to a hardware test harness, but this is not required by the FIRRTL specification.
 
-A `printf`{.firrtl} statement requires a clock signal, a print condition signal, a format string, and a variable list of argument signals.
+A `printf`{.firrtl} statement requires a clock signal, a print condition signal, a file descriptor, a format string, and a variable list of argument signals.
 The condition signal must be a single bit unsigned integer type, and the argument signals must each have a ground type.
 
 For information about execution ordering of clocked statements with observable environmental side effects, see [@sec:stops].
@@ -2236,8 +2236,9 @@ circuit Foo:
     wire cond: UInt<1>
     wire a: UInt
     wire b: UInt
+    node fd = SInt<32>(-0h7FFFFFFE)
     printf(
-      clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b
+      clk, cond, fd, "a in hex: %x, b in decimal:%d.\n", a, b
     ) : optional_name
     ;; snippetend
 ```
@@ -4268,6 +4269,7 @@ command =
   | "release_initial" , "(" , expr_probe , ")"
   | expr_intrinsic , [ info ]
   | "printf" , "(" ,
+        expr , "," ,
         expr , "," ,
         expr , "," ,
         string_dq ,

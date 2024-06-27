@@ -61,7 +61,7 @@ This will not be present on files generated according to versions of this standa
 
 ``` firrtl
 ;; snippetbegin
-FIRRTL version 1.1.0
+FIRRTL version 2.0.0
 circuit Foo :
 ;; snippetend
   module Foo :

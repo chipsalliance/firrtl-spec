@@ -143,6 +143,19 @@ A public module has a number of restrictions:
 3.  A `RWProbe`{.firrtl} may not be used to access a public module's ports.
 4.  A public module may be instantiated by other modules within a circuit, but the behavior of the module must not be affected by these instantiations.
 
+A public module may specify which ABI a compiler must use for a specific public module.
+This can be specified with the syntax below:
+
+``` {.firrtl .notest}
+FIRRTL version 4.0.0
+circuit Foo:
+  ;; snippetbegin
+  public module<v1> Foo:
+  ;; snippetend
+```
+
+If the ABI is unspecified, the ABI for that public module uses the default ABI version as defined in the FIRRTL ABI Specification.
+
 For more information on the lowering of public modules, see the FIRRTL ABI Specification.
 
 ### Private Modules
@@ -224,6 +237,21 @@ Foo #(
 // snippetend
 endmodule
 ```
+
+Externally defined modules may specify an explicit lowering ABI using the same syntax as public modules:
+
+``` {.firrtl .notest}
+FIRRTL version 4.0.0
+circuit Foo:
+  public module Foo:
+  ;; snippetbegin
+  extmodule<v2> Bar:
+  ;; snippetend
+```
+
+If the ABI is unspecified, the ABI for that public module uses the default ABI version as defined in the FIRRTL ABI Specification.
+
+For more information on the lowering of public modules, see the FIRRTL ABI Specification.
 
 ## Layers
 
@@ -4169,15 +4197,18 @@ decl =
   | decl_layer
   | decl_type_alias ;
 
+abi =
+  "<" , id , ">" ;
+
 decl_module =
-  [ "public" ], "module" , id , { enablelayer } , ":" , [ info ] ,
+  [ "public" ], "module" , [ abi ] , id , { enablelayer } , ":" , [ info ] ,
     newline , indent ,
     { port , newline } ,
     { statement , newline } ,
   dedent ;
 
 decl_extmodule =
-  "extmodule" , id , ":" , [ info ] , newline , indent ,
+  "extmodule" , [ abi ] , id , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
     { "parameter" , id , "=" , type_param , newline } ,

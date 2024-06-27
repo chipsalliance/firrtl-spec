@@ -30,12 +30,15 @@ revisionHistory:
       - Restore id and info in printf grammar, add to verif commands.
       - Add intrinsic expressions and statements.
       - Remove intrinsic modules.
+      - Add ABI to public module and external module.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.
         These now use the public module and not the circuit.
       - Use EBNF to describe probe port macros and filename.
       - Correct mistakes in code examples.
+      - Clarify that ABI v1 is the default ABI if unspecified on a public module
+        or external module.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 3.2.0

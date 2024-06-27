@@ -30,6 +30,7 @@ revisionHistory:
       - Restore id and info in printf grammar, add to verif commands.
       - Add intrinsic expressions and statements.
       - Remove intrinsic modules.
+      - Allow layerbocks anywhere in a module.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

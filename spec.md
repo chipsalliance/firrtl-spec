@@ -2377,7 +2377,6 @@ See [@sec:intrinsics].
 The `layerblock`{.firrtl} keyword declares a *layer block* and associates it with a layer.
 Statements inside a layer block are only executed when the associated layer is enabled.
 
-A layer block may only be declared inside a module or in another layer block.
 A layer block must be associated with a layer declared in the current circuit.
 A layer block forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---statements and expressions in a layer block may use identifiers declared outside the layer block, but identifiers declared in the layer block may not be used in parent lexical scopes.
 The statements in a layer block are restricted in what identifiers they are allowed to drive.

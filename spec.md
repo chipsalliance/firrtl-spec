@@ -1619,24 +1619,6 @@ A register is initialized with an indeterminate value (see [@sec:indeterminate-v
 
 Conditional statements define one or more regions where the operations (declarations, statements, and expressions) inside these regions *conditionally execute* based on the value of a condition.
 
-## Conditional Execution
-
-The *conditional execution* of operations within a region is both operation-dependent and defined in terms of all *parent conditions*.
-A condition is a *parent condition* of an operation if the operation is defined under a conditional region with that condition.
-Operations have more than one parent condition when conditional statements are nested.
-
-Conditional execution is defined as follows:
-
--   Connections (see [@sec:connections]) to a sink only execute when the product (logical and) of all conditions that are parents of the connect, but not parents of the declaration defining the sink evaluate to true.
--   Commands (see [@sec:commands]) only execute when the product (logical and) of all parent conditions evaluates to true.
--   The execution of all other operations in conditional regions is unaffected by the condition.
-    E.g., register, wire, and node declarations as well as module instantiation statements and primitive operation expressions may occur in conditional regions but never execute conditionally.
-
-> These semantics may cause different behavior for trivial inlining (substitution of an instantiation's module body in place of the instantiation).
-> A register in a conditional region and an instantiation in a conditional region where the instantiated module contains a register will execute the same after a trivial inlining.
-> A command in a conditional region and a module instantiation in a conditional region where the instantiated module contains a command will not execute the same after a trivial inlining.
-> In this latter case, the command is not conditional before trivial inlining and conditional after trivial inlining.
-
 ## Conditional Statements
 
 FIRRTL provides several kinds of conditional statements.
@@ -1840,6 +1822,26 @@ circuit Foo:
         connect e, f
     ;; snippetend
 ```
+
+
+## Conditional Execution
+
+The *conditional execution* of operations within a region is both operation-dependent and defined in terms of all *parent conditions*.
+A condition is a *parent condition* of an operation if the operation is defined under a conditional region with that condition.
+Operations have more than one parent condition when conditional statements are nested.
+
+Conditional execution is defined as follows:
+
+-   Connections (see [@sec:connections]) to a sink only execute when the product (logical and) of all conditions that are parents of the connect, but not parents of the declaration defining the sink evaluate to true.
+-   Commands (see [@sec:commands]) only execute when the product (logical and) of all parent conditions evaluates to true.
+-   The execution of all other operations in conditional regions is unaffected by the condition.
+    E.g., register, wire, and node declarations as well as module instantiation statements and primitive operation expressions may occur in conditional regions but never execute conditionally.
+
+> These semantics may cause different behavior for trivial inlining (substitution of an instantiation's module body in place of the instantiation).
+> A register in a conditional region and an instantiation in a conditional region where the instantiated module contains a register will execute the same after a trivial inlining.
+> A command in a conditional region and a module instantiation in a conditional region where the instantiated module contains a command will not execute the same after a trivial inlining.
+> In this latter case, the command is not conditional before trivial inlining and conditional after trivial inlining.
+
 
 ## Initialization Coverage
 

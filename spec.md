@@ -1829,16 +1829,17 @@ circuit Foo:
 
 ## Conditional Execution
 
-The *conditional execution* of operations within a region is both operation-dependent and defined in terms of all *parent conditions*.
-A condition is a *parent condition* of an operation if the operation is defined under a conditional region with that condition.
-Operations have more than one parent condition when conditional statements are nested.
+Statements that appear in a conditional region behave differently based on the type of statement and on the conditions of the blocks containing it.
 
-Conditional execution is defined as follows:
+For connections (see [@sec:connections]), appearing inside of a conditional block affects whether or not the connect executes.
+The sink of a connect operator will correspond to a circuit component declared earlier in the module.
+We consider the conditions associated to the regions of all conditional blocks which contain the connect statement, but which do *not* contain the declaration of the circuit component.
+We call this set of conditions the **interleaving conditions** of the connect.
+Whenever we determine the last connect semantics (see [@sec:last-connect-semantics]) for that component, if each of the interleaving conditions is true, then that connect is executed.
 
--   Connections (see [@sec:connections]) to a sink only execute when the product (logical and) of all conditions that are parents of the connect, but not parents of the declaration defining the sink evaluate to true.
--   Commands (see [@sec:commands]) only execute when the product (logical and) of all parent conditions evaluates to true.
--   The execution of all other operations in conditional regions is unaffected by the condition.
-    E.g., register, wire, and node declarations as well as module instantiation statements and primitive operation expressions may occur in conditional regions but never execute conditionally.
+For commands (see [@sec:commands]), we instead consider the conditions associated with *each* containing conditional region.
+
+For hardware component declarations, conditional regions have no effect.
 
 > These semantics may cause different behavior for trivial inlining (substitution of an instantiation's module body in place of the instantiation).
 > A register in a conditional region and an instantiation in a conditional region where the instantiated module contains a register will execute the same after a trivial inlining.

@@ -1873,10 +1873,12 @@ Registers do not need to be connected to under all conditions, as it will keep i
 ## Declarations within Conditional Regions
 
 The names of circuit components declared within conditional regions must be unique within their module's namespace (see [@sec:namespaces]).
+Circuit components declared within condition regions may only be referred to within that region.
 
+> The behavior is also a bit non-intuitive at first.
 > This differs from the behavior in most programming languages, where variables in a local scope can shadow variables declared outside that scope.
+> Additionally, while the names *exist* in the module's namespace, those names cannot be *used* outside of the region which they are declared.
 
-Circuit components declared within condition regions may only be used by operations within the same conditional scope or a child conditional scope.
 
 ## Conditional Last Connect Semantics
 

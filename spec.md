@@ -1630,9 +1630,9 @@ FIRRTL provides several kinds of conditional statements.
 
 When statements define a condition and two conditional regions: a "then" region and an "else" region.
 The condition must be a 1-bit unsigned integer type.
-Operations within the "then" region are conditionally executed when the condition is true.
-Operations within the "else" region are conditionally executed when the condition is false.
-Operations within regions are executed using the rules in [@sec:conditional-execution].
+Statements within the "then" region are conditionally executed when the condition is true.
+Statements within the "else" region are conditionally executed when the condition is false.
+Statements within regions are executed using the rules in [@sec:conditional-execution].
 
 In the following example, the wire `x`{.firrtl} is connected to the input `a`{.firrtl} only when the `en`{.firrtl} signal is high.
 Otherwise, the wire `x`{.firrtl} is connected to the input `b`{.firrtl}.
@@ -1804,8 +1804,8 @@ circuit Foo:
 
 ### Match Statements
 
-Match statements define regions whose operations are executed when the value of an enumeration typed expression is equal to an enumeration variant.
-Operations within regions are executed using the rules in [@sec:conditional-execution].
+Match statements define regions whose statements are executed when the value of an enumeration typed expression is equal to an enumeration variant.
+Statements within regions are executed using the rules in [@sec:conditional-execution].
 A match statement must exhaustively test every variant of an enumeration.
 An optional binder may be specified to extract the data of the variant.
 

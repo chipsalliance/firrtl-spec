@@ -31,6 +31,7 @@ revisionHistory:
       - Add intrinsic expressions and statements.
       - Remove intrinsic modules.
       - Allow layerbocks anywhere in a module.
+      - Add language clarifying behavior statements affected by conditionals.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

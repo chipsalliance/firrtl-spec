@@ -228,7 +228,10 @@ endmodule
 ## Layers
 
 Layers are collections of functionality which will not be present in all executions of a circuit.
-When a layer is enabled, the FIRRTL circuit behaves *as-if* all the optional functionality of that layer was executed.
+
+During execution, each layer is either enabled or disabled.
+When a layer is enabled, the FIRRTL circuit behaves *as-if* all the optional functionality of that layer was included in the normal execution of the circuit.
+When a layer is disabled, the circuit behaves *as-if* all the optional functionality of that layer was removed from the execution of the circuit.
 Layers are intended to be used to keep verification, debugging, or other collateral, not relevant to the operation of the circuit, in a separate area.
 Each layer can then be optionally included in the resulting design.
 
@@ -1616,12 +1619,21 @@ A register is initialized with an indeterminate value (see [@sec:indeterminate-v
 
 # Conditionals
 
-Several statements provide branching in the data-flow and conditional control of verification constructs.
+Conditional statements define one or more regions, each with an associated condition.
+These regions contain other statements (including nested conditional statements).
+The behavior of the contained statements is affected by the conditions associated to the regions containing them.
 
-## When Statements
+## Conditional Statements
 
-Connections within a when statement that connect to previously declared components hold only when the given condition is high.
-The condition must have a 1-bit unsigned integer type.
+FIRRTL provides several kinds of conditional statements.
+
+### When Statements
+
+When statements define a condition and two conditional regions: a "then" region and an "else" region.
+The condition must be a 1-bit unsigned integer type.
+Statements within the "then" region are conditionally executed when the condition is true.
+Statements within the "else" region are conditionally executed when the condition is false.
+Statements within regions are executed using the rules in [@sec:conditional-execution].
 
 In the following example, the wire `x`{.firrtl} is connected to the input `a`{.firrtl} only when the `en`{.firrtl} signal is high.
 Otherwise, the wire `x`{.firrtl} is connected to the input `b`{.firrtl}.
@@ -1642,7 +1654,7 @@ circuit MyModule:
   ;; snippetend
 ```
 
-### Syntactic Shorthands
+#### Syntactic Shorthands
 
 The `else`{.firrtl} branch of a conditional statement may be omitted, in which case a default `else`{.firrtl} branch is supplied consisting of the empty statement.
 
@@ -1791,9 +1803,10 @@ circuit Foo:
     ;; snippetend
 ```
 
-## Match Statements
+### Match Statements
 
-Match statements are used to discriminate the active variant of an enumeration typed expression.
+Match statements define regions whose statements are executed when the value of an enumeration typed expression is equal to an enumeration variant.
+Statements within regions are executed using the rules in [@sec:conditional-execution].
 A match statement must exhaustively test every variant of an enumeration.
 An optional binder may be specified to extract the data of the variant.
 
@@ -1814,33 +1827,24 @@ circuit Foo:
     ;; snippetend
 ```
 
-## Nested Declarations
+## Conditional Execution
 
-If a circuit component is declared within a conditional statement,
-connections to it are unaffected by the condition.
-In the following example, register `myreg1`{.firrtl} is always connected to `a`{.firrtl},
-and register `myreg2`{.firrtl} is always connected to `b`{.firrtl}.
+Statements that appear in a conditional region behave differently based on the type of statement and on the conditions of the blocks containing it.
 
-``` firrtl
-FIRRTL version 4.0.0
-circuit MyModule :
-  ;; snippetbegin
-  public module MyModule :
-    input a: UInt<3>
-    input b: UInt<3>
-    input en: UInt<1>
-    input clk : Clock
-    when en :
-      reg myreg1 : UInt, clk
-      connect myreg1, a
-    else :
-      reg myreg2 : UInt, clk
-      connect myreg2, b
-  ;; snippetend
-```
+For connections (see [@sec:connections]), appearing inside of a conditional block affects whether or not the connect executes.
+The sink of a connect operator will correspond to a circuit component declared earlier in the module.
+We consider the conditions associated to the regions of all conditional blocks which contain the connect statement, but which do *not* contain the declaration of the circuit component.
+We call this set of conditions the **interleaving conditions** of the connect.
+Whenever we determine the last connect semantics (see [@sec:last-connect-semantics]) for that component, if each of the interleaving conditions is true, then that connect is executed.
 
-Intuitively, a line can be drawn between a connection to a component and that component's declaration.
-All conditional statements that are crossed by the line apply to that connection.
+For commands (see [@sec:commands]), we instead consider the conditions associated with *each* containing conditional region.
+
+For hardware component declarations, conditional regions have no effect.
+
+> These semantics may cause different behavior for trivial inlining (substitution of an instantiation's module body in place of the instantiation).
+> A register in a conditional region and an instantiation in a conditional region where the instantiated module contains a register will execute the same after a trivial inlining.
+> A command in a conditional region and a module instantiation in a conditional region where the instantiated module contains a command will not execute the same after a trivial inlining.
+> In this latter case, the command is not conditional before trivial inlining and conditional after trivial inlining.
 
 ## Initialization Coverage
 
@@ -1865,19 +1869,14 @@ This is an illegal FIRRTL circuit and an error will be thrown during compilation
 All wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
 Registers do not need to be connected to under all conditions, as it will keep its previous value if unconnected.
 
-## Conditional Scopes
+## Declarations within Conditional Regions
 
-Conditional statements create a new *conditional scope* within each
-of its `when`{.firrtl} and `else`{.firrtl} branches.
+The names of circuit components declared within conditional regions must be unique within their module's namespace (see [@sec:namespaces]).
+Circuit components declared within condition regions may only be referred to within that region.
 
-Circuit components may be declared locally within a conditional scope.
-The name given to a circuit component declared this way must still be unique
-across all circuit components declared the module (see [@sec:namespaces]).
-This differs from the behavior in most programming languages,
-where variables in a local scope can shadow variables declared outside that scope.
-
-A circuit components declared locally within a conditional scope
-may only be connected to within that scope.
+> The behavior is also a bit non-intuitive at first.
+> This differs from the behavior in most programming languages, where variables in a local scope can shadow variables declared outside that scope.
+> Additionally, while the names *exist* in the module's namespace, those names cannot be *used* outside of the region which they are declared.
 
 ## Conditional Last Connect Semantics
 
@@ -2378,7 +2377,7 @@ The `layerblock`{.firrtl} keyword declares a *layer block* and associates it wit
 Statements inside a layer block are only executed when the associated layer is enabled.
 
 A layer block must be associated with a layer declared in the current circuit.
-A layer block forms a lexical scope (as with [@sec:conditional-scopes]) for all identifiers declared inside it---statements and expressions in a layer block may use identifiers declared outside the layer block, but identifiers declared in the layer block may not be used in parent lexical scopes.
+A layer block forms a lexical scope (as with [@sec:declarations-within-conditional-regions]) for all identifiers declared inside it---statements and expressions in a layer block may use identifiers declared outside the layer block, but identifiers declared in the layer block may not be used in parent lexical scopes.
 The statements in a layer block are restricted in what identifiers they are allowed to drive.
 A statement in a layer block may drive no sinks declared outside the layer block *with one exception*: a statement in a layer block may drive reference types declared outside the layer block if the reference types are associated with the layer in which the statement is declared (see: [@sec:probe-types]).
 

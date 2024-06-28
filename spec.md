@@ -1617,7 +1617,10 @@ A register is initialized with an indeterminate value (see [@sec:indeterminate-v
 
 # Conditionals
 
-Conditional statements define one or more regions where the operations (declarations, statements, and expressions) inside these regions *conditionally execute* based on the value of a condition.
+Conditional statements define one or more regions, each with an associated condition.
+These regions contain other statements (including nested conditional statements).
+The behavior of the contained statements is affected by the conditions associated to the regions containing them.
+
 
 ## Conditional Statements
 

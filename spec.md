@@ -1623,7 +1623,6 @@ Conditional statements define one or more regions, each with an associated condi
 These regions contain other statements (including nested conditional statements).
 The behavior of the contained statements is affected by the conditions associated to the regions containing them.
 
-
 ## Conditional Statements
 
 FIRRTL provides several kinds of conditional statements.
@@ -1828,7 +1827,6 @@ circuit Foo:
     ;; snippetend
 ```
 
-
 ## Conditional Execution
 
 Statements that appear in a conditional region behave differently based on the type of statement and on the conditions of the blocks containing it.
@@ -1847,7 +1845,6 @@ For hardware component declarations, conditional regions have no effect.
 > A register in a conditional region and an instantiation in a conditional region where the instantiated module contains a register will execute the same after a trivial inlining.
 > A command in a conditional region and a module instantiation in a conditional region where the instantiated module contains a command will not execute the same after a trivial inlining.
 > In this latter case, the command is not conditional before trivial inlining and conditional after trivial inlining.
-
 
 ## Initialization Coverage
 
@@ -1880,7 +1877,6 @@ Circuit components declared within condition regions may only be referred to wit
 > The behavior is also a bit non-intuitive at first.
 > This differs from the behavior in most programming languages, where variables in a local scope can shadow variables declared outside that scope.
 > Additionally, while the names *exist* in the module's namespace, those names cannot be *used* outside of the region which they are declared.
-
 
 ## Conditional Last Connect Semantics
 

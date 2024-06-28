@@ -228,6 +228,8 @@ endmodule
 ## Layers
 
 Layers are collections of functionality which will not be present in all executions of a circuit.
+
+During execution, each layer is either enabled or disabled.
 When a layer is enabled, the FIRRTL circuit behaves *as-if* all the optional functionality of that layer was included in the normal execution of the circuit.
 When a layer is disabled, the circuit behaves *as-if* all the optional functionality of that layer was removed from the execution of the circuit.
 Layers are intended to be used to keep verification, debugging, or other collateral, not relevant to the operation of the circuit, in a separate area.

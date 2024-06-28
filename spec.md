@@ -1619,9 +1619,9 @@ A register is initialized with an indeterminate value (see [@sec:indeterminate-v
 
 # Conditionals
 
-Conditional statements define one or more regions, each with an associated condition.
-These regions contain other statements (including nested conditional statements).
-The behavior of the contained statements is affected by the conditions associated to the regions containing them.
+Conditional statements define one or more blocks, each with an associated condition.
+These blocks contain other statements (including nested conditional statements).
+The behavior of the contained statements is affected by the conditions associated to the blocks containing them.
 
 ## Conditional Statements
 
@@ -1629,11 +1629,11 @@ FIRRTL provides several kinds of conditional statements.
 
 ### When Statements
 
-When statements define a condition and two conditional regions: a "then" region and an "else" region.
+When statements define a condition and two conditional blocks: a "then" block and an "else" block.
 The condition must be a 1-bit unsigned integer type.
-Statements within the "then" region are conditionally executed when the condition is true.
-Statements within the "else" region are conditionally executed when the condition is false.
-Statements within regions are executed using the rules in [@sec:conditional-execution].
+Statements within the "then" block are conditionally executed when the condition is true.
+Statements within the "else" block are conditionally executed when the condition is false.
+Statements within blocks are executed using the rules in [@sec:conditional-execution].
 
 In the following example, the wire `x`{.firrtl} is connected to the input `a`{.firrtl} only when the `en`{.firrtl} signal is high.
 Otherwise, the wire `x`{.firrtl} is connected to the input `b`{.firrtl}.
@@ -1805,8 +1805,8 @@ circuit Foo:
 
 ### Match Statements
 
-Match statements define regions whose statements are executed when the value of an enumeration typed expression is equal to an enumeration variant.
-Statements within regions are executed using the rules in [@sec:conditional-execution].
+Match statements define blocks whose statements are executed when the value of an enumeration typed expression is equal to an enumeration variant.
+Statements within blocks are executed using the rules in [@sec:conditional-execution].
 A match statement must exhaustively test every variant of an enumeration.
 An optional binder may be specified to extract the data of the variant.
 
@@ -1829,21 +1829,21 @@ circuit Foo:
 
 ## Conditional Execution
 
-Statements that appear in a conditional region behave differently based on the type of statement and on the conditions of the blocks containing it.
+Statements that appear in a conditional block behave differently based on the type of statement and on the conditions of the blocks containing it.
 
 For connections (see [@sec:connections]), appearing inside of a conditional block affects whether or not the connect executes.
 The sink of a connect operator will correspond to a circuit component declared earlier in the module.
-We consider the conditions associated to the regions of all conditional blocks which contain the connect statement, but which do *not* contain the declaration of the circuit component.
+We consider the conditions associated to the blocks of all conditional blocks which contain the connect statement, but which do *not* contain the declaration of the circuit component.
 We call this set of conditions the **interleaving conditions** of the connect.
 Whenever we determine the last connect semantics (see [@sec:last-connect-semantics]) for that component, if each of the interleaving conditions is true, then that connect is executed.
 
-For commands (see [@sec:commands]), we instead consider the conditions associated with *each* containing conditional region.
+For commands (see [@sec:commands]), we instead consider the conditions associated with *each* containing conditional block.
 
-For hardware component declarations, conditional regions have no effect.
+For hardware component declarations, conditional blocks have no effect.
 
 > These semantics may cause different behavior for trivial inlining (substitution of an instantiation's module body in place of the instantiation).
-> A register in a conditional region and an instantiation in a conditional region where the instantiated module contains a register will execute the same after a trivial inlining.
-> A command in a conditional region and a module instantiation in a conditional region where the instantiated module contains a command will not execute the same after a trivial inlining.
+> A register in a conditional block and an instantiation in a conditional block where the instantiated module contains a register will execute the same after a trivial inlining.
+> A command in a conditional block and a module instantiation in a conditional block where the instantiated module contains a command will not execute the same after a trivial inlining.
 > In this latter case, the command is not conditional before trivial inlining and conditional after trivial inlining.
 
 ## Initialization Coverage
@@ -1869,14 +1869,14 @@ This is an illegal FIRRTL circuit and an error will be thrown during compilation
 All wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
 Registers do not need to be connected to under all conditions, as it will keep its previous value if unconnected.
 
-## Declarations within Conditional Regions
+## Declarations within Conditional Blocks
 
-The names of circuit components declared within conditional regions must be unique within their module's namespace (see [@sec:namespaces]).
-Circuit components declared within condition regions may only be referred to within that region.
+The names of circuit components declared within conditional blocks must be unique within their module's namespace (see [@sec:namespaces]).
+Circuit components declared within condition blocks may only be referred to within that block.
 
 > The behavior is also a bit non-intuitive at first.
 > This differs from the behavior in most programming languages, where variables in a local scope can shadow variables declared outside that scope.
-> Additionally, while the names *exist* in the module's namespace, those names cannot be *used* outside of the region which they are declared.
+> Additionally, while the names *exist* in the module's namespace, those names cannot be *used* outside of the block which they are declared.
 
 ## Conditional Last Connect Semantics
 
@@ -2377,7 +2377,7 @@ The `layerblock`{.firrtl} keyword declares a *layer block* and associates it wit
 Statements inside a layer block are only executed when the associated layer is enabled.
 
 A layer block must be associated with a layer declared in the current circuit.
-A layer block forms a lexical scope (as with [@sec:declarations-within-conditional-regions]) for all identifiers declared inside it---statements and expressions in a layer block may use identifiers declared outside the layer block, but identifiers declared in the layer block may not be used in parent lexical scopes.
+A layer block forms a lexical scope (as with [@sec:declarations-within-conditional-blocks]) for all identifiers declared inside it---statements and expressions in a layer block may use identifiers declared outside the layer block, but identifiers declared in the layer block may not be used in parent lexical scopes.
 The statements in a layer block are restricted in what identifiers they are allowed to drive.
 A statement in a layer block may drive no sinks declared outside the layer block *with one exception*: a statement in a layer block may drive reference types declared outside the layer block if the reference types are associated with the layer in which the statement is declared (see: [@sec:probe-types]).
 
@@ -2540,7 +2540,7 @@ Probe types may be colored with a layer (see [@sec:layers]).
 A layer-colored probe type places restrictions on the operations which use it.
 
 An operation may only "read" from a probe whose layer color is enabled when the operation is enabled.
-An operation that "writes" to a probe must be in a region whose layer color is enabled when the probe's layer color is enabled.
+An operation that "writes" to a probe must be in a block whose layer color is enabled when the probe's layer color is enabled.
 
 ## The `probe`{.firrtl} and `rwprobe`{.firrtl} Expressions
 

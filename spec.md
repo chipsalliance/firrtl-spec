@@ -3660,10 +3660,10 @@ The subtract operation result is e2 subtracted from e1, without loss of precisio
 
 ## Multiply Operation
 
-| Name | Arguments   | Parameters | Arg Types   | Result Type | Result Width |
-|------|-------------|------------|-------------|-------------|--------------|
-| mul  | (e1,e2)     | ()         | (UInt,UInt) | UInt        | w~e1~+w~e2~  |
-|      | (SInt,SInt) | SInt       | w~e1~+w~e2~ |             |              |
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|------|-----------|------------|-------------|-------------|--------------|
+| mul  | (e1,e2)   | ()         | (UInt,UInt) | UInt        | w~e1~+w~e2~  |
+|      |           |            | (SInt,SInt) | SInt        | w~e1~+w~e2~  |
 
 The multiply operation result is the product of e1 and e2, without loss of precision.
 

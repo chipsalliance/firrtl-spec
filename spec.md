@@ -900,6 +900,20 @@ circuit Example:
   ;; snippetend
 ```
 
+### List Type
+
+The `List` type represents an ordered sequence of properties.
+It is parameterized by the type of its elements, which can be any legal Property type.
+
+``` firrtl
+FIRRTL version 4.0.0
+circuit Example:
+  ;; snippetbegin
+  public module Example:
+    input listProp : List<Integer> ; an input port of List property type
+  ;; snippetend
+```
+
 ## Connectable Types
 
 A **connectable type** is one which may be the type of expressions which may participate in the `connect`{.firrtl} statement.
@@ -3940,6 +3954,27 @@ The shift right operation result is the arbitrary precision signed integer arith
 e2 sign bits from e1 are shifted into the most significant bits, and the e2 least significant bits of e1 are truncated.
 e2 must be non-negative.
 
+## List Operations
+
+List operations create `List`{.firrtl} property type expressions from other property expressions.
+
+### List Construction Operation
+
+  Name        Arguments   Arg Types   Result Type
+  ----------- ----------- ----------- -------------
+  List\<t\>   (e\*)       (t\*)       List\<t\>
+
+The list construction operation constructs a List property type expression of a given element type.
+The `List`{.firrtl} constructor is parameterized by element type t, and accepts zero or more property type expressions e of type t.
+
+### List Concatenation Operation
+
+  Name          Arguments   Arg Types   Result Type
+  ------------- ----------- ----------- -------------
+  list_concat   (e+)        (t+)        List\<t\>
+
+The list concatenation operation constructs a `List`{.firrtl} property type expression by concatenating one or more lists of the same element type t.
+
 # Notes on Syntax
 
 FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
@@ -4192,7 +4227,7 @@ decl_type_alias = "type", id, "=", type ;
 
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
 type_param = int | string_dq | string_sq ;
-type_property = "Integer" ;
+type_property = "Integer" | "List", "<", type_property, ">";
 
 (* Statements *)
 statement =
@@ -4344,7 +4379,7 @@ expr_probe =
 
 property_literal_expr = "Integer", "(", int, ")" ;
 property_expr = reference_static | property_literal_expr | property_expr_primop ;
-property_expr_primop = property_primop_2expr ;
+property_expr_primop = property_primop_2expr | property_primop_varexpr;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 expr_intrinsic = "intrinsic", "(" , id ,
@@ -4401,6 +4436,8 @@ primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int
 (* Primitive Property Operations *)
 property_primop_2expr = property_primop_2expr_keyword ,
                           "(" , property_expr , "," , property_expr ")" ;
+property_primop_varexpr = property_primop_varexpr_keyword ,
+                            "(" , property_expr , [ "," , property_expr ]* ")" ;
 
 (* Enable Layers *)
 enablelayer = "enablelayer" , id , { "." , id } ;
@@ -4474,6 +4511,9 @@ primop_1expr2int_keyword = "bits" ;
 
 property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" ;
+
+property_primop_varexpr_keyword =
+    "List", "<", type_property, ">" | "list_concat" ;
 ```
 
 # Versioning Scheme of this Document

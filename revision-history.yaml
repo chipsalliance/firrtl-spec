@@ -33,6 +33,7 @@ revisionHistory:
       - Allow layerbocks anywhere in a module.
       - Add language clarifying behavior statements affected by conditionals.
       - No abstract reset on externally-defined modules.
+      - Add Property type and primitive operations for List.
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

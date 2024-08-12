@@ -3964,7 +3964,7 @@ List operations create `List`{.firrtl} property type expressions from other prop
   ----------- ----------- ----------- -------------
   List\<t\>   (e\*)       (t\*)       List\<t\>
 
-The list construction operation constructs a List property type expression of a given element type.
+The list construction operation constructs a `List`{.firrtl} property type expression of a given element type.
 The `List`{.firrtl} constructor is parameterized by element type t, and accepts zero or more property type expressions e of type t.
 
 ### List Concatenation Operation
@@ -4227,7 +4227,7 @@ decl_type_alias = "type", id, "=", type ;
 
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
 type_param = int | string_dq | string_sq ;
-type_property = "Integer" | "List", "<", type_property, ">";
+type_property = "Integer" | "List" , "<" , type_property , ">";
 
 (* Statements *)
 statement =
@@ -4437,7 +4437,7 @@ primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int
 property_primop_2expr = property_primop_2expr_keyword ,
                           "(" , property_expr , "," , property_expr ")" ;
 property_primop_varexpr = property_primop_varexpr_keyword ,
-                            "(" , property_expr , [ "," , property_expr ]* ")" ;
+                            "(" , { property_expr } , ")" ;
 
 (* Enable Layers *)
 enablelayer = "enablelayer" , id , { "." , id } ;
@@ -4513,7 +4513,7 @@ property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" ;
 
 property_primop_varexpr_keyword =
-    "List", "<", type_property, ">" | "list_concat" ;
+    "List" , "<" , type_property , ">" | "list_concat" ;
 ```
 
 # Versioning Scheme of this Document

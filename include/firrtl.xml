@@ -36,11 +36,11 @@
       <item>Reset</item>
       <item>AsyncReset</item>
       <item>Integer</item>
-      <item>List</item>
     </list>
     <list name="outertype">
       <item>Probe</item>
       <item>RWProbe</item>
+      <item>List</item>
     </list>
     <list name="typemodifiers">
       <item>const</item>

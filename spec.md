@@ -306,7 +306,7 @@ circuit Foo :
 ### Test Harness  
 
 A test harness is a public module that is typically only used for defining a test-bench.
-These are not instanciated and their inputs function as free (or symbolic) variables.
+These are not instantiated and their inputs function as free (or symbolic) variables.
 Test harnesses typically instantiate a module, know as the Device Under Test (DUT), 
 connect a set of free variables to the DUT's inputs and then use those free variables to 
 check various properties of these DUT using assertions and assumptions.  

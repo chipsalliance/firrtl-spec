@@ -303,7 +303,7 @@ circuit Foo :
   formal testFoo of Foo, bound = 20
 ```
  
-### Test Harness  
+### Formal Test Harness  
 
 A test harness is a public module that is typically only used for defining a test-bench.
 These are not instantiated and their inputs function as free (or symbolic) variables.

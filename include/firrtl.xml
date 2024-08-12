@@ -6,6 +6,7 @@
       <item>module</item>
       <item>extmodule</item>
       <item>layer</item>
+      <item>formal</item>
     </list>
     <list name="keywords">
       <item>input</item>
@@ -26,6 +27,7 @@
       <item>propassign</item>
       <item>public</item>
       <item>enablelayer</item>
+      <item>bound</item>
     </list>
     <list name="types">
       <item>UInt</item>

@@ -286,6 +286,59 @@ circuit Foo :
   public module Foo enablelayer A :
 ```
 
+## Formal Tests
+
+Formal tests are names top-level constructs which allow for test-harnesses to be definied 
+as bounded model checking problems. Formal tests have 3 operands: 
+- A symbol that the test can be referred to with.  
+- The name of the test harness module.  
+- A bound for the bounded model checking problem, which refers to the number of cycles that 
+the module will be unrolled for in the formal test. This is a strictly positive integer.  
+
+```firrtl
+FIRRTL version 4.0.0
+circuit Foo :
+  public module Foo :
+    ; ...
+  formal testFoo of Foo, bound = 20
+```
+ 
+### Test Harness  
+
+A test harness is a public module that is typically only used for defining a test-bench.
+These are not instanciated and their inputs function as free (or symbolic) variables.
+Test harnesses typically instantiate a module, know as the Device Under Test (DUT), 
+connect a set of free variables to the DUT's inputs and then use those free variables to 
+check various properties of these DUT using assertions and assumptions.  
+
+Example:
+```firrtl
+FIRRTL version 4.0.0
+
+circuit Foo:
+  public module Foo:
+    input data : UInt<32>
+    input c : UInt<1>
+    output out : UInt<32>
+    ;; Foo body
+
+  module FooTest:
+      ;; example test
+      inst foo of Foo
+      ;; symbolic input -- maps to input in btor2
+      input s_foo_c : UInt<1>
+      input s_foo_data : UInt<32> 
+      ;; feed the symbolic inputs to the instance
+      connect foo.c, s_foo_c 
+      connect foo.data, s_foo_data
+      ;; example assertion that uses the symbolic inputs and outputs
+      intrinsic(circt_verif_assert, intrinsic(
+        circt_ltl_implication : UInt<1>, s_foo_c, eq(foo.out, s_foo_data))
+      )
+
+  formal testFormal of FooTest, bound = 20
+```
+
 # Circuit Components
 
 Circuit components are the named parts of a module corresponding to hardware.
@@ -4202,6 +4255,7 @@ decl =
     decl_module
   | decl_extmodule
   | decl_layer
+  | decl_formal
   | decl_type_alias ;
 
 decl_module =
@@ -4220,8 +4274,10 @@ decl_extmodule =
 
 decl_layer =
   "layer" , id , string , ":" , [ info ] , newline , indent ,
-    { decl_layer , newline } ,
   dedent ;
+
+decl_formal =
+  "formal" , id , "of" , id , "," , "bound" , "=" , int;
 
 decl_type_alias = "type", id, "=", type ;
 

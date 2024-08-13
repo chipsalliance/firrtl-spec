@@ -288,12 +288,17 @@ circuit Foo :
 
 ## Formal Tests
 
-Formal tests are names top-level constructs which allow for test-harnesses to be definied 
-as bounded model checking problems. Formal tests have 3 operands: 
+Formal tests are named top-level constructs which allow for formal test harnesses to be definied 
+as bounded model checking (BMC) problems. The body of the formal test harness is converted 
+into a BMC formula which encodes a state-transition system version of the design using one 
+of the formal backends (targetting either BTOR2 or SMTLib). 
+Formal tests have 3 operands: 
 - A symbol that the test can be referred to with.  
-- The name of the test harness module.  
-- A bound for the bounded model checking problem, which refers to the number of cycles that 
-the module will be unrolled for in the formal test. This is a strictly positive integer.  
+- The name of the formal test harness module.  
+- A bound for the bounded model checking problem, which refers to the maximum bound k used
+to check the bounded model checking formula. This means that given a bound k, the BMC formula 
+will be checked for all unrollings of the resulting state-transition system of depths 1 through k.
+This bound is a strictly positive integer.  
 
 ```firrtl
 FIRRTL version 4.0.0
@@ -302,14 +307,16 @@ circuit Foo :
     ; ...
   formal testFoo of Foo, bound = 20
 ```
+More details about how bounded model checking works can be found in [Biere et al. 2003](https://www.cs.cmu.edu/~emc/papers/Books%20and%20Edited%20Volumes/Bounded%20Model%20Checking.pdf).
  
 ### Formal Test Harness  
 
-A test harness is a public module that is typically only used for defining a test-bench.
-These are not instantiated and their inputs function as free (or symbolic) variables.
-Test harnesses typically instantiate a module, know as the Device Under Test (DUT), 
-connect a set of free variables to the DUT's inputs and then use those free variables to 
-check various properties of these DUT using assertions and assumptions.  
+A formal test harness is a public module that is typically only used for defining the 
+body of a formal test-bench. These are modules that are not intended to be instantiated and 
+their inputs function as free (or symbolic) variables. Formal test harnesses typically 
+instantiate a module, known as the Device Under Test (DUT), connect a set of free variables 
+to the DUT's inputs, and then use those free variables to check various properties of these 
+DUTs using assertions and assumptions.
 
 Example:
 ```firrtl

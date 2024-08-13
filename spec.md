@@ -293,12 +293,9 @@ as bounded model checking (BMC) problems. The body of the formal test harness is
 into a BMC formula which encodes a state-transition system version of the design using one
 of the formal backends (targetting either BTOR2 or SMTLib).
 Formal tests have 3 operands:
-- A symbol that the test can be referred to with.\
+- A name that the test can be referred to with.\
 - The name of the formal test harness module.\
-- A bound for the bounded model checking problem, which refers to the maximum bound k used
-to check the bounded model checking formula. This means that given a bound k, the BMC formula
-will be checked for all unrollings of the resulting state-transition system of depths 1 through k.
-This bound is a strictly positive integer.
+- A positive integer bound for the test. This number indicates the depth to which the model will be checked.
 
 ``` firrtl
 FIRRTL version 4.0.0
@@ -309,16 +306,15 @@ circuit Foo :
 ```
 
 More details about how bounded model checking works and what the bound refers to can be found in
-[Biere et al. 2003](https://www.cs.cmu.edu/~emc/papers/Books%20and%20Edited%20Volumes/Bounded%20Model%20Checking.pdf).
+[Biere et al. 2003](https://doi.org/10.1016/S0065-2458(03)58003-2).
 
 ### Formal Test Harness
 
-A formal test harness is a public module that is typically only used for defining the
+A formal test harness is a public module that is used for defining the
 body of a formal test-bench. These are modules that are not intended to be instantiated and
-their inputs function as free (or symbolic) variables. Formal test harnesses typically
-instantiate a module, known as the Device Under Test (DUT), connect a set of free variables
-to the DUT's inputs, and then use those free variables to check various properties of these
-DUTs using assertions and assumptions.
+their inputs function as free (or symbolic) variables. Formal test harnesses instantiate a module,
+known as the Device Under Test (DUT), connect a set of free variables to the DUT's inputs, and
+then use those free variables to check various properties of these DUTs using assertions and assumptions.
 
 Example:
 
@@ -332,7 +328,7 @@ circuit Foo:
     output out : UInt<32>
     ;; Foo body
 
-  module FooTest:
+  public module FooTest:
       ;; example test
       inst foo of Foo
       ;; symbolic input -- maps to input in btor2
@@ -4284,6 +4280,7 @@ decl_extmodule =
 
 decl_layer =
   "layer" , id , string , ":" , [ info ] , newline , indent ,
+  { decl_layer , newline } ,
   dedent ;
 
 decl_formal =

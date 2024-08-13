@@ -3442,7 +3442,7 @@ These are for demonstration and their meaning or validity is determined by the i
 
 The following shows an intrinsic expression for the intrinsic named "circt\_ltl\_delay" with two parameters, returns `UInt<1>`{.firrtl}, and has one operand.
 
-``` {.{..firrtl}}
+``` {.{.{..firrtl}}}
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin
@@ -3457,7 +3457,7 @@ The following has an intrinsic statement with an intrinsic expression as its ope
 The statement is for the intrinsic named "circt\_verif\_assert".
 The expression is for the intrinsic named "circt\_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
 
-``` {.{..firrtl}}
+``` {.{.{..firrtl}}}
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin

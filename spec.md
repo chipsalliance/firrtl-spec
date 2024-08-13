@@ -329,11 +329,11 @@ circuit Foo:
     ;; Foo body
 
   public module FooTest:
-    ;; example test
-    inst foo of Foo
     ;; symbolic input -- maps to input in btor2
     input s_foo_c : UInt<1>
     input s_foo_data : UInt<32> 
+    ;; example test
+    inst foo of Foo
     ;; feed the symbolic inputs to the instance
     connect foo.c, s_foo_c 
     connect foo.data, s_foo_data

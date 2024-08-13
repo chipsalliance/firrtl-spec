@@ -307,7 +307,8 @@ circuit Foo :
     ; ...
   formal testFoo of Foo, bound = 20
 ```
-More details about how bounded model checking works can be found in [Biere et al. 2003](https://www.cs.cmu.edu/~emc/papers/Books%20and%20Edited%20Volumes/Bounded%20Model%20Checking.pdf).
+More details about how bounded model checking works and what the bound refers to can be found in 
+[Biere et al. 2003](https://www.cs.cmu.edu/~emc/papers/Books%20and%20Edited%20Volumes/Bounded%20Model%20Checking.pdf).
  
 ### Formal Test Harness  
 

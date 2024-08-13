@@ -1,8 +1,6 @@
-Introduction
-============
+# Introduction
 
-Background
-----------
+## Background
 
 The ideas for FIRRTL (Flexible Intermediate Representation for RTL) originated from work on Chisel, a hardware description language (HDL) embedded in Scala used for writing highly-parameterized circuit design generators.
 Chisel designers manipulate circuit components using Scala functions, encode their interfaces in Scala types, and use Scala's object-orientation features to write their own circuit libraries.
@@ -32,8 +30,7 @@ A clearly defined IR with a concrete syntax also allows for inspection of the ou
 Clearly defined semantics allows users without knowledge of the compiler implementation to write circuit transformers; examples include optimization of circuits for simulation speed, and automatic insertion of signal activity counters.
 An additional benefit of a well defined IR is the structural invariants that can be enforced before and after each compilation stage, resulting in a more robust compiler and structured mechanism for error checking.
 
-Design Philosophy
------------------
+## Design Philosophy
 
 FIRRTL represents the standardized elaborated circuit that the Chisel HDL produces.
 FIRRTL represents the circuit immediately after Chisel's elaboration.
@@ -45,8 +42,7 @@ A FIRRTL compiler may choose to convert high-level constructs into low-level con
 
 Because the host language is now used solely for its meta-programming facilities, the frontend can be very light-weight, and additional HDLs written in other languages can target FIRRTL and reuse the majority of the compiler toolchain.
 
-Acknowledgments
-===============
+# Acknowledgments
 
 The FIRRTL specification was originally published as a UC Berkeley Tech Report ([UCB/EECS-2016-9](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-9.html)) authored by Adam Izraelevitz ([`@azidar`](https://github.com/azidar)), Patrick Li ([`@CuppoJava`](https://github.com/CuppoJava)), and Jonathan Bachrach ([`@jackbackrack`](https://github.com/jackbackrack)).
 The vision for FIRRTL was then expanded in an [ICCAD paper](https://ieeexplore.ieee.org/abstract/document/8203780) and in [Adam's thesis](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2019/EECS-2019-168.html).
@@ -58,13 +54,12 @@ A list of these contributors is below:
 ```{=tex}
 \contributors
 ```
-File Preamble
-=============
+# File Preamble
 
 A FIRRTL file begins with a magic string and version identifier indicating the version of this standard the file conforms to (see [@sec:versioning-scheme-of-this-document]).
 This will not be present on files generated according to versions of this standard prior to the first versioned release of this standard to include this preamble.
 
-``` {.firrtl}
+``` firrtl
 ;; snippetbegin
 FIRRTL version 2.0.0
 circuit Foo :
@@ -72,11 +67,9 @@ circuit Foo :
   module Foo :
 ```
 
-Circuits and Modules
-====================
+# Circuits and Modules
 
-Circuits
---------
+## Circuits
 
 A FIRRTL circuit is a named collection of FIRRTL modules.
 Each module is a hardware "unit" that has ports, registers, wires, and may instantiate other modules (see: [@sec:modules]).
@@ -89,7 +82,7 @@ The main module must be public (see [@sec:public-modules]).
 The following circuit contains a FIRRTL circuit with two modules.
 `Foo` is the main module:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo :
@@ -99,8 +92,7 @@ circuit Foo :
 ;; snippetend
 ```
 
-Modules
--------
+## Modules
 
 Each module has a given name, a list of ports, and a list of statements representing the circuit connections within the module.
 A module port is specified by its direction, which may be input or output, a name, and the data type of the port.
@@ -108,7 +100,7 @@ A module port is specified by its direction, which may be input or output, a nam
 The following example declares a module with one input port, one output port, and one statement connecting the input port to the output port.
 See [@sec:connections] for details on the connect statement.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 3.2.0
 circuit MyModule:
   ;; snippetbegin
@@ -132,7 +124,7 @@ In effect, public modules are the exported identifiers of a circuit.
 
 The example below shows a public module `Foo`:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   ;; snippetbegin
@@ -160,8 +152,7 @@ Private modules have none of the restrictions of public modules.
 Private modules have no stable, defined interface and may not be used outside the current circuit.
 A private module may not be physically present in a compiled circuit.
 
-Externally Defined Modules
---------------------------
+## Externally Defined Modules
 
 Externally defined modules are modules whose implementation is not provided in the current circuit.
 Only the ports and name of the externally defined module are specified in the circuit.
@@ -177,7 +168,7 @@ A common use of an externally defined module is to represent a Verilog module th
 
 An example of an externally defined module with parameters is:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyExternalModule :
   ;; snippetbegin
@@ -204,7 +195,7 @@ A raw string literal is lowered verbatim to Verilog.
 
 As an example, consider the following external module:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   ;; snippetbegin
@@ -217,7 +208,7 @@ circuit Foo:
 
 This is lowered to a Verilog instantiation site as:
 
-``` {.verilog}
+``` verilog
 `define hello 1
 module Foo #(
   parameter a=1,
@@ -236,8 +227,7 @@ Foo #(
 endmodule
 ```
 
-Layers
-------
+## Layers
 
 Layers are collections of functionality which will not be present in all executions of a circuit.
 
@@ -261,7 +251,7 @@ One such strategy is `bind`{.firrtl} which lowers to modules and instances which
 
 The example below shows a circuit with layers `A`, `B`, and `B.C`:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo :
@@ -289,51 +279,48 @@ See [@sec:layer-coloring] for more information on layer coloring.
 To declare a module with layers enabled, use the `enablelayer`{.firrtl} keyword.
 The circuit below shows a module with one layer enabled:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   layer A, bind :
   public module Foo enablelayer A :
 ```
 
-Formal Tests
-------------
+## Formal Tests
 
-Formal tests are named top-level constructs which allow for formal test harnesses to be definied
-as bounded model checking (BMC) problems. The body of the formal test harness is converted
-into a BMC formula which encodes a state-transition system version of the design using one
-of the formal backends (targetting either BTOR2 or SMTLib).
-Formal tests have 3 operands:
-- A symbol that the test can be referred to with.\
-- The name of the formal test harness module.\
+Formal tests are named top-level constructs which allow for formal test harnesses to be definied 
+as bounded model checking (BMC) problems. The body of the formal test harness is converted 
+into a BMC formula which encodes a state-transition system version of the design using one 
+of the formal backends (targetting either BTOR2 or SMTLib). 
+Formal tests have 3 operands: 
+- A symbol that the test can be referred to with.  
+- The name of the formal test harness module.  
 - A bound for the bounded model checking problem, which refers to the maximum bound k used
-to check the bounded model checking formula. This means that given a bound k, the BMC formula
+to check the bounded model checking formula. This means that given a bound k, the BMC formula 
 will be checked for all unrollings of the resulting state-transition system of depths 1 through k.
-This bound is a strictly positive integer.
+This bound is a strictly positive integer.  
 
-``` {.firrtl}
+```firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   public module Foo :
     ; ...
   formal testFoo of Foo, bound = 20
 ```
+More details about how bounded model checking works and what the bound refers to can be found in 
+[Biere et al. 2003](https://www.cs.cmu.edu/~emc/papers/Books%20and%20Edited%20Volumes/Bounded%20Model%20Checking.pdf).
+ 
+### Formal Test Harness  
 
-More details about how bounded model checking works and what the bound refers to can be found in
-[Biere et al. 2003](https://www.cs.cmu.edu/~emc/papers/Books%20and%20Edited%20Volumes/Bounded%20Model%20Checking.pdf).
-
-### Formal Test Harness
-
-A formal test harness is a public module that is typically only used for defining the
-body of a formal test-bench. These are modules that are not intended to be instantiated and
-their inputs function as free (or symbolic) variables. Formal test harnesses typically
-instantiate a module, known as the Device Under Test (DUT), connect a set of free variables
-to the DUT's inputs, and then use those free variables to check various properties of these
+A formal test harness is a public module that is typically only used for defining the 
+body of a formal test-bench. These are modules that are not intended to be instantiated and 
+their inputs function as free (or symbolic) variables. Formal test harnesses typically 
+instantiate a module, known as the Device Under Test (DUT), connect a set of free variables 
+to the DUT's inputs, and then use those free variables to check various properties of these 
 DUTs using assertions and assumptions.
 
 Example:
-
-``` {.firrtl}
+```firrtl
 FIRRTL version 4.0.0
 
 circuit Foo:
@@ -360,8 +347,7 @@ circuit Foo:
   formal testFormal of FooTest, bound = 20
 ```
 
-Circuit Components
-==================
+# Circuit Components
 
 Circuit components are the named parts of a module corresponding to hardware.
 
@@ -373,8 +359,7 @@ Circuit components can be connected together (see [@sec:connections]).
 Each circuit component in a module has a type ([@sec:types]).
 It is used to determine the legality of connections.
 
-Kinds
------
+## Kinds
 
 ### Nodes
 
@@ -382,7 +367,7 @@ Nodes are named expressions in FIRRTL.
 
 Example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -400,7 +385,7 @@ Wires represent named expressions whose value is determined by FIRRTL `connect`{
 
 Example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -430,7 +415,7 @@ The `reg`{.firrtl} keyword is used to declare a register without a reset.
 
 Examples:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -440,7 +425,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -450,7 +435,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -474,7 +459,7 @@ The way a module interacts with the outside world is through its output and inpu
 
 Example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -494,7 +479,7 @@ A module in FIRRTL may contain submodules.
 
 Example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   module Passthrough:
@@ -513,7 +498,7 @@ Among these fields, `output`{.firrtl} ports are flipped, while `input`{.firrtl} 
 
 For example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Passthrough:
   ;; snippetbegin
@@ -526,7 +511,7 @@ circuit Passthrough:
 
 The type of the submodule instance `passthrough`{.firrtl} above is thus:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -542,7 +527,7 @@ Memories are stateful elements of a design.
 
 Example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -564,8 +549,7 @@ The type of a memory is a bundle type derived from the declaration.
 The type named in `data-type`{.firrtl} must be storable (see [@sec:storable-types]).
 It indicates the type of the data being stored inside of the memory.
 
-Subcomponents
--------------
+## Subcomponents
 
 Each circuit component factors into subcomponents which can be accessed through references.
 
@@ -575,7 +559,7 @@ To motivate the notion of subcomponents, let's look at a few examples.
 
 First, let's look at a wire with a vector type:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   ;; snippetbegin
@@ -593,7 +577,7 @@ Each of these is a subcomponent of `v`{.firrtl} and each acts like a wire with t
 
 Next, let's look at a port with a bundle type:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Bar:
   ;; snippetbegin
@@ -676,13 +660,11 @@ A **dynamic reference** is one which is not a static reference.
 References may appear as the target of `connect`{.firrtl} statements (see [@sec:connections]).
 A connection to a dynamic reference is equivalent to a (potentially large) conditional statement consisting of only connects to static references.
 
-Types
-=====
+# Types
 
 FIRRTL has four classes of types: **ground** types, **aggregate** types, **probe** types, and **property** types.
 
-Ground Types
-------------
+## Ground Types
 
 Ground types are types which are not composed of other types.
 They are the integer types, clocks, and resets.
@@ -694,7 +676,7 @@ FIRRTL supports both signed and unsigned integer types.
 `UInt<n>`{.firrtl} is an `n`-bit wide unsigned integer.
 `SInt<n>`{.firrtl} is an `n`-bit wide signed integer.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -763,8 +745,7 @@ When analog signals are not given a concrete width, their widths are inferred ac
 
 The analog type also has the inferred form: `Analog`{.firrtl} (see [@sec:width-inference]).
 
-Aggregate Types
----------------
+## Aggregate Types
 
 FIRRTL supports three aggregate types: vectors, bundles, and enumerations.
 
@@ -774,7 +755,7 @@ A vector type is used to express an ordered sequence of elements of a given type
 
 The following example specifies a 10-element vector of 16-bit unsigned integers.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -787,7 +768,7 @@ circuit Foo:
 Note that the element type of a vector can be any type, including another aggregate type.
 The following example specifies a 20-element vector, each of which is a 10-element vector of 16-bit unsigned integers.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -812,7 +793,7 @@ Fields may also be flipped.
 The following is an example of a possible type for representing a complex number.
 It has two fields, `real`{.firrtl}, and `imag`{.firrtl}, both 10-bit signed integers.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -824,7 +805,7 @@ circuit Foo:
 
 The types of each field may be any type, including other aggregate types.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -838,7 +819,7 @@ circuit Foo:
 Here is an example of a bundle with a flipped field.
 Because the `ready` field is marked with the keyword `flip`, it will indicate the flow will be opposite of the `word` and `valid` fields.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -850,7 +831,7 @@ circuit Foo:
 
 As an example of how `flip`{.firrtl} works in context, consider a module declared like this:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Processor:
   ;; snippetbegin
@@ -874,7 +855,7 @@ Each variant also has a type associated with it which must be connectable (see [
 
 In the following example, the first variant has the tag `a`{.firrtl} with type `UInt<8>`{.firrtl}, and the second variant has the tag `b`{.firrtl} with type `UInt<16>`{.firrtl}.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -887,7 +868,7 @@ circuit Foo:
 A variant may optionally omit the type, in which case it is implicitly defined to be `UInt<0>`{.firrtl}.
 In the following example, all variants have the type `UInt<0>`{.firrtl}.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -897,8 +878,7 @@ circuit Foo:
       ;; snippetend
 ```
 
-Probe Types
------------
+## Probe Types
 
 Probe types expose and provide access to circuit components contained inside of a module.
 They are intended for verification.
@@ -909,7 +889,7 @@ There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWPro
 
 Examples:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -929,7 +909,7 @@ See [@sec:layer-coloring] for a description of these restrictions.
 
 For example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   layer A, bind:
@@ -950,8 +930,7 @@ For details, see the FIRRTL ABI Specification.
 
 For more information on probes, see [@sec:probes].
 
-Property Types
---------------
+## Property Types
 
 FIRRTL property types represent information about the circuit that is not hardware.
 This is useful to capture domain-specific knowledge and design intent alongside the hardware description within the same FIRRTL.
@@ -973,7 +952,7 @@ Property types are legal in the following constructs:
 The `Integer` type represents an numeric property.
 It can represent arbitrary-precision signed integer values.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Example:
   ;; snippetbegin
@@ -987,7 +966,7 @@ circuit Example:
 The `List` type represents an ordered sequence of properties.
 It is parameterized by the type of its elements, which can be any legal Property type.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Example:
   ;; snippetbegin
@@ -996,8 +975,7 @@ circuit Example:
   ;; snippetend
 ```
 
-Connectable Types
------------------
+## Connectable Types
 
 A **connectable type** is one which may be the type of expressions which may participate in the `connect`{.firrtl} statement.
 
@@ -1009,8 +987,7 @@ A connectable type is defined recursively:
 -   bundles where each field type is a connectable type, or
 -   an enumeration type
 
-Storable Types
---------------
+## Storable Types
 
 Stateful elements, such as registers and memories, are restricted in what types they can store.
 A **storable type** is a type which may appear as the type of a register or the element type of a memory.
@@ -1022,8 +999,7 @@ A storable type is defined recursively:
 -   A non-`const`{.firrtl} vector type is storable if and only if the element type is storable.
 -   A non-`const`{.firrtl} bundle type is storable if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is storable.
 
-Passive Types
--------------
+## Passive Types
 
 In certain contexts, the notion of `flip`{.firrtl} does not make sense.
 A **passive type** is a type which does not make use of `flip`{.firrtl}.
@@ -1037,8 +1013,7 @@ A passive type is defined recursively:
 -   A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is passive.
 -   All enumeration types are passive.
 
-Constant Types
---------------
+## Constant Types
 
 For certain situations, it is useful to guarantee that a signal holds a value that doesn't change during simulation.
 For example, when a register has a reset, the reset value is required to be held constant (see [@sec:registers-with-reset]).
@@ -1047,7 +1022,7 @@ Ground types and aggregate types maybe marked as constant using the `const`{.fir
 
 For example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1091,7 +1066,7 @@ References to a subcomponent of a circuit component with a `const`{.firrtl} vect
 
 For example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1101,8 +1076,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-Type Alias
-----------
+## Type Alias
 
 Type aliases allow us to give names to types.
 This is useful for bundle types, especially when they have many fields.
@@ -1110,7 +1084,7 @@ It is also useful for hinting at what the value represents.
 
 Examples:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit TypeAliasMod:
   ;; snippetbegin
@@ -1134,8 +1108,7 @@ For instance, in the above example, we can connect `in.w`{.firrtl} to `w`{.firrt
 The `type`{.firrtl} declaration is globally defined and all named types exist in the same namespace and thus must all have a unique name.
 Type aliases do not share the same namespace as modules; hence it is allowed for type aliases to conflict with module names.
 
-Type Inference
---------------
+## Type Inference
 
 FIRRTL has support for limited type inference.
 This comes in two flavors:
@@ -1150,7 +1123,7 @@ This is called the **uninferred** variant of the type.
 FIRRTL also supports an **inferred** variant of these types.
 They are written as follows:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1181,7 +1154,7 @@ The uninferred `Reset`{.firrtl} type will be inferred to either a synchronous re
 
 The following example shows an inferred reset that will get inferred to a synchronous reset.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1194,7 +1167,7 @@ circuit Foo:
 
 After reset inference, `reset`{.firrtl} is inferred to the synchronous `UInt<1>`{.firrtl} type:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1207,7 +1180,7 @@ circuit Foo:
 
 The following example demonstrates usage of an asynchronous reset.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1229,7 +1202,7 @@ Inference rules are as follows:
 `Reset`{.firrtl}s, whether synchronous or asynchronous, can be cast to other types.
 Casting between reset types is also legal:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1260,11 +1233,9 @@ Additionally, inference constraints may only flow in few restricted ways:
 -   In a `define`{.firrtl} expression, only the right-hand side may impose inference constraints on the left-hand side.
 -   Neither `read`{.firrtl} expressions nor `force`{.firrtl} statements may impose inference constraints.
 
-Connections
-===========
+# Connections
 
-Flow
-----
+## Flow
 
 The direction that signals travel across wires is determined by multiple factors: the kind of circuit component (e.g., `input`{.firrtl} vs `output`{.firrtl}), the side of a connect statement it appears on, and the presence of `flip`{.firrtl}s if the signal is a bundle type.
 
@@ -1294,8 +1265,7 @@ The reverse of duplex remains duplex.
 
 The flow of all other expressions are source, including mux and cast.
 
-Type Equivalence
-----------------
+## Type Equivalence
 
 The type equivalence relation is used to determine whether a connection between two components is legal.
 
@@ -1318,14 +1288,13 @@ Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}
 
 Two property types are equivalent if they are the same concrete property type.
 
-The Connect Statement
----------------------
+## The Connect Statement
 
 The components of a module can be connected together using `connect`{.firrtl} statements.
 
 The following example demonstrates connecting a module's input port to its output port, where port `myinput`{.firrtl} is connected to port `myoutput`{.firrtl}.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
@@ -1365,7 +1334,7 @@ Ordering of connects is significant.
 Later connects take precedence over earlier ones.
 In the following example port `b`{.firrtl} will be connected to `myport1`{.firrtl}, and port `a`{.firrtl} will be connected to `myport2`{.firrtl}:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
@@ -1388,7 +1357,7 @@ When a connection to a component with an aggregate type is followed by a connect
 Connections to the other sub-elements remain unaffected.
 In the following example the `c`{.firrtl} sub-element of port `portx`{.firrtl} will be connected to the `c`{.firrtl} sub-element of `myport`{.firrtl}, and port `porty`{.firrtl} will be connected to the `b`{.firrtl} sub-element of `myport`{.firrtl}.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
@@ -1403,7 +1372,7 @@ circuit MyModule :
 
 The above circuit can be rewritten as:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1418,7 +1387,7 @@ circuit MyModule:
 
 When a connection to a sub-element of an aggregate component is followed by a connection to the entire circuit component, the later connection overwrites the earlier sub-element connection.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1433,7 +1402,7 @@ circuit MyModule:
 
 The above circuit can be rewritten as:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1447,8 +1416,7 @@ circuit MyModule:
 
 See [@sec:references] for more details about indexing.
 
-Invalidates
------------
+## Invalidates
 
 The `invalidate`{.firrtl} statement allows a circuit component to be left uninitialized
 or only partially initialized.
@@ -1456,7 +1424,7 @@ The uninitialized part is left with an indeterminate value (see [@sec:indetermin
 
 It is specified as follows:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1470,7 +1438,7 @@ The following example demonstrates the effect of invalidating a variety of
 circuit components with aggregate types. See [@sec:the-invalidate-algorithm] for
 details on the algorithm for determining what is invalidated.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule :
   ;; snippetbegin
@@ -1486,7 +1454,7 @@ circuit MyModule :
 
 is equivalent to the following:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1514,8 +1482,7 @@ Invalidating a component with a bundle type recursively invalidates each sub-ele
 
 Components of reference and analog type are ignored, as are any reference or analog types within the component (as they cannot be connected to).
 
-Combinational Loops
--------------------
+## Combinational Loops
 
 Combinational logic is a section of logic with no registers between gates.
 A combinational loop exists when the output of some combinational logic is fed back into the input of that combinational logic with no intervening register.
@@ -1524,7 +1491,7 @@ Combinational loops are not allowed and designs should not depend on any FIRRTL 
 
 The module `Foo`{.firrtl} has a combinational loop and is not legal, even though the loop will be removed by last connect semantics.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   ;; snippetbegin
@@ -1538,7 +1505,7 @@ circuit Foo:
 
 The following module `Foo2`{.firrtl} has a combinational loop, even if it can be proved that `n1`{.firrtl} and `n2`{.firrtl} never overlap.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo2:
   ;; snippetbegin
@@ -1554,7 +1521,7 @@ circuit Foo2:
 
 Module `Foo3`{.firrtl} is another example of an illegal combinational loop, even if it only exists at the word level and not at the bit-level.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo3:
   ;; snippetbegin
@@ -1568,13 +1535,12 @@ circuit Foo3:
   ;; snippetend
 ```
 
-Attaches
-========
+# Attaches
 
 The `attach`{.firrtl} statement is used to attach two or more analog signals, defining that their values be the same in a commutative fashion that lacks the directionality of a regular connection.
 It can only be applied to signals with analog type, and each analog signal may be attached zero or more times.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1587,8 +1553,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-Property Assignments
-====================
+# Property Assignments
 
 Connections between property typed expressions (see [@sec:property-types]) are not supported in the `connect`{.firrtl} statement (see [@sec:connections]).
 
@@ -1612,7 +1577,7 @@ Note that property types are not legal for any expressions with duplex flow.
 
 The following example demonstrates a property assignment from a module's input property type port to its output property type port.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Example:
   ;; snippetbegin
@@ -1625,7 +1590,7 @@ circuit Example:
 
 The following example demonstrates a property assignment from a property literal expression to a module's output property type port.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Example:
   ;; snippetbegin
@@ -1635,15 +1600,14 @@ circuit Example:
   ;; snippetend
 ```
 
-Empty Statement
-===============
+# Empty Statement
 
 The empty statement does nothing and is used simply as a placeholder where a statement is expected.
 It is specified using the `skip`{.firrtl} keyword.
 
 The following example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1660,7 +1624,7 @@ circuit Foo:
 
 can be equivalently expressed as:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1677,8 +1641,7 @@ circuit Foo:
 The empty statement is most often used as the `else`{.firrtl} branch in a conditional statement, or as a convenient placeholder for removed components during transformational passes.
 See [@sec:conditionals] for details on the conditional statement.
 
-Registers
-=========
+# Registers
 
 A register is a stateful circuit component.
 Reads from a register return the current value of the element, writes are not visible until after the next positive edge of the register's clock.
@@ -1688,12 +1651,11 @@ The type of a register must be a storable type (see [@sec:storable-types]).
 
 Registers may be declared without a reset using the `reg`{.firrtl} syntax and with a reset using the `regreset`{.firrtl} syntax.
 
-Registers without Reset
------------------------
+## Registers without Reset
 
 The following example demonstrates instantiating a register with the given name `myreg`{.firrtl}, type `SInt`{.firrtl}, and is driven by the clock signal `myclock`{.firrtl}.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1704,8 +1666,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-Registers with Reset
---------------------
+## Registers with Reset
 
 A register with a reset is declared using `regreset`{.firrtl}.
 A `regreset`{.firrtl} adds two expressions after the type and clock arguments: a reset signal and a reset value.
@@ -1718,7 +1679,7 @@ The behavior of the register depends on the type of the reset signal.
 `Reset`{.firrtl} is an abstract reset whose behavior depends on reset inference.
 In the following example, `myreg`{.firrtl} is assigned the value `myinit`{.firrtl} when the signal `myreset`{.firrtl} is high.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1733,15 +1694,13 @@ circuit Foo:
 
 A register is initialized with an indeterminate value (see [@sec:indeterminate-values]).
 
-Conditionals
-============
+# Conditionals
 
 Conditional statements define one or more blocks, each with an associated condition.
 These blocks contain other statements (including nested conditional statements).
 The behavior of the contained statements is affected by the conditions associated to the blocks containing them.
 
-Conditional Statements
-----------------------
+## Conditional Statements
 
 FIRRTL provides several kinds of conditional statements.
 
@@ -1756,7 +1715,7 @@ Statements within blocks are executed using the rules in [@sec:conditional-execu
 In the following example, the wire `x`{.firrtl} is connected to the input `a`{.firrtl} only when the `en`{.firrtl} signal is high.
 Otherwise, the wire `x`{.firrtl} is connected to the input `b`{.firrtl}.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1778,7 +1737,7 @@ The `else`{.firrtl} branch of a conditional statement may be omitted, in which c
 
 Thus the following example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1794,7 +1753,7 @@ circuit MyModule:
 
 can be equivalently expressed as:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1814,7 +1773,7 @@ To aid readability of long chains of conditional statements, the colon following
 
 Thus the following example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1842,7 +1801,7 @@ circuit MyModule:
 
 can be equivalently written as:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1871,7 +1830,7 @@ If an `else`{.firrtl} branch exists, then the `else`{.firrtl} keyword must be in
 
 The following statement:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1890,7 +1849,7 @@ circuit Foo:
 
 can have the `when`{.firrtl} keyword, the `when`{.firrtl} branch, and the `else`{.firrtl} keyword expressed as a single line:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1907,7 +1866,7 @@ circuit Foo:
 
 The `else`{.firrtl} branch may also be added to the single line:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1928,7 +1887,7 @@ Statements within blocks are executed using the rules in [@sec:conditional-execu
 A match statement must exhaustively test every variant of an enumeration.
 An optional binder may be specified to extract the data of the variant.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -1945,8 +1904,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-Conditional Execution
----------------------
+## Conditional Execution
 
 Statements that appear in a conditional block behave differently based on the type of statement and on the conditions of the blocks containing it.
 
@@ -1965,14 +1923,13 @@ For hardware component declarations, conditional blocks have no effect.
 > A command in a conditional block and a module instantiation in a conditional block where the instantiated module contains a command will not execute the same after a trivial inlining.
 > In this latter case, the command is not conditional before trivial inlining and conditional after trivial inlining.
 
-Initialization Coverage
------------------------
+## Initialization Coverage
 
 Because of the conditional statement, it is possible to syntactically express circuits containing wires that have not been connected to under all conditions.
 
 In the following example, the wire `a`{.firrtl} is connected to the wire `w`{.firrtl} when `en`{.firrtl} is high, but it is not specified what is connected to `w`{.firrtl} when `en`{.firrtl} is low.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -1989,8 +1946,7 @@ This is an illegal FIRRTL circuit and an error will be thrown during compilation
 All wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
 Registers do not need to be connected to under all conditions, as it will keep its previous value if unconnected.
 
-Declarations within Conditional Blocks
---------------------------------------
+## Declarations within Conditional Blocks
 
 The names of circuit components declared within conditional blocks must be unique within their module's namespace (see [@sec:namespaces]).
 Circuit components declared within condition blocks may only be referred to within that block.
@@ -1999,8 +1955,7 @@ Circuit components declared within condition blocks may only be referred to with
 > This differs from the behavior in most programming languages, where variables in a local scope can shadow variables declared outside that scope.
 > Additionally, while the names *exist* in the module's namespace, those names cannot be *used* outside of the block which they are declared.
 
-Conditional Last Connect Semantics
-----------------------------------
+## Conditional Last Connect Semantics
 
 In the case where a connection to a circuit component is followed by a conditional statement containing a connection to the same component, the connection is overwritten only when the condition holds.
 Intuitively, a multiplexer is generated such that when the condition is low, the multiplexer returns the old value, and otherwise returns the new value.
@@ -2008,7 +1963,7 @@ For details about the multiplexer, see [@sec:multiplexers].
 
 The following example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2025,7 +1980,7 @@ circuit Foo:
 
 can be rewritten equivalently using a multiplexer as follows:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2041,7 +1996,7 @@ circuit Foo:
 Because invalid statements assign indeterminate values to components, a FIRRTL Compiler is free to choose any specific value for an indeterminate value when resolving last connect semantics.
 E.g., in the following circuit `w`{.firrtl} has an indeterminate value when `c`{.firrtl} is false.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2057,7 +2012,7 @@ circuit Foo:
 
 A FIRRTL compiler is free to optimize this to the following circuit by assuming that `w`{.firrtl} takes on the value of `a`{.firrtl} when `c`{.firrtl} is false.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2075,7 +2030,7 @@ The behavior of conditional connections to circuit components with aggregate typ
 
 For example, the following snippet:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2092,7 +2047,7 @@ circuit Foo:
 
 can be rewritten equivalently as follows:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2110,7 +2065,7 @@ Similar to the behavior of aggregate types under last connect semantics (see [@s
 
 For example, the following snippet:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2127,7 +2082,7 @@ circuit Foo:
 
 can be rewritten equivalently as follows:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2141,8 +2096,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-Memory Instances
-================
+# Memory Instances
 
 A memory is an abstract representation of a hardware memory.
 It is characterized by the following parameters.
@@ -2166,7 +2120,7 @@ It has two read ports, `r1`{.firrtl} and `r2`{.firrtl}, and one write port, `w`{
 It is combinationally read (read latency is zero cycles) and has a write latency of one cycle.
 Finally, its read-under-write behavior is undefined.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2185,7 +2139,7 @@ circuit Foo:
 
 In the example above, the type of `mymem`{.firrtl} is:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2209,8 +2163,7 @@ circuit Foo:
 
 The following sections describe how a memory's field types are calculated and the behavior of each type of memory port.
 
-Read Ports
-----------
+## Read Ports
 
 If a memory is declared with element type `T`{.firrtl}, has a size less than or equal to $2^N$, then its read ports have type:
 
@@ -2222,8 +2175,7 @@ If the `en`{.firrtl} field is high, then the element value associated with the a
 If the `en`{.firrtl} field is low, then the value in the `data`{.firrtl} field, after the appropriate read latency, is undefined.
 The port is driven by the clock signal in the `clk`{.firrtl} field.
 
-Write Ports
------------
+## Write Ports
 
 If a memory is declared with element type `T`{.firrtl}, has a size less than or equal to $2^N$, then its write ports have type:
 
@@ -2239,8 +2191,7 @@ If the `en`{.firrtl} field is high, then the non-masked portion of the `data`{.f
 If the `en`{.firrtl} field is low, then no value is written after the appropriate write latency.
 The port is driven by the clock signal in the `clk`{.firrtl} field.
 
-Readwrite Ports
----------------
+## Readwrite Ports
 
 Finally, the readwrite ports have type:
 
@@ -2253,8 +2204,7 @@ A readwrite port is a single port that, on a given cycle, can be used either as 
 If the readwrite port is not in write mode (the `wmode`{.firrtl} field is low), then the `rdata`{.firrtl}, `addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its read port fields, and should be used accordingly.
 If the readwrite port is in write mode (the `wmode`{.firrtl} field is high), then the `wdata`{.firrtl}, `wmask`{.firrtl}, `addr`{.firrtl}, `en`{.firrtl}, and `clk`{.firrtl} fields constitute its write port fields, and should be used accordingly.
 
-Read Under Write Behavior
--------------------------
+## Read Under Write Behavior
 
 The read-under-write flag indicates the value held on a read port's `data`{.firrtl} field if its memory location is written to while it is reading.
 The flag may take on three settings: `old`{.firrtl}, `new`{.firrtl}, and `undefined`{.firrtl}.
@@ -2276,24 +2226,21 @@ Note that this excludes combinational reads, which are simply modeled as combina
 For memories with independently clocked ports, a collision between a read operation and a write operation with independent clocks is defined to occur when the address of an active write port and the address of an active read port are the same for overlapping clock periods, or when any portion of a read operation overlaps part of a write operation with a matching addresses.
 In such cases, the data that is read out of the read port is undefined.
 
-Write Under Write Behavior
---------------------------
+## Write Under Write Behavior
 
 In all cases, if a memory location is written to by more than one port on the same cycle, the stored value is undefined.
 
-Constant memory type
---------------------
+## Constant memory type
 
 A memory with a constant data-type represents a ROM and may not have write-ports.
 It is beyond the scope of this specification how ROMs are initialized.
 
-Submodule Instances
-===================
+# Submodule Instances
 
 FIRRTL modules are instantiated with the instance statement.
 The following example demonstrates creating an instance named `myinstance`{.firrtl} of the `MyModule`{.firrtl} module within the top level module `Top`{.firrtl}.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Top :
@@ -2315,11 +2262,9 @@ Modules have the property that instances can always be *inlined* into the parent
 
 To disallow infinitely recursive hardware, modules cannot contain instances of itself, either directly, or indirectly through instances of other modules it instantiates.
 
-Commands
-========
+# Commands
 
-Stops
------
+## Stops
 
 The stop statement is used to halt simulations of the circuit.
 Backends are free to generate hardware to stop a running circuit for the purpose of debugging, but this is not required by the FIRRTL specification.
@@ -2333,7 +2278,7 @@ The stop statement has an optional name attribute which can be used to attach me
 The name is part of the module level namespace.
 However it can never be used in a reference since it is not of any valid type.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2344,8 +2289,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-Formatted Prints
-----------------
+## Formatted Prints
 
 The formatted print statement is used to print a formatted string during simulations of the circuit.
 Backends are free to generate hardware that relays this information to a hardware test harness, but this is not required by the FIRRTL specification.
@@ -2359,7 +2303,7 @@ The `printf`{.firrtl} statement has an optional name attribute which can be used
 The name is part of the module level namespace.
 However it can never be used in a reference since it is not of any valid type.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2400,8 +2344,7 @@ Format strings support the following escape characters:
 
 -   `\'` : Single quote
 
-Verification
-------------
+## Verification
 
 To facilitate simulation, model checking and formal methods, there are three non-synthesizable verification statements available: assert, assume and cover.
 Assert and assume statements require a clock signal, a predicate signal, an enable signal, a format string and a variable list of argument signals.
@@ -2423,14 +2366,13 @@ Any verification statement has an optional name attribute which can be used to a
 The name is part of the module level namespace.
 However it can never be used in a reference since it is not of any valid type.
 
-Assert
-------
+## Assert
 
 The assert statement verifies that the predicate is true on the rising edge of any clock cycle when the enable is true.
 In other words, it verifies that enable implies predicate.
 When the predicate is false, the assert statement may print out the format string where its argument placeholders are substituted.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2449,8 +2391,7 @@ circuit Foo:
     ;; snippetend
 ```
 
-Assume
-------
+## Assume
 
 The assume statement directs the model checker to disregard any states where the enable is true and the predicate is not true at the rising edge of the clock cycle.
 In other words, it reduces the states to be checked to only those where enable implies predicate is true by definition.
@@ -2458,7 +2399,7 @@ In simulation, assume is treated
 as an assert.
 When the predicate is false in simulation, the assume statement may print out the format string where its argument placeholders are substituted.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2478,14 +2419,13 @@ circuit Foo:
     ;; snippetend
 ```
 
-Cover
------
+## Cover
 
 The cover statement verifies that the predicate is true on the rising edge of some clock cycle when the enable is true.
 In other words, it directs the model checker to find some way to make both enable and predicate true at some time step.
 The string argument may be emitted as a comment with the cover.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2502,15 +2442,13 @@ circuit Foo:
     ;; snippetend
 ```
 
-Intrinsic Statements
---------------------
+## Intrinsic Statements
 
 Intrinsics may be used as statements.
 If the intrinsic has a return type, it is unused.
 See [@sec:intrinsics].
 
-Layer Blocks
-============
+# Layer Blocks
 
 The `layerblock`{.firrtl} keyword declares a *layer block* and associates it with a layer.
 Statements inside a layer block are only executed when the associated layer is enabled.
@@ -2523,7 +2461,7 @@ A statement in a layer block may drive no sinks declared outside the layer block
 The circuit below contains one layer, `Bar`.
 Module `Foo` contains a layer block that creates a node computed from a port defined in the scope of `Foo`.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo:
@@ -2546,7 +2484,7 @@ The circuit below shows module `Foo` having two layer blocks both referencing la
 The first layer block may not reference node `c`.
 The second layer block may not reference node `b`.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo:
@@ -2570,7 +2508,7 @@ The circuit below contains four layers, three of which are nested.
 `Baz` and `Qux` are nested under `Bar`.
 `Quz` is nested under `Qux`.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo:
@@ -2586,7 +2524,7 @@ Layer block nesting must match the nesting of declared layers.
 Layer blocks are declared under existing layer blocks with the `layerblock`{.firrtl} keyword indented under an existing `layerblock`{.firrtl} keyword.
 For the four layers in the circuit above, the following is a legal nesting of layerblocks:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   layer Bar, bind:
@@ -2615,7 +2553,7 @@ This port can then be driven from the layer block.
 In module `Foo`, the port may be read from inside the layer block.
 *Stated differently, module `Baz` has an additional port `_a` that is only accessible in a layer block associated with `Bar`*.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo:
@@ -2642,7 +2580,7 @@ circuit Foo:
 If a port is associated with a nested layer then a period is used to indicate the nesting.
 E.g., the following circuit has a port associated with the nested layer `Bar.Baz`:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo:
@@ -2657,8 +2595,7 @@ circuit Foo:
 Layer blocks will be compiled to modules whose ports are derived from what they capture from their visible scope.
 For full details of the way layers are compiled, see the FIRRTL ABI specification.
 
-Probes
-======
+# Probes
 
 Probes are a feature which facilitate graybox testing of FIRRTL modules.
 
@@ -2668,15 +2605,13 @@ For read-writeable probes, you can also force it, causing it to take on a specif
 
 Since they are intended for verification, ports with a probe type do not necessarily result in physical hardware.
 
-Types
------
+## Types
 
 There are two probe types, `Probe<T>`{.firrtl} is a read-only variant and `RWProbe<T>`{.firrtl} is a read-write variant.
 Probes may be layer-colored.
 See [@sec:probe-types] for more information.
 
-Layer Coloring
---------------
+## Layer Coloring
 
 Probe types may be colored with a layer (see [@sec:layers]).
 A layer-colored probe type places restrictions on the operations which use it.
@@ -2684,13 +2619,11 @@ A layer-colored probe type places restrictions on the operations which use it.
 An operation may only "read" from a probe whose layer color is enabled when the operation is enabled.
 An operation that "writes" to a probe must be in a block whose layer color is enabled when the probe's layer color is enabled.
 
-The `probe`{.firrtl} and `rwprobe`{.firrtl} Expressions
--------------------------------------------------------
+## The `probe`{.firrtl} and `rwprobe`{.firrtl} Expressions
 
 Given a reference to a circuit component, you can capture it in a probe with `probe`{.firrtl} for a read-only probe or with `rwprobe`{.firrtl} for a read-writeable probe.
 
-The `define`{.firrtl} Statement
--------------------------------
+## The `define`{.firrtl} Statement
 
 Since neither `Probe<T>`{.firrtl} nor `RWProbe<T>`{.firrtl} is a connectable type ([@sec:connectable-types]), circuit components with these types cannot be connected to.
 Instead, we use the `define`{.firrtl} statement to route probes through a FIRRTL circuit.
@@ -2703,7 +2636,7 @@ All probes in a module definition must be initialized with a `define`{.firrtl} s
 
 Here is an example of a module which uses `define`{.firrtl} to pass a number of probes to its ports:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Refs:
   ;; snippetbegin
@@ -2729,7 +2662,7 @@ circuit Refs:
 
 The target may also be a subcomponent of a circuit component:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   ;; snippetbegin
@@ -2748,16 +2681,14 @@ circuit Foo:
   ;; snippetend
 ```
 
-The `read`{.firrtl} Expressions
--------------------------------
+## The `read`{.firrtl} Expressions
 
 Both `Probe`{.firrtl} and `RWProbe`{.firrtl} may be read from using the `read`{.firrtl} expression.
 
 Keep in mind that probes are intended for verification and aren't intended to be synthesizable.
 A `read`{.firrtl} expression can reach arbitrarily far into the module hierarchy to read from a distant circuit component, which is arguably unphysical at worst and potentially expensive at best.
 
-Forcing
--------
+## Forcing
 
 A `RWProbe`{.firrtl} may be forced using the `force`{.firrtl} and `force_initial`{.firrtl} commands.
 When you force a component, it will ignore all other drivers and take on the value supplied by the force statement instead.
@@ -2765,18 +2696,18 @@ The `release`{.firrtl} and `release_initial`{.firrtl} statements end the forcing
 
 Like `read`{.firrtl}, the force statements are verification constructs.
 
-  Name               Arguments                      Argument Types
-  ------------------ ------------------------------ ------------------------------------------------------------------
-  force\_initial     (ref, val)                     (`RWProbe<T>`{.firrtl}, T)
-  release\_initial   (ref)                          (`RWProbe<T>`{.firrtl})
-  force              (clock, condition, ref, val)   (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T)
-  release            (clock, condition, ref)        (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})
+| Name            | Arguments                    | Argument Types                                                   |
+|-------------------|----------------------------------|-------------------|
+| force_initial   | (ref, val)                   | (`RWProbe<T>`{.firrtl}, T)                                       |
+| release_initial | (ref)                        | (`RWProbe<T>`{.firrtl})                                          |
+| force           | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
+| release         | (clock, condition, ref)      | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})    |
 
 Backends optionally generate corresponding constructs in the target language, or issue an warning.
 
 The following `AddRefs`{.firrtl} module is used in the examples that follow for each construct.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit AddRefs:
   ;; snippetbegin
@@ -2806,7 +2737,7 @@ These variants force and release continuously:
 
 Example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit ForceAndRelease:
   module AddRefs:
@@ -2846,7 +2777,7 @@ Note that globally the last force statement overrides the others until another f
 
 Sample SystemVerilog output for the force and release statements would be:
 
-``` {.systemverilog}
+``` systemverilog
 module Foo();
   wire [1:0] x, y, z;
 endmodule
@@ -2869,7 +2800,7 @@ Note that this condition is only checked once and changes to it afterwards are i
 For more control over their behavior, the other variants should be used.
 Example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -2883,7 +2814,7 @@ circuit Foo:
 
 would become:
 
-``` {.systemverilog}
+``` systemverilog
 module A();
   wire b;
 endmodule
@@ -2902,7 +2833,7 @@ endmodule
 
 These more detailed variants allow specifying a clock and condition for when activating the force or release behavior continuously:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit ForceAndRelease:
   module AddRefs:
@@ -2942,7 +2873,7 @@ Note that once active, these remain active regardless of the condition, until an
 
 Sample SystemVerilog output:
 
-``` {.systemverilog}
+``` systemverilog
 module AddRefs();
   wire x;
 endmodule
@@ -2972,7 +2903,7 @@ Force on a non-passive bundle drives in the direction of each field's orientatio
 
 Example:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Top:
@@ -3004,8 +2935,7 @@ circuit Top:
 ;; snippetend
 ```
 
-Limitations
------------
+## Limitations
 
 ### `RWProbe`{.firrtl} with Aggregate Types
 
@@ -3028,8 +2958,7 @@ For this reason, it is an error to use `rwprobe`{.firrtl} on any port on a publi
 
 Probes may not be inputs to modules.
 
-Expressions
-===========
+# Expressions
 
 FIRRTL expressions are used for creating constant integers,
 for creating literal property type expressions,
@@ -3040,15 +2969,14 @@ for performing primitive operations,
 for reading a remote reference to a probe, and
 for intrinsics ([@sec:intrinsics]).
 
-Constant Integer Expressions
-----------------------------
+## Constant Integer Expressions
 
 A constant unsigned or signed integer expression can be created from an integer literal or radix-specified integer literal.
 An optional positive bit width may be specified.
 Constant integer expressions are of constant type.
 All of the following examples create a 10-bit unsigned constant integer expressions representing the number `42`:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3078,7 +3006,7 @@ Note that it is an error to supply a bit width that is not large enough to fit t
 If the bit width is omitted, then the minimum number of bits necessary to fit the given value will be inferred.
 All of the following will infer a bit width of five:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3107,7 +3035,7 @@ circuit Foo:
 Signed constant integer expressions may be created from a signed integer literal or signed radix-encoded integer literal.
 All of the following examples create a 10-bit signed hardware integer representing the number `-42`:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3136,7 +3064,7 @@ circuit Foo:
 Signed constant integer expressions may also have an inferred width.
 All of the following examples create and infer a 6-bit signed integer with value `-42`:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3162,8 +3090,7 @@ circuit Foo:
       ;; snippetend
 ```
 
-Property Literal Expressions
-----------------------------
+## Property Literal Expressions
 
 A literal property type expression can be created for a given property type.
 The property type name is followed by an appropriate literal value for the property type, enclosed in parentheses.
@@ -3173,7 +3100,7 @@ The property type name is followed by an appropriate literal value for the prope
 A literal `Integer` property type expression can be created from an integer literal.
 The following examples show literal `Integer` property type expressions.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3190,13 +3117,12 @@ circuit Foo:
     ;; snippetend
 ```
 
-Enum Expressions
-----------------
+## Enum Expressions
 
 An enumeration can be constructed by applying an enumeration type to a variant tag and a data value expression.
 The data value expression may be omitted when the data type is `UInt<0>(0)`{.firrtl}, where it is implicitly defined to be `UInt<0>(0)`{.firrtl}.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3211,8 +3137,7 @@ circuit Foo:
       ;; snippetend
 ```
 
-Multiplexers
-------------
+## Multiplexers
 
 A multiplexer outputs one of two input expressions depending on the value of an unsigned selection signal.
 
@@ -3220,7 +3145,7 @@ The following example connects to the `c`{.firrtl} port the result of selecting 
 The `a`{.firrtl} port is selected when the `sel`{.firrtl} signal is high, otherwise the `b`{.firrtl} port
 is selected.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -3249,8 +3174,7 @@ A multiplexer expression is legal only if the following holds.
 
 4.  The types of the two input expressions are passive (see [@sec:passive-types]).
 
-Primitive Operations {#sec:expressions:primitive-operations}
---------------------
+## Primitive Operations {#sec:expressions:primitive-operations}
 
 All fundamental operations on ground types are expressed as a FIRRTL primitive operation.
 In general, each operation takes some number of argument expressions, along with some number of integer literal parameters.
@@ -3264,7 +3188,7 @@ op(arg0, arg1, ..., argn, int0, int1, ..., intm)
 The following examples of primitive operations demonstrate adding two expressions, `a`{.firrtl} and `b`{.firrtl}, shifting expression `a`{.firrtl} left by 3 bits, selecting the fourth bit through and including the seventh bit in the `a`{.firrtl} expression, and interpreting the expression `x`{.firrtl} as
 a Clock typed signal.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3291,8 +3215,7 @@ circuit Foo:
 
 [@sec:primitive-operations] will describe the format and semantics of each primitive operation.
 
-Primitive Property Operations {#sec:expressions:primitive-property-operations}
------------------------------
+## Primitive Property Operations {#sec:expressions:primitive-property-operations}
 
 All fundamental operations on property types are expressed as a FIRRTL primitive operation.
 In general, each operation takes some number of property type expressions as arguments.
@@ -3305,7 +3228,7 @@ op(arg0, arg1, ..., argn)
 
 The following examples of primitive property operations demonstrate adding two property expressions, `a` and `b`, and adding an integer property literal to expression `a`.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3325,14 +3248,13 @@ circuit Foo:
 
 [@sec:primitive-property-operations] will describe the format and semantics of each primitive property operation.
 
-Reading Probe References
-------------------------
+## Reading Probe References
 
 Probes are read using the `read`{.firrtl} operation.
 
 Read expressions have source flow and can be connected to other components:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Bar:
   ;; snippetbegin
@@ -3350,7 +3272,7 @@ circuit Bar:
 
 Indexing statically (sub-field, sub-index) into a probed value is allowed as part of the read:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Bar:
   ;; snippetbegin
@@ -3368,7 +3290,7 @@ circuit Bar:
 
 Read operations can be used anywhere a signal of the same underlying type can be used, such as the following:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -3381,8 +3303,7 @@ circuit Foo:
 
 The source of the probe must reside at or below the point of the `read`{.firrtl} expression in the design hierarchy.
 
-Probe
------
+## Probe
 
 Probe references are generated with probe expressions.
 
@@ -3395,7 +3316,7 @@ There are two probe varieties: `probe`{.firrtl} and `rwprobe`{.firrtl} for produ
 
 The following example exports a probe reference to a port:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit MyModule:
   ;; snippetbegin
@@ -3411,8 +3332,7 @@ The probed expression must be a static reference.
 
 See [@sec:probe-types; @sec:probe] for more details on probe references and their use.
 
-Namespaces
-==========
+# Namespaces
 
 All modules in a circuit exist in the same module namespace, and thus must all have a unique name.
 
@@ -3425,8 +3345,7 @@ Within a memory declaration, all port names must be unique.
 
 Any modifications to names must preserve the uniqueness of names within a namespace.
 
-Intrinsics
-==========
+# Intrinsics
 
 Intrinsics are expressions and statements which represent implementation-defined, compiler-provided functionality.
 
@@ -3440,9 +3359,9 @@ An implementation shall type-check the specification and all operands.
 Below are some examples of intrinsics.
 These are for demonstration and their meaning or validity is determined by the implementation.
 
-The following shows an intrinsic expression for the intrinsic named "circt\_ltl\_delay" with two parameters, returns `UInt<1>`{.firrtl}, and has one operand.
+The following shows an intrinsic expression for the intrinsic named "circt_ltl_delay" with two parameters, returns `UInt<1>`{.firrtl}, and has one operand.
 
-``` {.{.{..firrtl}}}
+``` .firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin
@@ -3454,10 +3373,10 @@ circuit Foo :
 ```
 
 The following has an intrinsic statement with an intrinsic expression as its operand.
-The statement is for the intrinsic named "circt\_verif\_assert".
-The expression is for the intrinsic named "circt\_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
+The statement is for the intrinsic named "circt_verif_assert".
+The expression is for the intrinsic named "circt_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
 
-``` {.{.{..firrtl}}}
+``` .firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin
@@ -3472,8 +3391,7 @@ Operands and the return type of intrinsics must be passive and either ground or 
 When used as an expression, the intrinsic must have a return type.
 The types of intrinsic module parameters may only be literal integers or string literals.
 
-Annotations
-===========
+# Annotations
 
 Annotations encode arbitrary metadata and associate it with zero or more targets ([@sec:targets]) in a FIRRTL circuit.
 
@@ -3486,7 +3404,7 @@ Annotations are serializable to JSON.
 
 Below is an example annotation used to mark some module `foo`{.firrtl}:
 
-``` {.json}
+``` json
 {
   "class":"myannotationpackage.FooAnnotation",
   "target":"MyModule>foo"
@@ -3495,14 +3413,13 @@ Below is an example annotation used to mark some module `foo`{.firrtl}:
 
 Below is an example of an annotation which does not have a target:
 
-``` {.json}
+``` json
 {
   "class":"myannotationpackage.BarAnnotation"
 }
 ```
 
-Targets
--------
+## Targets
 
 A circuit is described, stored, and optimized in a folded representation.
 For example, there may be multiple instances of a module which will eventually become multiple physical copies of that module on the die.
@@ -3516,13 +3433,13 @@ A target with an instance hierarchy is non-local.
 
 Targets use a shorthand syntax of the form:
 
-``` {.ebnf}
+``` ebnf
 target = module , [ { “/” (instance) “:” (module) } , [ “>” , ref ] ]
 ```
 
 A reference is a name inside a module and one or more qualifying tokens that encode subfields (of a bundle) or subindices (of a vector):
 
-``` {.ebnf}
+``` ebnf
 ref = name , { ( "[" , index , "]" ) | ( "." , field ) }
 ```
 
@@ -3531,7 +3448,7 @@ Targets are specific enough to refer to any specific module in a folded, unfolde
 To show some examples of what these look like, consider the following example circuit.
 This consists of four instances of module `Baz`{.firrtl}, two instances of module `Bar`{.firrtl}, and one instance of module `Foo`{.firrtl}:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo:
@@ -3557,13 +3474,13 @@ Figure [@fig:foo-unfolded] shows the completely unfolded representation where ea
 Using targets (or multiple targets), any specific module, instance, or combination of instances can be expressed.
 Some examples include:
 
-  Target              Description
-  ------------------- ---------------------------------------------------------------------------------
-  `Foo`               refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl})
-  `Bar`               refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})
-  `Foo/a:Bar`         refers just to one instance of module `Bar`{.firrtl}
-  `Foo/b:Bar/c:Baz`   refers to one instance of module `Baz`{.firrtl}
-  `Bar/d:Baz`         refers to two instances of module `Baz`{.firrtl}
+| Target            | Description                                                                     |
+|-------------------------------------------|-----------------------------|
+| `Foo`             | refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl}) |
+| `Bar`             | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})    |
+| `Foo/a:Bar`       | refers just to one instance of module `Bar`{.firrtl}                            |
+| `Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl}                                 |
+| `Bar/d:Baz`       | refers to two instances of module `Baz`{.firrtl}                                |
 
 If a target does not contain an instance path, it is a *local* target.
 A local target points to all instances of a module.
@@ -3571,13 +3488,12 @@ If a target contains an instance path, it is a *non-local* target.
 A non-local target *may* not point to all instances of a module.
 Additionally, a non-local target may have an equivalent local target representation.
 
-Annotation Storage
-------------------
+## Annotation Storage
 
 Annotations may be stored in one or more JSON files using an array-of-dictionaries format.
 The following shows a valid annotation file containing two annotations:
 
-``` {.json}
+``` json
 [
   {
     "class":"hello",
@@ -3593,7 +3509,7 @@ The following shows a valid annotation file containing two annotations:
 Annotations may also be stored in-line along with the FIRRTL circuit by wrapping Annotation JSON in `%[ ... ]`{.firrtl}.
 The following shows the above annotation file stored in-line:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo: %[[
@@ -3614,16 +3530,14 @@ circuit Foo: %[[
 
 Any legal JSON is allowed, meaning that the above JSON may be stored "minimized" all on one line.
 
-Semantics of Values
-===================
+# Semantics of Values
 
 FIRRTL is defined for 2-state boolean logic.
 The behavior of a generated circuit in a language, such as Verilog or VHDL, which have multi-state logic, is undefined in the presence of values which are not 2-state.
 A FIRRTL compiler need only respect the 2-state behavior of a circuit.
 This is a limitation on the scope of what behavior is observable (i.e., a relaxation of the ["as-if"](https://en.wikipedia.org/wiki/As-if_rule) rule).
 
-Indeterminate Values
---------------------
+## Indeterminate Values
 
 An indeterminate value represents a value which is unknown or unspecified.
 Indeterminate values are generally implementation defined, with constraints specified below.
@@ -3633,7 +3547,7 @@ This allows transformations such as the following, where when `a`{.firrtl} has a
 An alternate, legal mapping, lets the implementation give it the value `42`{.firrtl}.
 In both cases, there is no visibility of `a`{.firrtl} when it has an indeterminate value which is not mapped to the value the implementation chooses.
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit IValue:
   ;; snippetbegin
@@ -3652,7 +3566,7 @@ circuit IValue:
 
 is transformed to:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit IValue:
   ;; snippetbegin
@@ -3667,7 +3581,7 @@ circuit IValue:
 
 Note that it is equally correct to produce:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit IValue:
   ;; snippetbegin
@@ -3699,14 +3613,12 @@ The behavior of constructs which cause indeterminate values is implementation de
 -   Two constructs with indeterminate values place no constraint on the identity of their values.
     For example, two uninitialized registers, which therefore contain indeterminate values, do not need to be equal under comparison.
 
-FIRRTL Compiler Implementation Details
-======================================
+# FIRRTL Compiler Implementation Details
 
 This section provides auxiliary information necessary for developers of a FIRRTL Compiler *implementation*.
 A FIRRTL Compiler is a program that converts FIRRTL text to another representation, e.g., Verilog, VHDL, a programming language, or a binary program.
 
-Module Conventions
-------------------
+## Module Conventions
 
 A module's convention describes how its ports are lowered to the output format, and serves as a kind of ABI for modules.
 
@@ -3729,7 +3641,7 @@ The lowering algorithm for the scalarized convention operates as follows:
 
 E.g., consider the following port:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Top:
   ;; snippetbegin
@@ -3740,7 +3652,7 @@ circuit Top:
 
 Scalarization breaks `a` into the following ports:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Top:
   ;; snippetbegin
@@ -3760,7 +3672,7 @@ If a name is already taken, that name will be made unique by appending a suffix 
 
 E.g., consider the following ports:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Top:
   ;; snippetbegin
@@ -3773,7 +3685,7 @@ circuit Top:
 
 Scalarization breaks these ports into the following ports:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Top:
   ;; snippetbegin
@@ -3790,15 +3702,13 @@ circuit Top:
 
 Named components in the body of a module will be renamed as needed to ensure port names follow this convention.
 
-The "Internal" Convention
--------------------------
+## The "Internal" Convention
 
 Private modules (i.e. modules that are *not* the top of a circuit, device under test, or an extmodule) have no specified ABI.
 The compiler is free to transform the ports of a private module in any way, or not at all.
 Private modules are said to have "internal" convention.
 
-Primitive Operations {#primitive-operations}
-====================
+# Primitive Operations {#primitive-operations}
 
 The arguments of all primitive operations must be expressions with ground types, while their parameters are integer literals.
 Each specific operation can place additional restrictions on the number and types of their arguments and parameters.
@@ -3807,240 +3717,220 @@ If the operation has a mixed constant and non-constant arguments, the result is 
 
 Notationally, the width of an argument e is represented as w~e~.
 
-Add Operation
--------------
+## Add Operation
 
-  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
-  ------ ----------- ------------ ------------- ------------- --------------------
-  add    (e1,e2)     ()           (UInt,UInt)   UInt          max(w~e1~,w~e2~)+1
-                                  (SInt,SInt)   SInt          max(w~e1~,w~e2~)+1
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
+|------|-----------|------------|-------------|-------------|--------------------|
+| add  | (e1,e2)   | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~)+1 |
+|      |           |            | (SInt,SInt) | SInt        | max(w~e1~,w~e2~)+1 |
 
 The add operation result is the sum of e1 and e2 without loss of precision.
 
-Subtract Operation
-------------------
+## Subtract Operation
 
-  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
-  ------ ----------- ------------ ------------- ------------- --------------------
-  sub    (e1,e2)     ()           (UInt,UInt)   UInt          max(w~e1~,w~e2~)+1
-                                  (SInt,SInt)   SInt          max(w~e1~,w~e2~)+1
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
+|------|-----------|------------|-------------|-------------|--------------------|
+| sub  | (e1,e2)   | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~)+1 |
+|      |           |            | (SInt,SInt) | SInt        | max(w~e1~,w~e2~)+1 |
 
 The subtract operation result is e2 subtracted from e1, without loss of precision.
 
-Multiply Operation
-------------------
+## Multiply Operation
 
-  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
-  ------ ----------- ------------ ------------- ------------- --------------
-  mul    (e1,e2)     ()           (UInt,UInt)   UInt          w~e1~+w~e2~
-                                  (SInt,SInt)   SInt          w~e1~+w~e2~
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|------|-----------|------------|-------------|-------------|--------------|
+| mul  | (e1,e2)   | ()         | (UInt,UInt) | UInt        | w~e1~+w~e2~  |
+|      |           |            | (SInt,SInt) | SInt        | w~e1~+w~e2~  |
 
 The multiply operation result is the product of e1 and e2, without loss of precision.
 
-Divide Operation
-----------------
+## Divide Operation
 
-  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
-  ------ ----------- ------------ ------------- ------------- --------------
-  div    (num,den)   ()           (UInt,UInt)   UInt          w~num~
-                                  (SInt,SInt)   SInt          w~num~+1
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|------|-----------|------------|-------------|-------------|--------------|
+| div  | (num,den) | ()         | (UInt,UInt) | UInt        | w~num~       |
+|      |           |            | (SInt,SInt) | SInt        | w~num~+1     |
 
 The divide operation divides num by den, truncating the fractional portion of the result.
 This is equivalent to rounding the result towards zero.
 The result of a division where den is zero is undefined.
 
-Modulus Operation
------------------
+## Modulus Operation
 
-  Name   Arguments   Parameters   Arg Types     Result Type   Result Width
-  ------ ----------- ------------ ------------- ------------- --------------------
-  rem    (num,den)   ()           (UInt,UInt)   UInt          min(w~num~,w~den~)
-                                  (SInt,SInt)   SInt          min(w~num~,w~den~)
+| Name | Arguments | Parameters | Arg Types   | Result Type | Result Width       |
+|------|-----------|------------|-------------|-------------|--------------------|
+| rem  | (num,den) | ()         | (UInt,UInt) | UInt        | min(w~num~,w~den~) |
+|      |           |            | (SInt,SInt) | SInt        | min(w~num~,w~den~) |
 
 The modulus operation yields the remainder from dividing num by den, keeping the sign of the numerator.
 Together with the divide operator, the modulus operator satisfies the relationship below:
 
     num = add(mul(den,div(num,den)),rem(num,den))}
 
-Comparison Operations
----------------------
+## Comparison Operations
 
-  Name     Arguments   Parameters   Arg Types     Result Type   Result Width
-  -------- ----------- ------------ ------------- ------------- --------------
-  eq,neq   (e1,e2)     ()           (UInt,UInt)   UInt          1
-                                    (SInt,SInt)   UInt          1
+| Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|--------|-----------|------------|-------------|-------------|--------------|
+| eq,neq | (e1,e2)   | ()         | (UInt,UInt) | UInt        | 1            |
+|        |           |            | (SInt,SInt) | UInt        | 1            |
 
-  Name     Arguments   Parameters   Arg Types     Result Type   Result Width
-  -------- ----------- ------------ ------------- ------------- --------------
-  lt,leq   (e1,e2)     ()           (UInt,UInt)   UInt          1
-                                    (SInt,SInt)   UInt          1
+| Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|--------|-----------|------------|-------------|-------------|--------------|
+| lt,leq | (e1,e2)   | ()         | (UInt,UInt) | UInt        | 1            |
+|        |           |            | (SInt,SInt) | UInt        | 1            |
 
-  Name     Arguments   Parameters   Arg Types     Result Type   Result Width
-  -------- ----------- ------------ ------------- ------------- --------------
-  gt,geq   (e1,e2)     ()           (UInt,UInt)   UInt          1
-                                    (SInt,SInt)   UInt          1
+| Name   | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|--------|-----------|------------|-------------|-------------|--------------|
+| gt,geq | (e1,e2)   | ()         | (UInt,UInt) | UInt        | 1            |
+|        |           |            | (SInt,SInt) | UInt        | 1            |
 
 The comparison operations return an unsigned 1 bit signal with value one if e1 is less than (lt), less than or equal to (leq), greater than (gt), greater than or equal to (geq), equal to (eq), or not equal to (neq) e2.
 The operation returns a value of zero otherwise.
 
-Padding Operations
-------------------
+## Padding Operations
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- --------------
-  pad    \(e\)       \(n\)        (UInt)      UInt          max(w~e~,n)
-                                  (SInt)      SInt          max(w~e~,n)
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| pad  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~,n)  |
+|      |           |            | (SInt)    | SInt        | max(w~e~,n)  |
 
 If e's bit width is smaller than n, then the pad operation zero-extends or sign-extends e up to the given width n.
 Otherwise, the result is simply e.
 n must be non-negative.
 
-Interpret As UInt
------------------
+## Interpret As UInt
 
-  Name     Arguments   Parameters   Arg Types      Result Type   Result Width
-  -------- ----------- ------------ -------------- ------------- --------------
-  asUInt   \(e\)       ()           (UInt)         UInt          w~e~
-                                    (SInt)         UInt          w~e~
-                                    (Clock)        UInt          1
-                                    (Reset)        UInt          1
-                                    (AsyncReset)   UInt          1
+| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asUInt | \(e\)     | ()         | (UInt)       | UInt        | w~e~         |
+|        |           |            | (SInt)       | UInt        | w~e~         |
+|        |           |            | (Clock)      | UInt        | 1            |
+|        |           |            | (Reset)      | UInt        | 1            |
+|        |           |            | (AsyncReset) | UInt        | 1            |
 
 The interpret as UInt operation reinterprets e's bits as an unsigned integer.
 
-Interpret As SInt
------------------
+## Interpret As SInt
 
-  Name     Arguments   Parameters   Arg Types      Result Type   Result Width
-  -------- ----------- ------------ -------------- ------------- --------------
-  asSInt   \(e\)       ()           (UInt)         SInt          w~e~
-                                    (SInt)         SInt          w~e~
-                                    (Clock)        SInt          1
-                                    (Reset)        SInt          1
-                                    (AsyncReset)   SInt          1
+| Name   | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|--------|-----------|------------|--------------|-------------|--------------|
+| asSInt | \(e\)     | ()         | (UInt)       | SInt        | w~e~         |
+|        |           |            | (SInt)       | SInt        | w~e~         |
+|        |           |            | (Clock)      | SInt        | 1            |
+|        |           |            | (Reset)      | SInt        | 1            |
+|        |           |            | (AsyncReset) | SInt        | 1            |
 
 The interpret as SInt operation reinterprets e's bits as a signed integer according to two's complement representation.
 
-Interpret as Clock
-------------------
+## Interpret as Clock
 
-  Name      Arguments   Parameters   Arg Types      Result Type   Result Width
-  --------- ----------- ------------ -------------- ------------- --------------
-  asClock   \(e\)       ()           (UInt)         Clock         n/a
-                                     (SInt)         Clock         n/a
-                                     (Clock)        Clock         n/a
-                                     (Reset)        Clock         n/a
-                                     (AsyncReset)   Clock         n/a
+| Name    | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|---------|-----------|------------|--------------|-------------|--------------|
+| asClock | \(e\)     | ()         | (UInt)       | Clock       | n/a          |
+|         |           |            | (SInt)       | Clock       | n/a          |
+|         |           |            | (Clock)      | Clock       | n/a          |
+|         |           |            | (Reset)      | Clock       | n/a          |
+|         |           |            | (AsyncReset) | Clock       | n/a          |
 
 The result of the interpret as clock operation is the Clock typed signal obtained from interpreting a single bit integer as a clock signal.
 
-Interpret as AsyncReset
------------------------
+## Interpret as AsyncReset
 
-  Name           Arguments   Parameters   Arg Types      Result Type   Result Width
-  -------------- ----------- ------------ -------------- ------------- --------------
-  asAsyncReset   \(e\)       ()           (AsyncReset)   AsyncReset    n/a
-                                          (UInt)         AsyncReset    n/a
-                                          (SInt)         AsyncReset    n/a
-                                          (Interval)     AsyncReset    n/a
-                                          (Clock)        AsyncReset    n/a
-                                          (Reset)        AsyncReset    n/a
+| Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|-------------|----------|------------|-------------|------------|-------------|
+| asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
+|              |           |            | (UInt)       | AsyncReset  | n/a          |
+|              |           |            | (SInt)       | AsyncReset  | n/a          |
+|              |           |            | (Interval)   | AsyncReset  | n/a          |
+|              |           |            | (Clock)      | AsyncReset  | n/a          |
+|              |           |            | (Reset)      | AsyncReset  | n/a          |
 
 The result of the interpret as asynchronous reset operation is an AsyncReset typed signal.
 
-Shift Left Operation
---------------------
+## Shift Left Operation
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- --------------
-  shl    \(e\)       \(n\)        (UInt)      UInt          w~e~+n
-                                  (SInt)      SInt          w~e~+n
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| shl  | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~+n       |
+|      |           |            | (SInt)    | SInt        | w~e~+n       |
 
 The shift left operation concatenates n zero bits to the least significant end of e.
 n must be non-negative.
 
-Shift Right Operation
----------------------
+## Shift Right Operation
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- ----------------
-  shr    \(e\)       \(n\)        (UInt)      UInt          max(w~e~-n, 0)
-                                  (SInt)      SInt          max(w~e~-n, 1)
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width   |
+|------|-----------|------------|-----------|-------------|----------------|
+| shr  | \(e\)     | \(n\)      | (UInt)    | UInt        | max(w~e~-n, 0) |
+|      |           |            | (SInt)    | SInt        | max(w~e~-n, 1) |
 
 The shift right operation truncates the least significant n bits from e.
 If n is greater than or equal to the bit-width of e, the resulting value will be zero for unsigned types and the sign bit for signed types.
 n must be non-negative.
 
-Dynamic Shift Left Operation
-----------------------------
+## Dynamic Shift Left Operation
 
-  Name   Arguments   Parameters   Arg Types      Result Type   Result Width
-  ------ ----------- ------------ -------------- ------------- -----------------------
-  dshl   (e1, e2)    ()           (UInt, UInt)   UInt          w~e1~ + 2`^`w~e2~ - 1
-                                  (SInt, UInt)   SInt          w~e1~ + 2`^`w~e2~ - 1
+| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width          |
+|---------|------------|-------------|--------------|-------------|--------------|
+| dshl | (e1, e2)  | ()         | (UInt, UInt) | UInt        | w~e1~ + 2`^`w~e2~ - 1 |
+|      |           |            | (SInt, UInt) | SInt        | w~e1~ + 2`^`w~e2~ - 1 |
 
 The dynamic shift left operation shifts the bits in e1 e2 places towards the most significant bit.
 e2 zeroes are shifted in to the least significant bits.
 
-Dynamic Shift Right Operation
------------------------------
+## Dynamic Shift Right Operation
 
-  Name   Arguments   Parameters   Arg Types      Result Type   Result Width
-  ------ ----------- ------------ -------------- ------------- --------------
-  dshr   (e1, e2)    ()           (UInt, UInt)   UInt          w~e1~
-                                  (SInt, UInt)   SInt          w~e1~
+| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|------|-----------|------------|--------------|-------------|--------------|
+| dshr | (e1, e2)  | ()         | (UInt, UInt) | UInt        | w~e1~        |
+|      |           |            | (SInt, UInt) | SInt        | w~e1~        |
 
 The dynamic shift right operation shifts the bits in e1 e2 places towards the least significant bit.
 e2 signed or zeroed bits are shifted in to the most significant bits, and the e2 least significant bits are truncated.
 
-Arithmetic Convert to Signed Operation
---------------------------------------
+## Arithmetic Convert to Signed Operation
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- --------------
-  cvt    \(e\)       ()           (UInt)      SInt          w~e~+1
-                                  (SInt)      SInt          w~e~
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| cvt  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
+|      |           |            | (SInt)    | SInt        | w~e~         |
 
 The result of the arithmetic convert to signed operation is a signed integer representing the same numerical value as e.
 
-Negate Operation
-----------------
+## Negate Operation
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- --------------
-  neg    \(e\)       ()           (UInt)      SInt          w~e~+1
-                                  (SInt)      SInt          w~e~+1
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| neg  | \(e\)     | ()         | (UInt)    | SInt        | w~e~+1       |
+|      |           |            | (SInt)    | SInt        | w~e~+1       |
 
 The result of the negate operation is a signed integer representing the negated numerical value of e.
 
-Bitwise Complement Operation
-----------------------------
+## Bitwise Complement Operation
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- --------------
-  not    \(e\)       ()           (UInt)      UInt          w~e~
-                                  (SInt)      UInt          w~e~
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| not  | \(e\)     | ()         | (UInt)    | UInt        | w~e~         |
+|      |           |            | (SInt)    | UInt        | w~e~         |
 
 The bitwise complement operation performs a logical not on each bit in e.
 
-Binary Bitwise Operations
--------------------------
+## Binary Bitwise Operations
 
-  Name         Arguments   Parameters   Arg Types     Result Type   Result Width
-  ------------ ----------- ------------ ------------- ------------- ------------------
-  and,or,xor   (e1, e2)    ()           (UInt,UInt)   UInt          max(w~e1~,w~e2~)
-                                        (SInt,SInt)   UInt          max(w~e1~,w~e2~)
+| Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width     |
+|------------|-----------|------------|-------------|-------------|--------------|
+| and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
+|            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
 
 The above bitwise operations perform a bitwise and, or, or exclusive or on e1 and e2.
 The result has the same width as its widest argument, and any narrower arguments are automatically zero-extended or sign-extended to match the width of the result before performing the operation.
 
-Bitwise Reduction Operations
-----------------------------
+## Bitwise Reduction Operations
 
-  Name            Arguments   Parameters   Arg Types   Result Type   Result Width
-  --------------- ----------- ------------ ----------- ------------- --------------
-  andr,orr,xorr   \(e\)       ()           (UInt)      UInt          1
-                                           (SInt)      UInt          1
+| Name          | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|---------------|-----------|------------|-----------|-------------|--------------|
+| andr,orr,xorr | \(e\)     | ()         | (UInt)    | UInt        | 1            |
+|               |           |            | (SInt)    | UInt        | 1            |
 
 The bitwise reduction operations correspond to a bitwise and, or, and exclusive or operation, reduced over every bit in e.
 
@@ -4048,91 +3938,84 @@ In all cases, the reduction incorporates as an inductive base case the "identity
 This is defined as the value that preserves the value of the other argument: one for and (as $x \wedge 1 = x$), zero for or (as $x \vee 0 = x$), and zero for xor (as $x \oplus 0 = x$).
 Note that the logical consequence is that the and-reduction of a zero-width expression returns a one, while the or- and xor-reductions of a zero-width expression both return zero.
 
-Concatenate Operation
----------------------
+## Concatenate Operation
 
-  Name   Arguments   Parameters   Arg Types      Result Type   Result Width
-  ------ ----------- ------------ -------------- ------------- --------------
-  cat    (e1,e2)     ()           (UInt, UInt)   UInt          w~e1~+w~e2~
-                                  (SInt, SInt)   UInt          w~e1~+w~e2~
+| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width |
+|------|-----------|------------|--------------|-------------|--------------|
+| cat  | (e1,e2)   | ()         | (UInt, UInt) | UInt        | w~e1~+w~e2~  |
+|      |           |            | (SInt, SInt) | UInt        | w~e1~+w~e2~  |
 
 The result of the concatenate operation is the bits of e1 concatenated to the most significant end of the bits of e2.
 
-Bit Extraction Operation
-------------------------
+## Bit Extraction Operation
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- --------------
-  bits   \(e\)       (hi,lo)      (UInt)      UInt          hi-lo+1
-                                  (SInt)      UInt          hi-lo+1
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| bits | \(e\)     | (hi,lo)    | (UInt)    | UInt        | hi-lo+1      |
+|      |           |            | (SInt)    | UInt        | hi-lo+1      |
 
 The result of the bit extraction operation are the bits of e between lo (inclusive) and hi (inclusive).
 hi must be greater than or equal to lo.
 Both hi and lo must be non-negative and strictly less than the bit width of e.
 The index of the least significant bit is 0 and the index of the most significant bit is one less than the width of the argument.
 
-Head
-----
+## Head
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- --------------
-  head   \(e\)       \(n\)        (UInt)      UInt          n
-                                  (SInt)      UInt          n
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| head | \(e\)     | \(n\)      | (UInt)    | UInt        | n            |
+|      |           |            | (SInt)    | UInt        | n            |
 
 The result of the head operation are the n most significant bits of e.
 n must be non-negative and less than or equal to the bit width of e.
 
-Tail
-----
+## Tail
 
-  Name   Arguments   Parameters   Arg Types   Result Type   Result Width
-  ------ ----------- ------------ ----------- ------------- --------------
-  tail   \(e\)       \(n\)        (UInt)      UInt          w~e~-n
-                                  (SInt)      UInt          w~e~-n
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| tail | \(e\)     | \(n\)      | (UInt)    | UInt        | w~e~-n       |
+|      |           |            | (SInt)    | UInt        | w~e~-n       |
 
 The tail operation truncates the n most significant bits from e.
 n must be non-negative and less than or equal to the bit width of e.
 
-Primitive Property Operations {#primitive-property-operations}
-=============================
+# Primitive Property Operations {#primitive-property-operations}
 
 The arguments of all primitive property operations must be expressions with property types.
 Each specific operation can place additional restrictions on the number and types of their arguments.
 In general, primitive property operations are named with a prefix indicating the property type on which they operate.
 
-Integer Arithmetic
-------------------
+## Integer Arithmetic
 
 Integer arithmetic operations take `Integer`{.firrtl} property type expressions as arguments and return an `Integer`{.firrtl} property type result.
 
 ### Integer Add Operation
 
-  Name           Arguments   Arg Types           Result Type
-  -------------- ----------- ------------------- -------------
-  integer\_add   (e1,e2)     (Integer,Integer)   Integer
+  Name          Arguments   Arg Types           Result Type
+  ------------- ----------- ------------------- -------------
+  integer_add   (e1,e2)     (Integer,Integer)   Integer
 
 The add operation result is the arbitrary precision signed integer arithmetic sum of e1 and e2.
 
 ### Integer Multiply Operation
 
-  Name           Arguments   Arg Types           Result Type
-  -------------- ----------- ------------------- -------------
-  integer\_mul   (e1,e2)     (Integer,Integer)   Integer
+  Name          Arguments   Arg Types           Result Type
+  ------------- ----------- ------------------- -------------
+  integer_mul   (e1,e2)     (Integer,Integer)   Integer
 
 The multiply operation result is the arbitrary precision signed integer arithmetic product of e1 and e2.
 
 ### Integer Shift Right Operation
 
-  Name           Arguments   Arg Types           Result Type
-  -------------- ----------- ------------------- -------------
-  integer\_shr   (e1,e2)     (Integer,Integer)   Integer
+  Name          Arguments   Arg Types           Result Type
+  ------------- ----------- ------------------- -------------
+  integer_shr   (e1,e2)     (Integer,Integer)   Integer
 
 The shift right operation result is the arbitrary precision signed integer arithmetic shift right of e1 by e2.
 e2 sign bits from e1 are shifted into the most significant bits, and the e2 least significant bits of e1 are truncated.
 e2 must be non-negative.
 
-List Operations
----------------
+## List Operations
 
 List operations create `List`{.firrtl} property type expressions from other property expressions.
 
@@ -4147,14 +4030,13 @@ The `List`{.firrtl} constructor is parameterized by element type t, and accepts 
 
 ### List Concatenation Operation
 
-  Name           Arguments   Arg Types   Result Type
-  -------------- ----------- ----------- -------------
-  list\_concat   (e+)        (t+)        List\<t\>
+  Name          Arguments   Arg Types   Result Type
+  ------------- ----------- ----------- -------------
+  list_concat   (e+)        (t+)        List\<t\>
 
 The list concatenation operation constructs a `List`{.firrtl} property type expression by concatenating one or more lists of the same element type t.
 
-Notes on Syntax
-===============
+# Notes on Syntax
 
 FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
 
@@ -4207,7 +4089,7 @@ As a concrete guide, a few consequences of these rules are summarized below:
 
 As an example illustrating some of these points, the following is a legal FIRRTL circuit:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Foo :
@@ -4228,7 +4110,7 @@ The following characters need to be escaped with a leading '`\`': '`\n`' (new li
 
 The following example shows the info tokens included:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 ;; snippetbegin
 circuit Top : @[myfile.txt 14:8]
@@ -4246,15 +4128,14 @@ circuit Top : @[myfile.txt 14:8]
 ;; snippetend
 ```
 
-Literals
---------
+## Literals
 
 FIRRTL has both integer, string, and raw string literals.
 
 An integer literal is a signed or unsigned decimal integer.
 The following are examples of integer literals:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -4273,7 +4154,7 @@ circuit Foo:
 A string literal is a sequence of characters with a leading `"`{.firrtl} and a trailing `"`{.firrtl}.
 The following is an example of a string literal:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   extmodule Foo:
@@ -4286,7 +4167,7 @@ circuit Foo:
 A raw string literal is a sequence of characters with a leading `'`{.firrtl} and a trailing `'`{.firrtl}.
 The following is an example of a raw string literal:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   extmodule Foo:
@@ -4307,7 +4188,7 @@ Signed radix-specified integer literals have their sign before the leading encod
 
 The following string-encoded integer literals all have the value `42`:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -4335,7 +4216,7 @@ circuit Foo:
 
 The following string-encoded integer literals all have the value `-42`:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   public module Foo:
@@ -4367,10 +4248,9 @@ Any use in place of an integer is disallowed.
 ```{=tex}
 \clearpage
 ```
-Grammar
-=======
+# Grammar
 
-``` {.ebnf}
+``` ebnf
 (* Circuit Definition *)
 circuit =
   version , newline ,
@@ -4700,8 +4580,7 @@ property_primop_varexpr_keyword =
     "List" , "<" , type_property , ">" | "list_concat" ;
 ```
 
-Versioning Scheme of this Document
-==================================
+# Versioning Scheme of this Document
 
 This is the versioning scheme that applies to version 1.0.0 and later.
 

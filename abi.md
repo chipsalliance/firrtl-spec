@@ -1,5 +1,4 @@
-Introduction
-============
+# Introduction
 
 FIRRTL defines a language/IR for describing synchronous hardware circuits.
 This document specifies the mapping of FIRRTL constructs to Verilog in a manner similar to an application binary interface (ABI) which enables predictability of the output of key constructs necessary for the interoperability between circuits described in FIRRTL and between other languages and FIRRTL output.
@@ -8,8 +7,7 @@ This document describes multiple versions of the ABI, specifically calling speci
 It is expected that a conforming FIRRTL compiler can lower to all specified ABIs.
 This mechanism exists to allow improved representations when using tools which have better Verilog support and allow incremental migration of existing development flows to the significant representational changes introduced by ABI changes.
 
-FIRRTL System Verilog Interface
-===============================
+# FIRRTL System Verilog Interface
 
 To use a circuit described in FIRRTL in a predictable way, the mapping of certain behaviors and boundary constructs in FIRRTL to System Verilog must be defined.
 Where possible this ABI does not impose constraints on implementation, concerning itself primarily with the boundaries of the circuit.
@@ -21,8 +19,7 @@ Specifically, this ABI, by construction, produces no aggregate Verilog types.
 ABIv2 defines an ABI in which aggregate types are preserved.
 Both these ABIs may evolve as new FIRRTL constructs are added.
 
-On Modules
-----------
+## On Modules
 
 ### The Circuit
 
@@ -44,14 +41,14 @@ All public modules shall be implemented in Verilog in a consistent way.
 All public modules shall exist as Verilog modules of the same name.
 Each public module shall be placed in a file with a format as follows where `module` is the name of the public module:
 
-``` {.ebnf}
+``` ebnf
 filename = module , ".sv" ;
 ```
 
 Each public module in a circuit shall produce a filelist that contains the filename of the file containing the public module and any necessary files that define all public or private module files instantiated under it.
 Files that define external modules are not included. This filelist shall have a name as follows where `module` is the name of the public module:
 
-``` {.ebnf}
+``` ebnf
 filelist_filename = "filelist_" , module , ".f" ;
 ```
 
@@ -83,7 +80,7 @@ Ports are generally lowered to netlist types, except where Verilog's type system
 Ports of integer types shall be lowered to netlist ports (`wire`{.verilog}) as a packed vector of equivalent size.
 For example, consider the following FIRRTL:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Top :
   public module Top :
@@ -93,7 +90,7 @@ circuit Top :
 
 This is lowered to the following Verilog:
 
-``` {.verilog}
+``` verilog
 module Top(
     output wire [15:0] out,
     input wire [31:0] in
@@ -105,13 +102,13 @@ Ports of aggregate type shall be scalarized according to the "Aggregate Type Low
 
 Ports of ref type on public modules shall, for each public module, be lowered to a Verilog macro with the following format where `module` is the name of the public module, `portname` is the name of the port, and `internalpath` is the hierarchical path name:
 
-``` {.ebnf}
+``` ebnf
 macro = "`define " , "ref_" , module , "_" , portname , " ", internalpath ;
 ```
 
 All macros for a public module will be put in a file with name:
 
-``` {.ebnf}
+``` ebnf
 filename = "ref_" , module , ".sv" ;
 ```
 
@@ -132,8 +129,7 @@ Passive bundles shall be lowered to Verilog packed structs.
 
 Reference types in ports shall be logically split out from aggregates and named as though "Aggregate Type Lowering" was used.
 
-On Layers
----------
+## On Layers
 
 The lowering convention of a declared layer specifies how a layer and all its associated layer blocks will be lowered.
 Currently, the only lowering convention that must be supported is `"bind"`{.firrtl.}.
@@ -156,13 +152,13 @@ For each layer and public module, one binding file will be produced for each lay
 The public module, layer name, and any nested layer names are used to derive a predictable filename of the binding file.
 The file format uses the format below where `module` is the name of the public module, `root` is the name of the root-level layer and `nested` is the name of zero or more nested layers:
 
-``` {.ebnf}
+``` ebnf
 filename = "layers_" , module , "_", root , { "_" , nested } , ".sv" ;
 ```
 
 As an example, consider the following circuit with three layers:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Bar:
   layer Layer1, bind:
@@ -193,7 +189,7 @@ Module `Foo` contains one instantiation of module `Bar`.
 Both `Foo` and `Bar` contain layer blocks.
 To make the example simpler, no constant propagation is done:
 
-``` {.firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo:
   layer Layer1, bind:
@@ -226,7 +222,7 @@ circuit Foo:
 
 The following Verilog will be produced for the modules without layers:
 
-``` {.verilog}
+``` verilog
 module Foo();
   Bar bar();
 endmodule
@@ -239,7 +235,7 @@ endmodule
 The following Verilog associated with `Layer1` is produced.
 Note that all module names and ports are implementation defined:
 
-``` {.verilog}
+``` verilog
 module Bar_Layer1(
   input a
 );
@@ -255,7 +251,7 @@ endmodule
 
 The following Verilog associated with `Layer2` is produced. Note that all module names and ports are implementation defined:
 
-``` {.verilog}
+``` verilog
 module Bar_Layer1_Layer2(
   input notA
 );
@@ -272,7 +268,7 @@ endmodule
 Because there are two layers, two bindings files will be produced.
 The first bindings file is associated with `Layer1`:
 
-``` {.systemverilog}
+``` systemverilog
 module Foo();
   Bar bar();
 endmodule
@@ -315,8 +311,7 @@ bind Bar Bar_Layer1_Layer2 layer1_layer2(.notA(Bar.layer1.notA));
 The `` `ifdef ``{.verilog} guards enable any combination of the bind files to be included while still producing legal SystemVerilog.
 I.e., the end user may safely include none, either, or both of the bindings files.
 
-On Types
---------
+## On Types
 
 Types are only guaranteed to follow this lowering when the Verilog type is on an element which is part of the ABI defined public elements.
 These include use in ports and elements exported by reference through a public module.
@@ -350,8 +345,7 @@ It is not intended that constants are a replacement for parameterization.
 Constant typed values have no particular meta-programming capability.
 It is, for example, expected that a module with a constant input port be fully compilable to non-parameterized Verilog.
 
-Versioning Scheme of this Document
-==================================
+# Versioning Scheme of this Document
 
 This is the versioning scheme that applies to version 1.0.0 and later.
 

@@ -1,8 +1,6 @@
-Guide for Contributors
-======================
+# Guide for Contributors
 
-Writing
--------
+## Writing
 
 -   One sentence per line.
     No linewraps.
@@ -11,8 +9,7 @@ Writing
 -   Match terminology and capitalization preferences used elsewhere by default.
 -   Don't forget to spell-check!
 
-Code Blocks
------------
+## Code Blocks
 
 Code blocks containing FIRRTL, Verilog, or SystemVerilog are, by default, extracted to separate files in the build area and passed through `firtool` or `verilator` to check that they are correct.
 You can run this manually with `make test`.
@@ -28,8 +25,7 @@ If a code block has more than one snippet, then each snippet is appended in the 
 You may prevent a code block from being checked by adding a second class with name `notest` to the code block.
 E.g., put the following on a FIRRTL code block to cause it to not be tested: `{.firrtl .notest}`.
 
-Pushing Changes
----------------
+## Pushing Changes
 
 1.  Read the [Versioning Scheme of this
     Document](https://github.com/chipsalliance/firrtl-spec/blob/main/spec.md#versioning-scheme-of-this-document).
@@ -48,8 +44,7 @@ Pushing Changes
 3.  PRs or commits that are `[patch]`, `[minor]`, or `[major]` should add an item to [`revision-history.yaml`](revision-history.yaml) under the `thisVersion`key.
     `[nfc]` PRs or commits do not modify this section.
 
-Releases
---------
+## Releases
 
 New releases are made automatically through GitHub actions.
 To make a new release, create a new tag using `git tag -s` if you have local GPG keys.

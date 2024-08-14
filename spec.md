@@ -310,7 +310,7 @@ More details about how bounded model checking works and what the bound refers to
 
 ### Formal Test Harness
 
-A public module definition may be used as a formal test harness. 
+A public module definition may be used as a formal test harness.
 Their input ports act as symbolic variables for the test.
 
 Example:

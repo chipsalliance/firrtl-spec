@@ -310,11 +310,8 @@ More details about how bounded model checking works and what the bound refers to
 
 ### Formal Test Harness
 
-A formal test harness is a public module that is used for defining the
-body of a formal test-bench. These are modules that are not intended to be instantiated and
-their inputs function as free (or symbolic) variables. Formal test harnesses instantiate a module,
-known as the Device Under Test (DUT), connect a set of free variables to the DUT's inputs, and
-then use those free variables to check various properties of these DUTs using assertions and assumptions.
+A public module definition may be used as a formal test harness. 
+Their input ports act as symbolic variables for the test.
 
 Example:
 

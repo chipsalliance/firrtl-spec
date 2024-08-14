@@ -292,10 +292,11 @@ Formal tests are named top-level constructs which allow for formal test harnesse
 as bounded model checking (BMC) problems. The body of the formal test harness is converted
 into a BMC formula which encodes a state-transition system version of the design using one
 of the formal backends (targetting either BTOR2 or SMTLib).
-Formal tests have 3 operands:\
-- A name that the test can be referred to with.\
-- The name of the formal test harness module.\
-- A positive integer bound for the test. This number indicates the depth to which the model will be checked.
+Formal tests have 3 operands:
+
+1.  A name that the test can be referred to with.
+2.  The name of the formal test harness module.
+3.  A positive integer bound for the test. This number indicates the depth to which the model will be checked.
 
 ``` firrtl
 FIRRTL version 4.0.0

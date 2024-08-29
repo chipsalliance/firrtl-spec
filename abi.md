@@ -153,7 +153,7 @@ The public module, layer name, and any nested layer names are used to derive a p
 The file format uses the format below where `module` is the name of the public module, `root` is the name of the root-level layer and `nested` is the name of zero or more nested layers:
 
 ``` ebnf
-filename = "layers_" , module , "_", root , { "_" , nested } , ".sv" ;
+filename = "layers-" , module , "-", root , { "-" , nested } , ".sv" ;
 ```
 
 As an example, consider the following circuit with three layers:
@@ -170,12 +170,12 @@ circuit Bar:
 
 When compiled to Verilog, this will produce six bind files:
 
-    layers_Bar_Layer1.sv
-    layers_Bar_Layer1_Layer2.sv
-    layers_Bar_Layer1_Layer2_Layer3_.sv
-    layers_Baz_Layer1.sv
-    layers_Baz_Layer1_Layer2.sv
-    layers_Baz_Layer1_Layer2_Layer3_.sv
+    layers-Bar-Layer1.sv
+    layers-Bar-Layer1-Layer2.sv
+    layers-Bar-Layer1-Layer2-Layer3-.sv
+    layers-Baz-Layer1.sv
+    layers-Baz-Layer1-Layer2.sv
+    layers-Baz-Layer1-Layer2-Layer3-.sv
 
 The contents of each binding files must have the effect of including all code defined in all of the layer blocks associated with a layer and any of its parent layer's layer blocks.
 
@@ -286,7 +286,7 @@ module Foo_Layer1(
   wire x = bar_notA;
 endmodule
 // snippetbegin
-// Inside file "layers_Foo_Layer1.sv" :
+// Inside file "layers-Foo-Layer1.sv" :
 `ifndef layers_Foo_Layer1
 `define layers_Foo_Layer1
 bind Foo Foo_Layer1 layer1(.bar_notA(Foo.bar.layer1.notA));

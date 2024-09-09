@@ -172,10 +172,10 @@ When compiled to Verilog, this will produce six bind files:
 
     layers-Bar-Layer1.sv
     layers-Bar-Layer1-Layer2.sv
-    layers-Bar-Layer1-Layer2-Layer3-.sv
+    layers-Bar-Layer1-Layer2-Layer3.sv
     layers-Baz-Layer1.sv
     layers-Baz-Layer1-Layer2.sv
-    layers-Baz-Layer1-Layer2-Layer3-.sv
+    layers-Baz-Layer1-Layer2-Layer3.sv
 
 The contents of each binding files must have the effect of including all code defined in all of the layer blocks associated with a layer and any of its parent layer's layer blocks.
 

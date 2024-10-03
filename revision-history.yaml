@@ -35,6 +35,7 @@ revisionHistory:
       - No abstract reset on externally-defined modules.
       - Add Property type and primitive operations for List.
       - Add "formal" construct to mark modules for bounded model checking.
+      - Add Property primitive operation for integer shift left
     abi:
       - Add ABI for public modules and filelist output.
       - Changed ABI for group and ref generated files.

@@ -4011,6 +4011,16 @@ The shift right operation result is the arbitrary precision signed integer arith
 e2 sign bits from e1 are shifted into the most significant bits, and the e2 least significant bits of e1 are truncated.
 e2 must be non-negative.
 
+### Integer Shift Left Operation
+
+  Name          Arguments   Arg Types           Result Type
+  ------------- ----------- ------------------- -------------
+  integer_shl   (e1,e2)     (Integer,Integer)   Integer
+
+The shift left operation result is the arbitrary precision signed integer arithmetic shift left of e1 by e2.
+e2 zero bits are shifted into the least significant bits of e1, and the e2 most significant bits of e1 are truncated.
+e2 must be non-negative.
+
 ## List Operations
 
 List operations create `List`{.firrtl} property type expressions from other property expressions.
@@ -4571,7 +4581,7 @@ primop_1expr1int_keyword =
 primop_1expr2int_keyword = "bits" ;
 
 property_primop_2expr_keyword =
-    "integer_add" | "integer_mul" | "integer_shr" ;
+    "integer_add" | "integer_mul" | "integer_shr" | "integer_shl" ;
 
 property_primop_varexpr_keyword =
     "List" , "<" , type_property , ">" | "list_concat" ;

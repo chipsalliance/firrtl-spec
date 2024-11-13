@@ -30,13 +30,13 @@ E.g., put the following on a FIRRTL code block to cause it to not be tested: `{.
 1.  Read the [Versioning Scheme of this
     Document](https://github.com/chipsalliance/firrtl-spec/blob/main/spec.md#versioning-scheme-of-this-document).
 
-2.  All commit messages have a leading tag indicating how they modify the.
+2.  All commit messages have a leading tag indicating how they modify the spec.
     If you forget to add this to your commit, it can be added to the PR title.
     The PR title should then be used in a squash-and-merge GitHub merge strategy.
     The available tags are:
 
     -   `[nfc]` -- a "non-functional change" to the spec or to something outside
-        the spec should not modify the current spec version
+        the spec that should not modify the current spec version
     -   `[patch]` -- a change to the spec that should increment the patch version
     -   `[minor]` -- a change to the spec that should increment the minor version
     -   `[major]` -- a change to the spec that should increment the major version the spec.

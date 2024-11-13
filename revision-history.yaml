@@ -5,15 +5,10 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
-      - Add public modules.
-      - Rename a "FIRRTL Language Definition" to "Grammar".
-      - Rename "Details about Syntax" to "Notes on Syntax".
-      - Add section "Circuit Components".
-      - Reorganized statements section.
-      - Rewrite of the Types section.
       - Fix mistake in layer-associated probe grammar.
       - Define "Storable Type".
-      - Change the minimum width of the result of "Shift Right" on UInt to 0-bit.
+      - Change the minimum width of the result of "Shift Right" on UInt to
+        0-bit.
       - Allow assert and assume statements to have a format string
       - Add Property primitive operations, starting with integer addition
       - Define/clarify layer-colored probe semantics.
@@ -37,15 +32,24 @@ revisionHistory:
       - Add "formal" construct to mark modules for bounded model checking.
       - Add Property primitive operation for integer shift left
     abi:
-      - Add ABI for public modules and filelist output.
-      - Changed ABI for group and ref generated files.
-        These now use the public module and not the circuit.
       - Use EBNF to describe probe port macros and filename.
       - Correct mistakes in code examples.
       - Change layer filenames to use "-" and not "_" to avoid ambiguity with
         module or layer names.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 3.3.0
+      spec:
+        - Add public modules.
+        - Rename a "FIRRTL Language Definition" to "Grammar".
+        - Rename "Details about Syntax" to "Notes on Syntax".
+        - Add section "Circuit Components".
+        - Reorganized statements section.
+        - Rewrite of the Types section.
+      abi:
+        - Add ABI for public modules and filelist output.
+        - Changed ABI for group and ref generated files.
+          These now use the public module and not the circuit.
     - version: 3.2.0
       spec:
         - Add optional groups.
@@ -59,8 +63,9 @@ revisionHistory:
         - Add property assignment.
         - Add Integer property type.
         - Add initial description of property types.
-        - Change/clarify mux selector width inference to align with other operations
-          (must infer to some width by itself, pad if infers to less than 1-bit).
+        - Change/clarify mux selector width inference to align with other
+          operations (must infer to some width by itself, pad if infers to less
+          than 1-bit).
         - Fix printf grammar, expect commas between arguments.
         - Fix spec bug where string-encoded literals were still used in examples
           of "Constant Integer Expression".
@@ -130,8 +135,8 @@ revisionHistory:
       spec:
         - Specify behavior of zero bit width integers, add zero-width literals
         - Specify behavior of indeterminate values
-        - Add an explicit section about "Aggregate Types" and move "Vector Type" and
-          "Bundle Type" under it.
+        - Add an explicit section about "Aggregate Types" and move "Vector Type"
+          and "Bundle Type" under it.
         - Move "head" and "tail" from primop_1expr_keyword to
           primop_1expr1int_keyword in the "FIRRTL Language Definition".
         - Add in-line annotation format

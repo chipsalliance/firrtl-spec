@@ -4454,8 +4454,8 @@ property_expr_primop = property_primop_2expr | property_primop_varexpr;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 expr_intrinsic = "intrinsic", "(" , id ,
-  [ "<"     "parameter" , id , "=" , ( int | string_dq ) ,
-    { "," , "parameter" , id , "=" , ( int | string_dq ) } , ">" ] ,
+  [ "<"   , id , "=" , ( int | string_dq ) ,
+    { "," , id , "=" , ( int | string_dq ) } , ">" ] ,
   [ ":" , type ] ,
   { "," , expr } , ")"
 

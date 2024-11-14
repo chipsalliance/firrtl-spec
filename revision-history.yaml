@@ -29,7 +29,7 @@ revisionHistory:
       - Add language clarifying behavior statements affected by conditionals.
       - No abstract reset on externally-defined modules.
       - Add Property type and primitive operations for List.
-      - Add "formal" construct to mark modules for bounded model checking.
+      - Add `formal` unit test construct.
       - Add Property primitive operation for integer shift left
     abi:
       - Use EBNF to describe probe port macros and filename.

@@ -286,61 +286,63 @@ circuit Foo :
   public module Foo enablelayer A :
 ```
 
-## Formal Tests
+## Formal Unit Tests
 
-Formal tests are named top-level constructs which allow for formal test harnesses to be definied
-as bounded model checking (BMC) problems. The body of the formal test harness is converted
-into a BMC formula which encodes a state-transition system version of the design using one
-of the formal backends (targetting either BTOR2 or SMTLib).
-Formal tests have 3 operands:
+The `formal`{.firrtl} keyword declares a formal unit test.
+Tools may look for these constructs and automatically run them as part of a regression test suite.
 
-1.  A name that the test can be referred to with.
-2.  The name of the formal test harness module.
-3.  A positive integer bound for the test. This number indicates the depth to which the model will be checked.
+A formal unit test has a unique name and refers to a module declaration that contains the design to be verified and any necessary test harness.
+Additionally, the test may also declare a list of user-defined named parameters which can be integers, strings, arrays, or dictionaries.
+These parameters are passed on to any tools that execute the tests.
+No parameters with well-known semantics are defined yet.
+During execution of the formal test, all input ports of the target module are treated as symbolic values that may change in every cycle.
+All output ports are ignored.
 
-``` firrtl
+The circuit below shows a module run as a formal unit test:
+
+``` {.firrtl .notest}
 FIRRTL version 4.0.0
 circuit Foo :
   public module Foo :
-    ; ...
-  formal testFoo of Foo, bound = 20
+  formal myTest of Foo :
 ```
 
-More details about how bounded model checking works and what the bound refers to can be found in
-[Biere et al. 2003](https://doi.org/10.1016/S0065-2458(03)58003-2).
+A module may be reused in multiple unit tests, for example to run with different testing parameters:
 
-### Formal Test Harness
-
-A public module definition may be used as a formal test harness.
-Their input ports act as symbolic variables for the test.
-
-Example:
-
-``` firrtl
+``` {.firrtl .notest}
 FIRRTL version 4.0.0
+circuit Foo :
+  public module Foo :
+  formal myTestA of Foo :
+    mode = "bmc"
+    bound = 42
+  formal myTestB of Foo :
+    mode = "induction"
+    bound = 100
+```
 
-circuit Foo:
-  public module Foo:
-    input data : UInt<32>
-    input c : UInt<1>
-    output out : UInt<32>
-    ;; Foo body
+### Test Harnesses
 
-  public module FooTest:
-    ;; symbolic input -- maps to input in btor2
-    input s_foo_c : UInt<1>
-    input s_foo_data : UInt<32> 
-    ;; example test
+It may be necessary to define additional verification constructs and hardware in addition to the design that should be run in a formal unit test.
+To achieve this, an additional module may act as a test harness and instantiate the design to be tested alongside any other necessary verification collateral:
+
+``` {.firrtl .notest}
+FIRRTL version 4.0.0
+circuit Foo :
+  public module Foo :
+    input a : UInt<42>
+    output b : UInt<42>
+    ; ...
+
+  public module FooTest :
+    input clk : Clock
+    input a : UInt<42>
     inst foo of Foo
-    ;; feed the symbolic inputs to the instance
-    connect foo.c, s_foo_c 
-    connect foo.data, s_foo_data
-    ;; example assertion that uses the symbolic inputs and outputs
-    intrinsic(circt_verif_assert, intrinsic(
-      circt_ltl_implication : UInt<1>, s_foo_c, eq(foo.out, s_foo_data))
-    )
+    connect foo.a, a
+    assert(clk, eq(foo.b, add(a, UInt(42))), UInt<1>(h1), "foo computes a + 42")
+    assume(clk, gt(a, UInt(2)), UInt<1>(h1), "input a > 2")
 
-  formal testFormal of FooTest, bound = 20
+  formal testFoo of FooTest :
 ```
 
 # Circuit Components
@@ -4292,7 +4294,15 @@ decl_layer =
   dedent ;
 
 decl_formal =
-  "formal" , id , "of" , id , "," , "bound" , "=" , int;
+  "formal" , id , "of" , id , ":" , [ info ] , newline , indent ,
+    { id , "=" , decl_formal_param , newline } ,
+  dedent ;
+decl_formal_param =
+    int
+  | string_dq
+  | string_sq
+  | "[" , [ decl_formal_param , { "," , decl_formal_param } ] , "]"
+  | "{" , [ id , "=" , decl_formal_param , { "," , id , "=" , decl_formal_param } ] , "}"
 
 decl_type_alias = "type", id, "=", type ;
 

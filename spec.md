@@ -51,9 +51,8 @@ During that time and since, there have been a number of contributions and improv
 To better reflect the work of contributors after the original tech report, the FIRRTL specification was changed to be authored by *The FIRRTL Specification Contributors*.
 A list of these contributors is below:
 
-```{=tex}
 \contributors
-```
+
 # File Preamble
 
 A FIRRTL file begins with a magic string and version identifier indicating the version of this standard the file conforms to (see [@sec:versioning-scheme-of-this-document]).
@@ -2694,12 +2693,12 @@ The `release`{.firrtl} and `release_initial`{.firrtl} statements end the forcing
 
 Like `read`{.firrtl}, the force statements are verification constructs.
 
-| Name            | Arguments                    | Argument Types                                                   |
-|-------------------|----------------------------------|-------------------|
-| force_initial   | (ref, val)                   | (`RWProbe<T>`{.firrtl}, T)                                       |
-| release_initial | (ref)                        | (`RWProbe<T>`{.firrtl})                                          |
-| force           | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
-| release         | (clock, condition, ref)      | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})    |
+| Name | Arguments | Argument Types |
+|-------------------|--------------------|---------------------------------|
+| force_initial | (ref, val) | (`RWProbe<T>`{.firrtl}, T) |
+| release_initial | (ref) | (`RWProbe<T>`{.firrtl}) |
+| force | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
+| release | (clock, condition, ref) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}) |
 
 Backends optionally generate corresponding constructs in the target language, or issue an warning.
 
@@ -3472,13 +3471,13 @@ Figure [@fig:foo-unfolded] shows the completely unfolded representation where ea
 Using targets (or multiple targets), any specific module, instance, or combination of instances can be expressed.
 Some examples include:
 
-| Target            | Description                                                                     |
-|-------------------------------------------|-----------------------------|
-| `Foo`             | refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl}) |
-| `Bar`             | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})    |
-| `Foo/a:Bar`       | refers just to one instance of module `Bar`{.firrtl}                            |
-| `Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl}                                 |
-| `Bar/d:Baz`       | refers to two instances of module `Baz`{.firrtl}                                |
+| Target | Description |
+|-------------------------|-----------------------------------------------|
+| `Foo` | refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl}) |
+| `Bar` | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl}) |
+| `Foo/a:Bar` | refers just to one instance of module `Bar`{.firrtl} |
+| `Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl} |
+| `Bar/d:Baz` | refers to two instances of module `Baz`{.firrtl} |
 
 If a target does not contain an instance path, it is a *local* target.
 A local target points to all instances of a module.
@@ -4253,9 +4252,8 @@ circuit Foo:
 Radix-specified integer literals are only usable when constructing hardware integer literals.
 Any use in place of an integer is disallowed.
 
-```{=tex}
 \clearpage
-```
+
 # Grammar
 
 ``` ebnf

@@ -5,39 +5,42 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
-      - Fix mistake in layer-associated probe grammar.
-      - Define "Storable Type".
-      - Change the minimum width of the result of "Shift Right" on UInt to
-        0-bit.
-      - Allow assert and assume statements to have a format string
-      - Add Property primitive operations, starting with integer addition
-      - Define/clarify layer-colored probe semantics.
-      - Add Property primitive operation for integer multiplication
-      - Add Property primitive operation for integer shift right
-      - Drop "ref statement" support.
-      - Correct mistakes in code examples.
-      - Drop support for input probes.
-      - Add "enablelayer" to grammar.
-      - Main module must be public.
-      - Make commas mandatory, not whitespace.
-      - Restore flow description.
-      - Update intrinsic module example to use a real intrinsic.
-      - Restore id and info in printf grammar, add to verif commands.
-      - Add intrinsic expressions and statements.
-      - Remove intrinsic modules.
-      - Allow layerbocks anywhere in a module.
-      - Add language clarifying behavior statements affected by conditionals.
-      - No abstract reset on externally-defined modules.
-      - Add Property type and primitive operations for List.
-      - Add `formal` unit test construct.
-      - Add Property primitive operation for integer shift left
     abi:
-      - Use EBNF to describe probe port macros and filename.
-      - Correct mistakes in code examples.
-      - Change layer filenames to use "-" and not "_" to avoid ambiguity with
-        module or layer names.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 4.0.0
+      spec:
+        - Fix mistake in layer-associated probe grammar.
+        - Define "Storable Type".
+        - Change the minimum width of the result of "Shift Right" on UInt to
+          0-bit.
+        - Allow assert and assume statements to have a format string
+        - Add Property primitive operations, starting with integer addition
+        - Define/clarify layer-colored probe semantics.
+        - Add Property primitive operation for integer multiplication
+        - Add Property primitive operation for integer shift right
+        - Drop "ref statement" support.
+        - Correct mistakes in code examples.
+        - Drop support for input probes.
+        - Add "enablelayer" to grammar.
+        - Main module must be public.
+        - Make commas mandatory, not whitespace.
+        - Restore flow description.
+        - Update intrinsic module example to use a real intrinsic.
+        - Restore id and info in printf grammar, add to verif commands.
+        - Add intrinsic expressions and statements.
+        - Remove intrinsic modules.
+        - Allow layerbocks anywhere in a module.
+        - Add language clarifying behavior statements affected by conditionals.
+        - No abstract reset on externally-defined modules.
+        - Add Property type and primitive operations for List.
+        - Add `formal` unit test construct.
+        - Add Property primitive operation for integer shift left
+      abi:
+        - Use EBNF to describe probe port macros and filename.
+        - Correct mistakes in code examples.
+        - Change layer filenames to use "-" and not "_" to avoid ambiguity with
+          module or layer names.
     - version: 3.3.0
       spec:
         - Add public modules.

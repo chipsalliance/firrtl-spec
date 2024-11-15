@@ -17,7 +17,7 @@ jobs:
         run: |
           ./scripts/get-contributors.sh -g ${{ secrets.GITHUB_TOKEN }} > include/contributors.json
       - name: "Open PR If New Contributors"
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.CHISEL_BOT_TOKEN }}
           branch: ci/update-contributors

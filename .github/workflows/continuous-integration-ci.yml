@@ -22,7 +22,7 @@ jobs:
       contents: write
     steps:
       - name: "Checkout chipsalliance/firrtl-spec"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         # We use `git describe` which requires tags
         with:
           fetch-depth: 0
@@ -73,7 +73,7 @@ jobs:
           path: build
           retention-days: 1
       - name: "Create Release If Tagged"
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           fail_on_unmatched_files: true

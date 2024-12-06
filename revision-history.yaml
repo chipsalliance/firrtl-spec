@@ -5,7 +5,9 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
+      - Add a second standard layer convention, "inelin".
     abi:
+      - Add inline layer convention ABI.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 4.0.0

@@ -131,24 +131,33 @@ Reference types in ports shall be logically split out from aggregates and named 
 
 ## On Layers
 
-The lowering convention of a declared layer specifies how a layer and all its associated layer blocks will be lowered.
-Currently, the only lowering convention that must be supported is `"bind"`{.firrtl.}.
+The lowering convention of a layer specifies how the functionality contained within its associated layer block will both be represented after compilation and the mechanism to enable the functionality.
+There are two standard lowering conventions:
+
+1.  The `bind`{.firrtl} convention will "extract" layer blocks from the circuit into modules that are instantiated via SystemVerilog's `bind`{.verilog} feature.
+    Functionality is enabled by including a file during compilation.
+2.  The `inline`{.firrtl} convention lowers the layer blocks to `` `ifdef ``{.verilog}-guarded regions.
+    Functionality is enabled by defining a macro during Verilog elaboration.
+
 FIRRTL compilers may implement other non-standard lowering conventions.
 
 ### Bind Lowering Convention
 
-The bind lowering convention is indicated by the `"bind"`{.firrtl} string on a declared layer.
-When using this convention, layer blocks associated with that layer are lowered to separate modules that are instantiated via SystemVerilog `bind`{.verilog} statements ("bind instantiation").
+The bind lowering convention is indicated by the `bind`{.firrtl} string on a declared layer.
+When using this convention, the functionality contained within layer blocks will be converted to FIRRTL modules.
+These modules are then instantiated via SystemVerilog `bind`{.verilog} statements ("bind instantiation").
 
-Each module that contains layer blocks will produce one additional module per layer block that has "internal" module convention.
-I.e., the modules are private and have no defined ABI---the name of each module is implementation defined, the instantiation name of a bound instance is implementation defined, and any ports created on the module may have any name and may be optimized away.
+The bind lowering convention is intended to be used in situations where layer functionality must be removed from the design.
+E.g., bind layers can be used to remove verification code for more succinct Verilog presentation or to prevent it from being included in a release of design Intellectual Property (IP).
+
+The number, instantiation location, name, ports, and port names of these modules is implementation defined.
+(While it is a legal compilation to produce one module for each layerblock in a module, a compiler is free to optimize layer blocks in any way that it sees fit so long as the functionality of the layer blocks is unchanged.)
 
 Practically speaking, additional ports of each generated module must be created whenever a value defined outside the layer block is used inside the layer block.
 The values captured by the layer block will create input ports.
 Values defined in a layer block and used by a nested layer block will create output ports because SystemVerilog disallows the use of a bind instantiation underneath the scope of another bind instantiation.
-The names of additional ports are implementation defined.
 
-For each layer and public module, one binding file will be produced for each layer or nested layer.
+For each layer and public module, one binding file must be produced for each layer or nested layer.
 The public module, layer name, and any nested layer names are used to derive a predictable filename of the binding file.
 The file format uses the format below where `module` is the name of the public module, `root` is the name of the root-level layer and `nested` is the name of zero or more nested layers:
 
@@ -310,6 +319,47 @@ bind Bar Bar_Layer1_Layer2 layer1_layer2(.notA(Bar.layer1.notA));
 
 The `` `ifdef ``{.verilog} guards enable any combination of the bind files to be included while still producing legal SystemVerilog.
 I.e., the end user may safely include none, either, or both of the bindings files.
+
+### Inline Lowering Convention
+
+The inline lowering convention is indicated by the `inline`{.firrtl} string on a declared layer.
+When using this convention, the functionality contained within layer blocks will be included *inline* in the final circuit, but will be guarded behind conditional compilation compiler directives, e.g., `` `ifdef ``{.verilog}.
+
+The number and location of conditional compilation compiler directive code regions is implementation defined.
+
+To enable the functionality for all layer blocks under a public module, a user should set a preprocessor define during Verilog compilation to enable the conditional compilation compiler directives.
+The define uses the format below where `module` is the name of the public module, `root` is the name of the root-level layer and `nested` is the name of zero or more nested layers:
+
+``` ebnf
+define = "layers_" , module , "$" , root , { "$" , nested } ;
+```
+
+If an inline layer is nested under a bind layer, the name of the bind layer should be included in the define.
+
+As an example, consider the following circuit with one bind layer and two inline layers:
+
+``` firrtl
+FIRRTL version 4.0.0
+circuit Bar:
+  layer Layer1, bind:
+    layer Layer2, inline:
+      layer Layer3, inline:
+  public module Bar:
+  public module Baz:
+```
+
+When compiled to Verilog, this creates two Verilog modules.
+Verilog module `Bar` will be sensitive to the following defines:
+
+    layers_Bar$Layer1$Layer2
+    layers_Bar$Layer1$Layer2$Layer3
+
+Verilog module `Baz` will be sensitive to the following defines:
+
+    layers_Baz$Layer1$Layer2
+    layers_Baz$Layer1$Layer2$Layer3
+
+The effect of enabling a child inline layer *does not* enable its parent layers.
 
 ## On Types
 

@@ -331,7 +331,7 @@ To enable the functionality for all layer blocks under a public module, a user s
 The define uses the format below where `module` is the name of the public module, `root` is the name of the root-level layer and `nested` is the name of zero or more nested layers:
 
 ``` ebnf
-define = "layers_" , module , "$" , root , { "$" , nested } ;
+define = "layer_" , module , "$" , root , { "$" , nested } ;
 ```
 
 If an inline layer is nested under a bind layer, the name of the bind layer should be included in the define.
@@ -351,13 +351,13 @@ circuit Bar:
 When compiled to Verilog, this creates two Verilog modules.
 Verilog module `Bar` will be sensitive to the following defines:
 
-    layers_Bar$Layer1$Layer2
-    layers_Bar$Layer1$Layer2$Layer3
+    layer_Bar$Layer1$Layer2
+    layer_Bar$Layer1$Layer2$Layer3
 
 Verilog module `Baz` will be sensitive to the following defines:
 
-    layers_Baz$Layer1$Layer2
-    layers_Baz$Layer1$Layer2$Layer3
+    layer_Baz$Layer1$Layer2
+    layer_Baz$Layer1$Layer2$Layer3
 
 The effect of enabling a child inline layer *does not* enable its parent layers.
 

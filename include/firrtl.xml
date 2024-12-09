@@ -7,6 +7,7 @@
       <item>extmodule</item>
       <item>layer</item>
       <item>formal</item>
+      <item>option</item>
     </list>
     <list name="keywords">
       <item>input</item>
@@ -28,6 +29,8 @@
       <item>public</item>
       <item>enablelayer</item>
       <item>bound</item>
+      <item>instchoice</item>
+      <item>option</item>
     </list>
     <list name="types">
       <item>UInt</item>

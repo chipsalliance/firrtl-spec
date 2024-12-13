@@ -134,9 +134,9 @@ Reference types in ports shall be logically split out from aggregates and named 
 The lowering convention of a layer specifies how the functionality contained within its associated layer block will both be represented after compilation and the mechanism to enable the functionality.
 There are two standard lowering conventions:
 
-1.  The `bind`{.firrtl} convention will "extract" layer blocks from the circuit into modules that are instantiated via SystemVerilog's `bind`{.verilog} feature.
+1.  The `bind`{.firrtl} convention will "extract" layer blocks from the circuit into modules that are instantiated via SystemVerilog's `bind`{.verilog} feature (Section 23.11 of IEEE 1800-2023).
     Functionality is enabled by including a file during compilation.
-2.  The `inline`{.firrtl} convention lowers the layer blocks to `` `ifdef ``{.verilog}-guarded regions.
+2.  The `inline`{.firrtl} convention lowers the layer blocks to `` `ifdef ``{.verilog}-guarded regions (Section 23.6 of IEEE 1800-2023).
     Functionality is enabled by defining a macro during Verilog elaboration.
 
 FIRRTL compilers may implement other non-standard lowering conventions.

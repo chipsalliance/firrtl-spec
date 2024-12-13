@@ -241,7 +241,7 @@ A layer may be declared in a circuit or in another layer declaration.
 A layer's identifier must be unique within the current namespace.
 I.e., the identifier of a top-level layer declared in a circuit must not conflict with the identifier of a module, external module, or implementation defined module.
 
-Layers may be arbitrarily nested, with the exceptions of convention constraints described below.
+Layers may be nested, with the exceptions of convention constraints described below.
 Nested layers are declared with the `layer`{.firrtl} keyword indented under an existing `layer`{.firrtl} keyword.
 
 Each layer must include a string that sets the *lowering convention* for that layer.

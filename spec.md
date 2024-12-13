@@ -241,12 +241,18 @@ A layer may be declared in a circuit or in another layer declaration.
 A layer's identifier must be unique within the current namespace.
 I.e., the identifier of a top-level layer declared in a circuit must not conflict with the identifier of a module, external module, or implementation defined module.
 
-Layers may be nested.
+Layers may be nested, with the exceptions of convention constraints described below.
 Nested layers are declared with the `layer`{.firrtl} keyword indented under an existing `layer`{.firrtl} keyword.
 
-Each layer must include a string that sets the lowering convention for that layer.
-The FIRRTL ABI specification defines supported lowering conventions.
-One such strategy is `bind`{.firrtl} which lowers to modules and instances which are instantiated using the SystemVerilog `bind`{.verilog} feature.
+Each layer must include a string that sets the *lowering convention* for that layer.
+The conventions defines both how the optional functionality is represented when the circuit is compiled to a backend language and the mechanism by which the layer's optional functionality can be enabled.
+For the purposes of FIRRTL execution, all layer conventions are the same---enabling the layer enables the optional functionality.
+
+There are two standard lowering conventions: `bind`{.firrtl} and `inline`{.firrtl}.
+For details of the representation and mechanism of these conventions, see the FIRRTL ABI Specification.
+Compilers may define other non-standard lowering conventions.
+
+A layer with the `bind`{.firrtl} convention may not be nested, or transitively nested, under a layer of `inline`{.firrtl} convention.
 
 The example below shows a circuit with layers `A`, `B`, and `B.C`:
 

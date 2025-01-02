@@ -5,11 +5,14 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
-      - Add a second standard layer convention, "inline".
     abi:
-      - Add inline layer convention ABI.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 4.1.0
+      spec:
+        - Add a second standard layer convention, "inline".
+      abi:
+        - Add inline layer convention ABI.
     - version: 4.0.0
       spec:
         - Fix mistake in layer-associated probe grammar.

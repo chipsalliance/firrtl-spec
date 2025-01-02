@@ -339,7 +339,7 @@ If an inline layer is nested under a bind layer, the name of the bind layer shou
 As an example, consider the following circuit with one bind layer and two inline layers:
 
 ``` firrtl
-FIRRTL version 4.0.0
+FIRRTL version 4.1.0
 circuit Bar:
   layer Layer1, bind:
     layer Layer2, inline:

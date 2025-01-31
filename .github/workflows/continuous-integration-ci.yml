@@ -67,7 +67,7 @@ jobs:
       - name: "Test code blocks"
         run: make test
       - name: "Upload Build Directory"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build
           path: build

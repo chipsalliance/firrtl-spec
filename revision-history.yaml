@@ -5,6 +5,7 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
+      - Add `contract` construct.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

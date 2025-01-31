@@ -2961,6 +2961,104 @@ For this reason, it is an error to use `rwprobe`{.firrtl} on any port on a publi
 
 Probes may not be inputs to modules.
 
+# Contracts
+
+The `contract`{.firrtl} declaration provides a mechanism to verify a predicate or property, and to then use this predicate or property to simplify the circuit for further verification or simulation.
+
+``` {.firrtl .notest}
+FIRRTL version 4.2.0
+circuit Foo:
+  public module Foo:
+    input a: UInt<42>
+    input b: UInt<1337>
+    output x: UInt<42>
+    output y: UInt<1337>
+    ;; snippetbegin
+    contract c, d = a, b:
+      ; contract body
+    connect x, c
+    connect y, d
+    ;; snippetend
+```
+
+A contract conceptually acts like a `node`{.firrtl}, defining one or more names and assigning a value to each.
+It also has a block to hold statements that describe the predicates and properties to be verified.
+Most commonly the `circt_verif_require` and `circt_verif_ensure` intrinsics ([@sec:intrinsics]) are used to describe pre- and post-conditions of the contract.
+These intrinsics can only be used in the body block of a contract.
+The types of the defined names are the types of the expressions given in the definition and must be a ground type or a potentially nested aggregate type of only ground types.
+Probes, properties, and bundles with flips cannot be used in a contract.
+
+## Passthrough Semantics
+
+It is always legal to discard a contract by ignoring any statements in its body block and treating the contract as a set of `node`{.firrtl}s.
+
+## Assume-Guarantee Semantics
+
+A contract can be used to implement a form of the assume-guarantee technique that is commonly used in formal verification software.
+Simply put, a contract's properties can be verified to hold using an `assert` in one step, and then can be assumed to hold using an `assume` in subsequent steps.
+And similarly, if a contract only applies under certain assumptions, these are `assume`d in the first step, and then `assert`ed to hold in subsequent steps.
+The `circt_verif_require` and `circt_verif_ensure` intrinsics can be used to express this switching between assertion and assumption based on whether the contract is *checked* or *applied*:
+
+1.  A contract can be *checked* by turning `require`s into `assume`s and `ensure`s into `assert`s.
+    Doing so verifies that a circuit upholds the contract by placing asserts on the values it produces, and by placing assumes on the input values the circuit sees.
+    In a nutshell, this checks that, assuming the inputs to the circuit honor the contract, the output from the circuit also upholds the contract.
+    This check can be done very efficiently by creating `formal`{.firrtl} tests ([@sec:formal-unit-tests]) to verify each contract.
+
+2.  A contract can be *applied* by turning `require`s into `assert`s and `ensure`s into `assume`s.
+    Doing so verifies that the inputs fed into a circuit uphold the contract, such that the outputs can be assumed to have the promised values.
+    In a nutshell, this checks that the inputs to a circuit honor the contract and therefore the circuit can be assumed to uphold the contract.
+    Assuming a contract can often eliminate large parts of the circuit's actual implementation, since the contracts tend to be a simpler description of a circuit's functionality.
+
+## Cutpoint Semantics
+
+A contract can be used to implement cutpoints, a technique commonly used in formal verification software to subdivide a large verification problem in multiple smaller ones.
+This technique separates a contract into two individual verification problems:
+
+1.  The contract is interpreted as a passthrough ([@sec:passthrough-semantics]) and *checked* as described above.
+    In a nutshell, this creates a bunch of `assert`s and `assume`s on the expressions given in the contract definition.
+
+2.  The contract's results are replaced with symbolic values and the contract is *applied* as described above.
+    In a nutshell, this replaces the contract's results with arbitrary values that are constrained by a bunch of `assume`s and `assert`s.
+
+These two verification problems can coexist and can be executed in parallel.
+Since the contract's results are replaced with symbolic values, subsequent parts of the circuit that depend on those results are detached from the actual hardware implementation.
+This can be used to implement a divide-and-conquer scheme for hardware verification.
+It is particularly useful if a complex hardware implementation can be replaced with a much simpler arithmetic expression or property.
+
+## Example
+
+As a concrete example, a contract can be used to verify and simplify an implementation of a multiply-by-9 circuit as follows:
+
+``` {.firrtl .notest}
+circuit MulBy9:
+  public module MulBy9:
+    input a : UInt<32>
+    output z : UInt<32>
+    ; b = a+(a<<3)
+    contract b = add(a, shl(a, UInt(3))):
+      ; ensure a+(a<<3) == a*9
+      intrinsic(circt_verif_ensure, eq(b, mul(a, UInt(9))))
+    connect z, b
+```
+
+By applying the assume-guarantee and cutpoint techniques, the contract can be *checked* separately in a `formal`{.firrtl} test, and it can be *applied* in its original location to simplify the module:
+
+``` {.firrtl .notest}
+circuit MulBy9:
+  public module MulBy9:
+    input a : UInt<32>
+    output z : UInt<32>
+    ; simplified node b = <symbolic value>; assume(eq(b, mul(a, UInt(9))))
+    connect z, mul(a, UInt(9))
+
+  formal MulBy9ContractCheck of MulBy9Contract:
+  module MulBy9Contract:
+    input a : UInt<32>
+    node b = add(a, shl(a, UInt(3)))
+    ; assert a+(a<<3) == a*9
+    intrinsic(circt_verif_assert, eq(b, mul(a, UInt(9))))
+```
+
 # Expressions
 
 FIRRTL expressions are used for creating constant integers,

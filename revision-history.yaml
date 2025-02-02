@@ -5,6 +5,7 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
+      - Correct grammar for modulus primitive operator.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

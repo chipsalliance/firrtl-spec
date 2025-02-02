@@ -4584,7 +4584,7 @@ primop_1expr_keyword =
   | "andr"   | "orr"    | "xorr" ;
 
 primop_2expr_keyword =
-    "add"  | "sub" | "mul" | "div" | "mod"
+    "add"  | "sub" | "mul" | "div" | "rem"
   | "lt"   | "leq" | "gt"  | "geq" | "eq" | "neq"
   | "dshl" | "dshr"
   | "and"  | "or"  | "xor" | "cat" ;

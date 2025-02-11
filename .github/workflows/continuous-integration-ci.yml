@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p ${{ env.pandoc-install-dir }}/bin
           wget https://github.com/jgm/pandoc/releases/download/${{ env.pandoc-version }}/pandoc-${{ env.pandoc-version }}-linux-amd64.tar.gz -O - | tar -zx -C ${{ env.pandoc-install-dir }}/bin --strip-components 2
-          wget https://github.com/lierdakil/pandoc-crossref/releases/download/${{ env.pandoc-crossref-version }}/pandoc-crossref-Linux.tar.xz -O - | tar -Jx -C ${{ env.pandoc-install-dir }}/bin
+          wget https://github.com/lierdakil/pandoc-crossref/releases/download/${{ env.pandoc-crossref-version }}/pandoc-crossref-Linux-X64.tar.xz -O - | tar -Jx -C ${{ env.pandoc-install-dir }}/bin
           echo "${{ env.pandoc-install-dir }}/bin" >> $GITHUB_PATH
       - name: "Check Formatting"
         shell: bash

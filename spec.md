@@ -2349,6 +2349,15 @@ Format strings support the following escape characters:
 
 -   `\'` : Single quote
 
+The following special substitutions are also allowed.
+These substitutions do not have corresponding operands:
+
+-   `{{SimulationTime}}` : Prints the current simulation time
+
+-   `{{HierarchicalModuleName}}` : Prints the complete hierarchical path from the root module to the module that contains this `printf`.
+
+-   `\{{` : Prints a literal `{{`. This can be used to escape a special substitution if you desire to have a literal `{{` appear in the output.
+
 ## Verification
 
 To facilitate simulation, model checking and formal methods, there are three non-synthesizable verification statements available: assert, assume and cover.

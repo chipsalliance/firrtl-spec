@@ -5,6 +5,7 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
+      - Add special substitutions (`{{}}`) for format strings.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

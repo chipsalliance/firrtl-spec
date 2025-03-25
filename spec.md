@@ -2329,6 +2329,8 @@ Format strings support the following argument placeholders:
 
 -   `%b` : Prints the argument in binary
 
+-   `%c` : Prints the argument as an ASCII character
+
 -   `%d` : Prints the argument in decimal
 
 -   `%x` : Prints the argument in hexadecimal

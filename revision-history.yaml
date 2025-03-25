@@ -6,6 +6,7 @@ revisionHistory:
   thisVersion:
     spec:
       - Correct grammar for modulus primitive operator.
+      - Add `%c` format string substitution.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

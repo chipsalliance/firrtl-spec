@@ -4,6 +4,7 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
+    spec:
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

@@ -4,12 +4,14 @@ revisionHistory:
   # populated using the "version" that the Makefile grabs from git.  Notable
   # additions to the specification should append entries here.
   thisVersion:
-    spec:
-      - Correct grammar for modulus primitive operator.
-      - Add `%c` format string substitution.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 4.2.0
+      spec:
+        - Correct grammar for modulus primitive operator.
+        - Add `%c` format string substitution.
+      abi:
     - version: 4.1.0
       spec:
         - Add a second standard layer convention, "inline".

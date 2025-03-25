@@ -320,7 +320,7 @@ The `formal`{.firrtl} keyword declares a formal unit test.
 Tools may look for these constructs and automatically run them as part of a regression test suite.
 
 A formal unit test has a unique name and refers to a module declaration that contains the design to be verified and any necessary test harness.
-Additionally, the test may also declare a list of user-defined named parameters which can be integers, strings, arrays, or dictionaries.
+Additionally, the test may also declare a list of user-defined named parameters which can be integers, strings, arrays, or dictionaries (see [@sec:test-parameters]).
 These parameters are passed on to any tools that execute the tests.
 No parameters with well-known semantics are defined yet.
 During execution of the formal test, all input ports of the target module are treated as symbolic values that may change in every cycle.
@@ -349,6 +349,31 @@ circuit Foo :
     bound = 100
 ```
 
+### Test Parameters
+
+Unit tests may declare a list of user-defined *named parameters*.
+Each parameter starts on a separate line with an identifier corresponding to the parameter name, followed by `=` and the parameter value.
+The *parameter value* can be an integer literal, a string literal, an array, or a dictionary.
+An array is a comma-separated list of parameter values enclosed in `[` and `]`.
+A dictionary is a comma-separated list of named parameters enclosed in `{` and `}`.
+Each named parameter in a dictionary consists of an identifier corresponding to the parameter name, followed by `=` and the parameter value.
+
+The following snippet shows the different parameters:
+
+``` {.firrtl .notest}
+FIRRTL version 4.0.0
+circuit Foo :
+  public module Foo :
+  formal myTest of Foo :
+    myParamA = 42                     ; an integer
+    myParamB = "hello"                ; a string
+    myParamC = [42, "hello"]          ; an array
+    myParamD = {x = 42, b = "hello"}  ; a dictionary
+    ; arrays and dictionaries can be nested:
+    myParamE = [42, [9001], {foo = 1337}]
+    myParamF = {x = 42, y = [9001], z = {foo = 1337}}
+```
+
 ### Test Harnesses
 
 It may be necessary to define additional verification constructs and hardware in addition to the design that should be run in a formal unit test.
@@ -372,6 +397,95 @@ circuit Foo :
 
   formal testFoo of FooTest :
 ```
+
+## Simulation Unit Tests
+
+The `simulation`{.firrtl} keyword declares a simulation unit test.
+Tools may look for these constructs and automatically run them as part of a regression test suite.
+
+A simulation unit test has a unique name and refers to a module declaration that contains the design to be verified and any necessary test harness.
+Additionally, the test may also declare a list of user-defined named parameters which can be integers, strings, arrays, or dictionaries (see [@sec:test-parameters]).
+These parameters are passed on to any tools that execute the tests.
+No parameters with well-known semantics are defined yet.
+
+The circuit below shows a module run as a simulation unit test:
+
+``` {.firrtl .notest}
+FIRRTL version 4.3.0
+circuit Foo :
+  public module Foo :
+    input clock : Clock
+    input init : UInt<1>
+    output done : UInt<1>
+    output success : UInt<1>
+    ; ...
+  simulation myTest of Foo :
+```
+
+A module may be reused in multiple unit tests, for example to run with different testing parameters:
+
+``` {.firrtl .notest}
+FIRRTL version 4.3.0
+circuit Foo :
+  public module Foo :
+    input clock : Clock
+    input init : UInt<1>
+    output done : UInt<1>
+    output success : UInt<1>
+    ; ...
+  simulation myTestA of Foo :
+    maxSteps = 9001
+  simulation myTestB of Foo :
+    enableAsserts = 1
+    collectCoverage = 1
+```
+
+### Ports
+
+The target module must have exactly the following four ports:
+
+  Name      Type        Direction
+  --------- ----------- -----------
+  clock     Clock       input
+  init      UInt\<1\>   input
+  done      UInt\<1\>   output
+  success   UInt\<1\>   output
+
+The *clock* input starts at 0 and continuously toggles between 0 and 1 throughout the simulation.
+The *init* input starts at 1, remains 1 during a single 0-to-1 transition of the clock, and then drops to 0 for the remainder of the simulation.
+The *done* output indicates the end of the simulation.
+The simulation stops when done is 1 during a 0-to-1 transition of the clock after init has dropped to 0.
+No additional clock toggles occur once done has been sampled as 1.
+The *success* output indicates the success of the test as 1, or failure as 0.
+The output is sampled at the same time as the done signal.
+Simulators must signal failure to the operating system through a non-zero exit code.
+
+### Schedule
+
+The clock and init values adhere to the following schedule during simulation.
+Steps marked as optional may be skipped by the simulator:
+
+  Time Step      Clock       Init
+  -------------- ----------- -----------
+  1 (optional)   undefined   undefined
+  2              0           1
+  3              1           1
+  4 (optional)   1           1 or 0
+  5 (optional)   0           1 or 0
+  6              0           0
+  7              1           0
+  8              0           0
+
+1.  Clock and init may initially be undefined.
+2.  Clock and init change to their initial values of low and high, respectively.
+    Initialization code may run before or after this change.
+    (E.g., Verilog `initial` procedures or register randomization.)
+3.  A single rising clock edge occurs while init is high.
+4.  Init may be high or low during the first clock high period.
+5.  Init may be high or low during the first falling clock edge.
+6.  Init goes low before the second rising clock edge.
+7.  Rising clock edge.
+8.  Falling clock edge. Continue at 7. indefinitely.
 
 # Circuit Components
 
@@ -4322,6 +4436,7 @@ decl =
   | decl_extmodule
   | decl_layer
   | decl_formal
+  | decl_simulation
   | decl_type_alias ;
 
 decl_module =
@@ -4340,19 +4455,25 @@ decl_extmodule =
 
 decl_layer =
   "layer" , id , string , ":" , [ info ] , newline , indent ,
-  { decl_layer , newline } ,
+    { decl_layer , newline } ,
   dedent ;
 
 decl_formal =
   "formal" , id , "of" , id , ":" , [ info ] , newline , indent ,
-    { id , "=" , decl_formal_param , newline } ,
+    { id , "=" , decl_test_param , newline } ,
   dedent ;
-decl_formal_param =
+
+decl_simulation =
+  "simulation" , id , "of" , id , ":" , [ info ] , newline , indent ,
+    { id , "=" , decl_test_param , newline } ,
+  dedent ;
+
+decl_test_param =
     int
   | string_dq
   | string_sq
-  | "[" , [ decl_formal_param , { "," , decl_formal_param } ] , "]"
-  | "{" , [ id , "=" , decl_formal_param , { "," , id , "=" , decl_formal_param } ] , "}"
+  | "[" , [ decl_test_param , { "," , decl_test_param } ] , "]"
+  | "{" , [ id , "=" , decl_test_param , { "," , id , "=" , decl_test_param } ] , "}"
 
 decl_type_alias = "type", id, "=", type ;
 

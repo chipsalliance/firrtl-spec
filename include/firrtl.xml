@@ -27,7 +27,6 @@
       <item>propassign</item>
       <item>public</item>
       <item>enablelayer</item>
-      <item>bound</item>
     </list>
     <list name="types">
       <item>UInt</item>

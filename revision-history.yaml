@@ -6,6 +6,7 @@ revisionHistory:
   thisVersion:
     spec:
       - Add special substitutions (`{{}}`) for format strings.
+      - Add `simulation` unit test construct.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

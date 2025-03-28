@@ -6,6 +6,7 @@ revisionHistory:
   thisVersion:
     spec:
       - Add special substitutions (`{{}}`) for format strings.
+      - Remove circuit from annotations
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

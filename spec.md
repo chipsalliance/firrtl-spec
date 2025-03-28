@@ -3511,11 +3511,11 @@ The following shows a valid annotation file containing two annotations:
 [
   {
     "class":"hello",
-    "target":"~Foo|Bar"
+    "target":"Bar"
   },
   {
     "class":"world",
-    "target":"~Foo|Baz"
+    "target":"Baz"
   }
 ]
 ```
@@ -3529,11 +3529,11 @@ FIRRTL version 4.0.0
 circuit Foo: %[[
   {
     "class":"hello",
-    "target":"~Foo|Bar"
+    "target":"Bar"
   },
   {
     "class":"world",
-    "target":"~Foo|Baz"
+    "target":"Baz"
   }
 ]]
   module Baz :

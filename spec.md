@@ -3448,7 +3448,7 @@ A target with an instance hierarchy is non-local.
 Targets use a shorthand syntax of the form:
 
 ``` ebnf
-target = "~" , (circuit) , "|" , module , [ { “/” (instance) “:” (module) } , [ “>” , ref ] ]
+target = "~" , [ circuit ] , "|" , module , [ { “/” (instance) “:” (module) } , [ “>” , ref ] ]
 ```
 
 A reference is a name inside a module and one or more qualifying tokens that encode subfields (of a bundle) or subindices (of a vector):

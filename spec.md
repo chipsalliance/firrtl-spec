@@ -3439,7 +3439,7 @@ A circuit is described, stored, and optimized in a folded representation.
 For example, there may be multiple instances of a module which will eventually become multiple physical copies of that module on the die.
 
 Targets are a mechanism to identify specific hardware in specific instances of modules in a FIRRTL circuit.
-A target consists of an optiona circuit, a mandatory root module, an optional instance hierarchy, and an optional reference.
+A target consists of an optional circuit, a mandatory root module, an optional instance hierarchy, and an optional reference.
 A target can only identify hardware with a name, e.g., a module, instance, register, wire, or node.
 References may further refer to specific fields or subindices in aggregates.
 A target with no instance hierarchy is local.

@@ -3444,7 +3444,7 @@ A circuit is described, stored, and optimized in a folded representation.
 For example, there may be multiple instances of a module which will eventually become multiple physical copies of that module on the die.
 
 Targets are a mechanism to identify specific hardware in specific instances of modules in a FIRRTL circuit.
-A target consists of a root module, an optional instance hierarchy, and an optional reference.
+A target consists of an optional circuit, a mandatory root module, an optional instance hierarchy, and an optional reference.
 A target can only identify hardware with a name, e.g., a module, instance, register, wire, or node.
 References may further refer to specific fields or subindices in aggregates.
 A target with no instance hierarchy is local.
@@ -3453,7 +3453,7 @@ A target with an instance hierarchy is non-local.
 Targets use a shorthand syntax of the form:
 
 ``` ebnf
-target = module , [ { “/” (instance) “:” (module) } , [ “>” , ref ] ]
+target = "~" , [ circuit ] , "|" , module , [ { “/” (instance) “:” (module) } , [ “>” , ref ] ]
 ```
 
 A reference is a name inside a module and one or more qualifying tokens that encode subfields (of a bundle) or subindices (of a vector):
@@ -3495,11 +3495,11 @@ Some examples include:
 
 | Target | Description |
 |-------------------------|-----------------------------------------------|
-| `Foo` | refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl}) |
-| `Bar` | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl}) |
-| `Foo/a:Bar` | refers just to one instance of module `Bar`{.firrtl} |
-| `Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl} |
-| `Bar/d:Baz` | refers to two instances of module `Baz`{.firrtl} |
+| `~|Foo` | refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl}) |
+| `~|Bar` | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl}) |
+| `~|Foo/a:Bar` | refers just to one instance of module `Bar`{.firrtl} |
+| `~|Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl} |
+| `~|Bar/d:Baz` | refers to two instances of module `Baz`{.firrtl} |
 
 If a target does not contain an instance path, it is a *local* target.
 A local target points to all instances of a module.
@@ -3516,11 +3516,11 @@ The following shows a valid annotation file containing two annotations:
 [
   {
     "class":"hello",
-    "target":"~Foo|Bar"
+    "target":"~|Bar"
   },
   {
     "class":"world",
-    "target":"~Foo|Baz"
+    "target":"~|Baz"
   }
 ]
 ```
@@ -3534,11 +3534,11 @@ FIRRTL version 4.0.0
 circuit Foo: %[[
   {
     "class":"hello",
-    "target":"~Foo|Bar"
+    "target":"~|Bar"
   },
   {
     "class":"world",
-    "target":"~Foo|Baz"
+    "target":"~|Baz"
   }
 ]]
   module Baz :

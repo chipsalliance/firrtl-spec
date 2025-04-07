@@ -5,7 +5,8 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
-        - Add `fprintf` statement.
+      - Add optional circuit to target syntax.
+      - Add `fprintf` statement.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

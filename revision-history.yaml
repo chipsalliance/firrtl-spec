@@ -5,13 +5,13 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
+        - Add `fprintf` statement.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 5.0.0
       spec:
         - Add special substitutions (`{{}}`) for format strings.
-        - Add `fprintf` statement.
       abi:
     - version: 4.2.0
       spec:

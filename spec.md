@@ -4413,7 +4413,7 @@ command =
   | "fprintf" , "(" ,
         expr , "," ,
         expr , "," ,
-        string_dq ,
+        string_dq , "," ,
         string_dq ,
         { "," , expr }
     , ")" ,

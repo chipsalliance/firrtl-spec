@@ -11,6 +11,7 @@ revisionHistory:
     - version: 5.0.0
       spec:
         - Add special substitutions (`{{}}`) for format strings.
+        - Add `fprintf` statement.
       abi:
     - version: 4.2.0
       spec:

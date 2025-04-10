@@ -2306,8 +2306,10 @@ The `printf`{.firrtl} statement has an optional name attribute which can be used
 The name is part of the module level namespace.
 However it can never be used in a reference since it is not of any valid type.
 
+The `fprintf`{.firrtl} statement outputs the string to a file specified by an additional string argument.
+
 ``` firrtl
-FIRRTL version 4.0.0
+FIRRTL version 5.1.0
 circuit Foo:
   public module Foo:
     ;; snippetbegin
@@ -2317,6 +2319,9 @@ circuit Foo:
     wire b: UInt
     printf(
       clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b
+    ) : optional_name
+    fprintf(
+      clk, cond, "test.txt", "hello\n"
     ) : optional_name
     ;; snippetend
 ```
@@ -4401,6 +4406,14 @@ command =
   | "printf" , "(" ,
         expr , "," ,
         expr , "," ,
+        string_dq ,
+        { "," , expr }
+    , ")" ,
+    [ ":" , id ] , [ info ]
+  | "fprintf" , "(" ,
+        expr , "," ,
+        expr , "," ,
+        string_dq , "," ,
         string_dq ,
         { "," , expr }
     , ")" ,

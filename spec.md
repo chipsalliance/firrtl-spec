@@ -2309,7 +2309,7 @@ However it can never be used in a reference since it is not of any valid type.
 The `fprintf`{.firrtl} statement outputs the string to a file specified by an additional string argument.
 
 ``` firrtl
-FIRRTL version 4.0.0
+FIRRTL version 5.1.0
 circuit Foo:
   public module Foo:
     ;; snippetbegin

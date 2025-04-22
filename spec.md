@@ -2306,7 +2306,9 @@ The `printf`{.firrtl} statement has an optional name attribute which can be used
 The name is part of the module level namespace.
 However it can never be used in a reference since it is not of any valid type.
 
-The `fprintf`{.firrtl} statement outputs the string to a file specified by an additional string argument.
+The `fprintf`{.firrtl} statement outputs the string to a file specified by an additional format string and a variable list of argument signals.
+
+The `fflush`{.firrtl} statement flushes the output buffer of the default output file or a file specified by an additional format string and a variable list of argument signals.
 
 ``` firrtl
 FIRRTL version 5.1.0
@@ -2321,8 +2323,10 @@ circuit Foo:
       clk, cond, "a in hex: %x, b in decimal:%d.\n", a, b
     ) : optional_name
     fprintf(
-      clk, cond, "test.txt", "hello\n"
+      clk, cond, "test%d.txt", a, "hello\n"
     ) : optional_name
+    fflush(clk, cond)
+    fflush(clk, cond, "test%d.txt", a)
     ;; snippetend
 ```
 
@@ -4413,9 +4417,18 @@ command =
   | "fprintf" , "(" ,
         expr , "," ,
         expr , "," ,
-        string_dq , "," ,
+        string_dq ,
+        { "," , expr } ,
+        "," ,
         string_dq ,
         { "," , expr }
+    , ")" ,
+    [ ":" , id ] , [ info ]
+  | "fflush" , "(" ,
+        expr , "," ,
+        expr , [ "," ,
+        string_dq ,
+        { "," , expr } ]
     , ")" ,
     [ ":" , id ] , [ info ]
   | "assert" , "(" ,

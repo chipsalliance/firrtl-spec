@@ -7,6 +7,7 @@ revisionHistory:
     spec:
       - Add optional circuit to target syntax.
       - Add `fprintf` statement.
+      - Add `fflush` statement.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

@@ -9,6 +9,7 @@ revisionHistory:
       - Add `fprintf` statement.
       - Add `fflush` statement.
     abi:
+     - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 5.0.0

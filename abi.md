@@ -328,10 +328,10 @@ When using this convention, the functionality contained within layer blocks will
 The number and location of conditional compilation compiler directive code regions is implementation defined.
 
 To enable the functionality for all layer blocks under a public module, a user should set a preprocessor define during Verilog compilation to enable the conditional compilation compiler directives.
-The define uses the format below where `module` is the name of the public module, `root` is the name of the root-level layer and `nested` is the name of zero or more nested layers:
+The define uses the format below, where `root` is the name of the top-level layer and `nested` is the name of zero or more child layers:
 
 ``` ebnf
-define = "layer_" , module , "$" , root , { "$" , nested } ;
+define = "layer$" , root , { "$" , nested } ;
 ```
 
 If an inline layer is nested under a bind layer, the name of the bind layer should be included in the define.
@@ -349,17 +349,10 @@ circuit Bar:
 ```
 
 When compiled to Verilog, this creates two Verilog modules.
-Verilog module `Bar` will be sensitive to the following defines:
+Both Verilog modules `Bar` and `Baz` will be sensitive to the following defines:
 
-    layer_Bar$Layer1$Layer2
-    layer_Bar$Layer1$Layer2$Layer3
-
-Verilog module `Baz` will be sensitive to the following defines:
-
-    layer_Baz$Layer1$Layer2
-    layer_Baz$Layer1$Layer2$Layer3
-
-The effect of enabling a child inline layer *does not* enable its parent layers.
+    layer$Layer1$Layer2
+    layer$Layer1$Layer2$Layer3
 
 ## On Types
 

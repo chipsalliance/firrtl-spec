@@ -3739,6 +3739,7 @@ Primitive operations may have all their arguments of constant type, in which cas
 If the operation has a mixed constant and non-constant arguments, the result is non-constant.
 
 Notationally, the width of an argument e is represented as w~e~.
+In operation tables, the notation `e\*` indicates zero or more repetitions of argument `e`.
 
 ## Add Operation
 
@@ -3963,12 +3964,14 @@ Note that the logical consequence is that the and-reduction of a zero-width expr
 
 ## Concatenate Operation
 
-| Name | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|------|-----------|------------|--------------|-------------|--------------|
-| cat  | (e1,e2)   | ()         | (UInt, UInt) | UInt        | w~e1~+w~e2~  |
-|      |           |            | (SInt, SInt) | UInt        | w~e1~+w~e2~  |
+| Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
+|------|-----------|------------|-----------|-------------|--------------|
+| cat  | (e\*)     | ()         | (UInt\*)  | UInt        | sum(w~e~\*)  |
+|      |           |            | (SInt\*)  | UInt        | sum(w~e~\*)  |
 
-The result of the concatenate operation is the bits of e1 concatenated to the most significant end of the bits of e2.
+The result of the concatenate operation is the bits of all input expressions concatenated together, with the first argument placed at the most significant end and subsequent arguments concatenated toward the least significant end.
+The concatenate operation accepts zero or more arguments.
+When called with zero arguments, it produces a zero-width constant zero.
 
 ## Bit Extraction Operation
 

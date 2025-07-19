@@ -3966,8 +3966,8 @@ Note that the logical consequence is that the and-reduction of a zero-width expr
 
 | Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
 |------|-----------|------------|-----------|-------------|--------------|
-| cat  | (e\*)     | ()         | (UInt\*)  | UInt        | sum(w~e~*)   |
-|      |           |            | (SInt\*)  | UInt        | sum(w~e~*)   |
+| cat  | (e\*)     | ()         | (UInt\*)  | UInt        | sum(w~e~\*)  |
+|      |           |            | (SInt\*)  | UInt        | sum(w~e~\*)  |
 
 The result of the concatenate operation is the bits of all input expressions concatenated together, with the first argument placed at the most significant end and subsequent arguments concatenated toward the least significant end.
 The concatenate operation accepts zero or more arguments.

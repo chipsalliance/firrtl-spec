@@ -3739,7 +3739,7 @@ Primitive operations may have all their arguments of constant type, in which cas
 If the operation has a mixed constant and non-constant arguments, the result is non-constant.
 
 Notationally, the width of an argument e is represented as w~e~.
-In operation tables, the notation `e*` indicates zero or more repetitions of argument e.
+In operation tables, the notation `e\*` indicates zero or more repetitions of argument `e`.
 
 ## Add Operation
 

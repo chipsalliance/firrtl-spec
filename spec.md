@@ -4585,7 +4585,7 @@ property_primop_varexpr = property_primop_varexpr_keyword ,
                             "(" , { property_expr } , ")" ;
 
 (* Enable Layers *)
-enablelayer = "enablelayer" , id , { "." , id } ;
+enablelayer = "enablelayer" , id_path ;
 
 (* Known Layers *)
 knownlayer = "knownlayer" , id_path , { "," id_path };

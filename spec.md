@@ -614,13 +614,13 @@ All three are wires and all three have type `UInt<8>`{.firrtl}.
 When a circuit component has a bundle type (see [@sec:bundle-types]), it has one direct subcomponent for each field.
 The kind of the subcomponent depends on both the kind and the type of the parent:
 
--   For nodes, wires, and registers, the kind of each direct subcomponent is the same.
--   For output and input ports, the kind of each direct subcomponent depends on whether or not the field is flipped.
-    When the field is not flipped, the kind remains the same.
-    When the field is flipped, it changes from output to input or vice versa.
--   For submodule instances and memories, the kind of each direct subcomponent depends on whether or not the field is flipped.
-    When the field is not flipped, the kind is an input port.
-    When the field is flipped, the kind is an output port.
+- For nodes, wires, and registers, the kind of each direct subcomponent is the same.
+- For output and input ports, the kind of each direct subcomponent depends on whether or not the field is flipped.
+  When the field is not flipped, the kind remains the same.
+  When the field is flipped, it changes from output to input or vice versa.
+- For submodule instances and memories, the kind of each direct subcomponent depends on whether or not the field is flipped.
+  When the field is not flipped, the kind is an input port.
+  When the field is flipped, the kind is an output port.
 
 If the bundle is not `const`{.firrtl}, the type of each subcomponent is simply the type of the corresponding field.
 However, if the bundle is `const`{.firrtl}, the type of each subcomponent is the `const`{.firrtl} version of the type of the corresponding field.
@@ -948,7 +948,7 @@ For example, it is valid to drop property types from the IR completely.
 
 Property types are legal in the following constructs:
 
--   Port declarations on modules and external modules
+- Port declarations on modules and external modules
 
 ### Integer Type
 
@@ -984,11 +984,11 @@ A **connectable type** is one which may be the type of expressions which may par
 
 A connectable type is defined recursively:
 
--   unsigned integers,
--   signed integers,
--   a vector type where the element type is a connectable type,
--   bundles where each field type is a connectable type, or
--   an enumeration type
+- unsigned integers,
+- signed integers,
+- a vector type where the element type is a connectable type,
+- bundles where each field type is a connectable type, or
+- an enumeration type
 
 ## Storable Types
 
@@ -997,10 +997,10 @@ A **storable type** is a type which may appear as the type of a register or the 
 
 A storable type is defined recursively:
 
--   All non-`const`{.firrtl} integer types are storable.
--   A non-`const`{.firrtl} enumeration types are storable if and only if the type of each of its variants is storable.
--   A non-`const`{.firrtl} vector type is storable if and only if the element type is storable.
--   A non-`const`{.firrtl} bundle type is storable if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is storable.
+- All non-`const`{.firrtl} integer types are storable.
+- A non-`const`{.firrtl} enumeration types are storable if and only if the type of each of its variants is storable.
+- A non-`const`{.firrtl} vector type is storable if and only if the element type is storable.
+- A non-`const`{.firrtl} bundle type is storable if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is storable.
 
 ## Passive Types
 
@@ -1009,12 +1009,12 @@ A **passive type** is a type which does not make use of `flip`{.firrtl}.
 
 A passive type is defined recursively:
 
--   All ground types are passive.
--   All probe types are passive.
--   All property types are passive.
--   A vector type is passive if and only if the element type is passive.
--   A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is passive.
--   All enumeration types are passive.
+- All ground types are passive.
+- All probe types are passive.
+- All property types are passive.
+- A vector type is passive if and only if the element type is passive.
+- A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is passive.
+- All enumeration types are passive.
 
 ## Constant Types
 
@@ -1058,9 +1058,9 @@ An expression of type `const T`{.firrtl} is implicitly upcast to type `T`{.firrt
 
 Expressions with `const`{.firrtl} may be used as the target of a connect statement as long as the following hold:
 
--   the source of the connect is `const`{.firrtl}
--   the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`{.firrtl}
--   the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const`{.firrtl} type
+- the source of the connect is `const`{.firrtl}
+- the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`{.firrtl}
+- the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const`{.firrtl} type
 
 Constant types may not be the type of a stateful circuit components.
 Thus, registers are memories may not be declared with a `const`{.firrtl} type.
@@ -1231,10 +1231,10 @@ A module with a probe with an inferred inner type must resolve all other inferre
 
 Additionally, inference constraints may only flow in few restricted ways:
 
--   Inference constraints may flow from child to parent through its `output`{.firrtl} ports.
--   Inference constraints may flow from parent to child through its `input`{.firrtl} ports.
--   In a `define`{.firrtl} expression, only the right-hand side may impose inference constraints on the left-hand side.
--   Neither `read`{.firrtl} expressions nor `force`{.firrtl} statements may impose inference constraints.
+- Inference constraints may flow from child to parent through its `output`{.firrtl} ports.
+- Inference constraints may flow from parent to child through its `input`{.firrtl} ports.
+- In a `define`{.firrtl} expression, only the right-hand side may impose inference constraints on the left-hand side.
+- Neither `read`{.firrtl} expressions nor `force`{.firrtl} statements may impose inference constraints.
 
 # Connections
 
@@ -1253,11 +1253,11 @@ The rules for the flow of an expression are as follows.
 
 If the expression is an identifier, we look at the kind of the circuit component the identifier refers to:
 
--   Nodes are sources.
--   Wires and registers are duplex.
--   For ports, `input` ports are sources and `output` ports are duplex.
--   Submodule instances are sources.
--   Memories are sources.
+- Nodes are sources.
+- Wires and registers are duplex.
+- For ports, `input` ports are sources and `output` ports are duplex.
+- Submodule instances are sources.
+- Memories are sources.
 
 The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.
 The flow of a sub-field expression depends upon the orientation of the field.
@@ -2336,36 +2336,36 @@ On each positive clock edge, when the condition signal is high, the `printf`{.fi
 
 Format strings support the following argument placeholders:
 
--   `%b` : Prints the argument in binary
+- `%b` : Prints the argument in binary
 
--   `%c` : Prints the argument as an ASCII character
+- `%c` : Prints the argument as an ASCII character
 
--   `%d` : Prints the argument in decimal
+- `%d` : Prints the argument in decimal
 
--   `%x` : Prints the argument in hexadecimal
+- `%x` : Prints the argument in hexadecimal
 
--   `%%` : Prints a single `%` character
+- `%%` : Prints a single `%` character
 
 Format strings support the following escape characters:
 
--   `\n` : New line
+- `\n` : New line
 
--   `\t` : Tab
+- `\t` : Tab
 
--   `\\` : Back slash
+- `\\` : Back slash
 
--   `\"` : Double quote
+- `\"` : Double quote
 
--   `\'` : Single quote
+- `\'` : Single quote
 
 The following special substitutions are also allowed.
 These substitutions do not have corresponding operands:
 
--   `{{SimulationTime}}` : Prints the current simulation time
+- `{{SimulationTime}}` : Prints the current simulation time
 
--   `{{HierarchicalModuleName}}` : Prints the complete hierarchical path from the root module to the module that contains this `printf`.
+- `{{HierarchicalModuleName}}` : Prints the complete hierarchical path from the root module to the module that contains this `printf`.
 
--   `\{{` : Prints a literal `{{`. This can be used to escape a special substitution if you desire to have a literal `{{` appear in the output.
+- `\{{` : Prints a literal `{{`. This can be used to escape a special substitution if you desire to have a literal `{{` appear in the output.
 
 ## Verification
 
@@ -3624,17 +3624,17 @@ circuit IValue:
 
 The behavior of constructs which cause indeterminate values is implementation defined with the following constraints.
 
--   Register initialization is done in a consistent way for all registers.
-    If code is generated to randomly initialize some registers (or 0 fill them, etc), it should be generated for all registers.
--   All observations of a unique instance of an expression with indeterminate value must see the same value at runtime.
-    Multiple readers of a value will see the same runtime value.
--   Indeterminate values captured in stateful elements are not time-varying.
-    Time-aware constructs, such as registers, which hold an indeterminate value will return the same runtime value unless something changes the value in a normal way.
-    For example, an uninitialized register will return the same value over multiple clock cycles until it is written (or reset).
--   The value produced at runtime for an expression which produced an intermediate value shall only be a function of the inputs of the expression.
-    For example, an out-of-bounds vector access shall produce the same value for a given out-of-bounds index and vector contents.
--   Two constructs with indeterminate values place no constraint on the identity of their values.
-    For example, two uninitialized registers, which therefore contain indeterminate values, do not need to be equal under comparison.
+- Register initialization is done in a consistent way for all registers.
+  If code is generated to randomly initialize some registers (or 0 fill them, etc), it should be generated for all registers.
+- All observations of a unique instance of an expression with indeterminate value must see the same value at runtime.
+  Multiple readers of a value will see the same runtime value.
+- Indeterminate values captured in stateful elements are not time-varying.
+  Time-aware constructs, such as registers, which hold an indeterminate value will return the same runtime value unless something changes the value in a normal way.
+  For example, an uninitialized register will return the same value over multiple clock cycles until it is written (or reset).
+- The value produced at runtime for an expression which produced an intermediate value shall only be a function of the inputs of the expression.
+  For example, an out-of-bounds vector access shall produce the same value for a given out-of-bounds index and vector contents.
+- Two constructs with indeterminate values place no constraint on the identity of their values.
+  For example, two uninitialized registers, which therefore contain indeterminate values, do not need to be equal under comparison.
 
 # FIRRTL Compiler Implementation Details
 
@@ -4109,19 +4109,19 @@ Since conditional statements (`when`{.firrtl} and `else`{.firrtl}) may be nested
 
 As a concrete guide, a few consequences of these rules are summarized below:
 
--   The `circuit`{.firrtl} keyword must not be indented.
+- The `circuit`{.firrtl} keyword must not be indented.
 
--   All `module`{.firrtl} keywords must be indented by the same number of spaces.
+- All `module`{.firrtl} keywords must be indented by the same number of spaces.
 
--   In a module, all port declarations and all statements (that are not children of other statements) must be indented by the same number of spaces.
+- In a module, all port declarations and all statements (that are not children of other statements) must be indented by the same number of spaces.
 
--   The number of spaces comprising the indent level of a module is specific to each module.
+- The number of spaces comprising the indent level of a module is specific to each module.
 
--   The statements comprising a conditional statement's branch must be indented by the same number of spaces.
+- The statements comprising a conditional statement's branch must be indented by the same number of spaces.
 
--   The statements of nested conditional statements establish their own, deeper indent level.
+- The statements of nested conditional statements establish their own, deeper indent level.
 
--   Each `when`{.firrtl} and each `else`{.firrtl} context may have a different number of non-zero spaces in its indent level.
+- Each `when`{.firrtl} and each `else`{.firrtl} context may have a different number of non-zero spaces in its indent level.
 
 As an example illustrating some of these points, the following is a legal FIRRTL circuit:
 
@@ -4215,10 +4215,10 @@ circuit Foo:
 
 A radix-specified integer literal is a special integer literal with one of the following leading characters to indicate the numerical encoding:
 
--   `0b`{.firrtl} -- for representing binary numbers
--   `0o`{.firrtl} -- for representing octal numbers
--   `0d`{.firrtl} -- for representing decimal numbers
--   `0h`{.firrtl} -- for representing hexadecimal numbers
+- `0b`{.firrtl} -- for representing binary numbers
+- `0o`{.firrtl} -- for representing octal numbers
+- `0d`{.firrtl} -- for representing decimal numbers
+- `0h`{.firrtl} -- for representing hexadecimal numbers
 
 Signed radix-specified integer literals have their sign before the leading encoding character.
 

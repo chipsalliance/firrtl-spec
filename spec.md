@@ -291,6 +291,26 @@ circuit Foo :
   public module Foo enablelayer A :
 ```
 
+### Extmodules with Known Layers
+
+Extmodules may be declared with known layers.
+A known layer modifier declares that the extmodule supports the known layers.
+When a layer is enabled for the current circuit, it is also enabled for each extmodules which "knows" about that layer.
+When a layer is referenced in the interface of an extmodule (e.g., in the color of a probe type), that layer must be known.
+
+To declare an extmodule with known layers, use the `knownlayer`{.firrtl} keyword.
+The circuit below shows an extmodule with one layer known:
+
+```firrtl
+FIRRTL version 5.0.0
+circuit Foo :
+  layer A, bind :
+  extmodule Bar knownlayer A :
+    output probe : Probe<UInt<1>, A>
+  public module Foo :
+    inst bar of Bar
+```
+
 ## Formal Unit Tests
 
 The `formal`{.firrtl} keyword declares a formal unit test.
@@ -4567,6 +4587,9 @@ property_primop_varexpr = property_primop_varexpr_keyword ,
 (* Enable Layers *)
 enablelayer = "enablelayer" , id , { "." , id } ;
 
+(* Known Layers *)
+knownlayer = "knownlayer" , id_path , { "," id_path };
+
 (* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;
 
@@ -4601,6 +4624,7 @@ string_dq = '"' , string , '"' ;
 string_sq = "'" , string , "'" ;
 
 (* Tokens: Identifiers *)
+id_path = id , { "." , id } ;
 id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
 literal_id = "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
 letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"

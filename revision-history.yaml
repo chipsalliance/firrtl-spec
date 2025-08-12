@@ -9,6 +9,7 @@ revisionHistory:
       - Add `fprintf` statement.
       - Add `fflush` statement.
       - Change a cat operation to accept variadic arguments.
+      - Add "knownlayer" modifier to extmodules.
     abi:
      - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

@@ -38,9 +38,9 @@ jobs:
         run: |
           make format
           if ! git diff --quiet; then
-            echo 'Please run `make format` on your change to apply the following formatting fixes:' >> $GITHUB_STEP_SUMMARY
+            echo 'Please run `make format` on your change to apply the following formatting fixes:' | tee -a $GITHUB_STEP_SUMMARY
             echo '```diff' >> $GITHUB_STEP_SUMMARY
-            git diff >> $GITHUB_STEP_SUMMARY
+            git diff | tee -a $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
             exit 1
           fi

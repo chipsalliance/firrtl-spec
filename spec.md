@@ -302,7 +302,7 @@ To declare an extmodule with known layers, use the `knownlayer`{.firrtl} keyword
 The circuit below shows an extmodule with one layer known:
 
 ```firrtl
-FIRRTL version 5.0.0
+FIRRTL version 5.1.0
 circuit Foo :
   layer A, bind :
   extmodule Bar knownlayer A :

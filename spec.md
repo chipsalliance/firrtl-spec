@@ -301,7 +301,7 @@ When a layer is referenced in the interface of an extmodule (e.g., in the color 
 To declare an extmodule with known layers, use the `knownlayer`{.firrtl} keyword.
 The circuit below shows an extmodule with one layer known:
 
-```firrtl
+``` firrtl
 FIRRTL version 5.1.0
 circuit Foo :
   layer A, bind :

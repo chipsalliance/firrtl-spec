@@ -16,7 +16,7 @@ GitHub releases pages:
 - [`pandoc` releases](https://github.com/jgm/pandoc/releases)
 - [`pandoc-crossref` releases](https://github.com/lierdakil/pandoc-crossref/releases)
 
-To run tests, you need Verilator and `firtool` available on your `$PATH`.
+To run tests, you need Verilator and `firtool` available on your `PATH`.
 
 After resolving these dependencies, use the following build targets:
 

@@ -8,15 +8,19 @@ To build this, you need the following:
 - [`latexmk`](https://ctan.org/pkg/latexmk?lang=en) which may come with your LaTeX distribution
 - [Graphviz](https://graphviz.org/)
 
-For compatibility with continuous integration (CI) testing, use the versions of
-`pandoc` and `pandoc-crossref` that are [listed in the CI GitHub
+For compatibility with continuous integration (CI) formatting, use the versions
+of `pandoc` and `pandoc-crossref` that are [listed in the CI GitHub
 Action](.github/workflows/continuous-integration-ci.yml). If this release is
 *not* available in your package manager, you can download binaries from their
 GitHub releases pages:
 - [`pandoc` releases](https://github.com/jgm/pandoc/releases)
 - [`pandoc-crossref` releases](https://github.com/lierdakil/pandoc-crossref/releases)
 
-To run tests, you need Verilator and `firtool` available on your `PATH`.
+To run tests, both `firtool` and Verilator must be available on your `PATH`.
+For compatibility with CI testing, use the version of `firtool` specified in
+[include/circt.json](include/circt.json) and the Verilator version used by the
+version of the OSS CAD Suite in [listed in the CI GitHub
+Action](.github/workflows/continuous-integration-ci.yml).
 
 After resolving these dependencies, use the following build targets:
 

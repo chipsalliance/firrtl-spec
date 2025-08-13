@@ -8,7 +8,7 @@ To build this, you need the following:
 - [`latexmk`](https://ctan.org/pkg/latexmk?lang=en) which may come with your LaTeX distribution
 - [Graphviz](https://graphviz.org/)
 
-For compatability with continuous integration (CI) testing, use the versions of
+For compatibility with continuous integration (CI) testing, use the versions of
 `pandoc` and `pandoc-crossref` that are [listed in the CI GitHub
 Action](.github/workflows/continuous-integration-ci.yml). If this release is
 *not* available in your package manager, you can download binaries from their

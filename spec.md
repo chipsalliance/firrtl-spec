@@ -291,7 +291,7 @@ circuit Foo :
   public module Foo enablelayer A :
 ```
 
-### Extmodules with Known Layers
+### External Modules with Known Layers
 
 Extmodules may be declared with known layers.
 A known layer modifier declares that the hardware backing an external module was built with certain (_known_) layers.

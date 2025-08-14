@@ -4591,7 +4591,7 @@ property_primop_varexpr = property_primop_varexpr_keyword ,
 enablelayer = "enablelayer" , id_path ;
 
 (* Known Layers *)
-knownlayer = "knownlayer" , id_path , { "," id_path };
+knownlayer = "knownlayer" , id_path , { "," id_path } ;
 
 (* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;

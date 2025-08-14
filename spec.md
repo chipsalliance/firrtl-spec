@@ -291,6 +291,29 @@ circuit Foo :
   public module Foo enablelayer A :
 ```
 
+### External Modules with Known Layers
+
+External modules may be declared with known layers.
+A known layer modifier declares that the hardware backing an external module was built with certain (*known*) layers.
+It follows that:
+1. when a layer is enabled for the current circuit, it is also enabled for each external module which "knows" about that layer, and
+2. when a layer is referenced in the interface of an external modules (e.g., in the color of a probe type), that layer must be known.
+
+To declare an external module with known layers, use the `knownlayer`{.firrtl} keyword.
+The `knownlayer` keyword may be specified more than once.
+Multiple comma-delimited layers may follow one `knownlayer` keyword.
+The circuit below shows one external module with one layer known:
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Foo :
+  layer A, bind :
+  extmodule Bar knownlayer A :
+    output probe : Probe<UInt<1>, A>
+  public module Foo :
+    inst bar of Bar
+```
+
 ## Formal Unit Tests
 
 The `formal`{.firrtl} keyword declares a formal unit test.
@@ -4309,7 +4332,7 @@ decl_module =
   dedent ;
 
 decl_extmodule =
-  "extmodule" , id , ":" , [ info ] , newline , indent ,
+  "extmodule" , id , { enablelayer | knownlayer } , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
     { "parameter" , id , "=" , type_param , newline } ,
@@ -4565,7 +4588,10 @@ property_primop_varexpr = property_primop_varexpr_keyword ,
                             "(" , { property_expr } , ")" ;
 
 (* Enable Layers *)
-enablelayer = "enablelayer" , id , { "." , id } ;
+enablelayer = "enablelayer" , id_path ;
+
+(* Known Layers *)
+knownlayer = "knownlayer" , id_path , { "," id_path } ;
 
 (* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;
@@ -4601,6 +4627,7 @@ string_dq = '"' , string , '"' ;
 string_sq = "'" , string , "'" ;
 
 (* Tokens: Identifiers *)
+id_path = id , { "." , id } ;
 id = ( "_" | letter ) , { "_" | letter | digit_dec } | literal_id ;
 literal_id = "`" , ( "_" | letter | digit_dec ), { "_" | letter | digit_dec } , "`" ;
 letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"

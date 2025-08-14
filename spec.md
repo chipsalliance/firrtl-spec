@@ -294,7 +294,7 @@ circuit Foo :
 ### External Modules with Known Layers
 
 External modules may be declared with known layers.
-A known layer modifier declares that the hardware backing an external module was built with certain (_known_) layers.
+A known layer modifier declares that the hardware backing an external module was built with certain (*known*) layers.
 It follows that:
 1. when a layer is enabled for the current circuit, it is also enabled for each external module which "knows" about that layer, and
 2. when a layer is referenced in the interface of an external modules (e.g., in the color of a probe type), that layer must be known.

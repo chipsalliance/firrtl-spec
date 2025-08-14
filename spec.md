@@ -300,7 +300,7 @@ It follows that:
 2. when a layer is referenced in the interface of an external modules (e.g., in the color of a probe type), that layer must be known.
 
 To declare an extmodule with known layers, use the `knownlayer`{.firrtl} keyword.
-The circuit below shows an extmodule with one layer known:
+The circuit below shows one external module with one layer known:
 
 ``` firrtl
 FIRRTL version 5.1.0

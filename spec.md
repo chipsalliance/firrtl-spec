@@ -299,7 +299,9 @@ It follows that:
 1. when a layer is enabled for the current circuit, it is also enabled for each external module which "knows" about that layer, and
 2. when a layer is referenced in the interface of an external modules (e.g., in the color of a probe type), that layer must be known.
 
-To declare an extmodule with known layers, use the `knownlayer`{.firrtl} keyword.
+To declare an external module with known layers, use the `knownlayer`{.firrtl} keyword.
+The `knownlayer` keyword may be specified more than once.
+Multiple comma-delimited layers may follow one `knownlayer` keyword.
 The circuit below shows one external module with one layer known:
 
 ``` firrtl

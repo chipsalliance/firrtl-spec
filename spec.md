@@ -4332,7 +4332,7 @@ decl_module =
   dedent ;
 
 decl_extmodule =
-  "extmodule" , id , { enablelayer } , ":" , [ info ] , newline , indent ,
+  "extmodule" , id , { enablelayer | knownlayer } , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
     { "parameter" , id , "=" , type_param , newline } ,

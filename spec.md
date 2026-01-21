@@ -2152,9 +2152,9 @@ It is characterized by the following parameters.
 
 3.  A variable number of named ports, each being a read port, a write port, or readwrite port.
 
-4.  A non-negative integer literal indicating the read latency, which is the number of cycles after setting the port's read address before the corresponding element's value can be read from the port's data field.
+4.  A non-negative integer literal indicating the read latency for all read ports, which is the number of cycles after setting the port's read address before the corresponding element's value can be read from the port's data field.
 
-5.  A positive integer literal indicating the write latency, which is the number of cycles after setting the port's write address and data before the corresponding element within the memory holds the new value.
+5.  A positive integer literal indicating the write latency for all write ports, which is the number of cycles after setting the port's write address and data before the corresponding element within the memory holds the new value.
 
 6.  A read-under-write flag indicating the behavior when a memory location is written to while a read to that location is in progress.
 

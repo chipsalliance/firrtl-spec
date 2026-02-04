@@ -44,9 +44,6 @@
       <item>RWProbe</item>
       <item>List</item>
     </list>
-    <list name="typemodifiers">
-      <item>const</item>
-    </list>
     <list name="conditionals">
       <item>when</item>
       <item>else</item>
@@ -111,7 +108,6 @@
         <keyword attribute="Keyword" context="#stay" String="keywords" />
         <keyword attribute="Keyword" context="type" String="types" />
         <keyword attribute="Keyword" context="outertype" String="outertype" />
-        <keyword attribute="Keyword" context="#stay" String="typemodifiers" />
         <keyword attribute="Structure" context="#stay" String="structure" />
         <keyword attribute="PrimOp" context="#stay" String="primops" />
         <keyword attribute="Conditional" context="#stay" String="conditionals" />
@@ -180,7 +176,6 @@
         <StringDetect String="flip" attribute="Keyword" context="#stay"/>
         <keyword String="types" attribute="Keyword" context="type"/>
         <keyword String="outertype" attribute="Keyword" context="outertype"/>
-        <keyword String="typemodifiers" attribute="Keyword" context="#stay"/>
         <Detect2Chars char="{" char1="|" attribute="Separator" context="field"/>
         <Detect2Chars char="|" char1="}" attribute="Separator" context="#pop"/>
         <DetectChar char="{" attribute="Separator" context="field"/>

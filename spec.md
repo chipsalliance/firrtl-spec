@@ -645,8 +645,7 @@ The kind of the subcomponent depends on both the kind and the type of the parent
   When the field is not flipped, the kind is an input port.
   When the field is flipped, the kind is an output port.
 
-If the bundle is not `const`{.firrtl}, the type of each subcomponent is simply the type of the corresponding field.
-However, if the bundle is `const`{.firrtl}, the type of each subcomponent is the `const`{.firrtl} version of the type of the corresponding field.
+The type of each subcomponent is the type of the corresponding field.
 
 A circuit component is a **subcomponent** of another if there is a way to get from the first component to the second through the direct subcomponent relation.
 A circuit component is trivially considered to be a subcomponent of itself.
@@ -1020,10 +1019,10 @@ A **storable type** is a type which may appear as the type of a register or the 
 
 A storable type is defined recursively:
 
-- All non-`const`{.firrtl} integer types are storable.
-- A non-`const`{.firrtl} enumeration types are storable if and only if the type of each of its variants is storable.
-- A non-`const`{.firrtl} vector type is storable if and only if the element type is storable.
-- A non-`const`{.firrtl} bundle type is storable if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is storable.
+- All integer types are storable.
+- An enumeration type is storable if and only if the type of each of its variants is storable.
+- A vector type is storable if and only if the element type is storable.
+- A bundle type is storable if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is storable.
 
 ## Passive Types
 
@@ -1039,68 +1038,26 @@ A passive type is defined recursively:
 - A bundle type is passive if and only if it contains no field which is marked `flip`{.firrtl} and the type of each field is passive.
 - All enumeration types are passive.
 
-## Constant Types
+## Constant Expressions
 
 For certain situations, it is useful to guarantee that a signal holds a value that doesn't change during simulation.
 For example, when a register has a reset, the reset value is required to be held constant (see [@sec:registers-with-reset]).
 
-Ground types and aggregate types maybe marked as constant using the `const`{.firrtl} modifier.
+A **constant expression** is an expression whose value is known to be unchanging throughout simulation.
+All integer literals are constant expressions.
+For example, `UInt<8>(42)`{.firrtl} is a constant expression.
 
-For example:
+Certain operations produce constant expressions when all of their operands are constant expressions.
+For example, `add(x, y)`{.firrtl} is a constant expression if both `x`{.firrtl} and `y`{.firrtl} are constant expressions.
 
-``` firrtl
-FIRRTL version 4.0.0
-circuit Foo:
-  public module Foo:
-    input a:
-      ;; snippetbegin
-      const UInt<3>
-      ;; snippetend
-    input b:
-      ;; snippetbegin
-      const SInt<8>[4]
-      ;; snippetend
-    input c:
-      ;; snippetbegin
-      const { real: UInt<32>, imag : UInt<32> }
-      ;; snippetend
-```
+The multiplexer expression `mux(s, a, b)`{.firrtl} is a constant expression if all of `s`{.firrtl}, `a`{.firrtl}, and `b`{.firrtl} are constant expressions (see [@sec:multiplexers]).
 
-All integer literals are `const`{.firrtl}.
-For example, `UInt<8>(42)`{.firrtl} has type `const UInt<8>`{.firrtl}.
+Whether an expression is constant is determined by dataflow analysis, not by the type system.
+Port references are never constant expressions, as their values are abstract and determined by the instantiation context.
 
-Ports can have a `const`{.firrtl} type, and thus, a module may receive constant values from its parent module.
-This may even happen in `public`{.firrtl} modules, and so the value of a `const`{.firrtl} type need not be known statically (see [@sec:public-modules]).
+Certain constructs require their operands to be constant expressions:
 
-Typically, primitive operations will result in a `const`{.firrtl} type whenever each of its inputs are `const`{.firrtl} (see [@sec:primitive-operations]).
-For example, `add(x, y)`{.firrtl} will be `const`{.firrtl} if both `x`{.firrtl} and `y`{.firrtl} are `const`{.firrtl}.
-
-The resulting type of a multiplexer expression, `mux(s, a, b)`{.firrtl}, will be `const`{.firrtl} if all of `s`{.firrtl}, `a`{.firrtl}, and `b`{.firrtl} are `const`{.firrtl} (see [@sec:multiplexers]).
-
-An expression of type `const T`{.firrtl} is implicitly upcast to type `T`{.firrtl} whenever it would be required to make a primitive operation, mux expression, or connect statement typecheck.
-
-Expressions with `const`{.firrtl} may be used as the target of a connect statement as long as the following hold:
-
-- the source of the connect is `const`{.firrtl}
-- the conditions of all containing `when`{.firrtl} blocks the connect statement is nested in must have conditions of type `const UInt<1>`{.firrtl}
-- the subject of any containing `match`{.firrtl} blocks the connect statement is nested in must have a `const`{.firrtl} type
-
-Constant types may not be the type of a stateful circuit components.
-Thus, registers are memories may not be declared with a `const`{.firrtl} type.
-
-References to a subcomponent of a circuit component with a `const`{.firrtl} vector or bundle type results in a `const`{.firrtl} of the inner type.
-
-For example:
-
-``` firrtl
-FIRRTL version 4.0.0
-circuit Foo:
-  public module Foo:
-    ;; snippetbegin
-    input c : const { real : SInt<8>, imag : SInt<8> }
-    ; c.real has type const SInt<8>
-    ;; snippetend
-```
+- For registers with `AsyncReset`{.firrtl}, the reset value must be a constant expression (see [@sec:registers-with-reset]).
 
 ## Type Alias
 
@@ -1698,7 +1655,7 @@ A register with a reset is declared using `regreset`{.firrtl}.
 A `regreset`{.firrtl} adds two expressions after the type and clock arguments: a reset signal and a reset value.
 The register's value is updated with the reset value when the reset is asserted.
 The reset signal must be a `Reset`{.firrtl}, `UInt<1>`{.firrtl}, or `AsyncReset`{.firrtl}, and the type of initialization value must be equivalent to the declared type of the register (see [@sec:type-equivalence] for details).
-If the reset signal is an `AsyncReset`{.firrtl}, then the reset value must be a constant type.
+If the reset signal is an `AsyncReset`{.firrtl}, then the reset value must be a constant expression.
 The behavior of the register depends on the type of the reset signal.
 `AsyncReset`{.firrtl} will immediately change the value of the register.
 `UInt<1>`{.firrtl} will not change the value of the register until the next positive edge of the clock signal (see [@sec:reset-types]).
@@ -3019,8 +2976,7 @@ for intrinsics ([@sec:intrinsics]).
 
 A constant unsigned or signed integer expression can be created from an integer literal or radix-specified integer literal.
 An optional positive bit width may be specified.
-Constant integer expressions are of constant type.
-All of the following examples create a 10-bit unsigned constant integer expressions representing the number `42`:
+All of the following examples create a 10-bit unsigned integer expressions representing the number `42`:
 
 ``` firrtl
 FIRRTL version 4.0.0
@@ -3758,8 +3714,6 @@ Private modules are said to have "internal" convention.
 
 The arguments of all primitive operations must be expressions with ground types, while their parameters are integer literals.
 Each specific operation can place additional restrictions on the number and types of their arguments and parameters.
-Primitive operations may have all their arguments of constant type, in which case their return type is of constant type.
-If the operation has a mixed constant and non-constant arguments, the result is non-constant.
 
 Notationally, the width of an argument e is represented as w~e~.
 In operation tables, the notation `e\*` indicates zero or more repetitions of argument `e`.
@@ -4537,7 +4491,7 @@ expr_intrinsic = "intrinsic", "(" , id ,
   { "," , expr } , ")"
 
 (* Types *)
-type = ( [ "const" ] , type_hardware ) | type_probe ;
+type = type_hardware | type_probe ;
 
 type_hardware =
     type_ground
@@ -4570,7 +4524,7 @@ type_vec = type , "[" , int , "]" ;
 
 (* Enum Types *)
 type_enum = "{|" , { type_enum_alt } , "|}" ;
-type_enum_alt = id, [ ":" , type_constable ] ;
+type_enum_alt = id, [ ":" , type_hardware ] ;
 
 (* Probe Types *)
 type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id ] ">" ;

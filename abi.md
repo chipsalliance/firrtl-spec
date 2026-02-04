@@ -378,16 +378,6 @@ The padding for each payload is set to ensure all padded payloads have the same 
 
 Property types have no defined ABI, and may not affect any other guarantees of the ABI.
 
-### Constant Types
-
-Constant types are a restriction on FIRRTL types.
-Therefore, FIRRTL structures which would be expected to produce certain Verilog structures will produce the same structure if instantiated with a constant type.
-For example, an input port of type `const UInt`{.firrtl} will result in a port in the Verilog, if under the same conditions an input port of type `UInt`{.firrtl} would have.
-
-It is not intended that constants are a replacement for parameterization.
-Constant typed values have no particular meta-programming capability.
-It is, for example, expected that a module with a constant input port be fully compilable to non-parameterized Verilog.
-
 # Versioning Scheme of this Document
 
 This is the versioning scheme that applies to version 1.0.0 and later.

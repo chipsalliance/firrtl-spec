@@ -179,35 +179,22 @@
             ]
         },
         "type_ground_nowidth": {
-            "match": "(const\\s+)?(Clock|Reset|AsyncReset)",
-            "name": "storage.type.firrtl",
-            "captures": {
-                "1": {
-                    "name": "storage.modifier.firrtl"
-                }
-            }
+            "match": "(Clock|Reset|AsyncReset)",
+            "name": "storage.type.firrtl"
         },
         "type_ground_width": {
-            "match": "(const\\s+)?([US]Int|Analog)(<(\\d+)>)?",
+            "match": "([US]Int|Analog)(<(\\d+)>)?",
             "name": "storage.type.firrtl",
             "captures": {
-                "1": {
-                    "name": "storage.modifier.firrtl"
-                },
-                "4": {
+                "2": {
                     "name": "constant.numeric.firrtl"
                 }
             }
         },
         "type_bundle": {
-            "begin": "(const\\s+)?{",
+            "begin": "{",
             "end": "}",
             "name": "meta.type.bundle.firrtl",
-            "captures": {
-                "1": {
-                    "name": "storage.modifier.firrtl"
-                }
-            },
             "patterns": [
                 {
                     "include": "#type_bundle_field"

@@ -10,8 +10,8 @@ on:
       - main
 
 env:
-  pandoc-version: 3.7.0.2
-  pandoc-crossref-version: v0.3.20
+  pandoc-version: 3.9
+  pandoc-crossref-version: v0.3.23a
   pandoc-install-dir: /opt/pandoc
   tabby-cad-version: 2024-02-18
 

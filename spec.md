@@ -3884,7 +3884,7 @@ The result of the interpret as clock operation is the Clock typed signal obtaine
 ## Interpret as AsyncReset
 
 | Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|--------------|-----------|------------|--------------|-------------|--------------|
+|-------------|----------|------------|-------------|------------|-------------|
 | asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
 |              |           |            | (UInt)       | AsyncReset  | n/a          |
 |              |           |            | (SInt)       | AsyncReset  | n/a          |

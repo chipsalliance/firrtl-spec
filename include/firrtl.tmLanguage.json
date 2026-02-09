@@ -424,7 +424,7 @@
             }
         },
         "expression_primop": {
-            "begin": "(add|sub|mul|div|rem|lt|leq|gt|geq|eq|neq|pad|asAsyncReset|asUInt|asSInt|asClock|shl|shr|dshl|dshr|cvt|neg|not|and|or|xor|andr|orr|xorr|cat|bits|head|tail|mux|probe|rwprobe|read)\\(",
+            "begin": "(add|sub|mul|div|rem|lt|leq|gt|geq|eq|neq|pad|asAsyncReset|asReset|asUInt|asSInt|asClock|shl|shr|dshl|dshr|cvt|neg|not|and|or|xor|andr|orr|xorr|cat|bits|head|tail|mux|probe|rwprobe|read)\\(",
             "end": "\\)",
             "beginCaptures": {
                 "1": {

@@ -67,6 +67,7 @@
       <item>neq</item>
       <item>pad</item>
       <item>asAsyncReset</item>
+      <item>asReset</item>
       <item>asUInt</item>
       <item>asSInt</item>
       <item>asClock</item>

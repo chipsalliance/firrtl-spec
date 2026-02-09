@@ -11,6 +11,7 @@ revisionHistory:
       - Change a cat operation to accept variadic arguments.
       - Add "enablelayer" modifier to extmodules.
       - Add "knownlayer" modifier to extmodules.
+      - Add `simulation` unit test construct.
     abi:
      - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

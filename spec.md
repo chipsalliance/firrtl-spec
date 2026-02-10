@@ -1243,6 +1243,25 @@ circuit Foo:
     ;; snippetend
 ```
 
+Synchronous resets can be cast to the abstract `Reset`{.firrtl} type in order to allow them to drive resets inferred as synchronous or asynchronous without influencing the inference outcome:
+
+``` {.firrtl .notest}
+FIRRTL version 5.1.0
+circuit Bar:
+  public module Bar:
+    ;; snippetbegin
+    input a : UInt<1>
+    output y : AsyncReset
+    output z : UInt<1>
+    wire p : Reset  ; inferred as async
+    wire q : Reset  ; inferred as sync
+    connect p, asReset(a)  ; becomes asAsyncReset(a)
+    connect q, asReset(a)  ; becomes a
+    connect y, p
+    connect z, q
+    ;; snippetend
+```
+
 See [@sec:primitive-operations] for more details on casting.
 
 ### Probes and Type Inference
@@ -3894,6 +3913,18 @@ The result of the interpret as clock operation is the Clock typed signal obtaine
 
 The result of the interpret as asynchronous reset operation is an AsyncReset typed signal.
 
+## Interpret as Reset
+
+| Name    | Arguments | Parameters | Arg Types   | Result Type | Result Width |
+|---------|-----------|------------|-------------|-------------|--------------|
+| asReset | \(e\)     | ()         | (UInt\<1\>) | Reset       | n/a          |
+
+The result of the interpret as reset operation is a `Reset`{.firrtl} typed signal.
+This operation is used to explicitly convert a synchronous reset value of `UInt<1>`{.firrtl} type into an abstract `Reset`{.firrtl} type.
+The result value does not affect the reset inference outcome of the signal it is connected to (see [@sec:reset-inference]).
+If the reset is inferred to be synchronous, this operation is removed, replacing the result with the input.
+If the reset is inferred to be asynchronous, this operation is replaced with a `asAsyncReset`{.firrtl} operation.
+
 ## Shift Left Operation
 
 | Name | Arguments | Parameters | Arg Types | Result Type | Result Width |
@@ -4646,7 +4677,7 @@ linecol = digit_dec , { digit_dec } , ":" , digit_dec , { digit_dec } ;
 
 (* Tokens: PrimOp Keywords *)
 primop_1expr_keyword =
-    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "cvt"
+    "asUInt" | "asSInt" | "asClock" | "asAsyncReset" | "asReset" | "cvt"
   | "neg"    | "not"
   | "andr"   | "orr"    | "xorr" ;
 

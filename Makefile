@@ -30,7 +30,7 @@ PANDOC_FLAGS=\
 	--template include/spec-template.tex \
 	--syntax-definition include/firrtl.xml \
 	--syntax-definition include/ebnf.xml \
-	-r markdown+table_captions+inline_code_attributes+gfm_auto_identifiers \
+	-r markdown+gfm_auto_identifiers+inline_code_attributes+table_captions+pipe_tables \
 	--filter pandoc-crossref \
 	--lua-filter scripts/extract-firrtl-code.lua \
 	--metadata version:$(VERSION)

@@ -2761,12 +2761,12 @@ The `release`{.firrtl} and `release_initial`{.firrtl} statements end the forcing
 
 Like `read`{.firrtl}, the force statements are verification constructs.
 
-| Name | Arguments | Argument Types |
-|-------------------|--------------------|---------------------------------|
-| force_initial | (ref, val) | (`RWProbe<T>`{.firrtl}, T) |
-| release_initial | (ref) | (`RWProbe<T>`{.firrtl}) |
-| force | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
-| release | (clock, condition, ref) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}) |
+| Name            | Arguments                    | Argument Types                                                   |
+|-----------------|------------------------------|------------------------------------------------------------------|
+| force_initial   | (ref, val)                   | (`RWProbe<T>`{.firrtl}, T)                                       |
+| release_initial | (ref)                        | (`RWProbe<T>`{.firrtl})                                          |
+| force           | (clock, condition, ref, val) | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl}, T) |
+| release         | (clock, condition, ref)      | (`Clock`{.firrtl}, `UInt<1>`{.firrtl}, `RWProbe<T>`{.firrtl})    |
 
 Backends optionally generate corresponding constructs in the target language, or issue an warning.
 
@@ -3539,13 +3539,13 @@ Figure [@fig:foo-unfolded] shows the completely unfolded representation where ea
 Using targets (or multiple targets), any specific module, instance, or combination of instances can be expressed.
 Some examples include:
 
-| Target | Description |
-|-------------------------|-----------------------------------------------|
-| `~|Foo` | refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl}) |
-| `~|Bar` | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl}) |
-| `~|Foo/a:Bar` | refers just to one instance of module `Bar`{.firrtl} |
-| `~|Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl} |
-| `~|Bar/d:Baz` | refers to two instances of module `Baz`{.firrtl} |
+| Target              | Description                                                                     |
+|---------------------|---------------------------------------------------------------------------------|
+| `~|Foo`             | refers to module `Foo`{.firrtl} (or the only instance of module `Foo`{.firrtl}) |
+| `~|Bar`             | refers to module `Bar`{.firrtl} (or both instances of module `Bar`{.firrtl})    |
+| `~|Foo/a:Bar`       | refers just to one instance of module `Bar`{.firrtl}                            |
+| `~|Foo/b:Bar/c:Baz` | refers to one instance of module `Baz`{.firrtl}                                 |
+| `~|Bar/d:Baz`       | refers to two instances of module `Baz`{.firrtl}                                |
 
 If a target does not contain an instance path, it is a *local* target.
 A local target points to all instances of a module.
@@ -3903,7 +3903,7 @@ The result of the interpret as clock operation is the Clock typed signal obtaine
 ## Interpret as AsyncReset
 
 | Name         | Arguments | Parameters | Arg Types    | Result Type | Result Width |
-|-------------|----------|------------|-------------|------------|-------------|
+|--------------|-----------|------------|--------------|-------------|--------------|
 | asAsyncReset | \(e\)     | ()         | (AsyncReset) | AsyncReset  | n/a          |
 |              |           |            | (UInt)       | AsyncReset  | n/a          |
 |              |           |            | (SInt)       | AsyncReset  | n/a          |
@@ -3949,7 +3949,7 @@ n must be non-negative.
 ## Dynamic Shift Left Operation
 
 | Name | Arguments | Parameters | Arg Types    | Result Type | Result Width          |
-|---------|------------|-------------|--------------|-------------|--------------|
+|------|-----------|------------|--------------|-------------|-----------------------|
 | dshl | (e1, e2)  | ()         | (UInt, UInt) | UInt        | w~e1~ + 2`^`w~e2~ - 1 |
 |      |           |            | (SInt, UInt) | SInt        | w~e1~ + 2`^`w~e2~ - 1 |
 
@@ -3996,7 +3996,7 @@ The bitwise complement operation performs a logical not on each bit in e.
 ## Binary Bitwise Operations
 
 | Name       | Arguments | Parameters | Arg Types   | Result Type | Result Width     |
-|------------|-----------|------------|-------------|-------------|--------------|
+|------------|-----------|------------|-------------|-------------|------------------|
 | and,or,xor | (e1, e2)  | ()         | (UInt,UInt) | UInt        | max(w~e1~,w~e2~) |
 |            |           |            | (SInt,SInt) | UInt        | max(w~e1~,w~e2~) |
 
@@ -4071,25 +4071,25 @@ Integer arithmetic operations take `Integer`{.firrtl} property type expressions 
 
 ### Integer Add Operation
 
-  Name          Arguments   Arg Types           Result Type
-  ------------- ----------- ------------------- -------------
-  integer_add   (e1,e2)     (Integer,Integer)   Integer
+| Name        | Arguments | Arg Types         | Result Type |
+|-------------|-----------|-------------------|-------------|
+| integer_add | (e1,e2)   | (Integer,Integer) | Integer     |
 
 The add operation result is the arbitrary precision signed integer arithmetic sum of e1 and e2.
 
 ### Integer Multiply Operation
 
-  Name          Arguments   Arg Types           Result Type
-  ------------- ----------- ------------------- -------------
-  integer_mul   (e1,e2)     (Integer,Integer)   Integer
+| Name        | Arguments | Arg Types         | Result Type |
+|-------------|-----------|-------------------|-------------|
+| integer_mul | (e1,e2)   | (Integer,Integer) | Integer     |
 
 The multiply operation result is the arbitrary precision signed integer arithmetic product of e1 and e2.
 
 ### Integer Shift Right Operation
 
-  Name          Arguments   Arg Types           Result Type
-  ------------- ----------- ------------------- -------------
-  integer_shr   (e1,e2)     (Integer,Integer)   Integer
+| Name        | Arguments | Arg Types         | Result Type |
+|-------------|-----------|-------------------|-------------|
+| integer_shr | (e1,e2)   | (Integer,Integer) | Integer     |
 
 The shift right operation result is the arbitrary precision signed integer arithmetic shift right of e1 by e2.
 e2 sign bits from e1 are shifted into the most significant bits, and the e2 least significant bits of e1 are truncated.
@@ -4097,9 +4097,9 @@ e2 must be non-negative.
 
 ### Integer Shift Left Operation
 
-  Name          Arguments   Arg Types           Result Type
-  ------------- ----------- ------------------- -------------
-  integer_shl   (e1,e2)     (Integer,Integer)   Integer
+| Name        | Arguments | Arg Types         | Result Type |
+|-------------|-----------|-------------------|-------------|
+| integer_shl | (e1,e2)   | (Integer,Integer) | Integer     |
 
 The shift left operation result is the arbitrary precision signed integer arithmetic shift left of e1 by e2.
 e2 zero bits are shifted into the least significant bits of e1, and the e2 most significant bits of e1 are truncated.
@@ -4111,18 +4111,18 @@ List operations create `List`{.firrtl} property type expressions from other prop
 
 ### List Construction Operation
 
-  Name        Arguments   Arg Types   Result Type
-  ----------- ----------- ----------- -------------
-  List\<t\>   (e\*)       (t\*)       List\<t\>
+| Name      | Arguments | Arg Types | Result Type |
+|-----------|-----------|-----------|-------------|
+| List\<t\> | (e\*)     | (t\*)     | List\<t\>   |
 
 The list construction operation constructs a `List`{.firrtl} property type expression of a given element type.
 The `List`{.firrtl} constructor is parameterized by element type t, and accepts zero or more property type expressions e of type t.
 
 ### List Concatenation Operation
 
-  Name          Arguments   Arg Types   Result Type
-  ------------- ----------- ----------- -------------
-  list_concat   (e+)        (t+)        List\<t\>
+| Name        | Arguments | Arg Types | Result Type |
+|-------------|-----------|-----------|-------------|
+| list_concat | (e+)      | (t+)      | List\<t\>   |
 
 The list concatenation operation constructs a `List`{.firrtl} property type expression by concatenating one or more lists of the same element type t.
 

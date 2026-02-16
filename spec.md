@@ -4600,7 +4600,7 @@ type_vec = type , "[" , int , "]" ;
 
 (* Enum Types *)
 type_enum = "{|" , { type_enum_alt } , "|}" ;
-type_enum_alt = id, [ ":" , type_constable ] ;
+type_enum_alt = id, [ ":" , type_hardware ] ;
 
 (* Probe Types *)
 type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id ] , ">" ;

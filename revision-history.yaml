@@ -15,6 +15,7 @@ revisionHistory:
       - Clarify that read/write latency apply to all ports, respectively.
       - Fix mistakes in layer/layerblock EBNF grammar.
       - Fix missing commas and semicolons in EBNF grammar.
+      - Let enums be hardware types, not undefined `type_constable`.
     abi:
      - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

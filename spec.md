@@ -314,6 +314,23 @@ circuit Foo :
     inst bar of Bar
 ```
 
+### External Modules with Build Requirements
+
+External modules may require additional out-of-band dependencies that downstream tools are required to consider when working with a FIRRTL circuit.
+
+To declare an external module with build requirements, use the `requires`{.firrtl} keyword followed by one or more comma-delimited string literals.
+The `requires`{.firrtl} keyword may be specified more than once. The interpretation of these requirements is unspecified.
+
+The circuit below shows an external module with two build requirements:
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Foo :
+  extmodule Bar requires "libfoo", "libbar" :
+  public module Foo :
+    inst bar of Bar
+```
+
 ## Formal Unit Tests
 
 The `formal`{.firrtl} keyword declares a formal unit test.
@@ -4363,7 +4380,7 @@ decl_module =
   dedent ;
 
 decl_extmodule =
-  "extmodule" , id , { enablelayer | knownlayer } , ":" , [ info ] , newline , indent ,
+  "extmodule" , id , { enablelayer | knownlayer | requires } , ":" , [ info ] , newline , indent ,
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
     { "parameter" , id , "=" , type_param , newline } ,
@@ -4622,7 +4639,10 @@ property_primop_varexpr = property_primop_varexpr_keyword ,
 enablelayer = "enablelayer" , id_path ;
 
 (* Known Layers *)
-knownlayer = "knownlayer" , id_path , { "," id_path } ;
+knownlayer = "knownlayer" , id_path , { "," , id_path } ;
+
+(* External Module Requirements *)
+requires = "requires" , string_dq , { "," , string_dq } ;
 
 (* Tokens: Annotations *)
 annotations = "%" , "[" , json_array , "]" ;

@@ -4383,7 +4383,7 @@ decl_formal_param =
   | string_dq
   | string_sq
   | "[" , [ decl_formal_param , { "," , decl_formal_param } ] , "]"
-  | "{" , [ id , "=" , decl_formal_param , { "," , id , "=" , decl_formal_param } ] , "}"
+  | "{" , [ id , "=" , decl_formal_param , { "," , id , "=" , decl_formal_param } ] , "}" ;
 
 decl_type_alias = "type", id, "=", type ;
 
@@ -4444,7 +4444,7 @@ conditional =
   | conditional_match ;
 
 conditional_when =
-  "when" , expr , ":" [ info ] , newline ,
+  "when" , expr , ":" , [ info ] , newline ,
     indent , statement, { statement } , dedent ,
   [ "else" , ":" , indent , statement, { statement } , dedent ] ;
 
@@ -4551,8 +4551,8 @@ expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
 expr_read = "read" , "(" , expr_probe , ")" ;
 
 expr_probe =
-  "probe" , "(" , reference_static , ")"
-  "rwprobe" , "(" , reference_static , ")"
+    "probe" , "(" , reference_static , ")"
+  | "rwprobe" , "(" , reference_static , ")"
   | reference_static ;
 
 property_literal_expr = "Integer", "(", int, ")" ;
@@ -4564,7 +4564,7 @@ expr_intrinsic = "intrinsic", "(" , id ,
   [ "<"   , id , "=" , ( int | string_dq ) ,
     { "," , id , "=" , ( int | string_dq ) } , ">" ] ,
   [ ":" , type ] ,
-  { "," , expr } , ")"
+  { "," , expr } , ")" ;
 
 (* Types *)
 type = ( [ "const" ] , type_hardware ) | type_probe ;
@@ -4603,17 +4603,17 @@ type_enum = "{|" , { type_enum_alt } , "|}" ;
 type_enum_alt = id, [ ":" , type_constable ] ;
 
 (* Probe Types *)
-type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id ] ">" ;
+type_probe = ( "Probe" | "RWProbe" ) , "<", type , [ "," , id ] , ">" ;
 
 (* Primitive Operations *)
-primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr ")" ;
+primop_2expr     = primop_2expr_keyword , "(" , expr , "," , expr , ")" ;
 primop_1expr     = primop_1expr_keyword , "(" , expr , ")" ;
 primop_1expr1int = primop_1expr1int_keyword , "(", expr , "," , int , ")" ;
 primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int , ")" ;
 
 (* Primitive Property Operations *)
 property_primop_2expr = property_primop_2expr_keyword ,
-                          "(" , property_expr , "," , property_expr ")" ;
+                          "(" , property_expr , "," , property_expr , ")" ;
 property_primop_varexpr = property_primop_varexpr_keyword ,
                             "(" , { property_expr } , ")" ;
 

@@ -14,6 +14,7 @@ revisionHistory:
       - Add `asReset` primitive operation.
       - Clarify that read/write latency apply to all ports, respectively.
       - Fix mistakes in layer/layerblock EBNF grammar.
+      - Fix missing commas and semicolons in EBNF grammar.
     abi:
      - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

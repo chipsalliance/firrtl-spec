@@ -12,6 +12,9 @@
             "include": "#circuit"
         },
         {
+            "include": "#annotations"
+        },
+        {
             "include": "#declaration"
         },
         {
@@ -26,11 +29,11 @@
     ],
     "repository": {
         "version": {
-            "match": "^FIRRTL version \\d+\\.\\d+\\.\\d+$",
+            "match": "FIRRTL\\s+version\\s+\\d+\\.\\d+\\.\\d+",
             "name": "comment.line.character.firrtl"
         },
         "circuit": {
-            "match": "^(circuit)\\s+(\\w+)\\s*:",
+            "match": "^(circuit)\\s+(\\w+|`[\\w]+`)\\s*:",
             "captures": {
                 "1": {
                     "name": "storage.type.class.firrtl"
@@ -40,8 +43,21 @@
                 }
             }
         },
+        "annotations": {
+            "begin": "%\\[",
+            "end": "\\]",
+            "name": "meta.annotation.firrtl",
+            "patterns": [
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
         "declaration": {
             "patterns": [
+                {
+                    "include": "#formal"
+                },
                 {
                     "include": "#module"
                 },
@@ -71,9 +87,27 @@
                 }
             ]
         },
-        "module": {
-            "match": "^\\s*(public\\s+)?(module)\\s+(\\w+)\\s*:",
+        "formal": {
+            "match": "^\\s*(formal)\\s+(\\w+|`[\\w]+`)\\s+(of)\\s+(\\w+|`[\\w]+`)\\s*:",
             "captures": {
+                "1": {
+                    "name": "storage.type.class.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                },
+                "3": {
+                    "name": "keyword.other.firrtl"
+                },
+                "4": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "module": {
+            "begin": "^\\s*(public\\s+)?(module)\\s+(\\w+|`[\\w]+`)",
+            "end": ":",
+            "beginCaptures": {
                 "1": {
                     "name": "storage.modifier.firrtl"
                 },
@@ -83,30 +117,65 @@
                 "3": {
                     "name": "entity.name.type.firrtl"
                 }
-            }
+            },
+            "patterns": [
+                {
+                    "match": "\\b(enablelayer)\\s+([\\w.]+)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.firrtl"
+                        },
+                        "2": {
+                            "name": "entity.name.class.firrtl"
+                        }
+                    }
+                }
+            ]
         },
         "extmodule": {
-            "match": "(extmodule)\\s+(\\w+)\\s*:",
-            "captures": {
+            "begin": "^\\s*(extmodule)\\s+(\\w+|`[\\w]+`)",
+            "end": ":",
+            "beginCaptures": {
                 "1": {
-                    "name": "storage.modifier.firrtl"
-                },
-                "2": {
                     "name": "storage.type.class.firrtl"
                 },
-                "3": {
+                "2": {
                     "name": "entity.name.type.firrtl"
                 }
-            }
+            },
+            "patterns": [
+                {
+                    "match": "\\b(enablelayer)\\s+([\\w.]+)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.firrtl"
+                        },
+                        "2": {
+                            "name": "entity.name.class.firrtl"
+                        }
+                    }
+                },
+                {
+                    "match": "\\b(knownlayer)\\s+([\\w.]+(?:\\s*,\\s*[\\w.]+)*)",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.firrtl"
+                        },
+                        "2": {
+                            "name": "entity.name.class.firrtl"
+                        }
+                    }
+                }
+            ]
         },
         "layer": {
-            "match": "(layer)\\s+(\\w+)\\s*,?\\s*(\\w*)",
+            "match": "^\\s*(layer)\\s+(\\w+|`[\\w]+`)\\s*,\\s*(bind|inline)\\s*:",
             "captures": {
                 "1": {
-                    "name": "storage.type.class.firrtl"
+                    "name": "keyword.declaration.firrtl"
                 },
                 "2": {
-                    "name": "entity.name.type.firrtl"
+                    "name": "entity.name.class.firrtl"
                 },
                 "3": {
                     "name": "storage.modifier.firrtl"
@@ -114,11 +183,11 @@
             }
         },
         "type_decl": {
-            "begin": "(type)\\s+(\\w+)\\s*=",
+            "begin": "^\\s*(type)\\s+(\\w+|`[\\w]+`)\\s*=",
             "end": "$",
             "beginCaptures": {
                 "1": {
-                    "name": "storage.type.port.firrtl"
+                    "name": "keyword.other.firrtl"
                 },
                 "2": {
                     "name": "entity.name.type.firrtl"
@@ -130,11 +199,14 @@
                 },
                 {
                     "include": "#comment"
+                },
+                {
+                    "include": "#file_info"
                 }
             ]
         },
         "port": {
-            "begin": "(input|output)\\s+(\\w+)\\s*:",
+            "begin": "^\\s*(input|output)\\s+(\\w+|`[\\w]+`)\\s*:",
             "end": "$",
             "beginCaptures": {
                 "1": {
@@ -159,13 +231,7 @@
         "type": {
             "patterns": [
                 {
-                    "include": "#type_ground_nowidth"
-                },
-                {
-                    "include": "#type_ground_width"
-                },
-                {
-                    "include": "#type_bundle"
+                    "include": "#type_property"
                 },
                 {
                     "include": "#type_probe"
@@ -174,25 +240,48 @@
                     "include": "#type_enum"
                 },
                 {
-                    "include": "#type_property"
+                    "include": "#type_bundle"
+                },
+                {
+                    "include": "#type_ground_nowidth"
+                },
+                {
+                    "include": "#type_ground_width"
+                },
+                {
+                    "include": "#type_alias_ref"
                 }
             ]
         },
+        "type_alias_ref": {
+            "match": "\\b(\\w+|`[\\w]+`)\\b",
+            "name": "entity.name.type.firrtl"
+        },
         "type_ground_nowidth": {
-            "match": "(const\\s+)?(Clock|Reset|AsyncReset)",
-            "name": "storage.type.firrtl",
+            "match": "(const\\s+)?(Clock|Reset|AsyncReset)(?:\\[(\\d+)\\])?",
             "captures": {
                 "1": {
                     "name": "storage.modifier.firrtl"
+                },
+                "2": {
+                    "name": "storage.type.firrtl"
+                },
+                "3": {
+                    "name": "constant.numeric.firrtl"
                 }
             }
         },
         "type_ground_width": {
-            "match": "(const\\s+)?([US]Int|Analog)(<(\\d+)>)?",
-            "name": "storage.type.firrtl",
+            "match": "(const\\s+)?([US]Int|Analog)(?:<(\\d+)>)?(?:\\[(\\d+)\\])?",
             "captures": {
                 "1": {
                     "name": "storage.modifier.firrtl"
+                },
+                "2": {
+                    "name": "storage.type.firrtl"
+                },
+                "3": {
+                    "name": "constant.numeric.firrtl"
                 },
                 "4": {
                     "name": "constant.numeric.firrtl"
@@ -200,68 +289,110 @@
             }
         },
         "type_bundle": {
-            "begin": "(const\\s+)?{",
-            "end": "}",
-            "name": "meta.type.bundle.firrtl",
-            "captures": {
+            "begin": "(const\\s+)?\\{(?!\\|)",
+            "end": "\\}",
+            "beginCaptures": {
                 "1": {
                     "name": "storage.modifier.firrtl"
                 }
             },
+            "name": "meta.type.bundle.firrtl",
             "patterns": [
                 {
                     "include": "#type_bundle_field"
                 },
                 {
                     "include": "#type"
+                },
+                {
+                    "include": "#comment"
                 }
             ]
         },
         "type_bundle_field": {
-            "match": "(flip\\s+)?(\\w+)\\s*:",
+            "match": "(flip\\s+)?(\\w+|`[\\w]+`)\\s*:",
             "captures": {
                 "1": {
                     "name": "storage.modifier.firrtl"
                 },
                 "2": {
-                    "name": "entity.name.type.firrtl"
+                    "name": "variable.other.firrtl"
                 }
             }
         },
         "type_probe": {
-            "begin": "((RW)?Probe<)",
-            "end": "(>)",
-            "captures": {
+            "begin": "((RW)?Probe)\\s*<",
+            "end": ">",
+            "beginCaptures": {
                 "1": {
                     "name": "storage.type.firrtl"
                 }
             },
             "patterns": [
+                {
+                    "match": ",\\s*([\\w.]+)",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.type.firrtl"
+                        }
+                    }
+                },
                 {
                     "include": "#type"
                 }
             ]
         },
         "type_enum": {
-            "begin": "({\\|)",
-            "end": "(\\|})",
-            "captures": {
-                "1": {
-                    "name": "storage.type.firrtl"
-                }
-            },
+            "begin": "\\{\\|",
+            "end": "\\|\\}",
+            "name": "meta.type.enum.firrtl",
             "patterns": [
                 {
+                    "include": "#type_enum_variant"
+                },
+                {
                     "include": "#type"
+                },
+                {
+                    "include": "#comment"
                 }
             ]
         },
+        "type_enum_variant": {
+            "match": "(\\w+|`[\\w]+`)\\s*(:)?",
+            "captures": {
+                "1": {
+                    "name": "variable.other.firrtl"
+                },
+                "2": {
+                    "name": "punctuation.separator.firrtl"
+                }
+            }
+        },
         "type_property": {
-            "match": "Integer",
-            "name": "storage.type.firrtl"
+            "patterns": [
+                {
+                    "match": "\\b(Integer)\\b",
+                    "name": "storage.type.firrtl"
+                },
+                {
+                    "begin": "\\b(List)\\s*<",
+                    "end": ">",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.firrtl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#type_property"
+                        }
+                    ]
+                }
+            ]
         },
         "wire_or_register": {
-            "begin": "(wire|reg|regreset)\\s+(\\w+)\\s*:",
+            "begin": "^\\s*(wire|reg|regreset)\\s+(\\w+|`[\\w]+`)\\s*:",
             "end": "$",
             "beginCaptures": {
                 "1": {
@@ -274,6 +405,9 @@
             "patterns": [
                 {
                     "include": "#type"
+                },
+                {
+                    "include": "#expression"
                 },
                 {
                     "include": "#comment"
@@ -284,55 +418,14 @@
             ]
         },
         "node": {
-            "match": "(node)\\s+(\\w+)\\s*",
-            "captures": {
+            "begin": "^\\s*(node)\\s+(\\w+|`[\\w]+`)\\s*=",
+            "end": "$",
+            "beginCaptures": {
                 "1": {
                     "name": "storage.type.firrtl"
                 },
                 "2": {
                     "name": "entity.name.type.firrtl"
-                }
-            }
-        },
-        "instance": {
-            "match": "inst\\s+(\\w+)\\s+of\\s+",
-            "name": "keyword.other.firrtl",
-            "captures": {
-                "1": {
-                    "name": "entity.name.type.firrtl"
-                }
-            }
-        },
-        "memory": {
-            "match": "(mem)\\s+(\\w+)",
-            "captures": {
-                "1": {
-                    "name": "storage.type.class.firrtl"
-                },
-                "2": {
-                    "name": "entity.name.type.firrtl"
-                }
-            }
-        },
-        "statement": {
-            "patterns": [
-                {
-                    "include": "#statement_generic"
-                },
-                {
-                    "include": "#statement_memory_config"
-                },
-                {
-                    "include": "#statement_extmodule_config"
-                }
-            ]
-        },
-        "statement_generic": {
-            "begin": "(connect|invalidate|attach\\(|propassign|skip|when|else(\\s+when)?|stop|printf|assert|assume|cover|layerblock|define|force(_initial)?|release(_initial)?)",
-            "end": "$",
-            "beginCaptures": {
-                "1": {
-                    "name": "keyword.other.firrtl"
                 }
             },
             "patterns": [
@@ -347,10 +440,468 @@
                 }
             ]
         },
+        "instance": {
+            "match": "^\\s*(inst)\\s+(\\w+|`[\\w]+`)\\s+(of)\\s+(\\w+|`[\\w]+`)",
+            "captures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                },
+                "3": {
+                    "name": "keyword.other.firrtl"
+                },
+                "4": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "memory": {
+            "match": "^\\s*(mem)\\s+(\\w+|`[\\w]+`)\\s*:",
+            "captures": {
+                "1": {
+                    "name": "storage.type.class.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.type.firrtl"
+                }
+            }
+        },
+        "statement": {
+            "patterns": [
+                {
+                    "include": "#statement_when"
+                },
+                {
+                    "include": "#statement_else"
+                },
+                {
+                    "include": "#statement_match"
+                },
+                {
+                    "include": "#statement_match_case"
+                },
+                {
+                    "include": "#statement_printf"
+                },
+                {
+                    "include": "#statement_fprintf"
+                },
+                {
+                    "include": "#statement_fflush"
+                },
+                {
+                    "include": "#statement_verification"
+                },
+                {
+                    "include": "#statement_stop"
+                },
+                {
+                    "include": "#statement_force"
+                },
+                {
+                    "include": "#statement_layerblock"
+                },
+                {
+                    "include": "#statement_intrinsic"
+                },
+                {
+                    "include": "#statement_connectlike"
+                },
+                {
+                    "include": "#statement_memory_config"
+                },
+                {
+                    "include": "#statement_extmodule_config"
+                },
+                {
+                    "include": "#statement_skip"
+                }
+            ]
+        },
+        "statement_when": {
+            "begin": "^\\s*(when)\\s+",
+            "end": "$",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#file_info"
+                }
+            ]
+        },
+        "statement_else": {
+            "patterns": [
+                {
+                    "begin": "^\\s*(else)\\s+(when)\\s+",
+                    "end": "$",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.firrtl"
+                        },
+                        "2": {
+                            "name": "keyword.control.firrtl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        },
+                        {
+                            "include": "#comment"
+                        },
+                        {
+                            "include": "#file_info"
+                        }
+                    ]
+                },
+                {
+                    "match": "^\\s*(else)\\s*:",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.firrtl"
+                        }
+                    }
+                }
+            ]
+        },
+        "statement_match": {
+            "begin": "^\\s*(match)\\s+",
+            "end": "$",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                },
+                {
+                    "include": "#file_info"
+                }
+            ]
+        },
+        "statement_match_case": {
+            "match": "^\\s*(\\w+|`[\\w]+`)(?:\\s*\\(\\s*(\\w+|`[\\w]+`)\\s*\\))?\\s*:",
+            "captures": {
+                "1": {
+                    "name": "variable.other.firrtl"
+                },
+                "2": {
+                    "name": "variable.parameter.firrtl"
+                }
+            }
+        },
+        "statement_connectlike": {
+            "patterns": [
+                {
+                    "begin": "^\\s*(connect|invalidate|propassign)\\s+",
+                    "end": "$",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.firrtl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        },
+                        {
+                            "include": "#property_expression"
+                        },
+                        {
+                            "include": "#comment"
+                        },
+                        {
+                            "include": "#file_info"
+                        }
+                    ]
+                },
+                {
+                    "begin": "^\\s*(attach)\\s*\\(",
+                    "end": "\\)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.firrtl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        },
+                        {
+                            "include": "#comment"
+                        }
+                    ]
+                },
+                {
+                    "begin": "^\\s*(define)\\s+",
+                    "end": "$",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.firrtl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        },
+                        {
+                            "include": "#comment"
+                        },
+                        {
+                            "include": "#file_info"
+                        }
+                    ]
+                },
+                {
+                    "comment": "Legacy connect syntax: foo <= bar",
+                    "begin": "^\\s*",
+                    "end": "$",
+                    "patterns": [
+                        {
+                            "match": "(<=)",
+                            "name": "keyword.operator.legacy.firrtl"
+                        },
+                        {
+                            "include": "#expression"
+                        },
+                        {
+                            "include": "#comment"
+                        },
+                        {
+                            "include": "#file_info"
+                        }
+                    ]
+                },
+                {
+                    "comment": "Legacy partial connect syntax: foo <- bar",
+                    "begin": "^\\s*",
+                    "end": "$",
+                    "patterns": [
+                        {
+                            "match": "(<-)",
+                            "name": "keyword.operator.legacy.firrtl"
+                        },
+                        {
+                            "include": "#expression"
+                        },
+                        {
+                            "include": "#comment"
+                        },
+                        {
+                            "include": "#file_info"
+                        }
+                    ]
+                },
+                {
+                    "comment": "Legacy invalidate syntax: foo is invalid",
+                    "match": "^\\s*(.+?)\\s+(is)\\s+(invalid)\\b",
+                    "captures": {
+                        "1": {
+                            "patterns": [
+                                {
+                                    "include": "#expression"
+                                }
+                            ]
+                        },
+                        "2": {
+                            "name": "keyword.operator.legacy.firrtl"
+                        },
+                        "3": {
+                            "name": "keyword.operator.legacy.firrtl"
+                        }
+                    }
+                }
+            ]
+        },
+        "statement_skip": {
+            "match": "^\\s*(skip)\\b",
+            "captures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            }
+        },
+        "statement_printf": {
+            "begin": "^\\s*(printf)\\s*\\(",
+            "end": "\\)(?:\\s*:\\s*(\\w+|`[\\w]+`))?",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "entity.name.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#format_string"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "statement_fprintf": {
+            "begin": "^\\s*(fprintf)\\s*\\(",
+            "end": "\\)(?:\\s*:\\s*(\\w+|`[\\w]+`))?",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "entity.name.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#format_string"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "statement_fflush": {
+            "begin": "^\\s*(fflush)\\s*\\(",
+            "end": "\\)(?:\\s*:\\s*(\\w+|`[\\w]+`))?",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "entity.name.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#format_string"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "statement_verification": {
+            "begin": "^\\s*(assert|assume|cover)\\s*\\(",
+            "end": "\\)(?:\\s*:\\s*(\\w+|`[\\w]+`))?",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "entity.name.type.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#format_string"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "statement_stop": {
+            "begin": "^\\s*(stop)\\s*\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "statement_force": {
+            "begin": "^\\s*(force|force_initial|release|release_initial)\\s*\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "statement_layerblock": {
+            "match": "^\\s*(layerblock)\\s+([\\w.]+|`[\\w]+`)\\s*:",
+            "captures": {
+                "1": {
+                    "name": "keyword.declaration.firrtl"
+                },
+                "2": {
+                    "name": "entity.name.class.firrtl"
+                }
+            }
+        },
+        "statement_intrinsic": {
+            "begin": "^\\s*intrinsic\\s*\\(",
+            "end": "\\)",
+            "name": "meta.intrinsic.firrtl",
+            "patterns": [
+                {
+                    "include": "#intrinsic_spec"
+                },
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
         "statement_memory_config": {
             "patterns": [
                 {
-                    "begin": "(data-type)\\s*=>",
+                    "begin": "^\\s*(data-type)\\s*=>",
                     "end": "$",
                     "beginCaptures": {
                         "1": {
@@ -360,19 +911,25 @@
                     "patterns": [
                         {
                             "include": "#type"
+                        },
+                        {
+                            "include": "#comment"
                         }
                     ]
                 },
                 {
-                    "match": "(depth|reader|writer|read-latency|write-latency)\\s*=>\\s*\\w+",
+                    "match": "^\\s*(depth|reader|writer|readwriter|read-latency|write-latency)\\s*=>\\s*(\\w+|`[\\w]+`)",
                     "captures": {
                         "1": {
                             "name": "keyword.other.firrtl"
+                        },
+                        "2": {
+                            "name": "constant.numeric.firrtl"
                         }
                     }
                 },
                 {
-                    "match": "(read-under-write)\\s*=>\\s*(old|new|undefined)",
+                    "match": "^\\s*(read-under-write)\\s*=>\\s*(old|new|undefined)",
                     "captures": {
                         "1": {
                             "name": "keyword.other.firrtl"
@@ -387,19 +944,52 @@
         "statement_extmodule_config": {
             "patterns": [
                 {
-                    "match": "(parameter)\\s+(\\w+)",
+                    "match": "^\\s*(defname)\\s*=\\s*(\\w+|`[\\w]+`)",
                     "captures": {
                         "1": {
                             "name": "keyword.other.firrtl"
+                        },
+                        "2": {
+                            "name": "entity.name.type.firrtl"
                         }
                     }
+                },
+                {
+                    "begin": "^\\s*(parameter)\\s+(\\w+|`[\\w]+`)\\s*=",
+                    "end": "$",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.firrtl"
+                        },
+                        "2": {
+                            "name": "variable.parameter.firrtl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#format_string"
+                        },
+                        {
+                            "match": "\\d+",
+                            "name": "constant.numeric.firrtl"
+                        },
+                        {
+                            "include": "#comment"
+                        }
+                    ]
                 }
             ]
         },
         "expression": {
             "patterns": [
                 {
-                    "include": "#expression_literal"
+                    "include": "#expression_mux"
+                },
+                {
+                    "include": "#expression_enum"
+                },
+                {
+                    "include": "#expression_intrinsic"
                 },
                 {
                     "include": "#expression_primop"
@@ -408,23 +998,70 @@
                     "include": "#expression_primop_deprecated"
                 },
                 {
-                    "include": "#property_literal"
+                    "include": "#expression_probe"
                 },
                 {
-                    "include": "#format_string"
+                    "include": "#expression_literal"
+                },
+                {
+                    "include": "#expression_radix_literal"
+                },
+                {
+                    "include": "#expression_reference"
                 }
             ]
         },
+        "expression_reference": {
+            "match": "\\b(\\w+|`[\\w]+`)\\b",
+            "name": "variable.other.firrtl"
+        },
         "expression_literal": {
-            "match": "(([US]Int|Analog)(<(\\d+)>)?\\(.+\\))",
+            "match": "\\b([US]Int|Analog)(?:<(\\d+)>)?\\s*\\(\\s*([+-]?\\d+)\\s*\\)",
             "captures": {
                 "1": {
+                    "name": "storage.type.firrtl"
+                },
+                "2": {
+                    "name": "constant.numeric.firrtl"
+                },
+                "3": {
                     "name": "constant.numeric.firrtl"
                 }
             }
         },
-        "expression_primop": {
-            "begin": "(add|sub|mul|div|rem|lt|leq|gt|geq|eq|neq|pad|asAsyncReset|asReset|asUInt|asSInt|asClock|shl|shr|dshl|dshr|cvt|neg|not|and|or|xor|andr|orr|xorr|cat|bits|head|tail|mux|probe|rwprobe|read)\\(",
+        "expression_radix_literal": {
+            "match": "\\b([US]Int|Analog)(?:<(\\d+)>)?\\s*\\(\\s*([+-]?0[bodh][0-9a-fA-F_]+)\\s*\\)",
+            "captures": {
+                "1": {
+                    "name": "storage.type.firrtl"
+                },
+                "2": {
+                    "name": "constant.numeric.firrtl"
+                },
+                "3": {
+                    "name": "constant.numeric.firrtl"
+                }
+            }
+        },
+        "expression_enum": {
+            "begin": "\\{\\|",
+            "end": "\\|\\}\\s*\\(\\s*(\\w+|`[\\w]+`)(?:\\s*,\\s*)?",
+            "endCaptures": {
+                "1": {
+                    "name": "variable.other.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type_enum_variant"
+                },
+                {
+                    "include": "#type"
+                }
+            ]
+        },
+        "expression_mux": {
+            "begin": "\\b(mux)\\s*\\(",
             "end": "\\)",
             "beginCaptures": {
                 "1": {
@@ -434,11 +1071,52 @@
             "patterns": [
                 {
                     "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "expression_probe": {
+            "begin": "\\b(probe|rwprobe|read)\\s*\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.operator.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "expression_primop": {
+            "begin": "\\b(add|sub|mul|div|rem|lt|leq|gt|geq|eq|neq|pad|asAsyncReset|asReset|asUInt|asSInt|asClock|shl|shr|dshl|dshr|cvt|neg|not|and|or|xor|andr|orr|xorr|cat|bits|head|tail)\\s*\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.operator.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#expression"
+                },
+                {
+                    "match": "\\d+",
+                    "name": "constant.numeric.firrtl"
+                },
+                {
+                    "include": "#comment"
                 }
             ]
         },
         "expression_primop_deprecated": {
-            "begin": "(asFixedPoint|bpshl|bpshr|bpset|validif)\\(",
+            "begin": "\\b(asFixedPoint|bpshl|bpshr|bpset|validif)\\s*\\(",
             "end": "\\)",
             "beginCaptures": {
                 "1": {
@@ -448,25 +1126,136 @@
             "patterns": [
                 {
                     "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "expression_intrinsic": {
+            "begin": "\\b(intrinsic)\\s*\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.firrtl"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#intrinsic_spec"
+                },
+                {
+                    "include": "#expression"
+                },
+                {
+                    "include": "#comment"
+                }
+            ]
+        },
+        "intrinsic_spec": {
+            "begin": "(\\w+)\\s*(?:<([^>]+)>)?(?:\\s*:\\s*)?",
+            "end": "(?=,|\\))",
+            "beginCaptures": {
+                "1": {
+                    "name": "entity.name.function.firrtl"
+                },
+                "2": {
+                    "patterns": [
+                        {
+                            "match": "(\\w+)\\s*=\\s*(\\d+|\"[^\"]*\")",
+                            "captures": {
+                                "1": {
+                                    "name": "variable.parameter.firrtl"
+                                },
+                                "2": {
+                                    "name": "constant.other.firrtl"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#type"
+                }
+            ]
+        },
+        "property_expression": {
+            "patterns": [
+                {
+                    "include": "#property_literal"
+                },
+                {
+                    "include": "#property_primop"
+                },
+                {
+                    "include": "#expression_reference"
                 }
             ]
         },
         "property_literal": {
-            "match": "Integer\\((\\d+)\\)",
-            "name": "constant.numeric.firrtl"
+            "match": "\\b(Integer)\\s*\\(\\s*([+-]?\\d+)\\s*\\)",
+            "captures": {
+                "1": {
+                    "name": "storage.type.firrtl"
+                },
+                "2": {
+                    "name": "constant.numeric.firrtl"
+                }
+            }
         },
-        "format_string": {
-            "begin": "\"",
-            "end": "\"",
-            "name": "string.quoted.double.firrtl",
+        "property_primop": {
+            "begin": "\\b(integer_add|integer_mul|integer_shl|integer_shr|list_concat|List)\\s*(?:<([^>]+)>)?\\s*\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.operator.firrtl"
+                },
+                "2": {
+                    "patterns": [
+                        {
+                            "include": "#type_property"
+                        }
+                    ]
+                }
+            },
             "patterns": [
                 {
-                    "match": "%[bdx%]",
-                    "name": "variable.other.firrtl"
+                    "include": "#property_expression"
                 },
                 {
-                    "match": "\\\\[nt\\\\\"']",
-                    "name": "variable.other.firrtl"
+                    "include": "#comment"
+                }
+            ]
+        },
+        "format_string": {
+            "patterns": [
+                {
+                    "begin": "\"",
+                    "end": "\"",
+                    "name": "string.quoted.double.firrtl",
+                    "patterns": [
+                        {
+                            "match": "%[bdx%]",
+                            "name": "constant.character.escape.firrtl"
+                        },
+                        {
+                            "match": "\\\\[nt\\\\\"']",
+                            "name": "constant.character.escape.firrtl"
+                        }
+                    ]
+                },
+                {
+                    "begin": "'",
+                    "end": "'",
+                    "name": "string.quoted.single.firrtl",
+                    "patterns": [
+                        {
+                            "match": "\\\\[nt\\\\\"']",
+                            "name": "constant.character.escape.firrtl"
+                        }
+                    ]
                 }
             ]
         },
@@ -475,7 +1264,7 @@
             "name": "comment.line.character.firrtl"
         },
         "file_info": {
-            "match": "(@\\[.*\\])",
+            "match": "@\\[[^\\]]+\\]",
             "name": "comment.line.character.firrtl"
         }
     }

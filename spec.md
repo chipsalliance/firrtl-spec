@@ -4370,7 +4370,7 @@ decl_extmodule =
   dedent ;
 
 decl_layer =
-  "layer" , id , string , ":" , [ info ] , newline , indent ,
+  "layer" , id , "," , ( "bind" | "inline" ) , ":" , [ info ] , newline , indent ,
   { decl_layer , newline } ,
   dedent ;
 
@@ -4514,8 +4514,7 @@ command =
 
 (* Layer Block Statement *)
 layerblock =
-  "layerblock" , id , "of" , id , ":" , [ info ] , newline , indent ,
-    { port , newline } ,
+  "layerblock" , id , ":" , [ info ] , newline , indent ,
     { statement , newline } ,
   dedent ;
 

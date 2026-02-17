@@ -17,7 +17,7 @@ revisionHistory:
       - Fix missing commas and semicolons in EBNF grammar.
       - Let enums be hardware types, not undefined `type_constable`.
     abi:
-     - Remove module name from guard macro for inline layers.
+      - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 5.0.0

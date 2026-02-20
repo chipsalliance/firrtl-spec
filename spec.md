@@ -1314,8 +1314,8 @@ The flow of all other expressions are source, including mux and cast.
 
 The type equivalence relation is used to determine whether a connection between two components is legal.
 
-An unsigned integer type is always equivalent to another unsigned integer type regardless of bit width, and is not equivalent to any other type.
-Similarly, a signed integer type is always equivalent to another signed integer type regardless of bit width, and is not equivalent to any other type.
+An unsigned integer type may be connected to another unsigned integer type of equal or longer width or with an uninferred width.
+Similarly, a signed integer type may be connect to another signed integer type of equal or longer width or with an uninferred width.
 
 Clock types are equivalent to clock types, and are not equivalent to any other type.
 
@@ -1324,14 +1324,14 @@ It cannot be connected to both a `UInt`{.firrtl} and an `AsyncReset`{.firrtl}.
 
 The `AsyncReset`{.firrtl} type can be connected to another `AsyncReset`{.firrtl} or to a `Reset`{.firrtl}.
 
-Two enumeration types are equivalent if both have the same number of variants, and both the enumerations' i'th variants have matching names and equivalent types.
+Two enumeration types may be connected if both have the same number of variants, and both the enumerations' i'th variants have matching names and equivalent types.
 
-Two vector types are equivalent if they have the same length, and if their element types are equivalent.
+Two vector types may be connected if they have the same length, and if their element types are connectable.
 
-Two bundle types are equivalent if they have the same number of fields, and both the bundles' i'th fields have matching names and orientations, as well as equivalent types.
+Two bundle types may be connected if they have the same number of fields, and both the bundles' i'th fields have matching names and orientations, as well as connectable types.
 Consequently, `{a:UInt, b:UInt}`{.firrtl} is not equivalent to `{b:UInt, a:UInt}`{.firrtl}, and `{a: {flip b:UInt}}`{.firrtl} is not equivalent to `{flip a: {b: UInt}}`{.firrtl}.
 
-Two property types are equivalent if they are the same concrete property type.
+Two property types are connectable if they are the same concrete property type.
 
 ## The Connect Statement
 
@@ -1360,12 +1360,10 @@ In order for a connection to be legal the following conditions must hold:
 
 4.  The left-hand side and right-hand side types are not property types.
 
-Connect statements from a narrower ground type component to a wider ground type component will have its value automatically sign-extended or zero-extended to the larger bit width.
-The behavior of connect statements between two circuit components with aggregate types is defined by the connection algorithm in [@sec:the-connection-algorithm].
 
 ### The Connection Algorithm
 
-Connect statements between ground types cannot be expanded further.
+Connect statements from a narrower ground type component to a wider ground type component will have its value automatically sign-extended or zero-extended to the larger bit width.
 
 Connect statements between two vector typed components recursively connects each sub-element in the right-hand side expression to the corresponding sub-element in the left-hand side expression.
 

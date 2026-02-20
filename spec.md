@@ -1988,8 +1988,10 @@ circuit MyModule:
 ```
 
 This is an illegal FIRRTL circuit and an error will be thrown during compilation.
-All wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
+All non-zero-width wires, memory ports, instance ports, and module ports that can be connected to must be connected to under all conditions.
 Registers do not need to be connected to under all conditions, as it will keep its previous value if unconnected.
+Zero-width wires, memory ports, instance ports, and module ports do not need to be connected.
+These are implicitly initialized with a value of zero.
 
 ## Declarations within Conditional Blocks
 

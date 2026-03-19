@@ -16,6 +16,11 @@ revisionHistory:
       - Fix mistakes in layer/layerblock EBNF grammar.
       - Fix missing commas and semicolons in EBNF grammar.
       - Let enums be hardware types, not undefined `type_constable`.
+      - Add `Bool` property type.
+      - Add `Double` property type.
+      - Add `Path` property type.
+      - Add `AnyRef` property type.
+      - Add `String` property type to documentation.
     abi:
       - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

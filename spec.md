@@ -1189,7 +1189,7 @@ circuit Example:
 ### Inst Type
 
 The `Inst` type represents a class instance property.
-It is parameterized by the name of a class, and represents an instance (object) of that class.
+It is parameterized by the name of a class, and represents an object of that class.
 The `Inst` type can only be used with classes that are defined in the same circuit.
 
 ``` firrtl

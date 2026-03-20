@@ -21,6 +21,10 @@ revisionHistory:
       - Add `Path` property type.
       - Add `AnyRef` property type.
       - Add `String` property type to documentation.
+      - Add `class` declaration for defining classes.
+      - Add `extclass` declaration for externally defined classes.
+      - Add `Inst<ClassName>` property type for class instances.
+      - Add `object` statement for instantiating classes.
     abi:
       - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

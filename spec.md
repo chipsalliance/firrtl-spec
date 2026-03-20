@@ -226,6 +226,84 @@ Foo #(
 endmodule
 ```
 
+## Classes
+
+Classes are object-oriented constructs that encapsulate property-typed data and can be instantiated to create objects.
+Unlike modules, which represent hardware, classes represent metadata and design intent that can be used for verification, debugging, or other non-hardware purposes.
+
+Each class has a given name and a list of ports.
+All ports on a class must be property types (see [@sec:property-types]).
+Classes may contain statements that operate on properties, such as property assignments.
+
+Classes are instantiated using the `object` statement (see [@sec:object-statements]), which creates an object of the class type.
+Objects can be accessed through their ports using subfield notation.
+
+The following example declares a simple class with input and output property ports:
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  ;; snippetbegin
+  class SimpleClass:
+    input a: String
+    output b: String
+    propassign b, a
+  ;; snippetend
+
+  public module Example:
+    skip
+```
+
+Classes can be instantiated within other classes or modules using the `object` statement:
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  class SimpleClass:
+    input a: String
+    output b: String
+    propassign b, a
+
+  ;; snippetbegin
+  class Client:
+    output result: Inst<SimpleClass>
+    object obj of SimpleClass
+    propassign result, obj
+  ;; snippetend
+
+  public module Example:
+    skip
+```
+
+Classes are always private and cannot be marked as public.
+A class cannot be the top-level component of a circuit.
+
+## Externally Defined Classes
+
+Externally defined classes are classes whose implementation is not provided in the current circuit.
+Only the ports and name of the externally defined class are specified.
+An externally defined class is declared using the `extclass` keyword.
+
+Like regular classes, all ports on an externally defined class must be property types.
+Externally defined classes are typically used to represent classes that will be provided by external tools or libraries.
+
+The following example declares an externally defined class:
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  ;; snippetbegin
+  extclass ExtClass:
+    input in: String
+    output out: String
+  ;; snippetend
+
+  public module Example:
+    skip
+```
+
+Externally defined classes can be used in the same way as regular classes, by creating objects of their type or using them as port types.
+
 ## Layers
 
 Layers are collections of functionality which will not be present in all executions of a circuit.
@@ -545,6 +623,56 @@ circuit Foo:
     input a:
       { flip in : UInt<8>, out : UInt<8> }
     ;; snippetend
+```
+
+### Object Statements
+
+An object statement instantiates a class to create an object.
+Unlike module instances, which represent hardware, objects represent metadata or design intent.
+
+The syntax for creating an object is `object <name> of <ClassName>`, where `<name>` is the identifier for the object and `<ClassName>` is the name of a class defined in the circuit.
+
+Example:
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  class MyClass:
+    input a: String
+    output b: String
+    propassign b, a
+
+  public module Example:
+    ;; snippetbegin
+    object obj of MyClass
+    ;; snippetend
+```
+
+The type of an object is `Inst<ClassName>`, which is a property type.
+Objects can be accessed through their ports using subfield notation (e.g., `obj.a`, `obj.b`).
+
+Objects can be created in modules or within classes.
+The following example shows a class that creates an object and accesses its ports:
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  class SimpleClass:
+    input a: String
+    output b: String
+    propassign b, a
+
+  ;; snippetbegin
+  class Client:
+    input in: String
+    output out: String
+    object obj of SimpleClass
+    propassign obj.a, in
+    propassign out, obj.b
+  ;; snippetend
+
+  public module Example:
+    skip
 ```
 
 ### Memories
@@ -1057,6 +1185,28 @@ circuit Example:
     input anyRefProp: AnyRef ; an input port of AnyRef property type
   ;; snippetend
 ```
+
+### Inst Type
+
+The `Inst` type represents a class instance property.
+It is parameterized by the name of a class, and represents an instance (object) of that class.
+The `Inst` type can only be used with classes that are defined in the same circuit.
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  class MyClass:
+    input a: String
+    output b: String
+    propassign b, a
+
+  ;; snippetbegin
+  public module Example:
+    output obj: Inst<MyClass> ; an output port of Inst property type
+  ;; snippetend
+```
+
+The `Inst` type is used to pass objects between classes and modules, or to expose objects as ports.
 
 ### List Type
 
@@ -4490,6 +4640,8 @@ circuit =
 decl =
     decl_module
   | decl_extmodule
+  | decl_class
+  | decl_extclass
   | decl_layer
   | decl_formal
   | decl_type_alias ;
@@ -4506,6 +4658,19 @@ decl_extmodule =
     { port , newline } ,
     [ "defname" , "=" , id , newline ] ,
     { "parameter" , id , "=" , type_param , newline } ,
+  dedent ;
+
+decl_class =
+  "class" , id , ":" , [ info ] ,
+    newline , indent ,
+    { port , newline } ,
+    { statement , newline } ,
+  dedent ;
+
+decl_extclass =
+  "extclass" , id , ":" , [ info ] ,
+    newline , indent ,
+    { port , newline } ,
   dedent ;
 
 decl_layer =
@@ -4535,6 +4700,7 @@ type_property =
   | "Double"
   | "Path"
   | "AnyRef"
+  | "Inst" , "<" , id , ">"
   | "List" , "<" , type_property , ">" ;
 
 (* Statements *)
@@ -4552,11 +4718,13 @@ circuit_component =
   | circuit_component_wire
   | circuit_component_reg
   | circuit_component_inst
+  | circuit_component_object
   | circuit_component_mem ;
 
 circuit_component_node = "node" , id , "=" , expr , [ info ] ;
 circuit_component_wire = "wire" , id , ":" , type , [ info ] ;
 circuit_component_inst = "inst" , id , "of" , id , [ info ] ;
+circuit_component_object = "object" , id , "of" , id , [ info ] ;
 
 circuit_component_reg =
     "reg" , id , ":" , type , "," , expr , [ info ]

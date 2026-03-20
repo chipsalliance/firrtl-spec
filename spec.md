@@ -1046,7 +1046,7 @@ circuit Example:
 ### AnyRef Type
 
 The `AnyRef` type represents a generic reference property.
-It can hold a reference to any object.
+It can hold a reference to any object of any class.
 This is useful for creating heterogeneous collections or when the specific type is not known statically.
 
 ``` firrtl

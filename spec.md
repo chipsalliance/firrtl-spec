@@ -987,6 +987,77 @@ circuit Example:
   ;; snippetend
 ```
 
+### String Type
+
+The `String` type represents a string property.
+It can represent arbitrary text values.
+
+``` firrtl
+FIRRTL version 4.0.0
+circuit Example:
+  ;; snippetbegin
+  public module Example:
+    input stringProp : String ; an input port of String property type
+  ;; snippetend
+```
+
+### Bool Type
+
+The `Bool` type represents a boolean property.
+It can represent the values `true` or `false`.
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  ;; snippetbegin
+  public module Example:
+    input boolProp: Bool ; an input port of Bool property type
+  ;; snippetend
+```
+
+### Double Type
+
+The `Double` type represents a double-precision floating-point property.
+It can represent IEEE 754 double-precision (64-bit) floating-point values.
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  ;; snippetbegin
+  public module Example:
+    input doubleProp: Double ; an input port of Double property type
+  ;; snippetend
+```
+
+### Path Type
+
+The `Path` type represents a hierarchical path reference property.
+It is used to reference specific instances or components in the design hierarchy.
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  ;; snippetbegin
+  public module Example:
+    input pathProp: Path ; an input port of Path property type
+  ;; snippetend
+```
+
+### AnyRef Type
+
+The `AnyRef` type represents a generic reference property.
+It can hold a reference to any object of any class.
+This is useful for creating heterogeneous collections or when the specific type is not known statically.
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  ;; snippetbegin
+  public module Example:
+    input anyRefProp: AnyRef ; an input port of AnyRef property type
+  ;; snippetend
+```
+
 ### List Type
 
 The `List` type represents an ordered sequence of properties.
@@ -3182,6 +3253,74 @@ circuit Foo:
     ;; snippetend
 ```
 
+### Bool Property Literal Expressions
+
+A literal `Bool` property type expression can be created from the keywords `true` or `false`.
+The following examples show literal `Bool` property type expressions.
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Foo:
+  public module Foo:
+    output a: Bool
+    output b: Bool
+
+    propassign a,
+    ;; snippetbegin
+      Bool(true)
+    ;; snippetend
+    propassign b,
+    ;; snippetbegin
+      Bool(false)
+    ;; snippetend
+```
+
+### Double Property Literal Expressions
+
+A literal `Double` property type expression can be created from a floating-point literal.
+The following examples show literal `Double` property type expressions.
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Foo:
+  public module Foo:
+    output a: Double
+    output b: Double
+    output c: Double
+
+    propassign a,
+    ;; snippetbegin
+      Double(3.14159)
+    ;; snippetend
+    propassign b,
+    ;; snippetbegin
+      Double(-0.0)
+    ;; snippetend
+    propassign c,
+    ;; snippetbegin
+      Double(1.2E+30)
+    ;; snippetend
+```
+
+### Path Property Expressions
+
+A `Path` property type expression can be created using the `path` function with a string literal representing a hierarchical path.
+The format and interpretation of the path string is implementation-defined.
+The following example shows a `Path` property type expression.
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Foo:
+  public module Foo:
+    output p: Path
+    output a: UInt<1>
+
+    propassign p,
+    ;; snippetbegin
+      path("OMReferenceTarget:~|Foo>a")
+    ;; snippetend
+```
+
 ## Enum Expressions
 
 An enumeration can be constructed by applying an enumeration type to a variant tag and a data value expression.
@@ -4389,7 +4528,14 @@ decl_type_alias = "type", id, "=", type ;
 
 port = ( "input" | "output" ) , id , ":" , (type | type_property) , [ info ] ;
 type_param = int | string_dq | string_sq ;
-type_property = "Integer" | "List" , "<" , type_property , ">";
+type_property =
+    "Integer"
+  | "String"
+  | "Bool"
+  | "Double"
+  | "Path"
+  | "AnyRef"
+  | "List" , "<" , type_property , ">" ;
 
 (* Statements *)
 statement =
@@ -4555,7 +4701,11 @@ expr_probe =
   | "rwprobe" , "(" , reference_static , ")"
   | reference_static ;
 
-property_literal_expr = "Integer", "(", int, ")" ;
+property_literal_expr =
+    "Integer" , "(" , int , ")"
+  | "Bool" , "(" , ( "true" | "false" ) , ")"
+  | "Double" , "(" , floatingpoint , ")"
+  | "path" , "(" , string_dq , ")" ;
 property_expr = reference_static | property_literal_expr | property_expr_primop ;
 property_expr_primop = property_primop_2expr | property_primop_varexpr;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
@@ -4650,6 +4800,9 @@ rint =
   | [ "-" ] , "0o" , digit_oct , { digit_oct }
   | [ "-" ] , "0d" , digit_oct , { digit_dec }
   | [ "-" ] , "0h" , digit_hex , { digit_hex } ;
+
+(* Tokens: Floating Point Literals *)
+floatingpoint = ? a floating point number ? ;
 
 (* Tokens: String Literals *)
 string = ? a string ? ;

@@ -233,7 +233,7 @@ Unlike modules, which represent hardware, classes represent metadata and design 
 
 Each class has a given name and a list of ports.
 All ports on a class must be property types (see [@sec:property-types]).
-Classes may contain statements that operate on properties, such as property assignments.
+Classes must contain statements that operate on properties.
 
 Classes are instantiated using the `object` statement (see [@sec:object-statements]), which creates an object of the class type.
 Objects can be accessed through their ports using subfield notation.

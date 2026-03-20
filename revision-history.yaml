@@ -21,6 +21,7 @@ revisionHistory:
       - Add `Path` property type.
       - Add `AnyRef` property type.
       - Add `String` property type to documentation.
+      - Add `string_concat` property operation for concatenating strings.
     abi:
       - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

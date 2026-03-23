@@ -4415,6 +4415,30 @@ The `List`{.firrtl} constructor is parameterized by element type t, and accepts 
 
 The list concatenation operation constructs a `List`{.firrtl} property type expression by concatenating one or more lists of the same element type t.
 
+### String Concatenation Operation
+
+| Name          | Arguments | Arg Types | Result Type |
+|---------------|-----------|-----------|-------------|
+| string_concat | (e+)      | (String+) | String      |
+
+The string concatenation operation constructs a `String`{.firrtl} property type expression by concatenating one or more string property expressions.
+The operation accepts one or more property type expressions e of type `String`{.firrtl}.
+
+The following example demonstrates concatenating three string property expressions:
+
+``` firrtl
+FIRRTL version 5.1.0
+circuit Example:
+  public module Example:
+    input a: String
+    input b: String
+    output c: String
+    propassign c,
+      ;; snippetbegin
+      string_concat(a, b, String(" world"))
+      ;; snippetend
+```
+
 # Notes on Syntax
 
 FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
@@ -5016,7 +5040,7 @@ property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" | "integer_shl" ;
 
 property_primop_varexpr_keyword =
-    "List" , "<" , type_property , ">" | "list_concat" ;
+    "List" , "<" , type_property , ">" | "list_concat" | "string_concat" ;
 ```
 
 # Versioning Scheme of this Document

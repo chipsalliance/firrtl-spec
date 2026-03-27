@@ -388,6 +388,10 @@ It is not intended that constants are a replacement for parameterization.
 Constant typed values have no particular meta-programming capability.
 It is, for example, expected that a module with a constant input port be fully compilable to non-parameterized Verilog.
 
+Type aliases shall be lowered to Verilog `typedef`{.verilog} with their inner types
+recursively following these rules. Type aliases will be dropped if inner types are
+mutated, for example by the type inference.
+
 # Versioning Scheme of this Document
 
 This is the versioning scheme that applies to version 1.0.0 and later.

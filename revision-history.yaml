@@ -26,6 +26,7 @@ revisionHistory:
       - Add `Inst<ClassName>` property type for class instances.
       - Add `object` statement for instantiating classes.
       - Add `string_concat` property operation for concatenating strings.
+      - Disallow connect truncations.
     abi:
       - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

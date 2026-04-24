@@ -1535,8 +1535,9 @@ The flow of all other expressions are source, including mux and cast.
 
 The type equivalence relation is used to determine whether a connection between two components is legal.
 
-An unsigned integer type is always equivalent to another unsigned integer type regardless of bit width, and is not equivalent to any other type.
-Similarly, a signed integer type is always equivalent to another signed integer type regardless of bit width, and is not equivalent to any other type.
+An unsigned integer type is equivalent to another unsigned integer type as long as the bit width is the same or lower, and is not equivalent to any other type.
+Similarly, a signed integer type is always equivalent to another signed integer type as long as the bit width is the same or lower, and is not equivalent to any other type.
+A connection cannot cause a truncation.
 
 Clock types are equivalent to clock types, and are not equivalent to any other type.
 
@@ -1582,6 +1583,7 @@ In order for a connection to be legal the following conditions must hold:
 4.  The left-hand side and right-hand side types are not property types.
 
 Connect statements from a narrower ground type component to a wider ground type component will have its value automatically sign-extended or zero-extended to the larger bit width.
+Connect statements from a wider ground type componenet to a narrower ground type component are illegal and will not truncate.
 The behavior of connect statements between two circuit components with aggregate types is defined by the connection algorithm in [@sec:the-connection-algorithm].
 
 ### The Connection Algorithm

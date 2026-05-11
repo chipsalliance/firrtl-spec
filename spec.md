@@ -1894,7 +1894,7 @@ It is legal for compiler implementations to reject circuits with statically fals
 
 A property assertion is specified using the `propassert`{.firrtl} statement, which takes a condition expression and a diagnostic message:
 
-```
+``` firrtl
 FIRRTL version 6.0.0
 circuit Foo:
   public module Foo:
@@ -4507,7 +4507,7 @@ The result is a `Bool`{.firrtl} property expression that is `true`{.firrtl} when
 
 The operand type t must be one of the following property types:
 
-- `Integer`{.firrtl}, in which case equality is arbitrary precision signed  integer equality
+- `Integer`{.firrtl}, in which case equality is arbitrary precision signed integer equality
 - `String`{.firrtl}, in which case equality is codepoint-wise string equality,
 - or `Bool`{.firrtl}, in which case equality is boolean equality.
 

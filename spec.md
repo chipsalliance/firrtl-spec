@@ -241,7 +241,7 @@ Objects can be accessed through their ports using subfield notation.
 The following example declares a simple class with input and output property ports:
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   ;; snippetbegin
   class SimpleClass:
@@ -257,7 +257,7 @@ circuit Example:
 Classes can be instantiated within other classes or modules using the `object` statement:
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   class SimpleClass:
     input a: String
@@ -290,7 +290,7 @@ Externally defined classes are typically used to represent classes that will be 
 The following example declares an externally defined class:
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   ;; snippetbegin
   extclass ExtClass:
@@ -383,7 +383,7 @@ Multiple comma-delimited layers may follow one `knownlayer` keyword.
 The circuit below shows one external module with one layer known:
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Foo :
   layer A, bind :
   extmodule Bar knownlayer A :
@@ -635,7 +635,7 @@ The syntax for creating an object is `object <name> of <ClassName>`, where `<nam
 Example:
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   class MyClass:
     input a: String
@@ -655,7 +655,7 @@ Objects can be created in modules or within classes.
 The following example shows a class that creates an object and accesses its ports:
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   class SimpleClass:
     input a: String
@@ -1135,7 +1135,7 @@ The `Bool` type represents a boolean property.
 It can represent the values `true` or `false`.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   ;; snippetbegin
   public module Example:
@@ -1149,7 +1149,7 @@ The `Double` type represents a double-precision floating-point property.
 It can represent IEEE 754 double-precision (64-bit) floating-point values.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   ;; snippetbegin
   public module Example:
@@ -1163,7 +1163,7 @@ The `Path` type represents a hierarchical path reference property.
 It is used to reference specific instances or components in the design hierarchy.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   ;; snippetbegin
   public module Example:
@@ -1178,11 +1178,31 @@ It can hold a reference to any object of any class.
 This is useful for creating heterogeneous collections or when the specific type is not known statically.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   ;; snippetbegin
   public module Example:
     input anyRefProp: AnyRef ; an input port of AnyRef property type
+  ;; snippetend
+```
+
+An `Inst<ClassName>`{.firrtl} value may be assigned to a sink of type `AnyRef`{.firrtl} in a `propassign`{.firrtl} statement (see [@sec:property-assignments]).
+This implicit conversion is the only case in which the left-hand side and right-hand side of a property assignment are allowed to have different types.
+No corresponding implicit conversion exists in the other direction: assigning an `AnyRef`{.firrtl} value to a sink of type `Inst<ClassName>`{.firrtl} is illegal.
+
+``` firrtl
+FIRRTL version 6.0.0
+circuit Example:
+  class MyClass:
+    input a: String
+    output b: String
+    propassign b, a
+
+  ;; snippetbegin
+  public module Example:
+    output anyRefProp: AnyRef
+    object obj of MyClass
+    propassign anyRefProp, obj ; implicit Inst<MyClass> -> AnyRef conversion
   ;; snippetend
 ```
 
@@ -1193,7 +1213,7 @@ It is parameterized by the name of a class, and represents an object of that cla
 The `Inst` type can only be used with classes that are defined in the same circuit.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Example:
   class MyClass:
     input a: String
@@ -1829,7 +1849,7 @@ Property typed expressions have the normal rules for flow (see [@sec:flow]), but
 
 1.  The left-hand and right-hand side expressions must be of property types.
 
-2.  The types of the left-hand and right-hand side expressions must be the same.
+2.  The types of the left-hand and right-hand side expressions must be the same, with one exception: a left-hand side of type `AnyRef`{.firrtl} may accept a right-hand side of any `Inst<ClassName>`{.firrtl} type (see [@sec:anyref-type]).
 
 3.  The flow of the left-hand side expression must be sink.
 
@@ -1865,6 +1885,43 @@ circuit Example:
     propassign propOut, Integer(42)
   ;; snippetend
 ```
+
+# Property Assertions {#sec:property-assertions}
+
+A property assertion checks that a property-typed condition holds.
+Unlike the hardware `assert`{.firrtl} statement (see [@sec:assert]), which evaluates each cycle while the circuit is running, a property assertion evaluates when property values are set.
+It is legal for compiler implementations to reject circuits with statically false property assertions.
+
+A property assertion is specified using the `propassert`{.firrtl} statement, which takes a condition expression and a diagnostic message:
+
+```
+FIRRTL version 6.0.0
+circuit Foo:
+  public module Foo:
+    input condition: Bool
+    ;; snippetbegin
+    propassert condition, "message"
+    ;; snippetend
+```
+
+The following conditions must hold for a property assertion to be legal:
+
+1.  The condition expression must be of property type `Bool`{.firrtl}.
+
+2.  The flow of the condition expression must be source.
+
+3.  The message is a double-quoted string literal.
+
+4.  The property assertion must not occur within a conditional scope.
+
+The assertion will be evaluated during property evaluation, an implementation-defined execution that allows the user to set property inputs, read property outputs, and cause assertions to error that are false.
+Property evaluation should display the property assertion message for any false assertions.
+Property assertions that evaluate to true have no effect.
+
+It is legal for FIRRTL compilers to statically evaluate property assertions and error when an assertion is known to always be false.
+
+Like other property statements, a property assertion has no effect on the
+generated hardware and does not participate in the hardware ABI.
 
 # Empty Statement
 
@@ -2574,7 +2631,7 @@ The `fprintf`{.firrtl} statement outputs the string to a file specified by an ad
 The `fflush`{.firrtl} statement flushes the output buffer of the default output file or a file specified by an additional format string and a variable list of argument signals.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Foo:
   public module Foo:
     ;; snippetbegin
@@ -3409,7 +3466,7 @@ A literal `Bool` property type expression can be created from the keywords `true
 The following examples show literal `Bool` property type expressions.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Foo:
   public module Foo:
     output a: Bool
@@ -3431,7 +3488,7 @@ A literal `Double` property type expression can be created from a floating-point
 The following examples show literal `Double` property type expressions.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Foo:
   public module Foo:
     output a: Double
@@ -3459,7 +3516,7 @@ The format and interpretation of the path string is implementation-defined.
 The following example shows a `Path` property type expression.
 
 ``` firrtl
-FIRRTL version 5.1.0
+FIRRTL version 6.0.0
 circuit Foo:
   public module Foo:
     output p: Path
@@ -4439,6 +4496,53 @@ circuit Example:
       ;; snippetend
 ```
 
+## Property Equality Operation
+
+| Name    | Arguments | Arg Types | Result Type |
+|---------|-----------|-----------|-------------|
+| prop_eq | (e1,e2)   | (t,t)     | Bool        |
+
+The property equality operation compares two property expressions of the same type for equality.
+The result is a `Bool`{.firrtl} property expression that is `true`{.firrtl} when e1 and e2 are equal, and `false`{.firrtl} otherwise.
+
+The operand type t must be one of the following property types:
+
+- `Integer`{.firrtl}, in which case equality is arbitrary precision signed  integer equality
+- `String`{.firrtl}, in which case equality is codepoint-wise string equality,
+- or `Bool`{.firrtl}, in which case equality is boolean equality.
+
+Both operands must have the same property type.
+
+## Boolean Property Operations
+
+Boolean property operations compute bitwise logical operations over `Bool`{.firrtl} property expressions.
+Each operation takes two `Bool`{.firrtl} property operands and produces a `Bool`{.firrtl} property result. All three operations are commutative.
+
+### Boolean And Operation
+
+| Name     | Arguments | Arg Types   | Result Type |
+|----------|-----------|-------------|-------------|
+| bool_and | (e1,e2)   | (Bool,Bool) | Bool        |
+
+The boolean and operation result is `true`{.firrtl} if and only if both e1 and e2 are `true`{.firrtl}, and `false`{.firrtl} otherwise.
+
+### Boolean Or Operation
+
+| Name    | Arguments | Arg Types   | Result Type |
+|---------|-----------|-------------|-------------|
+| bool_or | (e1,e2)   | (Bool,Bool) | Bool        |
+
+The boolean or operation result is `true`{.firrtl} if either e1 or e2 (or both) are `true`{.firrtl}, and `false`{.firrtl} otherwise.
+
+### Boolean Xor Operation
+
+| Name     | Arguments | Arg Types   | Result Type |
+|----------|-----------|-------------|-------------|
+| bool_xor | (e1,e2)   | (Bool,Bool) | Bool        |
+
+The boolean xor operation result is `true`{.firrtl} if exactly one of e1 and e2 is `true`{.firrtl}, and `false`{.firrtl} otherwise.
+A boolean NOT of expression e can be obtained as `bool_xor(e, Bool(true))`{.firrtl}.
+
 # Notes on Syntax
 
 FIRRTL's syntax is designed to be human-readable but easily algorithmically parsed.
@@ -4848,7 +4952,8 @@ command =
         expr , "," ,
         string_dq
     , ")" ,
-    [ ":" , id ] , [ info ] ;
+    [ ":" , id ] , [ info ]
+  | "propassert" , property_expr , "," , string_dq , [ info ] ;
 
 (* Layer Block Statement *)
 layerblock =
@@ -5037,7 +5142,9 @@ primop_1expr1int_keyword =
 primop_1expr2int_keyword = "bits" ;
 
 property_primop_2expr_keyword =
-    "integer_add" | "integer_mul" | "integer_shr" | "integer_shl" ;
+    "integer_add" | "integer_mul" | "integer_shr" | "integer_shl"
+  | "prop_eq"
+  | "bool_and" | "bool_or" | "bool_xor" ;
 
 property_primop_varexpr_keyword =
     "List" , "<" , type_property , ">" | "list_concat" | "string_concat" ;

@@ -26,6 +26,11 @@ revisionHistory:
       - Add `Inst<ClassName>` property type for class instances.
       - Add `object` statement for instantiating classes.
       - Add `string_concat` property operation for concatenating strings.
+      - Add `prop_eq` property operation for comparing property values of
+        the same type for equality.
+      - Add `propassert` statement for property-domain assertions.
+      - Add `bool_and`, `bool_or`, and `bool_xor` boolean property
+        operations.
     abi:
       - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.

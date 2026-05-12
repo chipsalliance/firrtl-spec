@@ -5,36 +5,38 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
-      - Add optional circuit to target syntax.
-      - Add `fprintf` statement.
-      - Add `fflush` statement.
-      - Change a cat operation to accept variadic arguments.
-      - Add "enablelayer" modifier to extmodules.
-      - Add "knownlayer" modifier to extmodules.
-      - Add `asReset` primitive operation.
-      - Clarify that read/write latency apply to all ports, respectively.
-      - Fix mistakes in layer/layerblock EBNF grammar.
-      - Fix missing commas and semicolons in EBNF grammar.
-      - Let enums be hardware types, not undefined `type_constable`.
-      - Add `Bool` property type.
-      - Add `Double` property type.
-      - Add `Path` property type.
-      - Add `AnyRef` property type.
-      - Add `String` property type to documentation.
-      - Add `class` declaration for defining classes.
-      - Add `extclass` declaration for externally defined classes.
-      - Add `Inst<ClassName>` property type for class instances.
-      - Add `object` statement for instantiating classes.
-      - Add `string_concat` property operation for concatenating strings.
-      - Add `prop_eq` property operation for comparing property values of
-        the same type for equality.
-      - Add `propassert` statement for property-domain assertions.
-      - Add `bool_and`, `bool_or`, and `bool_xor` boolean property
-        operations.
     abi:
-      - Remove module name from guard macro for inline layers.
   # Information about the old versions.  This should be static.
   oldVersions:
+    - version: 6.0.0
+      spec:
+        - Add optional circuit to target syntax.
+        - Add `fprintf` statement.
+        - Add `fflush` statement.
+        - Change a cat operation to accept variadic arguments.
+        - Add "enablelayer" modifier to extmodules.
+        - Add "knownlayer" modifier to extmodules.
+        - Add `asReset` primitive operation.
+        - Clarify that read/write latency apply to all ports, respectively.
+        - Fix mistakes in layer/layerblock EBNF grammar.
+        - Fix missing commas and semicolons in EBNF grammar.
+        - Let enums be hardware types, not undefined `type_constable`.
+        - Add `Bool` property type.
+        - Add `Double` property type.
+        - Add `Path` property type.
+        - Add `AnyRef` property type.
+        - Add `String` property type to documentation.
+        - Add `class` declaration for defining classes.
+        - Add `extclass` declaration for externally defined classes.
+        - Add `Inst<ClassName>` property type for class instances.
+        - Add `object` statement for instantiating classes.
+        - Add `string_concat` property operation for concatenating strings.
+        - Add `prop_eq` property operation for comparing property values of
+          the same type for equality.
+        - Add `propassert` statement for property-domain assertions.
+        - Add `bool_and`, `bool_or`, and `bool_xor` boolean property operations.
+      abi:
+        - Remove module name from guard macro for inline layers.
     - version: 5.0.0
       spec:
         - Add special substitutions (`{{}}`) for format strings.

@@ -1538,7 +1538,7 @@ If the expression is an identifier, we look at the kind of the circuit component
 
 - Nodes are sources.
 - Wires and registers are duplex.
-- For ports, `input` ports are sources and `output` ports are duplex.
+- For ports, `input` ports are sources and `output` ports are sinks.
 - Submodule instances are sources.
 - Memories are sources.
 
@@ -1597,7 +1597,7 @@ In order for a connection to be legal the following conditions must hold:
 
 2.  The flow of the left-hand side expression must be sink or duplex (see [@sec:flow] for an explanation of flow).
 
-3.  Either the flow of the right-hand side expression is source or duplex, or the right-hand side expression has a passive type.
+3.  Either the flow of the right-hand side expression is source or duplex, the right-hand side expression has a passive type, or the right-hand-side is an output port or instance input.
 
 4.  The left-hand side and right-hand side types are not property types.
 

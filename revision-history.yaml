@@ -5,6 +5,9 @@ revisionHistory:
   # additions to the specification should append entries here.
   thisVersion:
     spec:
+      - Correct inconsistencies around invalidation of output ports---output
+        ports are sinks (not duplex), they can be read from, and invalidating an
+        output port does not invalidate its inputs.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

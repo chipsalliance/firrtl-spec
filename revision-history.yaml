@@ -10,6 +10,8 @@ revisionHistory:
         output port does not invalidate its inputs.
       - Add an explicit algorithm to compute the flow of an expression.
       - Clarify the connection algorithm.
+      - Change property assertions to accept either a string (the current
+        behavior) or a property expression of string type.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

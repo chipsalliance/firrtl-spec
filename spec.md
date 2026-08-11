@@ -1595,24 +1595,29 @@ In order for a connection to be legal the following conditions must hold:
 
 1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence] for details).
 
-2.  The flow of the left-hand side expression must be sink or duplex (see [@sec:flow] for an explanation of flow).
+2.  When a connect is expanded using the connection algorithm (see [@sec:the-connection-algorithm]), each leaf connection destination must have sink or duplex flow.
 
-3.  Either the flow of the right-hand side expression is source or duplex, the right-hand side expression has a passive type, or the right-hand-side is an output port or instance input.
-
-4.  The left-hand side and right-hand side types are not property types.
+3.  The left-hand side and right-hand side types are not property types.
 
 Connect statements from a narrower ground type component to a wider ground type component will have its value automatically sign-extended or zero-extended to the larger bit width.
-The behavior of connect statements between two circuit components with aggregate types is defined by the connection algorithm in [@sec:the-connection-algorithm].
 
 ### The Connection Algorithm
 
+To determine how two types are connected, the connection algorithm is used.
+Conceptually, aggregate types are logically expanded to individual connections of their ground type leaves.
+Each leaf connection involves one destination.
+The destination must have sink or duplex flow (as discussed in the previous subsection).
+The flow of the non-destination type is irrelevant.
+A flip in a type changes the connection destination for that type and all types nested under it.
+
 Connect statements between ground types cannot be expanded further.
+The right-hand side connects to the left-hand side destination.
 
-Connect statements between two vector typed components recursively connects each sub-element in the right-hand side expression to the corresponding sub-element in the left-hand side expression.
+Connect statements between two vector typed components recursively connect each sub-element in the right-hand side expression to the corresponding sub-element in the left-hand side destination expression.
 
-Connect statements between two bundle typed components connects the i'th field of the right-hand side expression and the i'th field of the left-hand side expression.
-If the i'th field is not flipped, then the right-hand side field is connected to the left-hand side field.
-Conversely, if the i'th field is flipped, then the left-hand side field is connected to the right-hand side field.
+Connect statements between two bundle typed components connect the i'th field of the right-hand side expression and the i'th field of the left-hand side expression.
+If the i'th field is not flipped, then the right-hand side field is connected to the left-hand side destination field.
+Conversely, if the i'th field is flipped, then the left-hand side field is connected to the right-hand side destination field.
 
 ### Last Connect Semantics
 

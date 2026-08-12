@@ -1527,29 +1527,36 @@ The direction that signals travel across wires is determined by multiple factors
 
 To ensure connections are meaningful when taking directionality into account, every expression in FIRRTL has a **flow**.
 The flow of an expression can be one of **source**, **sink**, or **duplex**.
+Flow is used to determine the legality of a connection.
 
 A source expression supplies a signal and can be used to drive a circuit component.
 A sink expression can be driven by another expression.
-A duplex expression is an expression that is both a source and sink.
+A duplex expression can be used as a source or a sink.
 
-The rules for the flow of an expression are as follows.
+### Flow Algorithm
 
-If the expression is an identifier, we look at the kind of the circuit component the identifier refers to:
+To determine the flow of an expression, the following algorithm is used:
 
-- Nodes are sources.
-- Wires and registers are duplex.
-- For ports, `input` ports are sources and `output` ports are sinks.
-- Submodule instances are sources.
-- Memories are sources.
+1.  If the expression is an identifier, the kind of component determines the flow:
+    1.  Nodes are sources.
+    2.  Wires and registers are duplex.
+    3.  For ports, `input` ports are sources and `output` ports are sinks.
+    4.  Submodule instances are sources.
+    5.  Memories are sources.
+2.  If the expression is a sub-index, the flow is the same as the vector type expression it indexes.
+3.  If the expression is a sub-access, the flow is the same as the vector type expression is accesses.
+4.  If the expression is a sub-field:
+    1.  If the field is not flipped, the flow is the same as the bundle type expression it selects from.
+    2.  If the field is flipped, then the flow is the reverse (defined below) of the bundle type expression it selects from.
+5.  The flow of all other expressions is source.
 
-The flow of a sub-index or sub-access expression is the flow of the vector-typed expression it indexes or accesses.
-The flow of a sub-field expression depends upon the orientation of the field.
-If the field is not flipped, its flow is the same flow as the bundle-typed expression it selects its field from.
-If the field is flipped, then its flow is the reverse of the flow of the bundle-typed expression it selects its field from.
-The reverse of source is sink, and vice-versa.
-The reverse of duplex remains duplex.
+For each flow, its reverse is defined as follows:
 
-The flow of all other expressions are source, including mux and cast.
+1.  The reverse of source is sink.
+2.  The reverse of sink is source.
+3.  The reverse of duplex is duplex.
+
+Practically, for cases (2), (3), and (4), the flow algorithm is applied recursively to the operand of a sub-field, sub-access, or sub-field up to a base case of (1) or (5).
 
 ## Type Equivalence
 
@@ -1595,7 +1602,7 @@ In order for a connection to be legal the following conditions must hold:
 
 1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence] for details).
 
-2.  When a connect is expanded using the connection algorithm (see [@sec:the-connection-algorithm]), each leaf connection destination must have sink or duplex flow.
+2.  When a connect is expanded using the connection algorithm (see [@sec:the-connection-algorithm]), each leaf connection destination must have sink or duplex flow (see [@sec:flow]).
 
 3.  The left-hand side and right-hand side types are not property types.
 
@@ -1603,21 +1610,19 @@ Connect statements from a narrower ground type component to a wider ground type 
 
 ### The Connection Algorithm
 
-To determine how two types are connected, the connection algorithm is used.
-Conceptually, aggregate types are logically expanded to individual connections of their ground type leaves.
-Each leaf connection involves one destination.
-The destination must have sink or duplex flow (as discussed in the previous subsection).
-The flow of the non-destination type is irrelevant.
-A flip in a type changes the connection destination for that type and all types nested under it.
+To determine how two types are connected, the following connection algorithm is used:
 
-Connect statements between ground types cannot be expanded further.
-The right-hand side connects to the left-hand side destination.
+Inspect the type of the left-hand side and take one of three actions:
 
-Connect statements between two vector typed components recursively connect each sub-element in the right-hand side expression to the corresponding sub-element in the left-hand side destination expression.
-
-Connect statements between two bundle typed components connect the i'th field of the right-hand side expression and the i'th field of the left-hand side expression.
-If the i'th field is not flipped, then the right-hand side field is connected to the left-hand side destination field.
-Conversely, if the i'th field is flipped, then the left-hand side field is connected to the right-hand side destination field.
+1.  If this is a ground type, the right-hand side is connected to the left-hand side destination.
+    Compute the flow of the destination using the Flow Algorithm (see [@sec:flow-algorithm]).
+    Verify the destination has sink or duplex flow.
+2.  If this is a vector type, then expand the connection into one connection per element from each right-hand side element to each left-hand side element destination using sub-index expressions.
+    Recursively apply the connection algorithm to each expanded connection.
+3.  If this is a bundle type, then expand the connection into one connection per-field using the sub-field expression.
+    If the field is *not* flipped, then connect the right-hand side field to the left-hand side destination.
+    If the field is flipped, then connect the left-hand side field to the right-hand side destination.
+    Recursively apply the connection algorithm to each expanded connection.
 
 ### Last Connect Semantics
 

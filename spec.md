@@ -1544,7 +1544,7 @@ To determine the flow of an expression, the following algorithm is used:
     4.  Submodule instances are sources.
     5.  Memories are sources.
 2.  If the expression is a sub-index, the flow is the same as the vector type expression it indexes.
-3.  If the expression is a sub-access, the flow is the same as the vector type expression is accesses.
+3.  If the expression is a sub-access, the flow is the same as the vector type expression it accesses.
 4.  If the expression is a sub-field:
     1.  If the field is not flipped, the flow is the same as the bundle type expression it selects from.
     2.  If the field is flipped, then the flow is the reverse (defined below) of the bundle type expression it selects from.

@@ -8,6 +8,8 @@ revisionHistory:
       - Correct inconsistencies around invalidation of output ports---output
         ports are sinks (not duplex), they can be read from, and invalidating an
         output port does not invalidate its inputs.
+      - Add an explicit algorithm to compute the flow of an expression.
+      - Clarify the connection algorithm.
     abi:
   # Information about the old versions.  This should be static.
   oldVersions:

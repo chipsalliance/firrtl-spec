@@ -1556,7 +1556,7 @@ For each flow, its reverse is defined as follows:
 2.  The reverse of sink is source.
 3.  The reverse of duplex is duplex.
 
-Practically, for cases (2), (3), and (4), the flow algorithm is applied recursively to the operand of a sub-field, sub-access, or sub-field up to a base case of (1) or (5).
+Practically, for cases (2), (3), and (4), the flow algorithm is applied recursively to the operand of a sub-index, sub-access, or sub-field up to a base case of (1) or (5).
 
 ## Type Equivalence
 

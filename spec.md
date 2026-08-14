@@ -1600,13 +1600,24 @@ circuit MyModule :
 
 In order for a connection to be legal the following conditions must hold:
 
-1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence] for details).
+1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence]).
 
-2.  When a connect is expanded using the connection algorithm (see [@sec:the-connection-algorithm]), each leaf connection destination must have sink or duplex flow (see [@sec:flow]).
+2.  The left-hand side must have sink or duplex flow (see [@sec:flow]).
 
-3.  The left-hand side and right-hand side types are not property types.
+3.  The right-hand side must have either:
+
+    1.  source flow,
+
+    2.  duplex flow,
+
+    3.  or source flow in all leaf subexpressions.
+
+4.  The left-hand side and right-hand side types are not property types.
 
 Connect statements from a narrower ground type component to a wider ground type component will have its value automatically sign-extended or zero-extended to the larger bit width.
+
+> Condition 3.3 allows a read of an output port or an instance input.
+> Note: the underlying port declaration may have either input or output direction, but due to field `flip`{.firrtl}s meets the criteria in Condition 3.3.
 
 ### The Connection Algorithm
 
@@ -1615,8 +1626,6 @@ To determine how two types are connected, the following connection algorithm is 
 Inspect the type of the left-hand side and take one of three actions:
 
 1.  If this is a ground type, the right-hand side is connected to the left-hand side destination.
-    Compute the flow of the destination using the Flow Algorithm (see [@sec:flow-algorithm]).
-    Verify the destination has sink or duplex flow.
 2.  If this is a vector type, then expand the connection into one connection per element from each right-hand side element to each left-hand side element destination using sub-index expressions.
     Recursively apply the connection algorithm to each expanded connection.
 3.  If this is a bundle type, then expand the connection into one connection per-field using the sub-field expression.

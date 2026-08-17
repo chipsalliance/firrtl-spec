@@ -557,9 +557,10 @@ Semantically, registers become flip-flops in the design.
 The next value is latched on the positive edge of the clock.
 The initial value of a register is indeterminate (see [@sec:indeterminate-values]).
 
-### Output Ports and Input Ports
+### Ports
 
-The way a module interacts with the outside world is through its output and input ports.
+The way a module interacts with the outside world is through its ports.
+Ports have either an input or output direction.
 
 Example:
 
@@ -573,9 +574,9 @@ circuit Foo:
     ;; snippetend
 ```
 
-For both variants of port, the type is given after the colon (`:`{.firrtl}).
+Ports specify their type after the colon (`:`{.firrtl}).
 
-The two kinds of ports differ in the rules for how they may be connected (see [@sec:connections]).
+The direction of a port affects how it may be connected (see [@sec:connections]).
 
 ### Submodule Instances
 
@@ -763,15 +764,7 @@ For example, if we declare `wire v : UInt<8>[3]`{.firrtl}, it has three direct s
 All three are wires and all three have type `UInt<8>`{.firrtl}.
 
 When a circuit component has a bundle type (see [@sec:bundle-types]), it has one direct subcomponent for each field.
-The kind of the subcomponent depends on both the kind and the type of the parent:
-
-- For nodes, wires, and registers, the kind of each direct subcomponent is the same.
-- For output and input ports, the kind of each direct subcomponent depends on whether or not the field is flipped.
-  When the field is not flipped, the kind remains the same.
-  When the field is flipped, it changes from output to input or vice versa.
-- For submodule instances and memories, the kind of each direct subcomponent depends on whether or not the field is flipped.
-  When the field is not flipped, the kind is an input port.
-  When the field is flipped, the kind is an output port.
+The kind of the subcomponent is the kind of its parent.
 
 If the bundle is not `const`{.firrtl}, the type of each subcomponent is simply the type of the corresponding field.
 However, if the bundle is `const`{.firrtl}, the type of each subcomponent is the `const`{.firrtl} version of the type of the corresponding field.
@@ -1540,7 +1533,9 @@ To determine the flow of an expression, the following algorithm is used:
 1.  If the expression is an identifier, the kind of component determines the flow:
     1.  Nodes are sources.
     2.  Wires and registers are duplex.
-    3.  For ports, `input` ports are sources and `output` ports are sinks.
+    3.  For ports, the kind depends on the direction.
+        1. Input ports have source flow.
+        2. Output ports have sink flow.
     4.  Submodule instances are sources.
     5.  Memories are sources.
 2.  If the expression is a sub-index, the flow is the same as the vector type expression it indexes.
@@ -1600,7 +1595,7 @@ circuit MyModule :
 
 In order for a connection to be legal the following conditions must hold:
 
-1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence]).
+1.  The types of the left-hand and right-hand side subcomponents must be equivalent (see [@sec:type-equivalence]).
 
 2.  The left-hand side must have sink or duplex flow (see [@sec:flow]).
 
@@ -1610,7 +1605,7 @@ In order for a connection to be legal the following conditions must hold:
 
     2.  duplex flow,
 
-    3.  or source flow in all leaf subexpressions.
+    3.  or sink flow in all leaf subcomponents.
 
 4.  The left-hand side and right-hand side types are not property types.
 

@@ -1534,8 +1534,8 @@ To determine the flow of an expression, the following algorithm is used:
     1.  Nodes are sources.
     2.  Wires and registers are duplex.
     3.  For ports, the kind depends on the direction.
-        1. Input ports have source flow.
-        2. Output ports have sink flow.
+        1.  Input ports have source flow.
+        2.  Output ports have sink flow.
     4.  Submodule instances are sources.
     5.  Memories are sources.
 2.  If the expression is a sub-index, the flow is the same as the vector type expression it indexes.

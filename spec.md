@@ -1533,7 +1533,7 @@ To determine the flow of an expression, the following algorithm is used:
 1.  If the expression is an identifier, the kind of component determines the flow:
     1.  Nodes are sources.
     2.  Wires and registers are duplex.
-    3.  For ports, the kind depends on the direction.
+    3.  For ports, the flow depends on the direction.
         1.  Input ports have source flow.
         2.  Output ports have sink flow.
     4.  Submodule instances are sources.
@@ -1595,7 +1595,7 @@ circuit MyModule :
 
 In order for a connection to be legal the following conditions must hold:
 
-1.  The types of the left-hand and right-hand side subcomponents must be equivalent (see [@sec:type-equivalence]).
+1.  The types of the left-hand and right-hand side expressions must be equivalent (see [@sec:type-equivalence]).
 
 2.  The left-hand side must have sink or duplex flow (see [@sec:flow]).
 

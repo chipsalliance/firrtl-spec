@@ -9,6 +9,11 @@
 - Match terminology and capitalization preferences used elsewhere by default.
 - Don't forget to spell-check!
 
+Unless otherwise specified, follow the style rules in:
+
+- Merriam--Webster's Collegiate Dictionary
+- The Chicago Manual of Style
+
 ## Code Blocks
 
 Code blocks containing FIRRTL, Verilog, or SystemVerilog are, by default, extracted to separate files in the build area and passed through `firtool` or `verilator` to check that they are correct.

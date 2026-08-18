@@ -4071,7 +4071,7 @@ The name of each scalarized port is determined as follows:
 
     3.  A subfield appends the suffix `_<name>` where `<name>` is the field name.
 
-3.  If _after all expressions are resolved_ the name conflicts with an earlier scalarized port name then the suffix `_<n>` is appended where `<n>` is the lowest nonnegative integer that creates a unique name.
+3.  If *after all expressions are resolved* the name conflicts with an earlier scalarized port name then the suffix `_<n>` is appended where `<n>` is the lowest nonnegative integer that creates a unique name.
     Neither ports that have not yet been scalarized nor the names of declarations in a module body affect this suffix.
 
 The flow of each leaf subcomponent expression determines the direction of that port:

@@ -4052,20 +4052,33 @@ A module's convention describes how its ports are lowered to the output format, 
 
 ### The "Scalarized" Convention
 
-The scalarized convention lowers aggregate ports to ground values.
-The scalarized convention should be the default convention for "public" modules, such as the top module of a circuit, "device under test", or an extmodule.
+The scalarized convention replaces every port with one or more new ports for each leaf subcomponent of the original port.
 
-The lowering algorithm for the scalarized convention operates as follows:
+The name of each scalarized port is determined as follows:
 
-1.  Ports are scalarized in the order they are declared.
+1.  Each leaf subcomponent for a port is enumerated in declaration order, using a depth-first exploration for aggregates:
 
-2.  Ground-typed ports' names are unmodified.
+    1.  Vectors are explored from low index to high index using the subindex expression.
 
-3.  Vector-typed ports are scalarized to ground-typed ports by appending a suffix, `_<i>`, to the i^th^ element of the vector.
-    Elements are scalarized recursively, depth-first, and left-to-right.
+    2.  Bundles are explored from first field to last field using the subfield expression.
 
-4.  Bundle-typed ports are scalarized to ground-typed ports by appending a suffix, `_<name>`, to the field called `name`.
-    Fields are scalarized recursively, depth-first, and left-to-right.
+2.  Each resulting expression appends a suffix to the name of the scalarized port where expressions are analyzed from left to right.
+    The initial name is the empty string:
+
+    1.  A reference is a root and appends its name.
+
+    2.  A subindex appends the suffix `_<i>` where `<i>` is the index.
+
+    3.  A subfield appends the suffix `_<name>` where `<name>` is the field name.
+
+3.  If _after all expressions are resolved_ the name conflicts with an earlier scalarized port name then the suffix `_<n>` is appended where `<n>` is the lowest nonnegative integer that creates a unique name.
+    Neither ports that have not yet been scalarized nor the names of declarations in a module body affect this suffix.
+
+The flow of each leaf subcomponent expression determines the direction of that port:
+
+1.  Source flow becomes an input port.
+
+2.  Sink flow becomes an output port.
 
 E.g., consider the following port:
 
@@ -4078,7 +4091,8 @@ circuit Top:
   ;; snippetend
 ```
 
-Scalarization breaks `a` into the following ports:
+Scalarization breaks `a` into the following ports.
+Each resulting subexpression is shown as a comment:
 
 ``` firrtl
 FIRRTL version 4.0.0
@@ -4092,13 +4106,7 @@ circuit Top:
   ;; snippetend
 ```
 
-The body of a module definition introduces a new, empty namespace.
-As new port names are added, these names must be unique with respect to this namespace.
-In the case of a collision during renaming, priority will be given to values that are converted first.
-
-If a name is already taken, that name will be made unique by appending a suffix `_<i>` to the name, where `i` is the lowest nonnegative integer that gives a unique name.
-
-E.g., consider the following ports:
+As an example of unique port naming, consider the following example which contains name conflicts:
 
 ``` firrtl
 FIRRTL version 4.0.0
@@ -4111,7 +4119,8 @@ circuit Top:
   ;; snippetend
 ```
 
-Scalarization breaks these ports into the following ports:
+Scalarization breaks these ports into the following ports.
+Each resulting subexpression is shown as a comment:
 
 ``` firrtl
 FIRRTL version 4.0.0
@@ -4127,8 +4136,6 @@ circuit Top:
     input a_b_0_2: UInt<5>  ; a_b_0
   ;; snippetend
 ```
-
-Named components in the body of a module will be renamed as needed to ensure port names follow this convention.
 
 ## The "Internal" Convention
 

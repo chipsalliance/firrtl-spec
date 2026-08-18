@@ -1538,9 +1538,9 @@ To determine the flow of an expression, the following algorithm is used:
         2.  Output ports have sink flow.
     4.  Submodule instances are sources.
     5.  Memories are sources.
-2.  If the expression is a sub-index, the flow is the same as the vector type expression it indexes.
+2.  If the expression is a subindex, the flow is the same as the vector type expression it indexes.
 3.  If the expression is a sub-access, the flow is the same as the vector type expression it accesses.
-4.  If the expression is a sub-field:
+4.  If the expression is a subfield:
     1.  If the field is not flipped, the flow is the same as the bundle type expression it selects from.
     2.  If the field is flipped, then the flow is the reverse (defined below) of the bundle type expression it selects from.
 5.  The flow of all other expressions is source.
@@ -1551,7 +1551,7 @@ For each flow, its reverse is defined as follows:
 2.  The reverse of sink is source.
 3.  The reverse of duplex is duplex.
 
-Practically, for cases (2), (3), and (4), the flow algorithm is applied recursively to the operand of a sub-index, sub-access, or sub-field up to a base case of (1) or (5).
+Practically, for cases (2), (3), and (4), the flow algorithm is applied recursively to the operand of a subindex, sub-access, or subfield up to a base case of (1) or (5).
 
 ## Type Equivalence
 
@@ -1621,9 +1621,9 @@ To determine how two types are connected, the following connection algorithm is 
 Inspect the type of the left-hand side and take one of three actions:
 
 1.  If this is a ground type, the right-hand side is connected to the left-hand side destination.
-2.  If this is a vector type, then expand the connection into one connection per element from each right-hand side element to each left-hand side element destination using sub-index expressions.
+2.  If this is a vector type, then expand the connection into one connection per element from each right-hand side element to each left-hand side element destination using subindex expressions.
     Recursively apply the connection algorithm to each expanded connection.
-3.  If this is a bundle type, then expand the connection into one connection per-field using the sub-field expression.
+3.  If this is a bundle type, then expand the connection into one connection per-field using the subfield expression.
     If the field is *not* flipped, then connect the right-hand side field to the left-hand side destination.
     If the field is flipped, then connect the left-hand side field to the right-hand side destination.
     Recursively apply the connection algorithm to each expanded connection.
@@ -3696,7 +3696,7 @@ circuit Bar:
   ;; snippetend
 ```
 
-Indexing statically (sub-field, sub-index) into a probed value is allowed as part of the read:
+Indexing statically (subfield, subindex) into a probed value is allowed as part of the read:
 
 ``` firrtl
 FIRRTL version 4.0.0

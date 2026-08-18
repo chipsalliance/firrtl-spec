@@ -1909,12 +1909,13 @@ It is legal for compiler implementations to reject circuits with statically fals
 A property assertion is specified using the `propassert`{.firrtl} statement, which takes a condition expression and a diagnostic message:
 
 ``` firrtl
-FIRRTL version 6.0.0
+FIRRTL version 7.0.0
 circuit Foo:
   public module Foo:
     input condition: Bool
     ;; snippetbegin
     propassert condition, "message"
+    propassert condition, String("message")
     ;; snippetend
 ```
 
@@ -1924,12 +1925,12 @@ The following conditions must hold for a property assertion to be legal:
 
 2.  The flow of the condition expression must be source.
 
-3.  The message is a double-quoted string literal.
+3.  The message expression must be either a double-quoted string literal or a property type `String`{.firrtl}.
 
 4.  The property assertion must not occur within a conditional scope.
 
 The assertion will be evaluated during property evaluation, an implementation-defined execution that allows the user to set property inputs, read property outputs, and cause assertions to error that are false.
-Property evaluation should display the property assertion message for any false assertions.
+Property evaluation should evaluate and display the property assertion message for any false assertions.
 Property assertions that evaluate to true have no effect.
 
 It is legal for FIRRTL compilers to statically evaluate property assertions and error when an assertion is known to always be false.
@@ -4969,7 +4970,8 @@ command =
         string_dq
     , ")" ,
     [ ":" , id ] , [ info ]
-  | "propassert" , property_expr , "," , string_dq , [ info ] ;
+  | "propassert" , property_expr , "," ,
+      ( string_dq | property_expr ) , [ info ] ;
 
 (* Layer Block Statement *)
 layerblock =

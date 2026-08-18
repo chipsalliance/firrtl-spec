@@ -29,6 +29,10 @@ After resolving these dependencies, use the following build targets:
 - `make format` will format all Markdown files by round-tripping them through
   `pandoc`. *For this build step to be usable, use the exact versions of
   `pandoc` and `pandoc-crossref` that CI uses!*
+- `make lint` will rewrite all Markdown files in place to use the canonical
+  terminology, e.g., `subfield` instead of `sub-field`. The rules are in
+  `scripts/lint-terminology.lua`. CI runs this and fails if it produces any
+  changes.
 - `make test` will extract FIRRTL and Verilog snippets from the specification
   and ABI document and, respectively, run them through `firtool -parse-only` or
   `verilator --lint-only` to test that they are legal FIRRTL or Verilog.

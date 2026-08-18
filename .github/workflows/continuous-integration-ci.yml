@@ -44,6 +44,17 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
+      - name: "Lint terminology"
+        shell: bash
+        run: |
+          make lint
+          if ! git diff --quiet; then
+            echo 'Please run `make lint` on your change to apply the following terminology fixes:' | tee -a $GITHUB_STEP_SUMMARY
+            echo '```diff' >> $GITHUB_STEP_SUMMARY
+            git diff | tee -a $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
       - name: "Install Other Dependencies"
         shell: bash
         run: |

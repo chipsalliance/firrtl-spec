@@ -4053,8 +4053,8 @@ A module's convention describes how its ports are lowered to the output format, 
 ### The "Scalarized" Convention
 
 The scalarized convention replaces every port with zero or more new ports.
-One new, ground type port is created for each leaf subcomponent of the original port.
-If a port has no leaf subcomponents, then the port is removed.
+One new, ground type port is created for each non-empty leaf subcomponent of the original port.
+An empty component is either a zero-width ground type, a zero-length vector, or a bundle with no fields.
 
 The name of each scalarized port is determined as follows:
 

@@ -98,7 +98,7 @@ module Top(
 endmodule
 ```
 
-Ports of aggregate type shall be scalarized according to the "Aggregate Type Lowering" description in the FIRRTL spec.
+Ports of aggregate type shall be scalarized according to the "Scalarized Convention" described in the FIRRTL specification section on "Module Conventions".
 
 Ports of ref type on public modules shall, for each public module, be lowered to a Verilog macro with the following format where `module` is the name of the public module, `portname` is the name of the port, and `internalpath` is the hierarchical path name:
 

@@ -12,7 +12,13 @@ revisionHistory:
       - Clarify the connection algorithm.
       - Change property assertions to accept either a string (the current
         behavior) or a property expression of string type.
+      - Rework the algorithm for the scalarized module convention.
+      - Add missing information to the scalarized module convention about how
+        port directions are computed.
     abi:
+      - Provide correct section name linkage from the ABI to the specification
+        so that readers can understand the algorithm for the Port Lowering ABI
+        v1.
   # Information about the old versions.  This should be static.
   oldVersions:
     - version: 6.0.0

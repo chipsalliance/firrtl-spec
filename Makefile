@@ -5,7 +5,7 @@ IMG_SRCS=$(shell find include/img_src/ -type f -name '*.dot')
 IMG_EPSS=$(IMG_SRCS:include/img_src/%.dot=build/%.eps)
 IMG_PNG=$(IMG_SRCS:include/img_src/%.dot=build/%.png)
 
-.PHONY: all clean format images test
+.PHONY: all clean format images lint test
 .PRECIOUS: build/ build/img/
 
 all: build/spec.pdf build/abi.pdf
@@ -15,6 +15,9 @@ clean:
 
 format:
 	find . -type f -name '*.md' -exec ./scripts/format.sh {} ';'
+
+lint:
+	find . -type f -name '*.md' -exec ./scripts/lint-terminology.sh {} ';'
 
 images: $(IMG_EPSS) $(IMG_PNGS)
 

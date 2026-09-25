@@ -3696,7 +3696,7 @@ circuit Bar:
   ;; snippetend
 ```
 
-Indexing statically (subfield, subindex) into a probed value is allowed as part of the read:
+Indexing statically (subfield, subindex) into a probed value is allowed as part of the read or on the read value:
 
 ``` firrtl
 FIRRTL version 4.0.0
@@ -3708,9 +3708,11 @@ circuit Bar:
 
   public module Bar :
     output x : UInt<3>
+    output y : UInt<3>
 
     inst f of Foo
     connect x, read(f.p.b) ; indirectly access the probed data
+    connect y, read(f.p).a ; indirectly access the probed data
   ;; snippetend
 ```
 
@@ -5006,7 +5008,10 @@ reference_dynamic =
 
 (* Expressions *)
 expr =
-    expr_reference
+    id
+  | expr , "." , id
+  | expr , "[" , int , "]"
+  | expr , "[" , expr , "]"
   | expr_lit
   | expr_enum
   | expr_mux
@@ -5014,7 +5019,6 @@ expr =
   | expr_primop
   | expr_intrinsic ;
 
-expr_reference = reference ;
 expr_lit = ( "UInt" | "SInt" ) , [ width ] , "(" , ( int | rint ) , ")" ;
 expr_enum = type_enum , "(" , id , [ "," , expr ] , ")" ;
 expr_mux = "mux" , "(" , expr , "," , expr , "," , expr , ")" ;
@@ -5023,7 +5027,9 @@ expr_read = "read" , "(" , expr_probe , ")" ;
 expr_probe =
     "probe" , "(" , reference_static , ")"
   | "rwprobe" , "(" , reference_static , ")"
-  | reference_static ;
+  | id
+  | expr_probe , "." , id
+  | expr_probe , "[" , int , "]" ;
 
 property_literal_expr =
     "Integer" , "(" , int , ")"

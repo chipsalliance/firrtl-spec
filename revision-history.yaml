@@ -16,6 +16,7 @@ revisionHistory:
       - Add missing information to the scalarized module convention about how
         port directions are computed.
       - Fix inconsistent word choices.
+      - Update grammar for missing postfix indexing in expressions.
     abi:
       - Provide correct section name linkage from the ABI to the specification
         so that readers can understand the algorithm for the Port Lowering ABI

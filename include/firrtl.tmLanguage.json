@@ -1206,7 +1206,7 @@
             }
         },
         "property_primop": {
-            "begin": "\\b(integer_add|integer_mul|integer_shl|integer_shr|list_concat|List)\\s*(?:<([^>]+)>)?\\s*\\(",
+            "begin": "\\b(integer_add|integer_mul|integer_shl|integer_shr|integer_and|integer_or|integer_not|list_concat|List)\\s*(?:<([^>]+)>)?\\s*\\(",
             "end": "\\)",
             "beginCaptures": {
                 "1": {

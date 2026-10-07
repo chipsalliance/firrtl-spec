@@ -3675,7 +3675,7 @@ circuit Foo:
 The following example demonstrates the integer bitwise operations on `Integer`{.firrtl} properties.
 
 ``` {.firrtl .notest}
-FIRRTL version 6.1.0
+FIRRTL version 7.0.0
 circuit BitwiseProperties:
   public module BitwiseProperties:
     input a: Integer
@@ -3805,31 +3805,31 @@ These are for demonstration and their meaning or validity is determined by the i
 
 The following shows an intrinsic expression for the intrinsic named "circt_ltl_delay" with two parameters, returns `UInt<1>`{.firrtl}, and has one operand.
 
-\`\`\` {..firrtl}
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo :
-;; snippetbegin
-public module Foo :
-input in : UInt\<1\>
+  ;; snippetbegin
+  public module Foo :
+    input in : UInt<1>
 
     node d = intrinsic(circt_ltl_delay<delay = 1, length = 0> : UInt<1>, in)
+  ;; snippetend
+```
 
-;; snippetend
+The following has an intrinsic statement with an intrinsic expression as its operand.
+The statement is for the intrinsic named "circt_verif_assert".
+The expression is for the intrinsic named "circt_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
 
+``` firrtl
+FIRRTL version 4.0.0
+circuit Foo :
+  ;; snippetbegin
+  public module Foo :
+    input data : UInt<5>
 
-    The following has an intrinsic statement with an intrinsic expression as its operand.
-    The statement is for the intrinsic named "circt\_verif\_assert".
-    The expression is for the intrinsic named "circt\_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
-
-    ``` {..firrtl}
-    FIRRTL version 4.0.0
-    circuit Foo :
-      ;; snippetbegin
-      public module Foo :
-        input data : UInt<5>
-
-        intrinsic(circt_verif_assert, intrinsic(circt_isX: UInt<1>, data))
-      ;; snippetend
+    intrinsic(circt_verif_assert, intrinsic(circt_isX: UInt<1>, data))
+  ;; snippetend
+```
 
 Operands and the return type of intrinsics must be passive and either ground or aggregate.
 When used as an expression, the intrinsic must have a return type.
@@ -4501,7 +4501,7 @@ Integer bitwise operations take `Integer`{.firrtl} property type expressions as 
 They use arbitrary-precision signed two's-complement bitwise semantics, with negative operands sign-extended without bound.
 These semantics are equivalent to the bitwise operations on Scala `BigInt` values.
 
-### Integer And Operation
+### Integer Bitwise And Operation
 
 | Name        | Arguments | Arg Types         | Result Type |
 |-------------|-----------|-------------------|-------------|
@@ -4509,7 +4509,7 @@ These semantics are equivalent to the bitwise operations on Scala `BigInt` value
 
 The integer and operation result is the bitwise AND of e1 and e2.
 
-### Integer Or Operation
+### Integer Bitwise Or Operation
 
 | Name       | Arguments | Arg Types         | Result Type |
 |------------|-----------|-------------------|-------------|
@@ -4517,7 +4517,7 @@ The integer and operation result is the bitwise AND of e1 and e2.
 
 The integer or operation result is the bitwise OR of e1 and e2.
 
-### Integer Not Operation
+### Integer Bitwise Not Operation
 
 | Name        | Arguments | Arg Types | Result Type |
 |-------------|-----------|-----------|-------------|

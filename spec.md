@@ -3672,6 +3672,22 @@ circuit Foo:
       ;; snippetend
 ```
 
+The following example demonstrates the integer bitwise operations on `Integer`{.firrtl} properties.
+
+``` {.firrtl .notest}
+FIRRTL version 7.0.0
+circuit BitwiseProperties:
+  public module BitwiseProperties:
+    input a: Integer
+    input b: Integer
+    output andResult: Integer
+    output orResult: Integer
+    output notResult: Integer
+    propassign andResult, integer_and(a, b)
+    propassign orResult, integer_or(a, Integer(255))
+    propassign notResult, integer_not(a)
+```
+
 [@sec:primitive-property-operations] will describe the format and semantics of each primitive property operation.
 
 ## Reading Probe References
@@ -3789,7 +3805,7 @@ These are for demonstration and their meaning or validity is determined by the i
 
 The following shows an intrinsic expression for the intrinsic named "circt_ltl_delay" with two parameters, returns `UInt<1>`{.firrtl}, and has one operand.
 
-``` .firrtl
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin
@@ -3804,7 +3820,7 @@ The following has an intrinsic statement with an intrinsic expression as its ope
 The statement is for the intrinsic named "circt_verif_assert".
 The expression is for the intrinsic named "circt_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
 
-``` .firrtl
+``` firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin
@@ -4479,6 +4495,36 @@ The shift left operation result is the arbitrary precision signed integer arithm
 e2 zero bits are shifted into the least significant bits of e1, and the e2 most significant bits of e1 are truncated.
 e2 must be non-negative.
 
+## Integer Bitwise Operations
+
+Integer bitwise operations take `Integer`{.firrtl} property type expressions as arguments and return an `Integer`{.firrtl} property type result.
+They use arbitrary-precision signed two's-complement bitwise semantics, with negative operands sign-extended without bound.
+These semantics are equivalent to the bitwise operations on Scala `BigInt` values.
+
+### Integer Bitwise And Operation
+
+| Name        | Arguments | Arg Types         | Result Type |
+|-------------|-----------|-------------------|-------------|
+| integer_and | (e1,e2)   | (Integer,Integer) | Integer     |
+
+The integer and operation result is the bitwise AND of e1 and e2.
+
+### Integer Bitwise Or Operation
+
+| Name       | Arguments | Arg Types         | Result Type |
+|------------|-----------|-------------------|-------------|
+| integer_or | (e1,e2)   | (Integer,Integer) | Integer     |
+
+The integer or operation result is the bitwise OR of e1 and e2.
+
+### Integer Bitwise Not Operation
+
+| Name        | Arguments | Arg Types | Result Type |
+|-------------|-----------|-----------|-------------|
+| integer_not | \(e\)     | (Integer) | Integer     |
+
+The integer not operation result is the bitwise complement of e.
+
 ## List Operations
 
 List operations create `List`{.firrtl} property type expressions from other property expressions.
@@ -5037,7 +5083,7 @@ property_literal_expr =
   | "Double" , "(" , floatingpoint , ")"
   | "path" , "(" , string_dq , ")" ;
 property_expr = reference_static | property_literal_expr | property_expr_primop ;
-property_expr_primop = property_primop_2expr | property_primop_varexpr;
+property_expr_primop = property_primop_2expr | property_primop_1expr | property_primop_varexpr;
 expr_primop = primop_2expr | primop_1expr | primop_1expr1int | primop_1expr2int ;
 
 expr_intrinsic = "intrinsic", "(" , id ,
@@ -5094,6 +5140,8 @@ primop_1expr2int = primop_1expr2int_keyword , "(" , expr , "," , int , "," , int
 (* Primitive Property Operations *)
 property_primop_2expr = property_primop_2expr_keyword ,
                           "(" , property_expr , "," , property_expr , ")" ;
+property_primop_1expr = property_primop_1expr_keyword ,
+                          "(" , property_expr , ")" ;
 property_primop_varexpr = property_primop_varexpr_keyword ,
                             "(" , { property_expr } , ")" ;
 
@@ -5176,8 +5224,11 @@ primop_1expr2int_keyword = "bits" ;
 
 property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" | "integer_shl"
+  | "integer_and" | "integer_or"
   | "prop_eq"
   | "bool_and" | "bool_or" | "bool_xor" ;
+
+property_primop_1expr_keyword = "integer_not" ;
 
 property_primop_varexpr_keyword =
     "List" , "<" , type_property , ">" | "list_concat" | "string_concat" ;

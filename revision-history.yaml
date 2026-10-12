@@ -17,7 +17,8 @@ revisionHistory:
         port directions are computed.
       - Fix inconsistent word choices.
       - Update grammar for missing postfix indexing in expressions.
-      - Add integer Property bitwise AND, OR, and NOT operations.
+      - Add `integer_and`, `integer_or`, and `integer_not` integer property
+        operations.
     abi:
       - Provide correct section name linkage from the ABI to the specification
         so that readers can understand the algorithm for the Port Lowering ABI

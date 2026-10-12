@@ -3674,7 +3674,7 @@ circuit Foo:
 
 The following example demonstrates the integer bitwise operations on `Integer`{.firrtl} properties.
 
-``` {.firrtl .notest}
+``` firrtl
 FIRRTL version 7.0.0
 circuit BitwiseProperties:
   public module BitwiseProperties:
@@ -3683,9 +3683,18 @@ circuit BitwiseProperties:
     output andResult: Integer
     output orResult: Integer
     output notResult: Integer
-    propassign andResult, integer_and(a, b)
-    propassign orResult, integer_or(a, Integer(255))
-    propassign notResult, integer_not(a)
+    propassign andResult,
+      ;; snippetbegin
+      integer_and(a, b)
+      ;; snippetend
+    propassign orResult,
+      ;; snippetbegin
+      integer_or(a, Integer(255))
+      ;; snippetend
+    propassign notResult,
+      ;; snippetbegin
+      integer_not(a)
+      ;; snippetend
 ```
 
 [@sec:primitive-property-operations] will describe the format and semantics of each primitive property operation.
@@ -4498,8 +4507,6 @@ e2 must be non-negative.
 ## Integer Bitwise Operations
 
 Integer bitwise operations take `Integer`{.firrtl} property type expressions as arguments and return an `Integer`{.firrtl} property type result.
-They use arbitrary-precision signed two's-complement bitwise semantics, with negative operands sign-extended without bound.
-These semantics are equivalent to the bitwise operations on Scala `BigInt` values.
 
 ### Integer Bitwise And Operation
 

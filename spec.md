@@ -3814,7 +3814,7 @@ These are for demonstration and their meaning or validity is determined by the i
 
 The following shows an intrinsic expression for the intrinsic named "circt_ltl_delay" with two parameters, returns `UInt<1>`{.firrtl}, and has one operand.
 
-``` firrtl
+``` .firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin
@@ -3829,7 +3829,7 @@ The following has an intrinsic statement with an intrinsic expression as its ope
 The statement is for the intrinsic named "circt_verif_assert".
 The expression is for the intrinsic named "circt_isX" which returns a `UInt<1>`{.firrtl} and takes an operand.
 
-``` firrtl
+``` .firrtl
 FIRRTL version 4.0.0
 circuit Foo :
   ;; snippetbegin
@@ -4507,6 +4507,7 @@ e2 must be non-negative.
 ## Integer Bitwise Operations
 
 Integer bitwise operations take `Integer`{.firrtl} property type expressions as arguments and return an `Integer`{.firrtl} property type result.
+They use arbitrary-precision signed two's-complement bitwise semantics, with negative operands sign-extended without bound.
 
 ### Integer Bitwise And Operation
 

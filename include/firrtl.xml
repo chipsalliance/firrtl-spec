@@ -88,6 +88,7 @@
       <item>bits</item>
       <item>head</item>
       <item>tail</item>
+      <item>list_contains</item>
       <item>asFixedPoint</item>
       <item>bpshl</item>
       <item>bpshr</item>

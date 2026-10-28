@@ -4535,7 +4535,7 @@ The integer not operation result is the bitwise complement of e.
 
 ## List Operations
 
-List operations create `List`{.firrtl} property type expressions from other property expressions.
+List operations construct or query `List`{.firrtl} property expressions.
 
 ### List Construction Operation
 
@@ -4553,6 +4553,17 @@ The `List`{.firrtl} constructor is parameterized by element type t, and accepts 
 | list_concat | (e+)      | (t+)      | List\<t\>   |
 
 The list concatenation operation constructs a `List`{.firrtl} property type expression by concatenating one or more lists of the same element type t.
+
+### List Contains Operation
+
+| Name          | Arguments | Arg Types     | Result Type |
+|---------------|-----------|---------------|-------------|
+| list_contains | (e1,e2)   | (List\<t\>,t) | Bool        |
+
+The list contains operation returns a `Bool`{.firrtl} property expression that is `true`{.firrtl} if and only if at least one element of e1 is equal to e2 according to the `prop_eq`{.firrtl} operation.
+The element type t must be one of the property types supported by `prop_eq`{.firrtl}: `String`{.firrtl}, `Integer`{.firrtl}, or `Bool`{.firrtl}.
+
+An empty list produces `false`{.firrtl}.
 
 ### String Concatenation Operation
 
@@ -5233,7 +5244,7 @@ primop_1expr2int_keyword = "bits" ;
 property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" | "integer_shl"
   | "integer_and" | "integer_or"
-  | "prop_eq"
+  | "prop_eq" | "list_contains"
   | "bool_and" | "bool_or" | "bool_xor" ;
 
 property_primop_1expr_keyword = "integer_not" ;

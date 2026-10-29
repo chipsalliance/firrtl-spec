@@ -4562,8 +4562,6 @@ The list concatenation operation constructs a `List`{.firrtl} property type expr
 
 The list contains operation returns a `Bool`{.firrtl} property expression that is `true`{.firrtl} if and only if at least one element of e1 is equal to e2 according to the `prop_eq`{.firrtl} operation.
 
-An empty list produces `false`{.firrtl}.
-
 ### String Concatenation Operation
 
 | Name          | Arguments | Arg Types | Result Type |

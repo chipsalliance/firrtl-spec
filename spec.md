@@ -4561,7 +4561,6 @@ The list concatenation operation constructs a `List`{.firrtl} property type expr
 | list_contains | (e1,e2)   | (List\<t\>,t) | Bool        |
 
 The list contains operation returns a `Bool`{.firrtl} property expression that is `true`{.firrtl} if and only if at least one element of e1 is equal to e2 according to the `prop_eq`{.firrtl} operation.
-The element type t must be one of the property types supported by `prop_eq`{.firrtl}: `String`{.firrtl}, `Integer`{.firrtl}, or `Bool`{.firrtl}.
 
 An empty list produces `false`{.firrtl}.
 

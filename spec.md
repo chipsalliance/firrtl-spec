@@ -4535,7 +4535,7 @@ The integer not operation result is the bitwise complement of e.
 
 ## List Operations
 
-List operations construct or query `List`{.firrtl} property expressions.
+List operations construct or query `List`{.firrtl} property type expressions.
 
 ### List Construction Operation
 

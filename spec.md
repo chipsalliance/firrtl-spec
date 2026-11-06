@@ -632,6 +632,8 @@ An object statement instantiates a class to create an object.
 Unlike module instances, which represent hardware, objects represent metadata or design intent.
 
 The syntax for creating an object is `object <name> of <ClassName>`, where `<name>` is the identifier for the object and `<ClassName>` is the name of a class defined in the circuit.
+Each object statement creates a distinct object for each instance of its enclosing module or class.
+Property assignments of object references, including conversion to `AnyRef`{.firrtl}, preserve object identity.
 
 Example:
 
@@ -4603,6 +4605,21 @@ The operand type t must be one of the following property types:
 
 Both operands must have the same property type.
 
+## Object Identity Equality Operation
+
+| Name      | Arguments | Arg Types | Result Type |
+|-----------|-----------|-----------|-------------|
+| object_eq | (e1,e2)   | (t1,t2)   | Bool        |
+
+The result is `true`{.firrtl} if e1 and e2 refer to the same object, and `false`{.firrtl} otherwise.
+
+The operand types t1 and t2 must each be one of the following property types:
+
+- `Inst<ClassName>`{.firrtl}
+- or `AnyRef`{.firrtl}.
+
+The operands need not have the same property type.
+
 ## Boolean Property Operations
 
 Boolean property operations compute bitwise logical operations over `Bool`{.firrtl} property expressions.
@@ -5241,7 +5258,7 @@ primop_1expr2int_keyword = "bits" ;
 property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" | "integer_shl"
   | "integer_and" | "integer_or"
-  | "prop_eq" | "list_contains"
+  | "prop_eq" | "object_eq" | "list_contains"
   | "bool_and" | "bool_or" | "bool_xor" ;
 
 property_primop_1expr_keyword = "integer_not" ;

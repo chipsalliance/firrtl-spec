@@ -89,6 +89,7 @@
       <item>head</item>
       <item>tail</item>
       <item>list_contains</item>
+      <item>object_eq</item>
       <item>asFixedPoint</item>
       <item>bpshl</item>
       <item>bpshr</item>

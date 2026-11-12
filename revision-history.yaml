@@ -20,7 +20,6 @@ revisionHistory:
       - Add `integer_and`, `integer_or`, and `integer_not` integer property
         operations.
       - Add the `list_contains` property operation for list membership queries.
-      - Add the `object_eq` property operation for object identity comparisons.
     abi:
       - Provide correct section name linkage from the ABI to the specification
         so that readers can understand the algorithm for the Port Lowering ABI

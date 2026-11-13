@@ -4590,18 +4590,25 @@ circuit Example:
 
 | Name    | Arguments | Arg Types | Result Type |
 |---------|-----------|-----------|-------------|
-| prop_eq | (e1,e2)   | (t,t)     | Bool        |
+| prop_eq | (e1,e2)   | (t1,t2)   | Bool        |
 
-The property equality operation compares two property expressions of the same type for equality.
+The property equality operation compares two property expressions for equality.
 The result is a `Bool`{.firrtl} property expression that is `true`{.firrtl} when e1 and e2 are equal, and `false`{.firrtl} otherwise.
 
-The operand type t must be one of the following property types:
+The operand types t1 and t2 must each be one of the following property types:
 
-- `Integer`{.firrtl}, in which case equality is arbitrary precision signed integer equality
+- `Integer`{.firrtl}, in which case equality is arbitrary precision signed integer equality,
 - `String`{.firrtl}, in which case equality is codepoint-wise string equality,
-- or `Bool`{.firrtl}, in which case equality is boolean equality.
+- `Bool`{.firrtl}, in which case equality is boolean equality,
+- `Inst`{.firrtl}, in which case equality is object identity equality,
+- or `AnyRef`{.firrtl}, in which case equality is object identity equality.
 
-Both operands must have the same property type.
+Both operands must have the same type, *with one exception*.
+If one operand is an `Inst`{.firrtl} or `AnyRef`{.firrtl} then the other operand may be either an `Inst`{.firrtl} or `AnyRef`{.firrtl}.
+The class parameter for an `Inst`{.firrtl} type may be different for each operand.
+
+Object identity equality evaluates to true if the two operands refer to the same object.
+Property assignment of object references and conversions to `AnyRef`{.firrtl} preserve object identity.
 
 ## Boolean Property Operations
 

@@ -4556,11 +4556,15 @@ The list concatenation operation constructs a `List`{.firrtl} property type expr
 
 ### List Contains Operation
 
-| Name          | Arguments | Arg Types     | Result Type |
-|---------------|-----------|---------------|-------------|
-| list_contains | (e1,e2)   | (List\<t\>,t) | Bool        |
+| Name          | Arguments | Arg Types       | Result Type |
+|---------------|-----------|-----------------|-------------|
+| list_contains | (e1,e2)   | (List\<t1\>,t2) | Bool        |
 
 The list contains operation returns a `Bool`{.firrtl} property expression that is `true`{.firrtl} if and only if at least one element of e1 is equal to e2 according to the `prop_eq`{.firrtl} operation.
+The element type t1 must support property equality: `Integer`{.firrtl}, `String`{.firrtl}, `Bool`{.firrtl}, `Inst`{.firrtl}, or `AnyRef`{.firrtl}.
+The search expression type t2 must match t1, with one exception: if t1 is `AnyRef`{.firrtl}, t2 may be `Inst<ClassName>`{.firrtl} for any class.
+In this case, the search expression is implicitly converted to `AnyRef`{.firrtl}, preserving object identity.
+The reverse is not allowed: a list of `Inst<ClassName>`{.firrtl} may only be searched with an expression of that same `Inst<ClassName>`{.firrtl} type.
 
 ### String Concatenation Operation
 

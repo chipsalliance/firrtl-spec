@@ -4554,6 +4554,15 @@ The `List`{.firrtl} constructor is parameterized by element type t, and accepts 
 
 The list concatenation operation constructs a `List`{.firrtl} property type expression by concatenating one or more lists of the same element type t.
 
+### List Length Operation
+
+| Name        | Arguments | Arg Types   | Result Type |
+|-------------|-----------|-------------|-------------|
+| list_length | \(e\)     | (List\<t\>) | Integer     |
+
+The list length operation returns an `Integer`{.firrtl} property expression equal to the number of elements in e.
+The element type t may be any legal property type.
+
 ### List Contains Operation
 
 | Name          | Arguments | Arg Types       | Result Type |
@@ -5252,10 +5261,10 @@ primop_1expr2int_keyword = "bits" ;
 property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" | "integer_shl"
   | "integer_and" | "integer_or"
-  | "prop_eq" | "list_contains"
+  | "prop_eq" | "list_contains" | "list_intersects"
   | "bool_and" | "bool_or" | "bool_xor" ;
 
-property_primop_1expr_keyword = "integer_not" ;
+property_primop_1expr_keyword = "integer_not" | "list_length" ;
 
 property_primop_varexpr_keyword =
     "List" , "<" , type_property , ">" | "list_concat" | "string_concat" ;

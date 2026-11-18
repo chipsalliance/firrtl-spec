@@ -4575,6 +4575,16 @@ The search expression type t2 must match t1, with one exception: if t1 is `AnyRe
 In this case, the search expression is implicitly converted to `AnyRef`{.firrtl}, preserving object identity.
 The reverse is not allowed: a list of `Inst<ClassName>`{.firrtl} may only be searched with an expression of that same `Inst<ClassName>`{.firrtl} type.
 
+### List Intersection Operation
+
+| Name           | Arguments | Arg Types               | Result Type |
+|----------------|-----------|-------------------------|-------------|
+| list_intersect | (e1,e2)   | (List\<t1\>,List\<t2\>) | List\<t1\>  |
+
+The list intersection operation returns the multiset intersection of e1 and e2 using `prop_eq`{.firrtl} equality.
+The result is a subsequence of e1 retaining the earliest occurrences of each value.
+The element types t1 and t2 must satisfy the type constraints of `prop_eq`{.firrtl}.
+
 ### String Concatenation Operation
 
 | Name          | Arguments | Arg Types | Result Type |
@@ -5261,7 +5271,7 @@ primop_1expr2int_keyword = "bits" ;
 property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" | "integer_shl"
   | "integer_and" | "integer_or"
-  | "prop_eq" | "list_contains" | "list_intersects"
+  | "prop_eq" | "list_contains" | "list_intersect"
   | "bool_and" | "bool_or" | "bool_xor" ;
 
 property_primop_1expr_keyword = "integer_not" | "list_length" ;

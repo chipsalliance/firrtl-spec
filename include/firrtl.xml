@@ -90,6 +90,7 @@
       <item>tail</item>
       <item>list_length</item>
       <item>list_contains</item>
+      <item>list_intersect</item>
       <item>asFixedPoint</item>
       <item>bpshl</item>
       <item>bpshr</item>

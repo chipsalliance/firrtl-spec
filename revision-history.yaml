@@ -23,6 +23,7 @@ revisionHistory:
       - Extend `prop_eq` to compare object identity with freely intermixed
         `Inst<ClassName>` and `AnyRef` operands.
       - Add the `list_length` property operation for list length queries.
+      - Add the `list_intersect` property operation for multiset intersection.
     abi:
       - Provide correct section name linkage from the ABI to the specification
         so that readers can understand the algorithm for the Port Lowering ABI

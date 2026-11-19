@@ -1235,6 +1235,21 @@ circuit Example:
   ;; snippetend
 ```
 
+### Option Type
+
+The `Option` type represents an optional property value.
+It is parameterized by the type of its value, which can be any legal property type.
+An option is either empty or contains one value.
+
+``` {.firrtl .notest}
+FIRRTL version 6.1.0
+circuit Example:
+  ;; snippetbegin
+  public module Example:
+    input optionProp : Option<Integer> ; an input port of Option property type
+  ;; snippetend
+```
+
 ## Connectable Types
 
 A **connectable type** is one which may be the type of expressions which may participate in the `connect`{.firrtl} statement.
@@ -4599,6 +4614,29 @@ circuit Example:
       ;; snippetend
 ```
 
+## Option Operations
+
+Option operations construct or query `Option`{.firrtl} property type expressions.
+
+### Option Construction Operation
+
+| Name        | Arguments | Arg Types | Result Type |
+|-------------|-----------|-----------|-------------|
+| Option\<t\> | ()        | ()        | Option\<t\> |
+| Option\<t\> | \(e\)     | \(t\)     | Option\<t\> |
+
+The `Option`{.firrtl} constructor is parameterized by value type t, and accepts zero or one property type expression of type t.
+`Option<t>()`{.firrtl} constructs an empty option, and `Option<t>(e)`{.firrtl} constructs an option containing e.
+
+### Option Get Or Else Operation
+
+| Name               | Arguments | Arg Types       | Result Type |
+|--------------------|-----------|-----------------|-------------|
+| option_get_or_else | (e1,e2)   | (Option\<t\>,t) | t           |
+
+The option get or else operation returns the value contained in e1 if e1 is not empty, and e2 otherwise.
+The type of e2 must match the value type t of e1.
+
 ## Property Equality Operation
 
 | Name    | Arguments | Arg Types | Result Type |
@@ -4939,7 +4977,8 @@ type_property =
   | "Path"
   | "AnyRef"
   | "Inst" , "<" , id , ">"
-  | "List" , "<" , type_property , ">" ;
+  | "List" , "<" , type_property , ">"
+  | "Option" , "<" , type_property , ">" ;
 
 (* Statements *)
 statement =
@@ -5262,12 +5301,14 @@ property_primop_2expr_keyword =
     "integer_add" | "integer_mul" | "integer_shr" | "integer_shl"
   | "integer_and" | "integer_or"
   | "prop_eq" | "list_contains" | "list_intersects"
+  | "option_get_or_else"
   | "bool_and" | "bool_or" | "bool_xor" ;
 
 property_primop_1expr_keyword = "integer_not" | "list_length" ;
 
 property_primop_varexpr_keyword =
-    "List" , "<" , type_property , ">" | "list_concat" | "string_concat" ;
+    ( "List" | "Option" ) , "<" , type_property , ">"
+  | "list_concat" | "string_concat" ;
 ```
 
 # Versioning Scheme of this Document

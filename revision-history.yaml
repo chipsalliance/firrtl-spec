@@ -23,6 +23,8 @@ revisionHistory:
       - Extend `prop_eq` to compare object identity with freely intermixed
         `Inst<ClassName>` and `AnyRef` operands.
       - Add the `list_length` property operation for list length queries.
+      - Add the `Option` property type and the `option_get_or_else` property
+        operation.
     abi:
       - Provide correct section name linkage from the ABI to the specification
         so that readers can understand the algorithm for the Port Lowering ABI

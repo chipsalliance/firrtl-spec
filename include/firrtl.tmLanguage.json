@@ -376,7 +376,7 @@
                     "name": "storage.type.firrtl"
                 },
                 {
-                    "begin": "\\b(List)\\s*<",
+                    "begin": "\\b(List|Option)\\s*<",
                     "end": ">",
                     "beginCaptures": {
                         "1": {
@@ -1206,7 +1206,7 @@
             }
         },
         "property_primop": {
-            "begin": "\\b(integer_add|integer_mul|integer_shl|integer_shr|list_concat|list_length|list_contains|List)\\s*(?:<([^>]+)>)?\\s*\\(",
+            "begin": "\\b(integer_add|integer_mul|integer_shl|integer_shr|list_concat|list_length|list_contains|option_get_or_else|List|Option)\\s*(?:<([^>]+)>)?\\s*\\(",
             "end": "\\)",
             "beginCaptures": {
                 "1": {

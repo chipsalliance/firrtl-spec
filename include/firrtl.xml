@@ -43,6 +43,7 @@
       <item>Probe</item>
       <item>RWProbe</item>
       <item>List</item>
+      <item>Option</item>
     </list>
     <list name="typemodifiers">
       <item>const</item>
@@ -90,6 +91,7 @@
       <item>tail</item>
       <item>list_length</item>
       <item>list_contains</item>
+      <item>option_get_or_else</item>
       <item>asFixedPoint</item>
       <item>bpshl</item>
       <item>bpshr</item>
